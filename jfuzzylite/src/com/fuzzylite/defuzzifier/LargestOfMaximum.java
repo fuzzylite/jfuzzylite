@@ -1,0 +1,51 @@
+/*   Copyright 2013 Juan Rada-Vilela
+
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+
+ http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+ */
+package com.fuzzylite.defuzzifier;
+
+import com.fuzzylite.Op;
+import com.fuzzylite.term.Term;
+
+/**
+ *
+ * @author jcrada
+ */
+public class LargestOfMaximum extends IntegralDefuzzifier {
+
+    public LargestOfMaximum() {
+        super();
+    }
+
+    public LargestOfMaximum(int resolution) {
+        super(resolution);
+    }
+
+    @Override
+    public double defuzzify(Term term, double minimum, double maximum) {
+
+        double dx = (maximum - minimum) / getResolution();
+        double x, y;
+        double ymax = -1.0, xlargest = maximum;
+        for (int i = 0; i < getResolution(); ++i) {
+            x = minimum + (i + 0.5) * dx;
+            y = term.membership(x);
+
+            if (Op.isGE(y, ymax)) {
+                ymax = y;
+                xlargest = x;
+            }
+        }
+        return xlargest;
+    }
+}
