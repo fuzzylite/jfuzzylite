@@ -40,11 +40,11 @@ public class RuleBlock {
     public RuleBlock(String name) {
         this(name, null, null, null);
     }
-    
-    public RuleBlock(TNorm conjunction, SNorm disjunction, TNorm activation){
-    	this("", conjunction, disjunction, activation);
+
+    public RuleBlock(TNorm conjunction, SNorm disjunction, TNorm activation) {
+        this("", conjunction, disjunction, activation);
     }
-    
+
     public RuleBlock(String name, TNorm conjunction, SNorm disjunction, TNorm activation) {
         this.name = name;
         this.conjunction = conjunction;
@@ -53,12 +53,12 @@ public class RuleBlock {
         this.rules = new ArrayList<>();
     }
 
-    public void activateRules() {
+    public void activate() {
         for (Rule rule : rules) {
             double activationDegree = rule.activationDegree(conjunction, disjunction);
-            FuzzyLite.logger().info(String.format("%s [degree=%f]", rule.toString(), activationDegree));
+            FuzzyLite.logger().info(String.format("[degree=%f] %s", activationDegree, rule.toString()));
             if (Op.isGt(activationDegree, 0.0)) {
-                rule.modifyConsequent(activationDegree, activation);
+                rule.activate(activationDegree, activation);
             }
         }
     }
@@ -71,19 +71,6 @@ public class RuleBlock {
         this.name = name;
     }
 
-    public List<Rule> getRules() {
-        return rules;
-    }
-
-    public void setRules(List<Rule> rules) {
-        this.rules = rules;
-    }
-
-    public RuleBlock addRule(Rule rule){
-    	this.rules.add(rule);
-    	return this;
-    }
-    
     public TNorm getConjunction() {
         return conjunction;
     }
@@ -106,5 +93,36 @@ public class RuleBlock {
 
     public void setActivation(TNorm activation) {
         this.activation = activation;
+    }
+
+    /*
+     * Rules
+     */
+    public Rule getRule(int index) {
+        return this.rules.get(index);
+    }
+
+    public void addRule(Rule rule) {
+        this.rules.add(rule);
+    }
+
+    public Rule removeRule(Rule rule) {
+        return this.rules.remove(rule) ? rule : null;
+    }
+
+    public int numberOfRules() {
+        return this.rules.size();
+    }
+    
+    public boolean isEmpty(){
+        return this.rules.isEmpty();
+    }
+
+    public List<Rule> getRules() {
+        return this.rules;
+    }
+
+    public void setRules(List<Rule> rules) {
+        this.rules = rules;
     }
 }

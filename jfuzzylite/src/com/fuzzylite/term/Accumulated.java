@@ -81,6 +81,10 @@ public class Accumulated extends Term {
         }
         return result;
     }
+    
+    public void clear(){
+        this.terms.clear();
+    }
 
     public List<Term> getTerms() {
         return terms;

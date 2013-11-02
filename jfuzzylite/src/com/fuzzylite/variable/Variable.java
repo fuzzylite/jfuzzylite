@@ -131,15 +131,59 @@ public abstract class Variable {
         this.maximum = maximum;
     }
 
+    /*
+     * Terms
+     */
+    public Term getTerm(String name) {
+        for (Term term : this.terms) {
+            if (name.equals(term.getName())) {
+                return term;
+            }
+        }
+        return null;
+    }
+
+    public Term getTerm(int index) {
+        return this.terms.get(index);
+    }
+
+    public void addTerm(Term term) {
+        this.terms.add(term);
+    }
+
+    public Term removeTerm(Term term) {
+        return this.terms.remove(term) ? term : null;
+    }
+
+    public Term removeTerm(String name) {
+        for (Iterator<Term> it = this.terms.iterator(); it.hasNext();) {
+            Term term = it.next();
+            if (name.equals(term.getName())) {
+                it.remove();
+                return term;
+            }
+        }
+        return null;
+    }
+
+    public boolean hasTerm(String name) {
+        return this.getTerm(name) != null;
+    }
+
+    public int numberOfTerms() {
+        return this.terms.size();
+    }
+    
+    public boolean isEmpty(){
+        return this.terms.isEmpty();
+    }
+
     public List<Term> getTerms() {
-        return terms;
+        return this.terms;
     }
 
     public void setTerms(List<Term> terms) {
         this.terms = terms;
     }
-    
-    public void addTerm(Term term){
-    	this.terms.add(term);
-    }
+
 }

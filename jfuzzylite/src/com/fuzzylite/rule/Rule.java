@@ -46,7 +46,7 @@ public class Rule {
         return weight * this.antecedent.activationDegree(conjunction, disjunction);
     }
 
-    public void modifyConsequent(double activationDegree, TNorm activation) {
+    public void activate(double activationDegree, TNorm activation) {
         this.consequent.modify(activationDegree, activation);
     }
 
@@ -120,8 +120,8 @@ public class Rule {
         }
         result.antecedent = new Antecedent();
         result.antecedent.load(strAntecedent, engine);
-        
-        result.consequent =  new Consequent();
+
+        result.consequent = new Consequent();
         result.consequent.load(strConsequent, engine);
 
         return result;
@@ -165,7 +165,7 @@ public class Rule {
         return text;
     }
 
-    public void setText(String text) {
+    protected void setText(String text) {
         this.text = text;
     }
 }
