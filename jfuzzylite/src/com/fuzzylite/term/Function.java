@@ -17,13 +17,11 @@ package com.fuzzylite.term;
 import com.fuzzylite.Engine;
 import com.fuzzylite.FuzzyLite;
 import com.fuzzylite.Op;
+import static com.fuzzylite.Op.str;
 import com.fuzzylite.variable.InputVariable;
 import com.fuzzylite.variable.OutputVariable;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -58,7 +56,7 @@ public class Function extends Term {
         public BuiltInFunction function;
         public String variable;
         public double value;
-        public List<Node> children = new ArrayList<>();
+        public Node left, right;
 
         public double evaluate(Map<String, Double> localVariables) {
             double result = Double.NaN;
@@ -67,13 +65,28 @@ public class Function extends Term {
                 if (operator != null) {
                     element = operator;
                 }
-                Object[] parameters = new Object[children.size()];
-                for (int i = 0; i < children.size(); ++i) {
-                    parameters[i] = children.get(i).evaluate(localVariables);
-                }
+
                 try {
-                    result = (double) element.function.invoke(null, parameters);
-                } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
+                    switch (element.getArity()) {
+                        case 0:
+                            result = (double) element.function.invoke(null);
+                            break;
+                        case 1:
+                            result = (double) element.function.invoke(null,
+                                    left.evaluate(localVariables));
+                            break;
+                        case 2:
+                            result = (double) element.function.invoke(null,
+                                    left.evaluate(localVariables),
+                                    right.evaluate(localVariables));
+                            break;
+                        default:
+                            throw new RuntimeException(String.format(
+                                    "[function error] <%i>-ary element <%s> is not supported, "
+                                    + "only unary and binary elements are",
+                                    element.getArity(), element.toString()));
+                    }
+                } catch (Exception ex) {
                     throw new RuntimeException("[function error] exception thrown "
                             + "invoking element <" + element.name + ">", ex);
                 }
@@ -91,8 +104,13 @@ public class Function extends Term {
             } else {
                 result = value;
             }
-            FuzzyLite.logger().info(String.format("%s = %f", toPostfix(), result));
+            FuzzyLite.logger().info(String.format("%s=%s", toPostfix(), str(result)));
             return result;
+        }
+
+        public static Node parse(String infix) throws Exception {
+            //TODO: implement
+            return null;
         }
 
         @Override
@@ -121,9 +139,13 @@ public class Function extends Term {
             if (!node.variable.isEmpty()) {
                 return node.variable;
             }
+
             String result = node.toString();
-            for (Node child : node.children) {
-                result += " " + toPrefix(child);
+            if (node.left != null) {
+                result += " " + this.toPrefix(node.left);
+            }
+            if (node.right != null) {
+                result += " " + this.toPrefix(node.right);
             }
             return result;
         }
@@ -140,10 +162,13 @@ public class Function extends Term {
                 return node.variable;
             }
 
-            //TODO: Fix the infix! How to put node.toString() between 3+ operands?
-            String result = node.toString();
-            for (Node child : node.children) {
-                result += " " + toInfix(child);
+            String result = "";
+            if (node.left != null) {
+                result += this.toInfix(node.left) + " ";
+            }
+            result += node.toString();
+            if (node.right != null) {
+                result += " " + this.toInfix(node.right);
             }
             return result;
         }
@@ -160,8 +185,11 @@ public class Function extends Term {
                 return node.variable;
             }
             String result = "";
-            for (Node child : node.children) {
-                result += toPostfix(child) + " ";
+            if (node.left != null) {
+                result += this.toPostfix(node.left) + " ";
+            }
+            if (node.right != null) {
+                result += this.toPrefix(node.right) + " ";
             }
             result += node.toString();
             return result;
@@ -178,6 +206,31 @@ public class Function extends Term {
     protected Map<String, Double> variables;
     protected Map<String, Operator> operators;
     protected Map<String, BuiltInFunction> functions;
+
+    public Function(String name) {
+
+    }
+
+    public Function(String name, String text, Engine engine, boolean loadBuiltInFunctions) {
+        this.name = name;
+        this.text = text;
+        this.engine = engine;
+        //TODO: What to do with warning? Overridable method.
+        loadOperators();
+        if (loadBuiltInFunctions) {
+            loadBuiltInFunctions();
+        }
+    }
+
+    public void load() throws Exception {
+        load(this.text, this.engine);
+    }
+
+    public void load(String text, Engine engine) throws Exception {
+        this.root = parse(text);
+        this.text = text;
+        this.engine = engine;
+    }
 
     @Override
     public double membership(double x) {
@@ -206,6 +259,30 @@ public class Function extends Term {
     @Override
     public String toString() {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    public static Function create(String name, String text, Engine engine) {
+        //TODO: implement
+        Function result = new Function(name);
+        return result;
+    }
+
+    public void loadOperators() {
+        //TODO: implement
+    }
+
+    public void loadBuiltInFunctions() {
+        //TODO: implement
+    }
+
+    public String toPostfix(String text) {
+        //TODO: implement
+        return "";
+    }
+
+    public Node parse(String text) throws Exception {
+        //TODO: implement
+        return null;
     }
 
     public static void main(String[] args) throws Exception {

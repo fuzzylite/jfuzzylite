@@ -162,6 +162,7 @@ public class FactoryManager {
         this.map.remove(clazz);
     }
 
+    @SuppressWarnings("unchecked")
     public <T> Factory<T> getFactory(Class<T> clazz) {
         return map.get(clazz);
     }

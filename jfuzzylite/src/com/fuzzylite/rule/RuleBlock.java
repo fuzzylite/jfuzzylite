@@ -16,6 +16,7 @@ package com.fuzzylite.rule;
 
 import com.fuzzylite.FuzzyLite;
 import com.fuzzylite.Op;
+import static com.fuzzylite.Op.str;
 import com.fuzzylite.norm.SNorm;
 import com.fuzzylite.norm.TNorm;
 import java.util.ArrayList;
@@ -56,7 +57,7 @@ public class RuleBlock {
     public void activate() {
         for (Rule rule : rules) {
             double activationDegree = rule.activationDegree(conjunction, disjunction);
-            FuzzyLite.logger().info(String.format("[degree=%f] %s", activationDegree, rule.toString()));
+            FuzzyLite.logger().info(String.format("[degree=%s] %s", str(activationDegree), rule.toString()));
             if (Op.isGt(activationDegree, 0.0)) {
                 rule.activate(activationDegree, activation);
             }

@@ -23,7 +23,7 @@ import java.util.List;
  */
 public class Op {
 
-    /**
+    /*
      * Math Operations
      */
     public static boolean isEq(double a, double b) {
@@ -97,7 +97,7 @@ public class Op {
         return Double.parseDouble(x);
     }
 
-    /**
+    /*
      * String Operations
      */
     public static <T extends Number> String str(T x) {
@@ -128,11 +128,12 @@ public class Op {
         return result;
     }
 
+    @SafeVarargs
     public static <T> String join(String separator, T... x) {
         String result = "";
-        for (int i = 0; i < x.length; ++i) {
-            result += x[i];
-            if (i + 1 < x.length) {
+        for (int i = 0; i < x.length; ++i) { 
+            result += x[i].toString();
+             if (i + 1 < x.length) {
                 result += separator;
             }
         }

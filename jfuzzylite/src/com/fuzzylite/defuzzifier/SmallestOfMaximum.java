@@ -36,8 +36,8 @@ public class SmallestOfMaximum extends IntegralDefuzzifier {
     @Override
     public double defuzzify(Term term, double minimum, double maximum) {
         if (maximum - minimum > getResolution()) {
-            FuzzyLite.logger().info(
-                    String.format("[accuracy warning] resolution (%i)"
+            FuzzyLite.logger().warning(String.format(
+                    "[accuracy warning] resolution (%i)"
                     + "is smaller than the range (%f, %f). "
                     + "Improve the accuracy by increasing the resolution to a value "
                     + "greater or equal to the range.",

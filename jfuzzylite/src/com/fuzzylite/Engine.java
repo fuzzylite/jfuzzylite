@@ -67,12 +67,12 @@ public class Engine {
          * BEGIN: Debug information
          */
         Logger logger = FuzzyLite.logger();
-        if (logger.getLevel() == Level.INFO) {
+        if (logger.getLevel().intValue() <= Level.INFO.intValue()) {
             for (InputVariable inputVariable : this.inputVariables) {
                 double inputValue = inputVariable.getInputValue();
                 logger.info(String.format(
                         "%s.input=%s\n%s.fuzzy=%s",
-                        inputVariable.getName(), Op.str(inputValue),
+                        inputVariable.getName(), str(inputValue),
                         inputVariable.getName(), inputVariable.fuzzify(inputValue)));
             }
         }
@@ -87,7 +87,7 @@ public class Engine {
         /*
          * BEGIN: Debug information
          */
-        if (logger.getLevel() == Level.INFO) {
+        if (logger.getLevel().intValue() <= Level.INFO.intValue()) {
             for (OutputVariable outputVariable : this.outputVariables) {
                 logger.info(String.format("%s.default=%s",
                         outputVariable.getName(), str(outputVariable.getDefaultValue())));
