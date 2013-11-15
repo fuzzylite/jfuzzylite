@@ -20,8 +20,12 @@ import com.fuzzylite.Engine;
  *
  * @author jcrada
  */
-public abstract class Importer {
+public class CppExporter extends Exporter {
 
-    public abstract Engine fromString(String x);
+    @Override
+    public String toString(Engine engine) {
+        //TODO: implement
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
 
 }

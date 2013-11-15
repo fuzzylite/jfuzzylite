@@ -11,7 +11,9 @@
  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  See the License for the specific language governing permissions and
  limitations under the License.
- */
+*/
+
+
 package com.fuzzylite.imex;
 
 import com.fuzzylite.Engine;
@@ -20,8 +22,13 @@ import com.fuzzylite.Engine;
  *
  * @author jcrada
  */
-public abstract class Importer {
+public class FisImporter extends Importer{
 
-    public abstract Engine fromString(String x);
+    @Override
+    public Engine fromString(String x) {
+        //TODO: implement
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+    
 
 }

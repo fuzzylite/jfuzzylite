@@ -21,8 +21,8 @@ import com.fuzzylite.Engine;
  *
  * @author jcrada
  */
-public interface Exporter {
+public abstract class Exporter {
     
-    public String toString(Engine engine);
+    public abstract String toString(Engine engine);
     
 }

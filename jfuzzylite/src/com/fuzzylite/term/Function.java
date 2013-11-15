@@ -372,6 +372,7 @@ public class Function extends Term {
             this.functions.put("atan2", new BuiltInFunction(Math.class.getMethod("atan2", double.class, double.class)));
             this.functions.put("fmod", new BuiltInFunction(Op.class.getMethod("modulo", double.class, double.class)));
         } catch (Exception ex) {
+            //TODO: Check all RuntimeException always has ex to reference.
             throw new RuntimeException("[function error] built-in functions could not be loaded", ex);
         }
     }
@@ -427,7 +428,6 @@ public class Function extends Term {
 
     public static void main(String[] args) throws Exception {
         Function f = new Function();
-        f.loadOperators();
         f.loadBuiltInFunctions();
         System.out.println(f.functions.get("pow").method.invoke(null, 3, 3));
     }

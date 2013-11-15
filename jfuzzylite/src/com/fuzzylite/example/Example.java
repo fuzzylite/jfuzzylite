@@ -11,17 +11,15 @@
  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  See the License for the specific language governing permissions and
  limitations under the License.
- */
-package com.fuzzylite.imex;
+*/
 
-import com.fuzzylite.Engine;
+
+package com.fuzzylite.example;
 
 /**
  *
  * @author jcrada
  */
-public abstract class Importer {
-
-    public abstract Engine fromString(String x);
-
+public class Example {
+    
 }

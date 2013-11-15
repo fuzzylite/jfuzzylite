@@ -58,8 +58,8 @@ public class Rule {
         String strAntecedent = "";
         String strConsequent = "";
 
-        final short S_NONE = 0, S_IF = 1, S_THEN = 2, S_WITH = 3, S_END = 4;
-        short state = S_NONE;
+        final byte S_NONE = 0, S_IF = 1, S_THEN = 2, S_WITH = 3, S_END = 4;
+        byte state = S_NONE;
 
         while (tokenizer.hasMoreTokens()) {
             token = tokenizer.nextToken();

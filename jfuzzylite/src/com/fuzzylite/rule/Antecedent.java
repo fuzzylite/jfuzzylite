@@ -19,7 +19,11 @@ import com.fuzzylite.hedge.Any;
 import com.fuzzylite.hedge.Hedge;
 import com.fuzzylite.norm.SNorm;
 import com.fuzzylite.norm.TNorm;
+import com.fuzzylite.term.Function;
 import com.fuzzylite.variable.InputVariable;
+import java.util.ArrayDeque;
+import java.util.Deque;
+import java.util.StringTokenizer;
 
 /**
  *
@@ -30,7 +34,112 @@ public class Antecedent {
     protected Expression root;
 
     public void load(String antecedent, Engine engine) {
-        //TODO: Implement
+        Function function = new Function();
+        String postfix = function.toPostfix(antecedent);
+        /*
+         Builds an proposition tree from the antecedent of a fuzzy rule.
+         The rules are:
+         1) After a variable comes 'is',
+         2) After 'is' comes a hedge or a term
+         3) After a hedge comes a hedge or a term
+         4) After a term comes a variable or an operator
+         */
+
+        final byte S_VARIABLE = 1, S_IS = 2, S_HEDGE = 4, S_TERM = 8, S_OPERATOR = 16;
+        byte state = S_VARIABLE;
+        Deque<Expression> expressionStack = new ArrayDeque<>();
+        Proposition proposition = null;
+
+        StringTokenizer tokenizer = new StringTokenizer(postfix);
+        String token;
+
+        while (tokenizer.hasMoreTokens()) {
+            token = tokenizer.nextToken();
+            if ((state & S_VARIABLE) > 0) {
+                if (engine.hasInputVariable(token)) {
+                    proposition = new Proposition();
+                    proposition.variable = engine.getInputVariable(token);
+                    expressionStack.push(proposition);
+
+                    state = S_IS;
+                    continue;
+                }
+            }
+
+            if ((state & S_IS) > 0) {
+                if (Rule.FL_IS.equals(token)) {
+                    state = S_HEDGE | S_TERM;
+                    continue;
+                }
+            }
+
+            if ((state & S_HEDGE) > 0) {
+                if (engine.hasHedge(token)) {
+                    Hedge hedge = engine.getHedge(token);
+                    proposition.hedges.add(hedge);
+                    if (hedge instanceof Any) {
+                        state = S_VARIABLE | S_OPERATOR;
+                    } else {
+                        state = S_HEDGE | S_TERM;
+                    }
+                    continue;
+                }
+            }
+
+            if ((state & S_TERM) > 0) {
+                if (proposition.variable.hasTerm(token)) {
+                    proposition.term = proposition.variable.getTerm(token);
+                    state = S_VARIABLE | S_OPERATOR;
+                    continue;
+                }
+            }
+
+            if ((state & S_OPERATOR) > 0) {
+                //TODO: check this
+//                if (function.isOperator(token)){
+                if (true) {
+                    if (expressionStack.size() != 2) {
+                        throw new RuntimeException(String.format(
+                                "[syntax error] operator <%s> expects two operands, but found <%i>",
+                                token, expressionStack.size()));
+                    }
+                    Operator operator = new Operator();
+                    operator.name = token;
+                    operator.right = expressionStack.pop();
+                    operator.left = expressionStack.pop();
+                    expressionStack.push(operator);
+
+                    state = S_VARIABLE | S_OPERATOR;
+                    continue;
+                }
+            }
+
+            //If reached this point, there was an error
+            if ((state & S_VARIABLE) > 0 || (state & S_OPERATOR) > 0) {
+                throw new RuntimeException(String.format(
+                        "[syntax error] expected input variable or operator, but found <%s>",
+                        token));
+            }
+            if ((state & S_IS) > 0) {
+                throw new RuntimeException(String.format(
+                        "[syntax error] expected keyword <%s>, but found <%s>",
+                        Rule.FL_IS, token));
+            }
+            if ((state & S_HEDGE) > 0 || (state & S_TERM) > 0) {
+                throw new RuntimeException(String.format(
+                        "[syntax error] expected hedge or term, but found <%s>",
+                        token));
+            }
+            throw new RuntimeException(String.format(
+                    "[syntax error] unexpected token <%s>",
+                    token));
+        }
+        if (expressionStack.size()!=1){
+            throw new RuntimeException(String.format(
+            "[syntax error] stack expected to contain the root, but contains %i nodes",
+                    expressionStack.size()));
+        }
+        this.root = expressionStack.pop();
     }
 
     public double activationDegree(TNorm conjunction, SNorm disjunction) {
@@ -78,59 +187,59 @@ public class Antecedent {
 
     @Override
     public String toString() {
-        return this.toStringInfix(this.root);
+        return this.toInfix(this.root);
     }
 
-    public String toStringPrefix() {
-        return this.toStringPrefix(this.root);
+    public String toPrefix() {
+        return this.toPrefix(this.root);
     }
 
-    public String toStringInfix() {
-        return this.toStringInfix(this.root);
+    public String toInfix() {
+        return this.toInfix(this.root);
     }
 
-    public String toStringPostfix() {
-        return this.toStringPostfix(this.root);
+    public String toPostfix() {
+        return this.toPostfix(this.root);
     }
 
-    public String toStringPrefix(Expression node) {
+    public String toPrefix(Expression node) {
         if (node instanceof Proposition) {
             return node.toString();
         }
         if (node instanceof Operator) {
             Operator operator = (Operator) node;
             return operator.toString() + " "
-                    + this.toStringPrefix(operator.left) + " "
-                    + this.toStringPrefix(operator.right) + " ";
+                    + this.toPrefix(operator.left) + " "
+                    + this.toPrefix(operator.right) + " ";
         }
         throw new RuntimeException(String.format(
                 "[expression error] unexpected class <%s>",
                 node.getClass().getSimpleName()));
     }
 
-    public String toStringInfix(Expression node) {
+    public String toInfix(Expression node) {
         if (node instanceof Proposition) {
             return node.toString();
         }
         if (node instanceof Operator) {
             Operator operator = (Operator) node;
-            return this.toStringInfix(operator.left) + " "
+            return this.toInfix(operator.left) + " "
                     + operator.toString() + " "
-                    + this.toStringInfix(operator.right) + " ";
+                    + this.toInfix(operator.right) + " ";
         }
         throw new RuntimeException(String.format(
                 "[expression error] unexpected class <%s>",
                 node.getClass().getSimpleName()));
     }
 
-    public String toStringPostfix(Expression node) {
+    public String toPostfix(Expression node) {
         if (node instanceof Proposition) {
             return node.toString();
         }
         if (node instanceof Operator) {
             Operator operator = (Operator) node;
-            return this.toStringPostfix(operator.left) + " "
-                    + this.toStringPostfix(operator.right) + " "
+            return this.toPostfix(operator.left) + " "
+                    + this.toPostfix(operator.right) + " "
                     + operator.toString() + " ";
         }
         throw new RuntimeException(String.format(

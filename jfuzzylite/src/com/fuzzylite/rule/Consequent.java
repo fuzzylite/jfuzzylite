@@ -22,6 +22,7 @@ import com.fuzzylite.term.Thresholded;
 import com.fuzzylite.variable.OutputVariable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.StringTokenizer;
 
 /**
  *
@@ -36,7 +37,92 @@ public class Consequent {
     }
 
     public void load(String consequent, Engine engine) {
-        //TODO: implement
+        /*
+         Extracts the list of propositions from the consequent
+         The rules are:
+         1) After a variable comes 'is' or '=',
+         2) After 'is' comes a hedge or a term
+         3) After a hedge comes a hedge or a term
+         4) After a term comes operators 'and' or 'with'
+         5) After operator 'and' comes a variable
+         6) After operator 'with' comes a float
+         */
+
+        final byte S_VARIABLE = 1, S_IS = 2, S_HEDGE = 4, S_TERM = 8, S_AND = 16;
+        byte state = S_VARIABLE;
+
+        this.conclusions.clear();
+
+        Proposition proposition = null;
+
+        StringTokenizer tokenizer = new StringTokenizer(consequent);
+        String token = "";
+        while (tokenizer.hasMoreTokens()) {
+            token = tokenizer.nextToken();
+
+            if ((state & S_VARIABLE) > 0) {
+                proposition = new Proposition();
+                proposition.setVariable(engine.getOutputVariable(token));
+                this.conclusions.add(proposition);
+                state = S_IS;
+                continue;
+            }
+
+            if ((state & S_IS) > 0) {
+                if (Rule.FL_IS.equals(token) || Rule.FL_EQUALS.equals(token)) {
+                    state = S_HEDGE | S_TERM;
+                    continue;
+                }
+            }
+
+            if ((state & S_HEDGE) > 0) {
+                if (engine.hasHedge(token)) {
+                    Hedge hedge = engine.getHedge(token);
+                    proposition.hedges.add(hedge);
+                    state = S_HEDGE | S_TERM;
+                    continue;
+                }
+            }
+
+            if ((state & S_TERM) > 0) {
+                if (proposition.variable.hasTerm(token)) {
+                    proposition.term = proposition.variable.getTerm(token);
+                    state = S_AND;
+                    continue;
+                }
+            }
+
+            if ((state & S_AND) > 0) {
+                if (Rule.FL_AND.equals(token)) {
+                    state = S_VARIABLE;
+                    continue;
+                }
+            }
+
+            //if reached this point, there was an error:
+            if ((state & S_VARIABLE) > 0) {
+                throw new RuntimeException(String.format(
+                        "[syntax error] expected output variable, but found <%s>",
+                        token));
+            }
+            if ((state & S_IS) > 0) {
+                throw new RuntimeException(String.format(
+                        "[syntax error] expected keyword <%s> or <%s>, but found <%s>",
+                        Rule.FL_IS, Rule.FL_EQUALS, token));
+            }
+            if ((state & S_HEDGE) > 0 || (state & S_TERM) > 0) {
+                throw new RuntimeException(String.format(
+                        "[syntax error] expected hedge or term, but found <%s>",
+                        token));
+            }
+            if ((state & S_AND) > 0) {
+                throw new RuntimeException(String.format(
+                        "[syntax error] expected operator <%s>, but found <%s>",
+                        Rule.FL_AND, token));
+            }
+            throw new RuntimeException(String.format(
+                    "[syntax error] unexpected token <%s>", token));
+        }
     }
 
     public void modify(double activationDegree, TNorm activation) {
