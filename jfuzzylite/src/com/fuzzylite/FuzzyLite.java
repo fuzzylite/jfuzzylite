@@ -27,7 +27,7 @@ public class FuzzyLite {
     public static final String VERSION = "1.0";
     public static final String LONG_VERSION = "1.0b1401";
     public static final String AUTHOR = "Juan Rada-Vilela";
-    protected static DecimalFormat DF = new DecimalFormat("#.###");
+    protected static DecimalFormat DF = new DecimalFormat("0.000");
     protected static int DECIMALS = 3;
     protected static double TOLERANCE = 1e-5;
 

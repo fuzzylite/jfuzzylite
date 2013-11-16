@@ -14,8 +14,8 @@
  */
 package com.fuzzylite;
 
+import java.util.Collection;
 import java.util.Iterator;
-import java.util.List;
 
 /**
  *
@@ -117,7 +117,7 @@ public class Op {
         return result;
     }
 
-    public static <T> String join(List<T> x, String separator) {
+    public static <T> String join(Collection<T> x, String separator) {
         String result = "";
         for (Iterator<T> it = x.iterator(); it.hasNext();) {
             result += it.next();
@@ -141,6 +141,6 @@ public class Op {
     }
 
     public static void main(String[] args) {
-        System.out.println(Double.valueOf("nan"));
+        System.out.println(Double.valueOf(""));
     }
 }

@@ -45,7 +45,7 @@ public class Antecedent {
          4) After a term comes a variable or an operator
          */
 
-        final byte S_VARIABLE = 1, S_IS = 2, S_HEDGE = 4, S_TERM = 8, S_OPERATOR = 16;
+        final byte S_VARIABLE = 1, S_IS = 2, S_HEDGE = 4, S_TERM = 8, S_AND_OR = 16;
         byte state = S_VARIABLE;
         Deque<Expression> expressionStack = new ArrayDeque<>();
         Proposition proposition = null;
@@ -78,7 +78,7 @@ public class Antecedent {
                     Hedge hedge = engine.getHedge(token);
                     proposition.hedges.add(hedge);
                     if (hedge instanceof Any) {
-                        state = S_VARIABLE | S_OPERATOR;
+                        state = S_VARIABLE | S_AND_OR;
                     } else {
                         state = S_HEDGE | S_TERM;
                     }
@@ -89,18 +89,16 @@ public class Antecedent {
             if ((state & S_TERM) > 0) {
                 if (proposition.variable.hasTerm(token)) {
                     proposition.term = proposition.variable.getTerm(token);
-                    state = S_VARIABLE | S_OPERATOR;
+                    state = S_VARIABLE | S_AND_OR;
                     continue;
                 }
             }
 
-            if ((state & S_OPERATOR) > 0) {
-                //TODO: check this
-//                if (function.isOperator(token)){
-                if (true) {
+            if ((state & S_AND_OR) > 0) {
+                if (Rule.FL_AND.equals(token) || Rule.FL_OR.equals(token)){
                     if (expressionStack.size() != 2) {
                         throw new RuntimeException(String.format(
-                                "[syntax error] operator <%s> expects two operands, but found <%i>",
+                                "[syntax error] logical operator <%s> expects two operands, but found <%i>",
                                 token, expressionStack.size()));
                     }
                     Operator operator = new Operator();
@@ -109,13 +107,13 @@ public class Antecedent {
                     operator.left = expressionStack.pop();
                     expressionStack.push(operator);
 
-                    state = S_VARIABLE | S_OPERATOR;
+                    state = S_VARIABLE | S_AND_OR;
                     continue;
                 }
             }
 
             //If reached this point, there was an error
-            if ((state & S_VARIABLE) > 0 || (state & S_OPERATOR) > 0) {
+            if ((state & S_VARIABLE) > 0 || (state & S_AND_OR) > 0) {
                 throw new RuntimeException(String.format(
                         "[syntax error] expected input variable or operator, but found <%s>",
                         token));

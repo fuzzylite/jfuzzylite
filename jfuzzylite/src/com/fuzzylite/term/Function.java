@@ -22,8 +22,14 @@ import com.fuzzylite.rule.Rule;
 import com.fuzzylite.variable.InputVariable;
 import com.fuzzylite.variable.OutputVariable;
 import java.lang.reflect.Method;
+import java.util.ArrayDeque;
+import java.util.Deque;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
+import java.util.StringTokenizer;
+import java.util.logging.Logger;
 
 /**
  *
@@ -86,11 +92,27 @@ public class Function extends Term {
 
     public static class Node {
 
-        public Operator operator;
-        public BuiltInFunction function;
-        public String variable;
-        public double value;
-        public Node left, right;
+        public Operator operator = null;
+        public BuiltInFunction function = null;
+        public String variable = "";
+        public double value = Double.NaN;
+        public Node left = null, right = null;
+
+        public Node(Operator operator) {
+            this.operator = operator;
+        }
+
+        public Node(BuiltInFunction function) {
+            this.function = function;
+        }
+
+        public Node(String variable) {
+            this.variable = variable;
+        }
+
+        public Node(double value) {
+            this.value = value;
+        }
 
         public double evaluate(Map<String, Double> localVariables) {
             double result = Double.NaN;
@@ -111,8 +133,8 @@ public class Function extends Term {
                             break;
                         case 2:
                             result = (double) element.method.invoke(null,
-                                    left.evaluate(localVariables),
-                                    right.evaluate(localVariables));
+                                    right.evaluate(localVariables),
+                                    left.evaluate(localVariables));
                             break;
                         default:
                             throw new RuntimeException(String.format(
@@ -138,7 +160,7 @@ public class Function extends Term {
             } else {
                 result = value;
             }
-            FuzzyLite.logger().info(String.format("%s=%s", toPostfix(), str(result)));
+            FuzzyLite.logger().info(String.format("%s = %s", toPostfix(), str(result)));
             return result;
         }
 
@@ -259,6 +281,10 @@ public class Function extends Term {
         load(this.text, this.engine);
     }
 
+    public void load(String text) throws Exception {
+        load(text, null);
+    }
+
     public void load(String text, Engine engine) throws Exception {
         this.root = parse(text);
         this.text = text;
@@ -372,26 +398,203 @@ public class Function extends Term {
             this.functions.put("atan2", new BuiltInFunction(Math.class.getMethod("atan2", double.class, double.class)));
             this.functions.put("fmod", new BuiltInFunction(Op.class.getMethod("modulo", double.class, double.class)));
         } catch (Exception ex) {
-            //TODO: Check all RuntimeException always has ex to reference.
+            //TODO: Check that all RuntimeException always has ex to reference.
             throw new RuntimeException("[function error] built-in functions could not be loaded", ex);
         }
+    }
+
+    public boolean isOperator(String token) {
+        return this.operators.containsKey(token);
+    }
+
+    public boolean isBuiltInFunction(String token) {
+        return this.functions.containsKey(token);
+    }
+
+    public boolean isOperand(String token) {
+        //An operand is not a parenthesis...
+        if ("(".equals(token) || ")".equals(token) || ",".equals(token)) {
+            return false;
+        }
+        //nor an operator...
+        if (isOperator(token)) {
+            return false;
+        }
+        //nor a function...
+        if (isBuiltInFunction(token)) {
+            return false;
+        }
+        //...it is everything else :)
+        return true;
     }
 
     public String toPostfix(String text) {
         return toPostfix(text, false);
     }
 
-    public String toPostfix(String text, boolean requiresFunctions) {
-        //TODO:implement
-        if (requiresFunctions) {
+    public String toPostfix(final String text, boolean loadFunctions) {
+        if (loadFunctions) {
             loadBuiltInFunctions();
         }
-        return "";
+        //Space the operator to tokenize easier
+        Set<String> toSpace = new HashSet<>(this.operators.keySet());
+        toSpace.remove(Rule.FL_AND);
+        toSpace.remove(Rule.FL_OR);
+        toSpace.add("(");
+        toSpace.add(")");
+        toSpace.add(",");
+        String spacedText = text;
+        for (String operator : toSpace) {
+            spacedText = spacedText.replace(operator, " " + operator + " ");
+        }
+
+        //Tokenizer
+        Deque<String> queue = new ArrayDeque<>();
+        Deque<String> stack = new ArrayDeque<>();
+
+        StringTokenizer tokenizer = new StringTokenizer(spacedText);
+        String token;
+        while (tokenizer.hasMoreTokens()) {
+            token = tokenizer.nextToken();
+
+            if (isOperand(token)) {
+                queue.offer(token);
+
+            } else if (isBuiltInFunction(token)) {
+                stack.push(token);
+
+            } else if (",".equals(token)) {
+                while (!stack.isEmpty() && !"(".equals(stack.peek())) {
+                    queue.offer(stack.pop());
+                }
+                if (stack.isEmpty() || !"(".equals(stack.peek())) {
+                    throw new RuntimeException(String.format(
+                            "[parsing error] mismatching parentheses in: %s", text));
+                }
+
+            } else if (isOperator(token)) {
+                Operator op1 = getOperators().get(token);
+                while (true) {
+                    Operator op2;
+                    if (!stack.isEmpty() && isOperator(stack.peek())) {
+                        op2 = getOperators().get(stack.peek());
+                    } else {
+                        break;
+                    }
+
+                    if ((op1.associativity < 0 && op1.precedence <= op2.precedence)
+                            || op1.precedence < op2.precedence) {
+                        queue.offer(stack.pop());
+                    } else {
+                        break;
+                    }
+                }
+                stack.push(token);
+
+            } else if ("(".equals(token)) {
+                stack.push(token);
+
+            } else if (")".equals(token)) {
+                while (!(stack.isEmpty() || "(".equals(stack.peek()))) {
+                    queue.offer(stack.pop());
+                }
+                if (stack.isEmpty() || !"(".equals(stack.peek())) {
+                    throw new RuntimeException(String.format(
+                            "[parsing error] mismatching parentheses in: %s", text));
+                }
+                stack.pop();
+
+                if (!stack.isEmpty() && isBuiltInFunction(stack.peek())) {
+                    queue.offer(stack.pop());
+                }
+
+            } else {
+                throw new RuntimeException(String.format(
+                        "[parsing error] unexpected error with token <%s>", token));
+            }
+        }
+
+        while (!stack.isEmpty()) {
+            String pop = stack.pop();
+            if ("(".equals(pop) || ")".equals(pop)) {
+                throw new RuntimeException(String.format(
+                        "[parsing error] mismatching parentheses in: %s", text));
+            }
+            queue.offer(pop);
+        }
+
+        StringBuilder result = new StringBuilder();
+        while (!queue.isEmpty()) {
+            result.append(queue.poll());
+            if (!queue.isEmpty()) {
+                result.append(" ");
+            }
+        }
+
+        return result.toString();
     }
 
     public Node parse(String text) throws Exception {
-        //TODO: implement
-        return null;
+        if (text.isEmpty()) {
+            return null;
+        }
+        String postfix = toPostfix(text);
+
+        Deque<Node> stack = new ArrayDeque<>();
+
+        StringTokenizer tokenizer = new StringTokenizer(postfix);
+        String token;
+        while (tokenizer.hasMoreTokens()) {
+            token = tokenizer.nextToken();
+            if (isOperator(token)) {
+                Operator op = getOperators().get(token);
+                if (op.getArity() > stack.size()) {
+                    throw new RuntimeException(String.format(
+                            "[function error] operator <%s> has arity <%i>, "
+                            + "but <%i> elements are available",
+                            op.name, op.getArity(), stack.size()));
+                }
+
+                Node node = new Node(op);
+                node.left = stack.pop();
+                if (op.getArity() == 2) {
+                    node.right = stack.pop();
+                }
+                stack.push(node);
+
+            } else if (isBuiltInFunction(token)) {
+                BuiltInFunction function = getFunctions().get(token);
+                if (function.getArity() > stack.size()) {
+                    throw new RuntimeException(String.format(
+                            "[function error] operator <%s> has arity <%i>, "
+                            + "but <%i> elements are available",
+                            function.name, function.getArity(), stack.size()));
+                }
+
+                Node node = new Node(function);
+                node.left = stack.pop();
+                if (function.getArity() == 2) {
+                    node.right = stack.pop();
+                }
+                stack.push(node);
+
+            } else if (isOperand(token)) {
+                Node node;
+                try {
+                    double value = Op.toDouble(token);
+                    node = new Node(value);
+                } catch (Exception ex) {
+                    node = new Node(token);
+                }
+                stack.push(node);
+            }
+        }
+        if (stack.size() != 1) {
+            throw new RuntimeException(String.format(
+                    "[function error] parsing function <%s> due to: <%s>", 
+                    text, Op.join(stack, ";")));
+        }
+        return stack.pop();
     }
 
     public String getText() {
@@ -427,8 +630,44 @@ public class Function extends Term {
     }
 
     public static void main(String[] args) throws Exception {
+        Logger log = FuzzyLite.logger();
         Function f = new Function();
+        String text = "3+4*2/(1-5)^2^3";
+//        String text = "3+4*2/2";
+        log.info(f.toPostfix(text));
+        log.info(f.parse(text).toInfix());
+        log.info(Op.str(f.parse(text).evaluate(f.getVariables())));
+        f.load(text);
+        log.info(">>>" + Op.str(f.evaluate()));
+
+        f.getVariables().put("y", 1.0);
+        text = "sin(y*x)^2/x";
         f.loadBuiltInFunctions();
-        System.out.println(f.functions.get("pow").method.invoke(null, 3, 3));
+        log.info("pre: " + f.parse(text).toPrefix());
+        log.info("in: " + f.parse(text).toInfix());
+        log.info("pos: " + f.parse(text).toPostfix());
+        f.load(text);
+        log.info("Result: " + Op.str(f.membership(1)));
+        
+        text = "(Temperature is High and Oxigen is Low) or "+
+                "(Temperature is Low and (Oxigen is Low or Oxigen is High))";
+        log.info(f.toPostfix(text));
+        
+        f.variables.put("pi",3.14);
+        text = "-5 *4/sin(-pi/2)";
+        log.info(f.toPostfix(text));
+        try {
+            log.info(Op.str(f.parse(text).evaluate(f.getVariables())));
+        } catch (Exception e) {
+            log.info(e.getMessage());
+        }
+        
+        text = "~5 *4/sin(~pi/2)";
+        log.info(f.toPostfix(text));
+        try {
+            log.info(Op.str(f.parse(text).evaluate(f.variables)));
+        } catch (Exception e) {
+            log.info(e.getMessage());
+        }
     }
 }

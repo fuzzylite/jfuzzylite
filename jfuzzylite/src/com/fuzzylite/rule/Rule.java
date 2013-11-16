@@ -129,9 +129,12 @@ public class Rule {
 
     @Override
     public String toString() {
-        String result = Rule.FL_IF + " " + getAntecedent().toString() + " "
-                + Rule.FL_THEN + " " + getConsequent().toString();
-        if (Op.isEq(this.weight, 1.0)) {
+//        String result = Rule.FL_IF + " " + getAntecedent().toString() + " "
+//                + Rule.FL_THEN + " " + getConsequent().toString();
+        String result = String.format("%s %s %s %s",
+                Rule.FL_IF, getAntecedent().toString(),
+                Rule.FL_THEN, getConsequent().toString());
+        if (!Op.isEq(this.weight, 1.0)) {
             result += " " + Rule.FL_WITH + " " + str(this.weight);
         }
         return result;
