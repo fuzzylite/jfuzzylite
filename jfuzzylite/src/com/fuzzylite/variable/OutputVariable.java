@@ -31,6 +31,10 @@ public class OutputVariable extends Variable {
     protected boolean lockOutputRange;
     protected boolean lockValidOutput;
 
+    public OutputVariable() {
+        this("");
+    }
+
     public OutputVariable(String name) {
         this(name, Double.NaN, Double.NaN);
     }
@@ -84,9 +88,9 @@ public class OutputVariable extends Variable {
     }
 
     @Override
-    public void setMinimum(double mininum) {
+    public void setMinimum(double minimum) {
         super.setMinimum(minimum);
-        this.output.setMinimum(mininum);
+        this.output.setMinimum(minimum);
     }
 
     @Override

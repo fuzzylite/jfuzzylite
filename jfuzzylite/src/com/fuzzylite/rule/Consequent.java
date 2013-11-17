@@ -21,6 +21,7 @@ import com.fuzzylite.norm.TNorm;
 import com.fuzzylite.term.Thresholded;
 import com.fuzzylite.variable.OutputVariable;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.StringTokenizer;
 
@@ -34,6 +35,19 @@ public class Consequent {
 
     public Consequent() {
         this.conclusions = new ArrayList<>();
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        for (Iterator<Proposition> it = this.conclusions.iterator();
+                it.hasNext();) {
+            sb.append(it.next().toString());
+            if (it.hasNext()) {
+                sb.append(String.format(" %s ", Rule.FL_AND));
+            }
+        }
+        return sb.toString();
     }
 
     public void load(String consequent, Engine engine) {

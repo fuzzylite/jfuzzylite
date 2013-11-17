@@ -11,23 +11,27 @@
  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  See the License for the specific language governing permissions and
  limitations under the License.
-*/
-
+ */
 package com.fuzzylite.variable;
 
 /**
  *
  * @author jcrada
  */
-public class InputVariable extends Variable{
-    
+public class InputVariable extends Variable {
+
     protected double inputValue;
-    
-    public InputVariable(String name){
+
+    public InputVariable() {
+        this("");
+    }
+
+    public InputVariable(String name) {
         this(name, Double.NaN, Double.NaN);
     }
-    public InputVariable(String name, double minimum, double maximum){
-        super(name,minimum,maximum);
+
+    public InputVariable(String name, double minimum, double maximum) {
+        super(name, minimum, maximum);
     }
 
     public double getInputValue() {
@@ -37,6 +41,5 @@ public class InputVariable extends Variable{
     public void setInputValue(double inputValue) {
         this.inputValue = inputValue;
     }
-    
 
 }

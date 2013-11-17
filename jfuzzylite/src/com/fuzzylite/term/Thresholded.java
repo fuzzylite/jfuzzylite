@@ -48,7 +48,7 @@ public class Thresholded extends Term {
     @Override
     public String toString() {
         String result = Thresholded.class.getSimpleName();
-        result += String.format("(%s) thresholded to %f using <%s> activation",
+        result += String.format("(%s) thresholded to %s using <%s> activation",
                 term.toString(), str(threshold), activation.getName());
         return result;
     }
