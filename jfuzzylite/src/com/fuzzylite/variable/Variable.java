@@ -30,7 +30,7 @@ import java.util.Map;
  *
  * @author jcrada
  */
-public abstract class Variable {
+public class Variable {
 
     protected String name;
     protected double minimum, maximum;
@@ -173,8 +173,8 @@ public abstract class Variable {
     public int numberOfTerms() {
         return this.terms.size();
     }
-    
-    public boolean isEmpty(){
+
+    public boolean isEmpty() {
         return this.terms.isEmpty();
     }
 

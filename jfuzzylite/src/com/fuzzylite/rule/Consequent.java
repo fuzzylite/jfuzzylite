@@ -152,7 +152,7 @@ public class Consequent {
             term.setActivation(activation);
             OutputVariable outputVariable = (OutputVariable) proposition.getVariable();
             outputVariable.getOutput().getTerms().add(term);
-            FuzzyLite.logger().info(String.format("Accumulating %s", term.toString()));
+            FuzzyLite.logger().fine(String.format("Accumulating %s", term.toString()));
         }
     }
 

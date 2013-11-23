@@ -48,6 +48,10 @@ public class Engine {
     protected List<RuleBlock> ruleBlocks;
     protected List<Hedge> hedges;
 
+    public Engine() {
+        this("");
+    }
+
     public Engine(String name) {
         this.name = name;
         this.inputVariables = new ArrayList<>();
@@ -62,6 +66,16 @@ public class Engine {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public void restart() {
+        for (InputVariable inputVariable : this.inputVariables) {
+            inputVariable.setInputValue(Double.NaN);
+        }
+        for (OutputVariable outputVariable : this.outputVariables) {
+            outputVariable.getOutput().clear();
+            outputVariable.setLastValidOutput(Double.NaN);
+        }
     }
 
     public void process() {
@@ -252,13 +266,19 @@ public class Engine {
     /*
      * InputVariables
      */
+    public void setInputValue(String name, double value) {
+        InputVariable inputVariable = getInputVariable(name);
+        inputVariable.setInputValue(value);
+    }
+
     public InputVariable getInputVariable(String name) {
         for (InputVariable inputVariable : this.inputVariables) {
             if (name.equals(inputVariable.getName())) {
                 return inputVariable;
             }
         }
-        return null;
+        throw new RuntimeException(String.format(
+                "[engine error] no input variable by name <%s>", name));
     }
 
     public InputVariable getInputVariable(int index) {
@@ -281,11 +301,17 @@ public class Engine {
                 return inputVariable;
             }
         }
-        return null;
+        throw new RuntimeException(String.format(
+                "[engine error] no input variable by name <%s>", name));
     }
 
     public boolean hasInputVariable(String name) {
-        return this.getInputVariable(name) != null;
+        for (InputVariable inputVariable : this.inputVariables) {
+            if (name.equals(inputVariable.getName())) {
+                return true;
+            }
+        }
+        return false;
     }
 
     public int numberOfInputVariables() {
@@ -303,13 +329,19 @@ public class Engine {
     /*
      * OutputVariables
      */
+    public double getOutputValue(String name) {
+        OutputVariable outputVariable = getOutputVariable(name);
+        return outputVariable.defuzzify();
+    }
+
     public OutputVariable getOutputVariable(String name) {
         for (OutputVariable outputVariable : this.outputVariables) {
             if (name.equals(outputVariable.getName())) {
                 return outputVariable;
             }
         }
-        return null;
+        throw new RuntimeException(String.format(
+                "[engine error] no output variable by name <%s>", name));
     }
 
     public OutputVariable getOutputVariable(int index) {
@@ -332,11 +364,17 @@ public class Engine {
                 return outputVariable;
             }
         }
-        return null;
+        throw new RuntimeException(String.format(
+                "[engine error] no output variable by name <%s>", name));
     }
 
     public boolean hasOutputVariable(String name) {
-        return this.getOutputVariable(name) != null;
+        for (OutputVariable outputVariable : this.outputVariables) {
+            if (name.equals(outputVariable.getName())) {
+                return true;
+            }
+        }
+        return false;
     }
 
     public int numberOfOutputVariables() {
@@ -360,7 +398,8 @@ public class Engine {
                 return ruleBlock;
             }
         }
-        return null;
+        throw new RuntimeException(String.format(
+                "[engine error] no rule block by name <%s>", name));
     }
 
     public RuleBlock getRuleBlock(int index) {
@@ -383,11 +422,17 @@ public class Engine {
                 return ruleBlock;
             }
         }
-        return null;
+        throw new RuntimeException(String.format(
+                "[engine error] no rule block by name <%s>", name));
     }
 
     public boolean hasRuleBlock(String name) {
-        return this.getRuleBlock(name) != null;
+        for (RuleBlock ruleBlock : this.ruleBlocks) {
+            if (name.equals(ruleBlock.getName())) {
+                return true;
+            }
+        }
+        return false;
     }
 
     public int numberOfRuleBlocks() {
@@ -411,7 +456,8 @@ public class Engine {
                 return hedge;
             }
         }
-        return null;
+        throw new RuntimeException(String.format(
+                "[engine error] no hedge by name <%s>", name));
     }
 
     public Hedge getHedge(int index) {
@@ -434,11 +480,17 @@ public class Engine {
                 return hedge;
             }
         }
-        return null;
+        throw new RuntimeException(String.format(
+                "[engine error] no hedge by name <%s>", name));
     }
 
     public boolean hasHedge(String name) {
-        return this.getHedge(name) != null;
+        for (Hedge hedge : this.hedges) {
+            if (name.equals(hedge.getName())) {
+                return true;
+            }
+        }
+        return false;
     }
 
     public int numberOfHedges() {
@@ -451,10 +503,6 @@ public class Engine {
 
     public void setHedges(List<Hedge> hedges) {
         this.hedges = hedges;
-    }
-
-    public static void main(String[] args) {
-        System.out.println(String.valueOf(true));
     }
 
 }

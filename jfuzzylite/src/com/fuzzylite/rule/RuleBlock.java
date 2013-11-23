@@ -57,7 +57,7 @@ public class RuleBlock {
     public void activate() {
         for (Rule rule : rules) {
             double activationDegree = rule.activationDegree(conjunction, disjunction);
-            FuzzyLite.logger().info(String.format("[degree=%s] %s", str(activationDegree), rule.toString()));
+            FuzzyLite.logger().fine(String.format("[degree=%s] %s", str(activationDegree), rule.toString()));
             if (Op.isGt(activationDegree, 0.0)) {
                 rule.activate(activationDegree, activation);
             }

@@ -362,7 +362,7 @@ public class Function extends Term {
             --p; //Logical OR
             this.operators.put(Rule.FL_OR, new Operator(Rule.FL_OR,
                     Op.class.getMethod("logicalOr", double.class, double.class), p));
-        } catch (NoSuchMethodException | SecurityException ex) {
+        } catch (Exception ex) {
             throw new RuntimeException("[function error] operator could not be loaded", ex);
         }
     }
@@ -398,7 +398,6 @@ public class Function extends Term {
             this.functions.put("atan2", new BuiltInFunction(Math.class.getMethod("atan2", double.class, double.class)));
             this.functions.put("fmod", new BuiltInFunction(Op.class.getMethod("modulo", double.class, double.class)));
         } catch (Exception ex) {
-            //TODO: Check that all RuntimeException always has ex to reference.
             throw new RuntimeException("[function error] built-in functions could not be loaded", ex);
         }
     }

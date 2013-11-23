@@ -14,6 +14,7 @@
  */
 package com.fuzzylite;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
 
@@ -69,12 +70,12 @@ public class Op {
     public static double logicalAnd(double a, double b) {
         return (isEq(a, 1.0) && isEq(b, 1.0)) ? 1.0 : 0.0;
     }
-    
-    public static double logicalOr(double a, double b){
+
+    public static double logicalOr(double a, double b) {
         return (isEq(a, 1.0) || isEq(b, 1.0)) ? 1.0 : 0.0;
     }
-    
-    public static double negate(double x){
+
+    public static double negate(double x) {
         return -x;
     }
 
@@ -95,6 +96,36 @@ public class Op {
         }
 
         return Double.parseDouble(x);
+    }
+
+    //TODO: Make custom increments by x
+    public static boolean increment(int[] array, int min, int max) {
+        int[] minArray = new int[array.length];
+        int[] maxArray = new int[array.length];
+        for (int i = 0; i < array.length; ++i) {
+            minArray[i] = min;
+            maxArray[i] = max;
+        }
+        return increment(array, minArray, maxArray);
+    }
+
+    public static boolean increment(int[] array, int[] min, int[] max) {
+        return increment(array, array.length - 1, min, max);
+    }
+
+    public static boolean increment(int[] array, int pos, int[] min, int[] max) {
+        boolean overflow = false;
+        if (array[pos] < max[pos]) {
+            ++array[pos];
+        } else {
+            overflow = (pos == 0);
+            array[pos] = min[pos];
+            --pos;
+            if (pos >= 0) {
+                overflow = increment(array, pos, min, max);
+            }
+        }
+        return overflow;
     }
 
     /*
@@ -120,8 +151,57 @@ public class Op {
     public static <T> String join(Collection<T> x, String separator) {
         String result = "";
         for (Iterator<T> it = x.iterator(); it.hasNext();) {
-            result += it.next();
+            T item = it.next();
+            if (item instanceof Number) {
+                result += Op.str((Number) item);
+            } else {
+                result += item.toString();
+            }
             if (it.hasNext()) {
+                result += separator;
+            }
+        }
+        return result;
+    }
+
+    public static String join(long[] x, String separator) {
+        String result = "";
+        for (int i = 0; i < x.length; ++i) {
+            result += str(x[i]);
+            if (i + 1 < x.length) {
+                result += separator;
+            }
+        }
+        return result;
+    }
+
+    public static String join(int[] x, String separator) {
+        String result = "";
+        for (int i = 0; i < x.length; ++i) {
+            result += str(x[i]);
+            if (i + 1 < x.length) {
+                result += separator;
+            }
+        }
+        return result;
+    }
+
+    public static String join(double[] x, String separator) {
+        String result = "";
+        for (int i = 0; i < x.length; ++i) {
+            result += str(x[i]);
+            if (i + 1 < x.length) {
+                result += separator;
+            }
+        }
+        return result;
+    }
+
+    public static String join(float[] x, String separator) {
+        String result = "";
+        for (int i = 0; i < x.length; ++i) {
+            result += str(x[i]);
+            if (i + 1 < x.length) {
                 result += separator;
             }
         }
@@ -131,9 +211,9 @@ public class Op {
     @SafeVarargs
     public static <T> String join(String separator, T... x) {
         String result = "";
-        for (int i = 0; i < x.length; ++i) { 
+        for (int i = 0; i < x.length; ++i) {
             result += x[i].toString();
-             if (i + 1 < x.length) {
+            if (i + 1 < x.length) {
                 result += separator;
             }
         }

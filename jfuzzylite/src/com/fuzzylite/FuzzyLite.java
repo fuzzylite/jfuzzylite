@@ -15,7 +15,6 @@
 package com.fuzzylite;
 
 import java.text.DecimalFormat;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
@@ -31,7 +30,9 @@ public class FuzzyLite {
     protected static DecimalFormat DF = new DecimalFormat("0.000");
     protected static int DECIMALS = 3;
     protected static double TOLERANCE = 1e-5;
-    
+    //Resolution is used in IntegralDefuzzifier and ResultExporter
+    protected static int RESOLUTION = 200;
+
     public static Logger logger() {
         return Logger.getGlobal();
     }
@@ -42,9 +43,9 @@ public class FuzzyLite {
 
     public static void setDecimals(int decimals) {
         DECIMALS = decimals;
-        String pattern = "#.";
+        String pattern = "0.";
         for (int i = 0; i < decimals; ++i) {
-            pattern += "#";
+            pattern += "0";
         }
         DF = new DecimalFormat(pattern);
     }
@@ -61,8 +62,17 @@ public class FuzzyLite {
         TOLERANCE = tolerance;
     }
 
+    public static int getResolution() {
+        return RESOLUTION;
+    }
+
+    public static void setResolution(int resolution) {
+        RESOLUTION = resolution;
+    }
+
     public static void main(String[] args) {
 //        logger().setLevel(Level.INFO);
         logger().info("Some log + " + logger().getLevel());
     }
+
 }

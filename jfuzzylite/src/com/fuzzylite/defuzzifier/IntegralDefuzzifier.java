@@ -14,6 +14,8 @@
  */
 package com.fuzzylite.defuzzifier;
 
+import com.fuzzylite.FuzzyLite;
+
 /**
  *
  * @author jcrada
@@ -21,7 +23,7 @@ package com.fuzzylite.defuzzifier;
 //TODO: check  http://en.wikipedia.org/wiki/Adaptive_quadrature
 public abstract class IntegralDefuzzifier extends Defuzzifier {
 
-    protected int resolution = 200;
+    protected int resolution = FuzzyLite.getResolution();
 
     public IntegralDefuzzifier() {
     }

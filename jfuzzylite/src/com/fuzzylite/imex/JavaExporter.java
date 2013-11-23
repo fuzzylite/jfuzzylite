@@ -11,9 +11,7 @@
  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  See the License for the specific language governing permissions and
  limitations under the License.
-*/
-
-
+ */
 package com.fuzzylite.imex;
 
 import com.fuzzylite.Engine;
@@ -22,13 +20,21 @@ import com.fuzzylite.Engine;
  *
  * @author jcrada
  */
-public class JavaExporter extends Exporter{
+public class JavaExporter extends Exporter {
 
     @Override
     public String toString(Engine engine) {
-        //TODO: implement
+        String header = "";
+        header += "//package name;\n\n";
+        header += "import com.fuzzylite.*;\n";
+        header += "import com.fuzzylite.defuzzifier.*;\n";
+        header += "import com.fuzzylite.hedge.*;\n";
+        header += "import com.fuzzylite.norm.s.*;\n";
+        header += "import com.fuzzylite.norm.t.*;\n";
+        header += "import com.fuzzylite.rule.*;\n";
+        header += "import com.fuzzylite.term.*;\n";
+        header += "import com.fuzzylite.variable.*;\n";
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
-    
 }
