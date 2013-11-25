@@ -54,16 +54,6 @@ public class CppExporter extends Exporter {
 
     @Override
     public String toString(Engine engine) {
-//        String header = "";
-//        header += "//package name;\n\n";
-//        header += "import com.fuzzylite.*;\n";
-//        header += "import com.fuzzylite.defuzzifier.*;\n";
-//        header += "import com.fuzzylite.hedge.*;\n";
-//        header += "import com.fuzzylite.norm.s.*;\n";
-//        header += "import com.fuzzylite.norm.t.*;\n";
-//        header += "import com.fuzzylite.rule.*;\n";
-//        header += "import com.fuzzylite.term.*;\n";
-//        header += "import com.fuzzylite.variable.*;\n";      
         StringBuilder result = new StringBuilder();
 
         result.append("fl::Engine* engine = new fl::Engine;\n");
