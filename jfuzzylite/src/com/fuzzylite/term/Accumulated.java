@@ -77,7 +77,7 @@ public class Accumulated extends Term {
         if (accumulation == null) {
             result += "no accumulation operator";
         } else {
-            accumulation.getName();
+            accumulation.getClass().getSimpleName();
         }
         return result;
     }

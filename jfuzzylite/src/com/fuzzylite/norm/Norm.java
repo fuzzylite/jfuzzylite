@@ -22,8 +22,4 @@ public abstract class Norm {
 
     public abstract double compute(double a, double b);
 
-    public final String getName() {
-        return getClass().getSimpleName();
-    }
-
 }

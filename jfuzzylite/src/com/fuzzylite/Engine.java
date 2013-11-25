@@ -18,11 +18,8 @@ import static com.fuzzylite.Op.str;
 import com.fuzzylite.defuzzifier.Defuzzifier;
 import com.fuzzylite.defuzzifier.IntegralDefuzzifier;
 import com.fuzzylite.hedge.Hedge;
-import com.fuzzylite.imex.CppExporter;
 import com.fuzzylite.imex.FclExporter;
 import com.fuzzylite.imex.FisExporter;
-import com.fuzzylite.imex.JavaExporter;
-import com.fuzzylite.imex.PythonExporter;
 import com.fuzzylite.norm.SNorm;
 import com.fuzzylite.norm.TNorm;
 import com.fuzzylite.rule.Rule;
@@ -241,18 +238,6 @@ public class Engine {
             }
         }
         return message.length() == 0;
-    }
-
-    public String toCpp() {
-        return new CppExporter().toString(this);
-    }
-
-    public String toJava() {
-        return new JavaExporter().toString(this);
-    }
-
-    public String toPython() {
-        return new PythonExporter().toString(this);
     }
 
     public String toFcl() {

@@ -11,30 +11,15 @@
  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  See the License for the specific language governing permissions and
  limitations under the License.
- */
-package com.fuzzylite.defuzzifier;
+*/
+
+
+package com.fuzzylite;
 
 /**
  *
  * @author jcrada
  */
-//TODO: check  http://en.wikipedia.org/wiki/Adaptive_quadrature
-public abstract class IntegralDefuzzifier extends Defuzzifier {
-
-    protected int resolution = 200;
-
-    public IntegralDefuzzifier() {
-    }
-
-    public IntegralDefuzzifier(int resolution) {
-        this.resolution = resolution;
-    }
-
-    public int getResolution() {
-        return resolution;
-    }
-
-    public void setResolution(int resolution) {
-        this.resolution = resolution;
-    }
+public class Console {
+//Import from file, -i=file.fis -if=format -o=file -of=format -r=100
 }

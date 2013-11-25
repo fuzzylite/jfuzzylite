@@ -20,11 +20,9 @@ import com.fuzzylite.Op;
 import com.fuzzylite.example.ts.SimpleDimmer;
 import com.fuzzylite.variable.InputVariable;
 import com.fuzzylite.variable.OutputVariable;
-import com.fuzzylite.variable.Variable;
 import java.io.StringWriter;
 import java.io.Writer;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -92,9 +90,8 @@ public class ResultExporter extends Exporter {
 
             engine.process();
 
-            for (Iterator<OutputVariable> it = engine.getOutputVariables().iterator();
-                    it.hasNext();) {
-                values.add(Op.str(it.next().defuzzify()));
+            for (OutputVariable outputVariable : engine.getOutputVariables()) {
+                values.add(Op.str(outputVariable.defuzzify()));
             }
 
             writer.write(Op.join(values, separator) + "\n");

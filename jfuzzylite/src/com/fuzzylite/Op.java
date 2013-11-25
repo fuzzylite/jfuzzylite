@@ -212,7 +212,12 @@ public class Op {
     public static <T> String join(String separator, T... x) {
         String result = "";
         for (int i = 0; i < x.length; ++i) {
-            result += x[i].toString();
+            T item = x[i];
+            if (item instanceof Number) {
+                result += Op.str((Number) item);
+            } else {
+                result += item.toString();
+            }
             if (i + 1 < x.length) {
                 result += separator;
             }
@@ -221,6 +226,6 @@ public class Op {
     }
 
     public static void main(String[] args) {
-        System.out.println(Double.valueOf(""));
+        System.out.println(Op.join(",", 0.3,0.6666666,0.333333333, 1/9.0));
     }
 }

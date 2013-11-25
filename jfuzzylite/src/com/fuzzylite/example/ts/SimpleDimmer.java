@@ -12,6 +12,10 @@ import com.fuzzylite.variable.*;
 public class SimpleDimmer extends Engine {
 
     public SimpleDimmer() {
+        initialize();
+    }
+
+    private void initialize() {
         InputVariable inputVariable1 = new InputVariable();
         inputVariable1.setName("Ambient");
         inputVariable1.setRange(0.000, 1.000);
@@ -46,4 +50,5 @@ public class SimpleDimmer extends Engine {
         ruleblock1.addRule(Rule.parse("if Ambient is BRIGHT then Power is LOW", this));
         addRuleBlock(ruleblock1);
     }
+
 }

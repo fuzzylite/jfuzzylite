@@ -30,8 +30,6 @@ public class FuzzyLite {
     protected static DecimalFormat DF = new DecimalFormat("0.000");
     protected static int DECIMALS = 3;
     protected static double TOLERANCE = 1e-5;
-    //Resolution is used in IntegralDefuzzifier and ResultExporter
-    protected static int RESOLUTION = 200;
 
     public static Logger logger() {
         return Logger.getGlobal();
@@ -60,14 +58,6 @@ public class FuzzyLite {
 
     public static void setTolerance(double tolerance) {
         TOLERANCE = tolerance;
-    }
-
-    public static int getResolution() {
-        return RESOLUTION;
-    }
-
-    public static void setResolution(int resolution) {
-        RESOLUTION = resolution;
     }
 
     public static void main(String[] args) {
