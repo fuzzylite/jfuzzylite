@@ -32,6 +32,10 @@ import java.util.StringTokenizer;
 public class Antecedent {
 
     protected Expression root;
+    
+    public Expression getRoot(){
+        return this.root;
+    }
 
     public void load(String antecedent, Engine engine) {
         Function function = new Function();

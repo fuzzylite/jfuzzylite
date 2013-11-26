@@ -171,9 +171,9 @@ public class FclExporter extends Exporter {
     public String toString(RuleBlock ruleBlock) {
         StringBuilder result = new StringBuilder();
         result.append(String.format("RULEBLOCK %s\n", ruleBlock.getName()));
-        result.append(String.format("  AND : %s\n", toString(ruleBlock.getConjunction())));
-        result.append(String.format("  OR : %s\n", toString(ruleBlock.getDisjunction())));
-        result.append(String.format("  ACT : %s\n", toString(ruleBlock.getActivation())));
+        result.append(String.format("  AND : %s;\n", toString(ruleBlock.getConjunction())));
+        result.append(String.format("  OR : %s;\n", toString(ruleBlock.getDisjunction())));
+        result.append(String.format("  ACT : %s;\n", toString(ruleBlock.getActivation())));
 
         result.append("\n");
         int index = 1;
