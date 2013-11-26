@@ -59,6 +59,7 @@ import com.fuzzylite.term.Discrete;
 import com.fuzzylite.term.Function;
 import com.fuzzylite.term.Gaussian;
 import com.fuzzylite.term.GaussianProduct;
+import com.fuzzylite.term.Linear;
 import com.fuzzylite.term.PiShape;
 import com.fuzzylite.term.Ramp;
 import com.fuzzylite.term.Rectangle;
@@ -94,9 +95,9 @@ public class FisExporter extends Exporter {
         StringBuilder result = new StringBuilder();
 
         result.append(exportSystem(engine)).append("\n");
-        result.append(exportInputs(engine)).append("\n");
-        result.append(exportOutputs(engine)).append("\n");
-        result.append(exportRules(engine)).append("\n");
+        result.append(exportInputs(engine));
+        result.append(exportOutputs(engine));
+        result.append(exportRules(engine));
 
         return result.toString();
     }
@@ -131,8 +132,8 @@ public class FisExporter extends Exporter {
             result.append(String.format("NumMFs=%d\n", inputVariable.numberOfTerms()));
             for (int t = 0; t < inputVariable.numberOfTerms(); ++t) {
                 Term term = inputVariable.getTerm(t);
-                result.append(String.format("MF%d='%s':%s\n",
-                        (t + 1), term.getName(), toString(term)));
+                result.append(String.format("MF%d=%s\n",
+                        (t + 1), toString(term)));
             }
             result.append("\n");
         }
@@ -149,14 +150,14 @@ public class FisExporter extends Exporter {
             result.append(String.format("Name='%s'\n", outputVariable.getName()));
             result.append(String.format("Range=[%s %s]\n",
                     str(outputVariable.getMinimum()), str(outputVariable.getMaximum())));
-            result.append(String.format("Default=%s", str(outputVariable.getDefaultValue())));
-            result.append(String.format("LockValid=%d", outputVariable.isLockValidOutput() ? 1 : 0));
-            result.append(String.format("LockRange=%d", outputVariable.isLockOutputRange() ? 1 : 0));
+            result.append(String.format("Default=%s\n", str(outputVariable.getDefaultValue())));
+            result.append(String.format("LockValid=%d\n", outputVariable.isLockValidOutput() ? 1 : 0));
+            result.append(String.format("LockRange=%d\n", outputVariable.isLockOutputRange() ? 1 : 0));
             result.append(String.format("NumMFs=%d\n", outputVariable.numberOfTerms()));
             for (int t = 0; t < outputVariable.numberOfTerms(); ++t) {
                 Term term = outputVariable.getTerm(t);
-                result.append(String.format("MF%d='%s':%s\n",
-                        (t + 1), term.getName(), toString(term)));
+                result.append(String.format("MF%d=%s\n",
+                        (t + 1), toString(term)));
             }
             result.append("\n");
         }
@@ -217,8 +218,8 @@ public class FisExporter extends Exporter {
         }
 
         StringBuilder result = new StringBuilder();
-        result.append(translate(propositions, inputVariables)).append("\n");
-        result.append(translate(rule.getConsequent().getConclusions(), outputVariables)).append("\n");
+        result.append(translate(propositions, inputVariables));
+        result.append(translate(rule.getConsequent().getConclusions(), outputVariables));
         result.append(String.format("(%s)", str(rule.getWeight())));
         String connector;
         if (operators.isEmpty()) {
@@ -339,19 +340,15 @@ public class FisExporter extends Exporter {
     }
 
     public String toString(Term term) {
-        //TODO: implement
-        if (term == null) {
-            return "null";
-        }
         if (term instanceof Bell) {
             Bell t = (Bell) term;
-            return String.format("%s(\"%s\", %s)",
-                    Bell.class.getSimpleName(), term.getName(),
-                    Op.join(", ", t.getCenter(), t.getWidth(), t.getSlope()));
+            return String.format("'%s':'gbellmf',[%s]", term.getName(),
+                    Op.join(" ", t.getWidth(), t.getSlope(), t.getCenter()));
         }
         if (term instanceof Constant) {
             Constant t = (Constant) term;
-            return String.format("%s", str(t.getValue()));
+            return String.format("'%s':'constant',[%s]", term.getName(),
+                    str(t.getValue()));
         }
         if (term instanceof Discrete) {
             Discrete t = (Discrete) term;
@@ -360,92 +357,86 @@ public class FisExporter extends Exporter {
                 xy.add(t.x.get(i));
                 xy.add(t.y.get(i));
             }
-            return String.format("(%s)", Op.join(xy, ", "));
+            return String.format("'%s':'discretemf',[%s]", term.getName(),
+                    Op.join(xy, " "));
         }
 
         if (term instanceof Function) {
             Function t = (Function) term;
-            return String.format("%s(%s)",
-                    Function.class.getSimpleName(), t.getText());
+            return String.format("'%s':'function',[%s]", term.getName(),
+                    t.getText());
         }
         if (term instanceof Gaussian) {
             Gaussian t = (Gaussian) term;
-            return String.format("%s(\"%s\", %s)",
-                    Gaussian.class.getSimpleName(), term.getName(),
-                    Op.join(", ", t.getMean(), t.getStandardDeviation()));
+            return String.format("'%s':'gaussmf',[%s]", term.getName(),
+                    Op.join(" ", t.getStandardDeviation(), t.getMean()));
         }
         if (term instanceof GaussianProduct) {
             GaussianProduct t = (GaussianProduct) term;
-            return String.format("%s(\"%s\", %s)",
-                    GaussianProduct.class.getSimpleName(), term.getName(),
-                    Op.join(", ", t.getMeanA(), t.getStandardDeviationA(),
-                            t.getMeanB(), t.getStandardDeviationB()));
+            return String.format("'%s':'gauss2mf',[%s]", term.getName(),
+                    Op.join(" ", t.getStandardDeviationA(), t.getMeanA(),
+                            t.getStandardDeviationB(), t.getMeanB()));
+        }
+        if (term instanceof Linear) {
+            Linear t = (Linear) term;
+            return String.format("'%s':'linear','[%s]", term.getName(),
+                    Op.join(t.getCoefficients(), " "));
         }
         if (term instanceof PiShape) {
             PiShape t = (PiShape) term;
-            return String.format("%s(\"%s\", %s)",
-                    PiShape.class.getSimpleName(), term.getName(),
-                    Op.join(", ", t.getBottomLeft(), t.getTopLeft(),
+            return String.format("'%s':'pimf',[%s]", term.getName(),
+                    Op.join(" ", t.getBottomLeft(), t.getTopLeft(),
                             t.getTopRight(), t.getBottomRight()));
         }
         if (term instanceof Ramp) {
             Ramp t = (Ramp) term;
-            return String.format("%s(\"%s\", %s)",
-                    Ramp.class.getSimpleName(), term.getName(),
-                    Op.join(", ", t.getStart(), t.getEnd()));
+            return String.format("'%s':'rampmf',[%s]", term.getName(),
+                    Op.join(" ", t.getStart(), t.getEnd()));
         }
         if (term instanceof Rectangle) {
             Rectangle t = (Rectangle) term;
-            return String.format("%s(\"%s\", %s)",
-                    Rectangle.class.getSimpleName(), term.getName(),
-                    Op.join(", ", t.getMinimum(), t.getMaximum()));
+            return String.format("'%s':'rectmf',[%s]", term.getName(),
+                    Op.join(" ", t.getMinimum(), t.getMaximum()));
         }
         if (term instanceof SigmoidDifference) {
             SigmoidDifference t = (SigmoidDifference) term;
-            return String.format("%s(\"%s\", %s)",
-                    SigmoidDifference.class.getSimpleName(), term.getName(),
-                    Op.join(", ", t.getLeft(), t.getRising(),
+            return String.format("'%s':'dsigmf',[%s]", term.getName(),
+                    Op.join(" ", t.getRising(), t.getLeft(),
                             t.getFalling(), t.getRight()));
         }
         if (term instanceof Sigmoid) {
             Sigmoid t = (Sigmoid) term;
-            return String.format("%s(\"%s\", %s)",
-                    Sigmoid.class.getSimpleName(), term.getName(),
-                    Op.join(", ", t.getInflection(), t.getSlope()));
+            return String.format("'%s':'sigmf',[%s]", term.getName(),
+                    Op.join(" ", t.getSlope(), t.getInflection()));
         }
         if (term instanceof SigmoidProduct) {
             SigmoidProduct t = (SigmoidProduct) term;
-            return String.format("%s(\"%s\", %s)",
-                    SigmoidProduct.class.getSimpleName(), term.getName(),
-                    Op.join(", ", t.getLeft(), t.getRising(),
+            return String.format("'%s':'psigmf',[%s]", term.getName(),
+                    Op.join(" ",t.getRising(), t.getLeft(), 
                             t.getFalling(), t.getRight()));
         }
         if (term instanceof SShape) {
             SShape t = (SShape) term;
-            return String.format("%s(\"%s\", %s)",
-                    SShape.class.getSimpleName(), term.getName(),
-                    Op.join(", ", t.getStart(), t.getEnd()));
+            return String.format("'%s':'smf',[%s]", term.getName(),
+                    Op.join(" ", t.getStart(), t.getEnd()));
         }
         if (term instanceof Trapezoid) {
             Trapezoid t = (Trapezoid) term;
-            return String.format("%s(\"%s\", %s)",
-                    Trapezoid.class.getSimpleName(), term.getName(),
-                    Op.join(", ", t.getA(), t.getB(), t.getC(), t.getD()));
+            return String.format("'%s':'trapmf',[%s]", term.getName(),
+                    Op.join(" ", t.getA(), t.getB(), t.getC(), t.getD()));
         }
         if (term instanceof Triangle) {
             Triangle t = (Triangle) term;
-            return String.format("%s(\"%s\", %s)",
-                    Triangle.class.getSimpleName(), term.getName(),
-                    Op.join(", ", t.getA(), t.getB(), t.getC()));
+            return String.format("'%s':'trimf',[%s]", term.getName(),
+                    Op.join(" ", t.getA(), t.getB(), t.getC()));
         }
         if (term instanceof ZShape) {
             ZShape t = (ZShape) term;
-            return String.format("%s(\"%s\", %s)",
-                    ZShape.class.getSimpleName(), term.getName(),
-                    Op.join(", ", t.getStart(), t.getEnd()));
+            return String.format("'%s':'zmf',[%s]", term.getName(),
+                    Op.join(" ", t.getStart(), t.getEnd()));
         }
-
-        return term.toString();
+        throw new RuntimeException(String.format("[export error] "+
+                "term of class <%s> not supported", term.getClass().getName()));
     }
 
     public String toString(Defuzzifier defuzzifier) {
@@ -526,7 +517,8 @@ public class FisExporter extends Exporter {
     }
 
     public static void main(String[] args) {
-        System.out.println(new FclExporter().toString(new SimpleDimmer()));
+        String x = null;
+        System.out.println(new FisExporter().toString(new SimpleDimmer()));
     }
 
 }
