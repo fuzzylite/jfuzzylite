@@ -11,11 +11,11 @@
  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  See the License for the specific language governing permissions and
  limitations under the License.
-*/
-
-
+ */
 package com.fuzzylite.term;
 
+import com.fuzzylite.Op;
+import com.fuzzylite.variable.InputVariable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -23,33 +23,80 @@ import java.util.List;
  *
  * @author jcrada
  */
-public class Linear extends Term{
-    
+public class Linear extends Term {
+
     protected List<Double> coefficients;
-    //TODO: IMPLEMENT!!! Exporters
-    //TODO: Wrap list of coefficients.
-    public Linear(){
-        coefficients = new ArrayList<>();
+    protected List<InputVariable> inputVariables;
+
+    public Linear(String name) {
+        this(name, new ArrayList<Double>(), new ArrayList<InputVariable>());
+    }
+
+    //It is safe to pass the InputVariables from the Engine
+    public Linear(String name, List<Double> coefficients, List<InputVariable> inputVariables) {
+        this.name = name;
+        this.coefficients = coefficients;
+        //Copy elements to prevent changing the Engine's input variables
+        this.inputVariables = new ArrayList<>(inputVariables);
+    }
+
+    //It is safe to pass the InputVariables from the Engine
+    public static Linear create(String name, List<InputVariable> inputVariables,
+            double... coefficients) {
+        if (coefficients.length != inputVariables.size() + 1) {
+            throw new RuntimeException(String.format(
+                    "[linear error] number of coefficient must match number of variables plus a constant c (e.g. ax+by+c), "
+                    + "but <%d> coefficients were found and <%d> variables are available",
+                    coefficients.length, inputVariables.size()));
+        }
+        List<Double> coefficientsList = new ArrayList<>();
+        for (double coefficient : coefficients) {
+            coefficientsList.add(coefficient);
+        }
+        return new Linear(name, coefficientsList, inputVariables);
     }
 
     @Override
     public double membership(double x) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        if (coefficients.size() != inputVariables.size() + 1) {
+            throw new RuntimeException(String.format(
+                    "[linear error] number of coefficient must match number of variables plus a constant c (e.g. ax+by+c), "
+                    + "but <%d> coefficients were found and <%d> variables are available",
+                    this.coefficients.size(), this.inputVariables.size()));
+        }
+        double result = 0;
+        for (int i = 0; i < inputVariables.size(); ++i) {
+            result += coefficients.get(i) * inputVariables.get(i).getInputValue();
+        }
+        if (coefficients.size() > inputVariables.size()) {
+            result += coefficients.get(coefficients.size() - 1);
+        }
+        return result;
     }
 
     @Override
     public String toString() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return Linear.class.getSimpleName() + " (" + Op.join(this.coefficients, ", ") + ")";
     }
-    
 
     public List<Double> getCoefficients() {
         return coefficients;
     }
 
-    public void setCoefficients(List<Double> coefficients) {
-        this.coefficients = coefficients;
+    public List<InputVariable> getInputVariables() {
+        return inputVariables;
     }
 
-    
+    //It is safe to pass the InputVariables from the Engine
+    public void set(List<Double> coefficients, List<InputVariable> inputVariables) {
+        if (coefficients.size() != inputVariables.size() + 1) {
+            throw new RuntimeException(String.format(
+                    "[linear error] number of coefficient must match number of variables plus a constant c (e.g. ax+by+c), "
+                    + "but <%d> coefficients were found and <%d> variables are available",
+                    coefficients.size(), inputVariables.size()));
+        }
+        this.coefficients = coefficients;
+        this.inputVariables = new ArrayList<>(inputVariables);
+    }
+
 }

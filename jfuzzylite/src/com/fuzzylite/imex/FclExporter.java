@@ -48,6 +48,7 @@ import com.fuzzylite.term.Discrete;
 import com.fuzzylite.term.Function;
 import com.fuzzylite.term.Gaussian;
 import com.fuzzylite.term.GaussianProduct;
+import com.fuzzylite.term.Linear;
 import com.fuzzylite.term.PiShape;
 import com.fuzzylite.term.Ramp;
 import com.fuzzylite.term.Rectangle;
@@ -225,6 +226,12 @@ public class FclExporter extends Exporter {
                     GaussianProduct.class.getSimpleName(), term.getName(),
                     Op.join(", ", t.getMeanA(), t.getStandardDeviationA(),
                             t.getMeanB(), t.getStandardDeviationB()));
+        }
+        if (term instanceof Linear) {
+            Linear t = (Linear) term;
+            return String.format("%s(\"%s\", %s)",
+                    Linear.class.getSimpleName(), term.getName(),
+                    Op.join(t.getCoefficients(), ", "));
         }
         if (term instanceof PiShape) {
             PiShape t = (PiShape) term;
