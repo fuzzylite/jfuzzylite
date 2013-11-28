@@ -17,6 +17,8 @@ package com.fuzzylite;
 import static com.fuzzylite.Op.str;
 import com.fuzzylite.defuzzifier.Defuzzifier;
 import com.fuzzylite.defuzzifier.IntegralDefuzzifier;
+import com.fuzzylite.factory.Factory;
+import com.fuzzylite.factory.FactoryManager;
 import com.fuzzylite.hedge.Hedge;
 import com.fuzzylite.imex.FclExporter;
 import com.fuzzylite.imex.FisExporter;
@@ -127,6 +129,30 @@ public class Engine {
         /*
          * END: Debug information
          */
+    }
+
+    public void configure(String conjunction, String disjunction,
+            String activation, String accumulation, String defuzzifier) {
+        configure(conjunction, disjunction, activation, accumulation, defuzzifier,
+                IntegralDefuzzifier.DEFAULT_RESOLUTION);
+    }
+
+    public void configure(String conjunction, String disjunction,
+            String activation, String accumulation, String defuzzifier, int resolution) {
+        Factory<TNorm> tnormFactory = FactoryManager.instance().getFactory(TNorm.class);
+        Factory<SNorm> snormFactory = FactoryManager.instance().getFactory(SNorm.class);
+        TNorm objConjunction = tnormFactory.createInstance(conjunction);
+        SNorm objDisjunction = snormFactory.createInstance(disjunction);
+        TNorm objActivation = tnormFactory.createInstance(activation);
+        SNorm objAccumulation = snormFactory.createInstance(accumulation);
+
+        Factory<Defuzzifier> defuzzifierFactory
+                = FactoryManager.instance().getFactory(Defuzzifier.class);
+        Defuzzifier objDefuzzifier = defuzzifierFactory.createInstance(defuzzifier);
+        if (objDefuzzifier instanceof IntegralDefuzzifier) {
+            ((IntegralDefuzzifier) objDefuzzifier).setResolution(resolution);
+        }
+        configure(objConjunction, objDisjunction, objActivation, objAccumulation, objDefuzzifier);
     }
 
     public void configure(TNorm conjunction, SNorm disjunction,

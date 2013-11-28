@@ -46,6 +46,7 @@ public class Factory<T> {
     }
 
     public T createInstance(String simpleName) {
+        if (simpleName == null || simpleName.isEmpty()) return null;
         try {
             return this.map.get(simpleName).newInstance();
         } catch (Exception ex) {
