@@ -41,7 +41,15 @@ public class Factory<T> {
         this.map.remove(simpleName);
     }
 
-    public T createInstance(String simpleName) throws Exception {
-        return this.map.get(simpleName).newInstance();
+    public boolean isRegistered(String simpleName) {
+        return this.map.containsKey(simpleName);
+    }
+
+    public T createInstance(String simpleName) {
+        try {
+            return this.map.get(simpleName).newInstance();
+        } catch (Exception ex) {
+            throw new RuntimeException(ex);
+        }
     }
 }

@@ -16,10 +16,34 @@
 
 package com.fuzzylite;
 
+import java.util.LinkedHashMap;
+import java.util.Map;
+
 /**
  *
  * @author jcrada
  */
 public class Console {
-//Import from file, -i=file.fis -if=format -o=file -of=format -r=100
+//Import from file, -i file.fis -if format -o file -of format -r 100
+    
+    public static String usage(){
+        Map<String,String> options = new LinkedHashMap<>();
+        options.put("-i", "Input file");
+        options.put("-if", "Format of input file: fis, fcl");
+        options.put("-of", "Format of output: fis, fcl, c++, java, out");
+        options.put("-o", "Output file");
+        options.put("-ro", "Resolution of format 'out'");
+        options.put("-so", "Separator of format 'out'");
+        
+        StringBuilder result = new StringBuilder();
+        result.append("usage: java -jar jfuzzylite.jar ");
+        for (String option : options.keySet()){
+            result.append(String.format("[%s] ", option));
+        }
+        
+        return result.toString();
+    }
+    public static void main(String[] args) {
+        System.out.println(usage());
+    }
 }

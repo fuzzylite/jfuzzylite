@@ -68,9 +68,9 @@ import java.util.Map;
  * @author jcrada
  */
 public class FactoryManager {
-
+    
     protected static FactoryManager instance;
-
+    
     public synchronized static FactoryManager instance() {
         if (instance == null) {
             instance = new FactoryManager();
@@ -83,11 +83,11 @@ public class FactoryManager {
         return instance;
     }
     protected Map<Class, Factory> map;
-
+    
     protected FactoryManager() {
         this.map = new HashMap<>();
     }
-
+    
     protected void loadTNorms() {
         Factory<TNorm> tnorm = new Factory<>();
         tnorm.register(Minimum.class);
@@ -98,7 +98,7 @@ public class FactoryManager {
         tnorm.register(HamacherProduct.class);
         register(TNorm.class, tnorm);
     }
-
+    
     protected void loadSNorms() {
         Factory<SNorm> snorm = new Factory<>();
         snorm.register(Maximum.class);
@@ -110,7 +110,7 @@ public class FactoryManager {
         snorm.register(HamacherSum.class);
         register(SNorm.class, snorm);
     }
-
+    
     protected void loadDefuzzifiers() {
         Factory<Defuzzifier> defuzzifier = new Factory<>();
         defuzzifier.register(Centroid.class);
@@ -122,7 +122,7 @@ public class FactoryManager {
         defuzzifier.register(WeightedSum.class);
         register(Defuzzifier.class, defuzzifier);
     }
-
+    
     protected void loadHedges() {
         Factory<Hedge> hedge = new Factory<>();
         hedge.register(Any.class.getSimpleName().toLowerCase(), Any.class);
@@ -133,7 +133,7 @@ public class FactoryManager {
         hedge.register(Very.class.getSimpleName().toLowerCase(), Very.class);
         register(Hedge.class, hedge);
     }
-
+    
     protected void loadTerms() {
         Factory<Term> term = new Factory<>();
         term.register(Bell.class);
@@ -153,24 +153,28 @@ public class FactoryManager {
         term.register(ZShape.class);
         register(Term.class, term);
     }
-
+    
     public <T> void register(Class<T> clazz, Factory<T> factory) {
         this.map.put(clazz, factory);
     }
-
+    
     public <T> void deregister(Class<T> clazz) {
         this.map.remove(clazz);
     }
-
+    
+    public <T> boolean hasRegistered(Class<T> clazz) {
+        return this.map.containsKey(clazz);
+    }
+    
     @SuppressWarnings("unchecked")
     public <T> Factory<T> getFactory(Class<T> clazz) {
         return map.get(clazz);
     }
-
+    
     public Map<Class, Factory> getFactoryMap() {
         return this.map;
     }
-
+    
     public static void main(String[] args) throws Exception {
         FactoryManager.instance().getFactory(TNorm.class).createInstance("Minimum");
     }

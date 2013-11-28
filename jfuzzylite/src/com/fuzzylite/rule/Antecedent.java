@@ -15,6 +15,8 @@
 package com.fuzzylite.rule;
 
 import com.fuzzylite.Engine;
+import com.fuzzylite.factory.Factory;
+import com.fuzzylite.factory.FactoryManager;
 import com.fuzzylite.hedge.Any;
 import com.fuzzylite.hedge.Hedge;
 import com.fuzzylite.norm.SNorm;
@@ -32,8 +34,8 @@ import java.util.StringTokenizer;
 public class Antecedent {
 
     protected Expression root;
-    
-    public Expression getRoot(){
+
+    public Expression getRoot() {
         return this.root;
     }
 
@@ -78,8 +80,17 @@ public class Antecedent {
             }
 
             if ((state & S_HEDGE) > 0) {
+                Hedge hedge = null;
                 if (engine.hasHedge(token)) {
-                    Hedge hedge = engine.getHedge(token);
+                    hedge = engine.getHedge(token);
+                } else {
+                    Factory<Hedge> hedgeFactory = FactoryManager.instance().getFactory(Hedge.class);
+                    if (hedgeFactory.isRegistered(token)) {
+                        hedge = hedgeFactory.createInstance(token);
+                        engine.addHedge(hedge);
+                    }
+                }
+                if (hedge != null) {
                     proposition.hedges.add(hedge);
                     if (hedge instanceof Any) {
                         state = S_VARIABLE | S_AND_OR;
@@ -99,7 +110,7 @@ public class Antecedent {
             }
 
             if ((state & S_AND_OR) > 0) {
-                if (Rule.FL_AND.equals(token) || Rule.FL_OR.equals(token)){
+                if (Rule.FL_AND.equals(token) || Rule.FL_OR.equals(token)) {
                     if (expressionStack.size() != 2) {
                         throw new RuntimeException(String.format(
                                 "[syntax error] logical operator <%s> expects two operands, but found <%i>",
@@ -136,9 +147,9 @@ public class Antecedent {
                     "[syntax error] unexpected token <%s>",
                     token));
         }
-        if (expressionStack.size()!=1){
+        if (expressionStack.size() != 1) {
             throw new RuntimeException(String.format(
-            "[syntax error] stack expected to contain the root, but contains %i nodes",
+                    "[syntax error] stack expected to contain the root, but contains %i nodes",
                     expressionStack.size()));
         }
         this.root = expressionStack.pop();

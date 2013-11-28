@@ -16,6 +16,8 @@ package com.fuzzylite.rule;
 
 import com.fuzzylite.Engine;
 import com.fuzzylite.FuzzyLite;
+import com.fuzzylite.factory.Factory;
+import com.fuzzylite.factory.FactoryManager;
 import com.fuzzylite.hedge.Hedge;
 import com.fuzzylite.norm.TNorm;
 import com.fuzzylite.term.Thresholded;
@@ -90,8 +92,17 @@ public class Consequent {
             }
 
             if ((state & S_HEDGE) > 0) {
+                Hedge hedge = null;
                 if (engine.hasHedge(token)) {
-                    Hedge hedge = engine.getHedge(token);
+                    hedge = engine.getHedge(token);
+                } else {
+                    Factory<Hedge> hedgeFactory = FactoryManager.instance().getFactory(Hedge.class);
+                    if (hedgeFactory.isRegistered(token)) {
+                        hedge = hedgeFactory.createInstance(token);
+                        engine.addHedge(hedge);
+                    }
+                }
+                if (hedge != null) {
                     proposition.hedges.add(hedge);
                     state = S_HEDGE | S_TERM;
                     continue;
