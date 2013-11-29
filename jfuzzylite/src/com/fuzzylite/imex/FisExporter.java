@@ -89,7 +89,7 @@ public class FisExporter extends Exporter {
     public String toString(Engine engine) {
         if (engine.numberOfRuleBlocks() != 1) {
             throw new RuntimeException(String.format("[export error] "
-                    + "engine has <%d> rule blocks, but fis files support only one",
+                    + "fis files require one rule block, but engine has <%d> rule blocks",
                     engine.numberOfRuleBlocks()));
         }
         StringBuilder result = new StringBuilder();

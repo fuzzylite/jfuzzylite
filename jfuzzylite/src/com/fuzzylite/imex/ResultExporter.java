@@ -31,13 +31,15 @@ import java.util.List;
  */
 public class ResultExporter extends Exporter {
 
+    public static final int DEFAULT_RESOLUTION = 100;
+
     @Override
     public String toString(Engine engine) {
         return toString(engine, " ");
     }
 
     public String toString(Engine engine, String separator) {
-        return toString(engine, separator, 100);
+        return toString(engine, separator, DEFAULT_RESOLUTION);
     }
 
     public String toString(Engine engine, String separator, int resolution) {
@@ -99,6 +101,7 @@ public class ResultExporter extends Exporter {
 
             overflow = Op.increment(sampleValues, minSampleValues, maxSampleValues);
         }
+        writer.flush();
     }
 
     public static void main(String[] args) {

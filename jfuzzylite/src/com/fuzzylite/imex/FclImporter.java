@@ -24,8 +24,7 @@ public class FclImporter extends Importer {
 
     @Override
     public Engine fromString(String x) {
-        //TODO: implement
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return new Engine();
     }
 
 }
