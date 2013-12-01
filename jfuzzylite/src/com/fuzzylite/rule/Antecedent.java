@@ -15,8 +15,8 @@
 package com.fuzzylite.rule;
 
 import com.fuzzylite.Engine;
-import com.fuzzylite.factory.Factory;
 import com.fuzzylite.factory.FactoryManager;
+import com.fuzzylite.factory.HedgeFactory;
 import com.fuzzylite.hedge.Any;
 import com.fuzzylite.hedge.Hedge;
 import com.fuzzylite.norm.SNorm;
@@ -84,7 +84,7 @@ public class Antecedent {
                 if (engine.hasHedge(token)) {
                     hedge = engine.getHedge(token);
                 } else {
-                    Factory<Hedge> hedgeFactory = FactoryManager.instance().getFactory(Hedge.class);
+                    HedgeFactory hedgeFactory = FactoryManager.instance().getHedge();
                     if (hedgeFactory.isRegistered(token)) {
                         hedge = hedgeFactory.createInstance(token);
                         engine.addHedge(hedge);
