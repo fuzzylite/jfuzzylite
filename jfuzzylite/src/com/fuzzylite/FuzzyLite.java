@@ -29,7 +29,7 @@ public class FuzzyLite {
     public static final String AUTHOR = "Juan Rada-Vilela";
     protected static DecimalFormat DF = new DecimalFormat("0.000");
     protected static int DECIMALS = 3;
-    protected static double TOLERANCE = 1e-5;
+    protected static double MACHEPS = 1e-5; //Machine epsilon to differentiate numbers
 
     public static Logger logger() {
         return Logger.getGlobal();
@@ -52,12 +52,12 @@ public class FuzzyLite {
         return DF;
     }
 
-    public static double getTolerance() {
-        return TOLERANCE;
+    public static double getMachEps() {
+        return MACHEPS;
     }
 
-    public static void setTolerance(double tolerance) {
-        TOLERANCE = tolerance;
+    public static void setMachEps(double macheps) {
+        MACHEPS = macheps;
     }
 
     public static void main(String[] args) {

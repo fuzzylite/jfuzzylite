@@ -93,4 +93,18 @@ public class GaussianProduct extends Term {
     public void setStandardDeviationB(double standardDeviationB) {
         this.standardDeviationB = standardDeviationB;
     }
+
+    @Override
+    public void configure(double[] parameters) {
+        int required = 4;
+        if (parameters.length < required) {
+            throw new RuntimeException(String.format(
+                    "[configuration error] term <%s> requires <%d> parameters",
+                    this.getClass().getSimpleName(), required));
+        }
+        setMeanA(parameters[0]);
+        setStandardDeviationA(parameters[1]);
+        setMeanB(parameters[2]);
+        setStandardDeviationB(parameters[3]);
+    }
 }

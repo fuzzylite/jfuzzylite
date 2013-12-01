@@ -93,4 +93,18 @@ public class Trapezoid extends Term {
     public void setD(double d) {
         this.d = d;
     }
+
+    @Override
+    public void configure(double[] parameters) {
+        int required = 4;
+        if (parameters.length < required) {
+            throw new RuntimeException(String.format(
+                    "[configuration error] term <%s> requires <%d> parameters",
+                    this.getClass().getSimpleName(), required));
+        }
+        setA(parameters[0]);
+        setB(parameters[1]);
+        setC(parameters[2]);
+        setD(parameters[3]);
+    }
 }

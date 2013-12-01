@@ -22,7 +22,7 @@ import com.fuzzylite.imex.FisExporter;
 import com.fuzzylite.imex.FisImporter;
 import com.fuzzylite.imex.Importer;
 import com.fuzzylite.imex.JavaExporter;
-import com.fuzzylite.imex.ResultExporter;
+import com.fuzzylite.imex.DataExporter;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
@@ -43,19 +43,24 @@ public class Console {
     public static final String KW_INPUT_FORMAT = "-if";
     public static final String KW_OUTPUT_FILE = "-o";
     public static final String KW_OUTPUT_FORMAT = "-of";
-    public static final String KW_RESULT_RESOLUTION = "-res";
-    public static final String KW_RESULT_SEPARATOR = "-sep";
+    public static final String KW_DATA_RESOLUTION = "-res";
+    public static final String KW_DATA_SEPARATOR = "-sep";
 
     public static String usage() {
         Map<String, String> options = new LinkedHashMap<>();
         options.put(KW_INPUT_FILE, "inputfile");
         options.put(KW_INPUT_FORMAT, "fis,fcl");
         options.put(KW_OUTPUT_FILE, "outputfile");
-        options.put(KW_OUTPUT_FORMAT, "fis,fcl,cpp,java,out");
-        options.put(KW_RESULT_RESOLUTION, "resolution");
-        options.put(KW_RESULT_SEPARATOR, "separator");
+        options.put(KW_OUTPUT_FORMAT, "fis,fcl,cpp,java,dat");
+        options.put(KW_DATA_RESOLUTION, "resolution");
+        options.put(KW_DATA_SEPARATOR, "separator");
 
         StringBuilder result = new StringBuilder();
+        result.append("========================================\n");
+        result.append("fuzzylite: a fuzzy logic control library\n");
+        result.append(String.format("version: %s\n", FuzzyLite.LONG_VERSION));
+        result.append(String.format("author: %s\n", FuzzyLite.AUTHOR));
+        result.append("========================================\n");
         result.append("usage: java -jar jfuzzylite.jar inputfile outputfile\n");
         result.append("   or: java -jar jfuzzylite.jar ");
         for (String option : options.keySet()) {
@@ -68,11 +73,11 @@ public class Console {
             result.append(String.format("[%s %s] \n       ", option.getKey(), option.getValue()));
         }
         result.append("\n");
-        result.append("Visit http://www.fuzzylite.com for more information.\n");
+        result.append("Visit http://www.fuzzylite.com for more information.");
         return result.toString();
     }
 
-    public static Map<String, String> parse(String[] args) {
+    protected static Map<String, String> parse(String[] args) {
         Map<String, String> options = new HashMap<>();
         String key, value;
         for (int i = 0; i < args.length - 1; i += 2) {
@@ -82,7 +87,7 @@ public class Console {
         }
         if (options.size() == 1) {
             Map.Entry<String, String> in_out = options.entrySet().iterator().next();
-            if (!in_out.getKey().startsWith("-")) {
+            if (in_out.getKey().charAt(0) != '-') {
                 options.put(KW_INPUT_FILE, in_out.getKey());
                 options.put(KW_OUTPUT_FILE, in_out.getValue());
             }
@@ -90,7 +95,7 @@ public class Console {
         return options;
     }
 
-    public static void process(Map<String, String> options) throws Exception {
+    protected static void process(Map<String, String> options) throws Exception {
         String inputFilename = options.get(KW_INPUT_FILE);
         if (inputFilename == null) {
             throw new RuntimeException("[option error] no input file specified");
@@ -98,6 +103,19 @@ public class Console {
         File inputFile = new File(inputFilename);
         if (!inputFile.exists()) {
             inputFile.createNewFile();
+        }
+        StringBuilder textEngine = new StringBuilder();
+        BufferedReader reader = new BufferedReader(new FileReader(inputFile));
+        try {
+            String line = reader.readLine();
+            while (line != null) {
+                textEngine.append(line).append("\n");
+                line = reader.readLine();
+            }
+        } catch (Exception ex) {
+            throw new RuntimeException(ex);
+        } finally {
+            reader.close();
         }
 
         String inputFormat = options.get(KW_INPUT_FORMAT);
@@ -111,17 +129,6 @@ public class Console {
         }
 
         String outputFilename = options.get(KW_OUTPUT_FILE);
-        Writer writer = null;
-        if (outputFilename == null || outputFilename.isEmpty()) {
-            writer = new StringWriter();
-        } else {
-            File outputFile = new File(outputFilename);
-            if (!outputFile.exists()) {
-                outputFile.createNewFile();
-            }
-            writer = new FileWriter(outputFile);
-        }
-
         String outputFormat = options.get(KW_OUTPUT_FORMAT);
         if (outputFormat == null || outputFormat.isEmpty()) {
             if (outputFilename == null || outputFilename.isEmpty()) {
@@ -136,16 +143,22 @@ public class Console {
             }
         }
 
-        StringBuilder textEngine = new StringBuilder();
-        BufferedReader reader = new BufferedReader(new FileReader(inputFile));
-        String line = reader.readLine();
-        while (line != null) {
-            textEngine.append(line);
-            line = reader.readLine();
+        Writer writer;
+        if (outputFilename == null || outputFilename.isEmpty()) {
+            writer = new StringWriter();
+        } else {
+            File outputFile = new File(outputFilename);
+            if (!outputFile.exists()) {
+                outputFile.createNewFile();
+            }
+            writer = new FileWriter(outputFile);
         }
-        reader.close();
-
-        process(textEngine.toString(), writer, inputFormat, outputFormat, options);
+        try {
+            process(textEngine.toString(), writer, inputFormat, outputFormat, options);
+        } catch (Exception ex) {
+            writer.close();
+            throw ex;
+        }
         writer.flush();
         if (outputFilename == null || outputFilename.isEmpty()) {
             StringWriter stringWriter = (StringWriter) writer;
@@ -154,7 +167,7 @@ public class Console {
         writer.close();
     }
 
-    public static void process(String input, Writer output,
+    protected static void process(String input, Writer output,
             String inputFormat, String outputFormat, Map<String, String> options)
             throws Exception {
         Importer importer = null;
@@ -177,28 +190,23 @@ public class Console {
             exporter = new CppExporter();
         } else if ("java".equalsIgnoreCase(outputFormat)) {
             exporter = new JavaExporter();
-        } else if ("out".equalsIgnoreCase(outputFormat)) {
-            exporter = new ResultExporter();
+        } else if ("dat".equalsIgnoreCase(outputFormat)) {
+            String separator = DataExporter.DEFAULT_SEPARATOR;
+            int resolution = DataExporter.DEFAULT_RESOLUTION;
+            if (options.containsKey(KW_DATA_SEPARATOR)) {
+                separator = options.get(KW_DATA_SEPARATOR);
+            }
+            if (options.containsKey(KW_DATA_RESOLUTION)) {
+                resolution = Integer.parseInt(options.get(KW_DATA_RESOLUTION));
+            }
+            exporter = new DataExporter(separator, resolution);
         } else {
             throw new RuntimeException(String.format(
                     "[export error] format <%s> not supported", outputFormat));
         }
 
         Engine engine = importer.fromString(input);
-        if (exporter instanceof ResultExporter) {
-            ResultExporter resultExporter = (ResultExporter) exporter;
-            String separator = " ";
-            int resolution = ResultExporter.DEFAULT_RESOLUTION;
-            if (options.containsKey(KW_RESULT_SEPARATOR)) {
-                separator = options.get(KW_RESULT_SEPARATOR);
-            }
-            if (options.containsKey(KW_RESULT_RESOLUTION)) {
-                resolution = Integer.parseInt(options.get(KW_RESULT_RESOLUTION));
-            }
-            resultExporter.toWriter(engine, output, separator, resolution);
-        } else {
-            output.write(exporter.toString(engine));
-        }
+        output.write(exporter.toString(engine));
     }
 
     public static void main(String[] args) {

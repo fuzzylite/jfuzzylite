@@ -40,17 +40,17 @@ import java.util.logging.Logger;
  * @author jcrada
  */
 public class Engine {
-
+    
     protected String name;
     protected List<InputVariable> inputVariables;
     protected List<OutputVariable> outputVariables;
     protected List<RuleBlock> ruleBlocks;
     protected List<Hedge> hedges;
-
+    
     public Engine() {
         this("");
     }
-
+    
     public Engine(String name) {
         this.name = name;
         this.inputVariables = new ArrayList<>();
@@ -58,15 +58,15 @@ public class Engine {
         this.ruleBlocks = new ArrayList<>();
         this.hedges = new ArrayList<>();
     }
-
+    
     public String getName() {
         return name;
     }
-
+    
     public void setName(String name) {
         this.name = name;
     }
-
+    
     public void restart() {
         for (InputVariable inputVariable : this.inputVariables) {
             inputVariable.setInputValue(Double.NaN);
@@ -76,7 +76,7 @@ public class Engine {
             outputVariable.setLastValidOutput(Double.NaN);
         }
     }
-
+    
     public void process() {
         for (OutputVariable outputVariable : outputVariables) {
             outputVariable.getOutput().clear();
@@ -98,7 +98,7 @@ public class Engine {
         /*
          * END: Debug information
          */
-
+        
         for (RuleBlock ruleBlock : ruleBlocks) {
             ruleBlock.activate();
         }
@@ -130,13 +130,13 @@ public class Engine {
          * END: Debug information
          */
     }
-
+    
     public void configure(String conjunction, String disjunction,
             String activation, String accumulation, String defuzzifier) {
         configure(conjunction, disjunction, activation, accumulation, defuzzifier,
                 IntegralDefuzzifier.DEFAULT_RESOLUTION);
     }
-
+    
     public void configure(String conjunction, String disjunction,
             String activation, String accumulation, String defuzzifier, int resolution) {
         Factory<TNorm> tnormFactory = FactoryManager.instance().getFactory(TNorm.class);
@@ -145,7 +145,7 @@ public class Engine {
         SNorm objDisjunction = snormFactory.createInstance(disjunction);
         TNorm objActivation = tnormFactory.createInstance(activation);
         SNorm objAccumulation = snormFactory.createInstance(accumulation);
-
+        
         Factory<Defuzzifier> defuzzifierFactory
                 = FactoryManager.instance().getFactory(Defuzzifier.class);
         Defuzzifier objDefuzzifier = defuzzifierFactory.createInstance(defuzzifier);
@@ -154,7 +154,7 @@ public class Engine {
         }
         configure(objConjunction, objDisjunction, objActivation, objAccumulation, objDefuzzifier);
     }
-
+    
     public void configure(TNorm conjunction, SNorm disjunction,
             TNorm activation, SNorm accumulation,
             Defuzzifier defuzzifier) {
@@ -168,11 +168,11 @@ public class Engine {
             outputVariable.getOutput().setAccumulation(accumulation);
         }
     }
-
+    
     public boolean isReady() {
         return isReady(new StringBuilder());
     }
-
+    
     public boolean isReady(StringBuilder message) {
         message.setLength(0);
         if (this.inputVariables.isEmpty()) {
@@ -188,7 +188,7 @@ public class Engine {
                 //message.append(String.format("- Input variable <%s> has no terms\n", inputVariable.getName()));
             }
         }
-
+        
         if (this.outputVariables.isEmpty()) {
             message.append("- Engine has no output variables\n");
         }
@@ -214,7 +214,7 @@ public class Engine {
                 }
             }
         }
-
+        
         if (this.ruleBlocks.isEmpty()) {
             message.append("- Engine has no rule blocks\n");
         }
@@ -265,11 +265,11 @@ public class Engine {
         }
         return message.length() == 0;
     }
-
+    
     public String toFcl() {
         return new FclExporter().toString(this);
     }
-
+    
     public String toFis() {
         return new FisExporter().toString(this);
     }
@@ -281,7 +281,7 @@ public class Engine {
         InputVariable inputVariable = getInputVariable(name);
         inputVariable.setInputValue(value);
     }
-
+    
     public InputVariable getInputVariable(String name) {
         for (InputVariable inputVariable : this.inputVariables) {
             if (name.equals(inputVariable.getName())) {
@@ -291,19 +291,19 @@ public class Engine {
         throw new RuntimeException(String.format(
                 "[engine error] no input variable by name <%s>", name));
     }
-
+    
     public InputVariable getInputVariable(int index) {
         return this.inputVariables.get(index);
     }
-
+    
     public void addInputVariable(InputVariable inputVariable) {
         this.inputVariables.add(inputVariable);
     }
-
+    
     public InputVariable removeInputVariable(InputVariable inputVariable) {
         return this.inputVariables.remove(inputVariable) ? inputVariable : null;
     }
-
+    
     public InputVariable removeInputVariable(String name) {
         for (Iterator<InputVariable> it = this.inputVariables.iterator(); it.hasNext();) {
             InputVariable inputVariable = it.next();
@@ -316,6 +316,11 @@ public class Engine {
                 "[engine error] no input variable by name <%s>", name));
     }
 
+    public InputVariable removeInputVariable(int index) {
+        return this.inputVariables.remove(index);
+        
+    }
+    
     public boolean hasInputVariable(String name) {
         for (InputVariable inputVariable : this.inputVariables) {
             if (name.equals(inputVariable.getName())) {
@@ -324,15 +329,15 @@ public class Engine {
         }
         return false;
     }
-
+    
     public int numberOfInputVariables() {
         return this.inputVariables.size();
     }
-
+    
     public List<InputVariable> getInputVariables() {
         return this.inputVariables;
     }
-
+    
     public void setInputVariables(List<InputVariable> inputVariables) {
         this.inputVariables = inputVariables;
     }
@@ -344,7 +349,7 @@ public class Engine {
         OutputVariable outputVariable = getOutputVariable(name);
         return outputVariable.defuzzify();
     }
-
+    
     public OutputVariable getOutputVariable(String name) {
         for (OutputVariable outputVariable : this.outputVariables) {
             if (name.equals(outputVariable.getName())) {
@@ -354,19 +359,19 @@ public class Engine {
         throw new RuntimeException(String.format(
                 "[engine error] no output variable by name <%s>", name));
     }
-
+    
     public OutputVariable getOutputVariable(int index) {
         return this.outputVariables.get(index);
     }
-
+    
     public void addOutputVariable(OutputVariable outputVariable) {
         this.outputVariables.add(outputVariable);
     }
-
+    
     public OutputVariable removeOutputVariable(OutputVariable outputVariable) {
         return this.outputVariables.remove(outputVariable) ? outputVariable : null;
     }
-
+    
     public OutputVariable removeOutputVariable(String name) {
         for (Iterator<OutputVariable> it = this.outputVariables.iterator(); it.hasNext();) {
             OutputVariable outputVariable = it.next();
@@ -378,7 +383,11 @@ public class Engine {
         throw new RuntimeException(String.format(
                 "[engine error] no output variable by name <%s>", name));
     }
-
+    
+    public OutputVariable remoOutputVariable(int index) {
+        return this.outputVariables.remove(index);
+    }
+    
     public boolean hasOutputVariable(String name) {
         for (OutputVariable outputVariable : this.outputVariables) {
             if (name.equals(outputVariable.getName())) {
@@ -387,15 +396,15 @@ public class Engine {
         }
         return false;
     }
-
+    
     public int numberOfOutputVariables() {
         return this.outputVariables.size();
     }
-
+    
     public List<OutputVariable> getOutputVariables() {
         return this.outputVariables;
     }
-
+    
     public void setOutputVariables(List<OutputVariable> outputVariables) {
         this.outputVariables = outputVariables;
     }
@@ -412,19 +421,19 @@ public class Engine {
         throw new RuntimeException(String.format(
                 "[engine error] no rule block by name <%s>", name));
     }
-
+    
     public RuleBlock getRuleBlock(int index) {
         return this.ruleBlocks.get(index);
     }
-
+    
     public void addRuleBlock(RuleBlock ruleBlock) {
         this.ruleBlocks.add(ruleBlock);
     }
-
+    
     public RuleBlock removeRuleBlock(RuleBlock ruleBlock) {
         return this.ruleBlocks.remove(ruleBlock) ? ruleBlock : null;
     }
-
+    
     public RuleBlock removeRuleBlock(String name) {
         for (Iterator<RuleBlock> it = this.ruleBlocks.iterator(); it.hasNext();) {
             RuleBlock ruleBlock = it.next();
@@ -436,7 +445,11 @@ public class Engine {
         throw new RuntimeException(String.format(
                 "[engine error] no rule block by name <%s>", name));
     }
-
+    
+    public RuleBlock removeRuleBlock(int index) {
+        return this.ruleBlocks.remove(index);
+    }
+    
     public boolean hasRuleBlock(String name) {
         for (RuleBlock ruleBlock : this.ruleBlocks) {
             if (name.equals(ruleBlock.getName())) {
@@ -445,15 +458,15 @@ public class Engine {
         }
         return false;
     }
-
+    
     public int numberOfRuleBlocks() {
         return this.ruleBlocks.size();
     }
-
+    
     public List<RuleBlock> getRuleBlocks() {
         return this.ruleBlocks;
     }
-
+    
     public void setRuleBlocks(List<RuleBlock> ruleBlocks) {
         this.ruleBlocks = ruleBlocks;
     }
@@ -470,19 +483,19 @@ public class Engine {
         throw new RuntimeException(String.format(
                 "[engine error] no hedge by name <%s>", name));
     }
-
+    
     public Hedge getHedge(int index) {
         return this.hedges.get(index);
     }
-
+    
     public void addHedge(Hedge hedge) {
         this.hedges.add(hedge);
     }
-
+    
     public Hedge removeHedge(Hedge hedge) {
         return this.hedges.remove(hedge) ? hedge : null;
     }
-
+    
     public Hedge removeHedge(String name) {
         for (Iterator<Hedge> it = this.hedges.iterator(); it.hasNext();) {
             Hedge hedge = it.next();
@@ -494,6 +507,10 @@ public class Engine {
         throw new RuntimeException(String.format(
                 "[engine error] no hedge by name <%s>", name));
     }
+    
+    public Hedge removeHedge(int index) {
+        return this.hedges.remove(index);
+    }
 
     public boolean hasHedge(String name) {
         for (Hedge hedge : this.hedges) {
@@ -503,17 +520,17 @@ public class Engine {
         }
         return false;
     }
-
+    
     public int numberOfHedges() {
         return this.hedges.size();
     }
-
+    
     public List<Hedge> getHedges() {
         return this.hedges;
     }
-
+    
     public void setHedges(List<Hedge> hedges) {
         this.hedges = hedges;
     }
-
+    
 }

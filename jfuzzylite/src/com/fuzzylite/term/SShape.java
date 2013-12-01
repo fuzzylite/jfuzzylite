@@ -77,4 +77,17 @@ public class SShape extends Term {
     public void setEnd(double end) {
         this.end = end;
     }
+
+    @Override
+    public void configure(double[] parameters) {
+        int required = 2;
+        if (parameters.length < required) {
+            throw new RuntimeException(String.format(
+                    "[configuration error] term <%s> requires <%d> parameters",
+                    this.getClass().getSimpleName(), required));
+        }
+        setStart(parameters[0]);
+        setEnd(parameters[1]);
+    }
+
 }

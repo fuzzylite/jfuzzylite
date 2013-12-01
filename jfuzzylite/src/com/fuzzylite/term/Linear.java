@@ -99,4 +99,12 @@ public class Linear extends Term {
         this.inputVariables = new ArrayList<>(inputVariables);
     }
 
+    @Override
+    public void configure(double[] parameters) {
+        coefficients.clear();
+        for (double x : parameters){
+            coefficients.add(x);
+        }
+    }
+
 }

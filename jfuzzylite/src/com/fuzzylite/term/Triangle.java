@@ -87,4 +87,19 @@ public class Triangle extends Term {
     public void setC(double c) {
         this.c = c;
     }
+
+    @Override
+    public void configure(double[] parameters) {
+        int required = 3;
+        if (parameters.length < required) {
+            throw new RuntimeException(String.format(
+                    "[configuration error] term <%s> requires <%d> parameters",
+                    this.getClass().getSimpleName(), required));
+        }
+        setA(parameters[0]);
+        setB(parameters[1]);
+        setC(parameters[2]);
+    }
+    
+    
 }

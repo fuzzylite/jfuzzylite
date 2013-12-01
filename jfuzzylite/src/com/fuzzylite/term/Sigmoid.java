@@ -65,4 +65,18 @@ public class Sigmoid extends Term {
     public void setSlope(double slope) {
         this.slope = slope;
     }
+
+    @Override
+    public void configure(double[] parameters) {
+        int required = 2;
+        if (parameters.length < required) {
+            throw new RuntimeException(String.format(
+                    "[configuration error] term <%s> requires <%d> parameters",
+                    this.getClass().getSimpleName(), required));
+        }
+        setInflection(parameters[0]);
+        setSlope(parameters[1]);
+    }
+    
+    
 }

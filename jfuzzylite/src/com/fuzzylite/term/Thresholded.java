@@ -77,4 +77,9 @@ public class Thresholded extends Term {
         this.activation = activation;
     }
 
+    @Override
+    public void configure(double[] parameters) {
+        //do nothing
+    }
+
 }

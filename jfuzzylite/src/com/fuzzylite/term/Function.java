@@ -320,7 +320,13 @@ public class Function extends Term {
         return String.format("Function (%s)", this.text);
     }
 
-    public static Function create(String name, String text, Engine engine, boolean requiresFunctions) throws Exception {
+    //TODO: update exporters.
+    public static Function create(String name, String text, Engine engine) throws Exception {
+        return create(name, text, engine, true);
+    }
+
+    public static Function create(String name, String text,
+            Engine engine, boolean requiresFunctions) throws Exception {
         Function result = new Function(name);
         if (requiresFunctions) {
             result.loadBuiltInFunctions();
@@ -590,7 +596,7 @@ public class Function extends Term {
         }
         if (stack.size() != 1) {
             throw new RuntimeException(String.format(
-                    "[function error] parsing function <%s> due to: <%s>", 
+                    "[function error] parsing function <%s> due to: <%s>",
                     text, Op.join(stack, ";")));
         }
         return stack.pop();
@@ -628,6 +634,11 @@ public class Function extends Term {
         return functions;
     }
 
+    @Override
+    public void configure(double[] parameters) {
+        //do nothing
+    }
+
     public static void main(String[] args) throws Exception {
         Logger log = FuzzyLite.logger();
         Function f = new Function();
@@ -647,12 +658,12 @@ public class Function extends Term {
         log.info("pos: " + f.parse(text).toPostfix());
         f.load(text);
         log.info("Result: " + Op.str(f.membership(1)));
-        
-        text = "(Temperature is High and Oxigen is Low) or "+
-                "(Temperature is Low and (Oxigen is Low or Oxigen is High))";
+
+        text = "(Temperature is High and Oxigen is Low) or "
+                + "(Temperature is Low and (Oxigen is Low or Oxigen is High))";
         log.info(f.toPostfix(text));
-        
-        f.variables.put("pi",3.14);
+
+        f.variables.put("pi", 3.14);
         text = "-5 *4/sin(-pi/2)";
         log.info(f.toPostfix(text));
         try {
@@ -660,7 +671,7 @@ public class Function extends Term {
         } catch (Exception e) {
             log.info(e.getMessage());
         }
-        
+
         text = "~5 *4/sin(~pi/2)";
         log.info(f.toPostfix(text));
         try {

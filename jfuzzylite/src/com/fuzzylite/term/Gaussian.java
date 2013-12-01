@@ -66,4 +66,16 @@ public class Gaussian extends Term {
     public void setStandardDeviation(double standardDeviation) {
         this.standardDeviation = standardDeviation;
     }
+
+    @Override
+    public void configure(double[] parameters) {
+        int required = 2;
+        if (parameters.length < required) {
+            throw new RuntimeException(String.format(
+                    "[configuration error] term <%s> requires <%d> parameters",
+                    this.getClass().getSimpleName(), required));
+        }
+        setMean(parameters[0]);
+        setStandardDeviation(parameters[1]);
+    }
 }

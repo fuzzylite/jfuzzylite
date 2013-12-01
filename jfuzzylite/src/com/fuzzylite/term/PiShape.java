@@ -106,4 +106,20 @@ public class PiShape extends Term {
     public void setBottomRight(double bottomRight) {
         this.bottomRight = bottomRight;
     }
+
+    @Override
+    public void configure(double[] parameters) {
+        int required = 4;
+        if (parameters.length < required) {
+            throw new RuntimeException(String.format(
+                    "[configuration error] term <%s> requires <%d> parameters",
+                    this.getClass().getSimpleName(), required));
+        }
+        setBottomLeft(parameters[0]);
+        setTopLeft(parameters[1]);
+        setTopRight(parameters[2]);
+        setBottomRight(parameters[3]);
+    }
+    
+    
 }

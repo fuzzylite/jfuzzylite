@@ -68,6 +68,7 @@ import java.util.Map;
  * @author jcrada
  */
 public class FactoryManager {
+    //TODO: Create independent factories.
     
     protected static FactoryManager instance;
     

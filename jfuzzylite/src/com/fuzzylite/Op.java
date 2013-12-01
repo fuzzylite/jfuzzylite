@@ -28,7 +28,7 @@ public class Op {
      * Math Operations
      */
     public static boolean isEq(double a, double b) {
-        return Math.abs(a - b) < FuzzyLite.getTolerance();
+        return Math.abs(a - b) < FuzzyLite.getMachEps();
     }
 
     public static boolean isLt(double a, double b) {
@@ -113,16 +113,20 @@ public class Op {
         return increment(array, array.length - 1, min, max);
     }
 
-    public static boolean increment(int[] array, int pos, int[] min, int[] max) {
+    public static boolean increment(int[] array, int position, int[] min, int[] max) {
+        if (position < 0) {
+            return true;
+        }
+
         boolean overflow = false;
-        if (array[pos] < max[pos]) {
-            ++array[pos];
+        if (array[position] < max[position]) {
+            ++array[position];
         } else {
-            overflow = (pos == 0);
-            array[pos] = min[pos];
-            --pos;
-            if (pos >= 0) {
-                overflow = increment(array, pos, min, max);
+            overflow = (position == 0);
+            array[position] = min[position];
+            --position;
+            if (position >= 0) {
+                overflow = increment(array, position, min, max);
             }
         }
         return overflow;
@@ -226,6 +230,6 @@ public class Op {
     }
 
     public static void main(String[] args) {
-        System.out.println(Op.join(",", 0.3,0.6666666,0.333333333, 1/9.0));
+        System.out.println(Op.join(",", 0.3, 0.6666666, 0.333333333, 1 / 9.0));
     }
 }

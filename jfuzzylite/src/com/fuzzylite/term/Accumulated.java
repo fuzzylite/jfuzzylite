@@ -117,4 +117,9 @@ public class Accumulated extends Term {
     public void setAccumulation(SNorm accumulation) {
         this.accumulation = accumulation;
     }
+
+    @Override
+    public void configure(double[] parameters) {
+        //do nothing
+    }
 }

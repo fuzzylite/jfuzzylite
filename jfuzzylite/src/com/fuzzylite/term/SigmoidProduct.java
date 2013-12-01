@@ -87,4 +87,18 @@ public class SigmoidProduct extends Term {
     public void setRight(double right) {
         this.right = right;
     }
+
+    @Override
+    public void configure(double[] parameters) {
+        int required = 4;
+        if (parameters.length < required) {
+            throw new RuntimeException(String.format(
+                    "[configuration error] term <%s> requires <%d> parameters",
+                    this.getClass().getSimpleName(), required));
+        }
+        setLeft(parameters[0]);
+        setRising(parameters[1]);
+        setFalling(parameters[2]);
+        setRight(parameters[3]);
+    }
 }

@@ -68,4 +68,18 @@ public class Rectangle extends Term {
     public void setMaximum(double maximum) {
         this.maximum = maximum;
     }
+
+    @Override
+    public void configure(double[] parameters) {
+        int required = 2;
+        if (parameters.length < required) {
+            throw new RuntimeException(String.format(
+                    "[configuration error] term <%s> requires <%d> parameters",
+                    this.getClass().getSimpleName(), required));
+        }
+        setMinimum(parameters[0]);
+        setMaximum(parameters[1]);
+    }
+    
+    
 }

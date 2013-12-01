@@ -51,4 +51,15 @@ public class Constant extends Term {
     public void setValue(double value) {
         this.value = value;
     }
+
+        @Override
+    public void configure(double[] parameters) {
+        int required = 1;
+        if (parameters.length < required) {
+            throw new RuntimeException(String.format(
+                    "[configuration error] term <%s> requires <%d> parameters",
+                    this.getClass().getSimpleName(), required));
+        }
+        setValue(parameters[0]);
+    }
 }

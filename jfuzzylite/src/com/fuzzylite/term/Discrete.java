@@ -122,4 +122,20 @@ public class Discrete extends Term {
                 new ArrayList<>(this.x),
                 new ArrayList<>(this.y));
     }
+    
+        @Override
+    public void configure(double[] parameters) {
+        if (parameters.length % 2 != 0) {
+            throw new RuntimeException(String.format(
+                    "[configuration error] term <%s> requires a set of parameters for (x,y) values, "
+                            + "but found <%s> values",
+                    this.getClass().getSimpleName(), parameters.length));
+        }
+        this.x.clear();
+        this.y.clear();
+        for (int i = 0 ; i < parameters.length -1; i+=2){
+            this.x.add(parameters[i]);
+            this.y.add(parameters[i+1]);
+        }
+    }
 }

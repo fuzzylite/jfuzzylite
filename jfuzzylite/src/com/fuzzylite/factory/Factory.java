@@ -16,6 +16,7 @@ package com.fuzzylite.factory;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 /**
  *
@@ -43,6 +44,10 @@ public class Factory<T> {
 
     public boolean isRegistered(String simpleName) {
         return this.map.containsKey(simpleName);
+    }
+    
+    public Set<String> available(){
+        return this.map.keySet();
     }
 
     public T createInstance(String simpleName) {

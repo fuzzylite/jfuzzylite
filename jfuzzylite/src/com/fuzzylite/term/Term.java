@@ -26,6 +26,8 @@ public abstract class Term implements Cloneable {
 
     public abstract double membership(double x);
 
+    public abstract void configure(double[] parameters);
+
     @Override
     public abstract String toString();
 }

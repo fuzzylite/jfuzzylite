@@ -29,17 +29,45 @@ import java.util.List;
  *
  * @author jcrada
  */
-public class ResultExporter extends Exporter {
+public class DataExporter extends Exporter {
 
     public static final int DEFAULT_RESOLUTION = 100;
+    public static final String DEFAULT_SEPARATOR = " ";
+    
+    protected String separator;
+    protected int resolution;
 
+    public DataExporter(){
+        this(DEFAULT_SEPARATOR, DEFAULT_RESOLUTION);
+    }
+    
+    public DataExporter(String separator, int resolution){
+        this.separator = separator;
+        this.resolution = resolution;
+    }
+    
+    public String getSeparator() {
+        return separator;
+    }
+
+    public void setSeparator(String separator) {
+        this.separator = separator;
+    }
+
+    public int getResolution() {
+        return resolution;
+    }
+
+    public void setResolution(int resolution) {
+        this.resolution = resolution;
+    }
     @Override
     public String toString(Engine engine) {
-        return toString(engine, " ");
+        return toString(engine, this.separator);
     }
 
     public String toString(Engine engine, String separator) {
-        return toString(engine, separator, DEFAULT_RESOLUTION);
+        return toString(engine, separator, this.resolution);
     }
 
     public String toString(Engine engine, String separator, int resolution) {
@@ -64,7 +92,6 @@ public class ResultExporter extends Exporter {
         }
 
         writer.write(Op.join(variables, separator) + "\n");
-        writer.flush();
 
         int sampleValues[] = new int[engine.numberOfInputVariables()];
         int minSampleValues[] = new int[engine.numberOfInputVariables()];
@@ -106,8 +133,9 @@ public class ResultExporter extends Exporter {
 
     public static void main(String[] args) {
         SimpleDimmer dimmer = new SimpleDimmer();
-        ResultExporter exporter = new ResultExporter();
+        DataExporter exporter = new DataExporter();
         FuzzyLite.setDecimals(6);
         System.out.println(exporter.toString(dimmer));
     }
+
 }
