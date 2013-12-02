@@ -173,6 +173,7 @@ public class Engine {
         return isReady(new StringBuilder());
     }
 
+    //TODO: ignore "and/or" after "then"
     public boolean isReady(StringBuilder message) {
         message.setLength(0);
         if (this.inputVariables.isEmpty()) {
@@ -237,10 +238,11 @@ public class Engine {
                                 "- Rule block <%s> has a null rule at index <%i>\n",
                                 ruleBlock.getName(), r));
                     } else {
-                        if (rule.getText().contains(" " + Rule.FL_AND + " ")) {
+                        int thenIndex = rule.getText().indexOf(" " + Rule.FL_THEN + " ");
+                        if (rule.getText().indexOf(" " + Rule.FL_AND + " ") < thenIndex) {
                             ++requiresConjunction;
                         }
-                        if (rule.getText().contains(" " + Rule.FL_OR + " ")) {
+                        if (rule.getText().indexOf(" " + Rule.FL_OR + " ") < thenIndex) {
                             ++requiresDisjunction;
                         }
                     }
