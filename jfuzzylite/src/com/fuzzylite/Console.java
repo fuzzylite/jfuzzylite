@@ -56,7 +56,8 @@ public class Console {
     public static final String KW_OUTPUT_FILE = "-o";
     public static final String KW_OUTPUT_FORMAT = "-of";
     public static final String KW_EXAMPLE = "-ex";
-    public static final String KW_DATA_RESOLUTION = "-res";
+    public static final String KW_DATA_RESOLUTION_VARIABLE = "-rv";
+    public static final String KW_DATA_RESOLUTION_TOTAL = "-rt";
     public static final String KW_DATA_SEPARATOR = "-sep";
 
     public static String usage() {
@@ -66,7 +67,8 @@ public class Console {
         options.put(KW_OUTPUT_FILE, "outputfile");
         options.put(KW_OUTPUT_FORMAT, "fis,fcl,cpp,java,dat");
         options.put(KW_EXAMPLE, "(m)amdani,(t)akagi-sugeno");
-        options.put(KW_DATA_RESOLUTION, "resolution");
+        options.put(KW_DATA_RESOLUTION_VARIABLE, "resolution(variable)");
+        options.put(KW_DATA_RESOLUTION_TOTAL, "resolution(total)");
         options.put(KW_DATA_SEPARATOR, "separator");
 
         StringBuilder result = new StringBuilder();
@@ -92,6 +94,9 @@ public class Console {
     }
 
     protected static Map<String, String> parse(String[] args) {
+        if (args.length % 2 != 0) {
+            throw new RuntimeException("[option error] incomplete number of parameters [key value]");
+        }
         Map<String, String> options = new HashMap<>();
         String key, value;
         for (int i = 0; i < args.length - 1; i += 2) {
@@ -105,6 +110,23 @@ public class Console {
                 options.put(KW_INPUT_FILE, in_out.getKey());
                 options.put(KW_OUTPUT_FILE, in_out.getValue());
             }
+        } else {
+            Map<String, String> valid = new HashMap<>();
+            valid.put(KW_INPUT_FILE, "inputfile");
+            valid.put(KW_INPUT_FORMAT, "fis,fcl");
+            valid.put(KW_OUTPUT_FILE, "outputfile");
+            valid.put(KW_OUTPUT_FORMAT, "fis,fcl,cpp,java,dat");
+            valid.put(KW_EXAMPLE, "(m)amdani,(t)akagi-sugeno");
+            valid.put(KW_DATA_RESOLUTION_VARIABLE, "resolution(variable)");
+            valid.put(KW_DATA_RESOLUTION_TOTAL, "resolution(total)");
+            valid.put(KW_DATA_SEPARATOR, "separator");
+            for (String option : options.keySet()) {
+                if (!valid.containsKey(option)) {
+                    throw new RuntimeException(String.format(
+                            "[option error] option <%s> not supported", option));
+                }
+            }
+
         }
         return options;
     }
@@ -119,12 +141,12 @@ public class Console {
 
         if (isExample) {
             Engine engine;
-            if (example.equalsIgnoreCase("m") || example.equalsIgnoreCase("mamdani")){
+            if (example.equalsIgnoreCase("m") || example.equalsIgnoreCase("mamdani")) {
                 engine = mamdani();
-            }else if (example.equalsIgnoreCase("t") || example.equalsIgnoreCase("ts") ||
-                    example.equalsIgnoreCase("takagi-sugeno")){
+            } else if (example.equalsIgnoreCase("t") || example.equalsIgnoreCase("ts")
+                    || example.equalsIgnoreCase("takagi-sugeno")) {
                 engine = takagiSugeno();
-            }else{
+            } else {
                 throw new RuntimeException(String.format(
                         "[option error] example <%s> not available", example));
             }
@@ -140,7 +162,7 @@ public class Console {
             if (!inputFile.exists()) {
                 inputFile.createNewFile();
             }
-            
+
             BufferedReader reader = new BufferedReader(new FileReader(inputFile));
             try {
                 String line = reader.readLine();
@@ -216,6 +238,7 @@ public class Console {
             throw new RuntimeException(String.format(
                     "[import error] format <%s> not supported", inputFormat));
         }
+        Engine engine = importer.fromString(input);
 
         Exporter exporter = null;
         if ("fcl".equalsIgnoreCase(outputFormat)) {
@@ -233,8 +256,13 @@ public class Console {
             if (options.containsKey(KW_DATA_SEPARATOR)) {
                 separator = options.get(KW_DATA_SEPARATOR);
             }
-            if (options.containsKey(KW_DATA_RESOLUTION)) {
-                resolution = Integer.parseInt(options.get(KW_DATA_RESOLUTION));
+
+            if (options.containsKey(KW_DATA_RESOLUTION_VARIABLE)) {
+                resolution = Integer.parseInt(options.get(KW_DATA_RESOLUTION_VARIABLE));
+            } else if (options.containsKey(KW_DATA_RESOLUTION_TOTAL)) {
+                int total = Integer.parseInt(options.get(KW_DATA_RESOLUTION_TOTAL));
+                resolution = Math.max(1, (int) Math.round(Math.exp(
+                        Math.log(total) / engine.numberOfInputVariables())));
             }
             exporter = new DataExporter(separator, resolution);
         } else {
@@ -242,7 +270,6 @@ public class Console {
                     "[export error] format <%s> not supported", outputFormat));
         }
 
-        Engine engine = importer.fromString(input);
         output.write(exporter.toString(engine));
     }
 
@@ -368,9 +395,8 @@ public class Console {
             System.out.println(usage());
             return;
         }
-
-        Map<String, String> options = parse(args);
         try {
+            Map<String, String> options = parse(args);
             process(options);
         } catch (Exception ex) {
             ex.printStackTrace();
