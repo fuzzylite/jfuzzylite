@@ -15,6 +15,7 @@
 package com.fuzzylite;
 
 import java.text.DecimalFormat;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
@@ -30,9 +31,14 @@ public class FuzzyLite {
     protected static DecimalFormat DF = new DecimalFormat("0.000");
     protected static int DECIMALS = 3;
     protected static double MACHEPS = 1e-5; //Machine epsilon to differentiate numbers
+    protected static boolean DEBUG = false;
 
     public static Logger logger() {
         return Logger.getGlobal();
+    }
+
+    public static DecimalFormat getFormatter() {
+        return DF;
     }
 
     public static int getDecimals() {
@@ -48,10 +54,6 @@ public class FuzzyLite {
         DF = new DecimalFormat(pattern);
     }
 
-    public static DecimalFormat getFormatter() {
-        return DF;
-    }
-
     public static double getMachEps() {
         return MACHEPS;
     }
@@ -60,9 +62,12 @@ public class FuzzyLite {
         MACHEPS = macheps;
     }
 
-    public static void main(String[] args) {
-//        logger().setLevel(Level.INFO);
-        logger().info("Some log + " + logger().getLevel());
+    public static boolean debug() {
+        return DEBUG;
+    }
+
+    public static void setDebug(boolean debug) {
+        DEBUG = debug;
     }
 
 }

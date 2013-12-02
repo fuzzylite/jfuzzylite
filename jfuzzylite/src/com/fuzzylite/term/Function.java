@@ -321,17 +321,21 @@ public class Function extends Term {
     }
 
     //TODO: update exporters.
-    public static Function create(String name, String text, Engine engine) throws Exception {
+    public static Function create(String name, String text, Engine engine) {
         return create(name, text, engine, true);
     }
 
     public static Function create(String name, String text,
-            Engine engine, boolean requiresFunctions) throws Exception {
+            Engine engine, boolean requiresFunctions) {
         Function result = new Function(name);
         if (requiresFunctions) {
             result.loadBuiltInFunctions();
         }
-        result.load(text, engine);
+        try {
+            result.load(text, engine);
+        } catch (Exception ex) {
+            throw new RuntimeException(ex);
+        }
         return result;
     }
 

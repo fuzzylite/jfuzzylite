@@ -85,6 +85,8 @@ import java.util.List;
  */
 public class FisExporter extends Exporter {
 
+    //TODO: fix rule if x is any, appears as 0.nan in advanced TS example.
+    
     @Override
     public String toString(Engine engine) {
         if (engine.numberOfRuleBlocks() != 1) {

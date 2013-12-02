@@ -34,7 +34,6 @@ import com.fuzzylite.variable.OutputVariable;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
@@ -87,11 +86,10 @@ public class Engine {
          * BEGIN: Debug information
          */
         Logger logger = FuzzyLite.logger();
-        if (logger.getLevel() != null
-                && logger.getLevel().intValue() <= Level.FINE.intValue()) {
+        if (FuzzyLite.debug()) {
             for (InputVariable inputVariable : this.inputVariables) {
                 double inputValue = inputVariable.getInputValue();
-                logger.fine(String.format(
+                logger.info(String.format(
                         "%s.input=%s\n%s.fuzzy=%s",
                         inputVariable.getName(), str(inputValue),
                         inputVariable.getName(), inputVariable.fuzzify(inputValue)));
@@ -108,24 +106,23 @@ public class Engine {
         /*
          * BEGIN: Debug information
          */
-        if (logger.getLevel() != null
-                && logger.getLevel().intValue() <= Level.FINE.intValue()) {
+        if (FuzzyLite.debug()) {
             for (OutputVariable outputVariable : this.outputVariables) {
-                logger.fine(String.format("%s.default=%s",
+                logger.info(String.format("%s.default=%s",
                         outputVariable.getName(), str(outputVariable.getDefaultValue())));
-                logger.fine(String.format("%s.lockRange=%s",
+                logger.info(String.format("%s.lockRange=%s",
                         outputVariable.getName(), String.valueOf(outputVariable.isLockOutputRange())));
-                logger.fine(String.format("%s.lockValid=%s",
+                logger.info(String.format("%s.lockValid=%s",
                         outputVariable.getName(), String.valueOf(outputVariable.isLockValidOutput())));
 
                 //no locking is ever performed during this debugging block;
                 double outputValue = outputVariable.defuzzifyNoLocks();
-                logger.fine(String.format("%s.output=%s",
+                logger.info(String.format("%s.output=%s",
                         outputVariable.getName(), str(outputValue)));
-                logger.fine(String.format("%s.fuzzy=%s",
+                logger.info(String.format("%s.fuzzy=%s",
                         outputVariable.getName(), outputVariable.fuzzify(outputValue)));
-                logger.fine(outputVariable.getOutput().toString());
-                logger.fine("==========================");
+                logger.info(outputVariable.getOutput().toString());
+                logger.info("==========================");
             }
         }
         /*
