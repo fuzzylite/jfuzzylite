@@ -26,6 +26,9 @@ public class PiShape extends Term {
     protected double bottomLeft, topLeft;
     protected double topRight, bottomRight;
 
+    public PiShape(){
+        this("");
+    }
     public PiShape(String name) {
         this(name, Double.NaN, Double.NaN, Double.NaN, Double.NaN);
     }

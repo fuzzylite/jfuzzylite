@@ -25,6 +25,10 @@ public class Rectangle extends Term {
 
     protected double minimum, maximum;
 
+    public Rectangle() {
+        this("");
+    }
+
     public Rectangle(String name) {
         this(name, Double.NaN, Double.NaN);
     }
@@ -80,6 +84,5 @@ public class Rectangle extends Term {
         setMinimum(parameters[0]);
         setMaximum(parameters[1]);
     }
-    
-    
+
 }

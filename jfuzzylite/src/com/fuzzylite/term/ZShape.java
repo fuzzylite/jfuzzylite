@@ -25,6 +25,10 @@ public class ZShape extends Term {
 
     protected double start, end;
 
+    public ZShape() {
+        this("");
+    }
+
     public ZShape(String name) {
         this(name, Double.NaN, Double.NaN);
     }

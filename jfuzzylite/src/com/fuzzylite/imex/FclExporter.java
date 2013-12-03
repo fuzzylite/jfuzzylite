@@ -119,7 +119,7 @@ public class FclExporter extends Exporter {
         return result.toString();
     }
 
-    public String toString(InputVariable inputVariable) {
+    String toString(InputVariable inputVariable) {
         StringBuilder result = new StringBuilder();
         result.append(String.format("FUZZIFY %s\n", inputVariable.getName()));
         result.append(String.format("  RANGE := (%s .. %s);\n",
@@ -133,7 +133,7 @@ public class FclExporter extends Exporter {
         return result.toString();
     }
 
-    public String toString(OutputVariable outputVariable) {
+    String toString(OutputVariable outputVariable) {
         StringBuilder result = new StringBuilder();
 
         result.append(String.format("DEFUZZIFY %s\n", outputVariable.getName()));
@@ -158,18 +158,18 @@ public class FclExporter extends Exporter {
             }
             result.append(String.format("  LOCK : %s;\n", lock));
         }
-        result.append(String.format("  DEFAULT := %s;\n",
-                str(outputVariable.getDefaultValue())));
         result.append(String.format("  METHOD : %s;\n",
                 toString(outputVariable.getDefuzzifier())));
         result.append(String.format("  ACCU : %s;\n",
                 toString(outputVariable.getOutput().getAccumulation())));
+        result.append(String.format("  DEFAULT := %s;\n",
+                str(outputVariable.getDefaultValue())));
 
         result.append("END_DEFUZZIFY");
         return result.toString();
     }
 
-    public String toString(RuleBlock ruleBlock) {
+    String toString(RuleBlock ruleBlock) {
         StringBuilder result = new StringBuilder();
         result.append(String.format("RULEBLOCK %s\n", ruleBlock.getName()));
         result.append(String.format("  AND : %s;\n", toString(ruleBlock.getConjunction())));
@@ -185,14 +185,14 @@ public class FclExporter extends Exporter {
         return result.toString();
     }
 
-    public String toString(Term term) {
+    String toString(Term term) {
         if (term == null) {
             return "null";
         }
         if (term instanceof Bell) {
             Bell t = (Bell) term;
-            return String.format("%s(\"%s\", %s)",
-                    Bell.class.getSimpleName(), term.getName(),
+            return String.format("%s (%s)",
+                    Bell.class.getSimpleName(),
                     Op.join(", ", t.getCenter(), t.getWidth(), t.getSlope()));
         }
         if (term instanceof Constant) {
@@ -211,96 +211,96 @@ public class FclExporter extends Exporter {
 
         if (term instanceof Function) {
             Function t = (Function) term;
-            return String.format("%s(%s)",
+            return String.format("%s (%s)",
                     Function.class.getSimpleName(), t.getText());
         }
         if (term instanceof Gaussian) {
             Gaussian t = (Gaussian) term;
-            return String.format("%s(\"%s\", %s)",
-                    Gaussian.class.getSimpleName(), term.getName(),
+            return String.format("%s (%s)",
+                    Gaussian.class.getSimpleName(),
                     Op.join(", ", t.getMean(), t.getStandardDeviation()));
         }
         if (term instanceof GaussianProduct) {
             GaussianProduct t = (GaussianProduct) term;
-            return String.format("%s(\"%s\", %s)",
-                    GaussianProduct.class.getSimpleName(), term.getName(),
+            return String.format("%s (%s)",
+                    GaussianProduct.class.getSimpleName(),
                     Op.join(", ", t.getMeanA(), t.getStandardDeviationA(),
                             t.getMeanB(), t.getStandardDeviationB()));
         }
         if (term instanceof Linear) {
             Linear t = (Linear) term;
-            return String.format("%s(\"%s\", %s)",
-                    Linear.class.getSimpleName(), term.getName(),
+            return String.format("%s (%s)",
+                    Linear.class.getSimpleName(),
                     Op.join(t.getCoefficients(), ", "));
         }
         if (term instanceof PiShape) {
             PiShape t = (PiShape) term;
-            return String.format("%s(\"%s\", %s)",
-                    PiShape.class.getSimpleName(), term.getName(),
+            return String.format("%s (%s)",
+                    PiShape.class.getSimpleName(),
                     Op.join(", ", t.getBottomLeft(), t.getTopLeft(),
                             t.getTopRight(), t.getBottomRight()));
         }
         if (term instanceof Ramp) {
             Ramp t = (Ramp) term;
-            return String.format("%s(\"%s\", %s)",
-                    Ramp.class.getSimpleName(), term.getName(),
+            return String.format("%s (%s)",
+                    Ramp.class.getSimpleName(),
                     Op.join(", ", t.getStart(), t.getEnd()));
         }
         if (term instanceof Rectangle) {
             Rectangle t = (Rectangle) term;
-            return String.format("%s(\"%s\", %s)",
-                    Rectangle.class.getSimpleName(), term.getName(),
+            return String.format("%s (%s)",
+                    Rectangle.class.getSimpleName(),
                     Op.join(", ", t.getMinimum(), t.getMaximum()));
         }
         if (term instanceof SigmoidDifference) {
             SigmoidDifference t = (SigmoidDifference) term;
-            return String.format("%s(\"%s\", %s)",
-                    SigmoidDifference.class.getSimpleName(), term.getName(),
+            return String.format("%s (%s)",
+                    SigmoidDifference.class.getSimpleName(),
                     Op.join(", ", t.getLeft(), t.getRising(),
                             t.getFalling(), t.getRight()));
         }
         if (term instanceof Sigmoid) {
             Sigmoid t = (Sigmoid) term;
-            return String.format("%s(\"%s\", %s)",
-                    Sigmoid.class.getSimpleName(), term.getName(),
+            return String.format("%s (%s)",
+                    Sigmoid.class.getSimpleName(),
                     Op.join(", ", t.getInflection(), t.getSlope()));
         }
         if (term instanceof SigmoidProduct) {
             SigmoidProduct t = (SigmoidProduct) term;
-            return String.format("%s(\"%s\", %s)",
-                    SigmoidProduct.class.getSimpleName(), term.getName(),
+            return String.format("%s (%s)",
+                    SigmoidProduct.class.getSimpleName(),
                     Op.join(", ", t.getLeft(), t.getRising(),
                             t.getFalling(), t.getRight()));
         }
         if (term instanceof SShape) {
             SShape t = (SShape) term;
-            return String.format("%s(\"%s\", %s)",
-                    SShape.class.getSimpleName(), term.getName(),
+            return String.format("%s (%s)",
+                    SShape.class.getSimpleName(),
                     Op.join(", ", t.getStart(), t.getEnd()));
         }
         if (term instanceof Trapezoid) {
             Trapezoid t = (Trapezoid) term;
-            return String.format("%s(\"%s\", %s)",
-                    Trapezoid.class.getSimpleName(), term.getName(),
+            return String.format("%s (%s)",
+                    Trapezoid.class.getSimpleName(),
                     Op.join(", ", t.getA(), t.getB(), t.getC(), t.getD()));
         }
         if (term instanceof Triangle) {
             Triangle t = (Triangle) term;
-            return String.format("%s(\"%s\", %s)",
-                    Triangle.class.getSimpleName(), term.getName(),
+            return String.format("%s (%s)",
+                    Triangle.class.getSimpleName(),
                     Op.join(", ", t.getA(), t.getB(), t.getC()));
         }
         if (term instanceof ZShape) {
             ZShape t = (ZShape) term;
-            return String.format("%s(\"%s\", %s)",
-                    ZShape.class.getSimpleName(), term.getName(),
+            return String.format("%s (%s)",
+                    ZShape.class.getSimpleName(),
                     Op.join(", ", t.getStart(), t.getEnd()));
         }
 
         return term.toString();
     }
 
-    public String toString(Defuzzifier defuzzifier) {
+    String toString(Defuzzifier defuzzifier) {
         if (defuzzifier == null) {
             return "";
         }
@@ -328,7 +328,7 @@ public class FclExporter extends Exporter {
         return defuzzifier.getClass().getSimpleName();
     }
 
-    public String toString(Norm norm) {
+    String toString(Norm norm) {
         if (norm == null) {
             return "";
         }

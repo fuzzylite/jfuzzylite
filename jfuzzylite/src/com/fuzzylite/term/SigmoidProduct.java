@@ -26,6 +26,10 @@ public class SigmoidProduct extends Term {
     protected double left, rising;
     protected double falling, right;
 
+    public SigmoidProduct() {
+        this("");
+    }
+
     public SigmoidProduct(String name) {
         this(name, Double.NaN, Double.NaN, Double.NaN, Double.NaN);
     }

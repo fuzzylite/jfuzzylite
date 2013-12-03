@@ -25,6 +25,10 @@ public class Gaussian extends Term {
 
     protected double mean, standardDeviation;
 
+    public Gaussian() {
+        this("");
+    }
+
     public Gaussian(String name) {
         this(name, Double.NaN, Double.NaN);
     }

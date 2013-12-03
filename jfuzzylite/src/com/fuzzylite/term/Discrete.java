@@ -11,8 +11,7 @@
  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  See the License for the specific language governing permissions and
  limitations under the License.
-*/
-
+ */
 package com.fuzzylite.term;
 
 import java.util.ArrayList;
@@ -27,6 +26,10 @@ import static com.fuzzylite.Op.str;
 public class Discrete extends Term {
 
     public List<Double> x, y;
+
+    public Discrete() {
+        this("");
+    }
 
     public Discrete(String name) {
         this(name, new ArrayList<Double>(), new ArrayList<Double>());
@@ -71,7 +74,6 @@ public class Discrete extends Term {
          * ____________/                          \____________
          *            x[0]                      x[n-1]
          */
-
         if (Op.isLE(_x_, x.get(0))) {
             return y.get(0);
         }
@@ -122,20 +124,20 @@ public class Discrete extends Term {
                 new ArrayList<>(this.x),
                 new ArrayList<>(this.y));
     }
-    
-        @Override
+
+    @Override
     public void configure(double[] parameters) {
         if (parameters.length % 2 != 0) {
             throw new RuntimeException(String.format(
                     "[configuration error] term <%s> requires a set of parameters for (x,y) values, "
-                            + "but found <%s> values",
+                    + "but found <%s> values",
                     this.getClass().getSimpleName(), parameters.length));
         }
         this.x.clear();
         this.y.clear();
-        for (int i = 0 ; i < parameters.length -1; i+=2){
+        for (int i = 0; i < parameters.length - 1; i += 2) {
             this.x.add(parameters[i]);
-            this.y.add(parameters[i+1]);
+            this.y.add(parameters[i + 1]);
         }
     }
 }

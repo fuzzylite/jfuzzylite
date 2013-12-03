@@ -25,6 +25,10 @@ public class Sigmoid extends Term {
 
     protected double inflection, slope;
 
+    public Sigmoid() {
+        this("");
+    }
+
     public Sigmoid(String name) {
         this(name, Double.NaN, Double.NaN);
     }
@@ -77,6 +81,5 @@ public class Sigmoid extends Term {
         setInflection(parameters[0]);
         setSlope(parameters[1]);
     }
-    
-    
+
 }

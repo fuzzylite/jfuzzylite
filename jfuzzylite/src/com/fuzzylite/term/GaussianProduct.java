@@ -11,8 +11,7 @@
  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  See the License for the specific language governing permissions and
  limitations under the License.
-*/
-
+ */
 package com.fuzzylite.term;
 
 import com.fuzzylite.Op;
@@ -26,6 +25,10 @@ public class GaussianProduct extends Term {
 
     protected double meanA, standardDeviationA;
     protected double meanB, standardDeviationB;
+
+    public GaussianProduct() {
+        this("");
+    }
 
     public GaussianProduct(String name) {
         this(name, Double.NaN, Double.NaN, Double.NaN, Double.NaN);

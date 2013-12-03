@@ -25,6 +25,10 @@ public class Trapezoid extends Term {
 
     protected double a, b, c, d;
 
+    public Trapezoid() {
+        this("");
+    }
+
     public Trapezoid(String name) {
         this(name, Double.NaN, Double.NaN, Double.NaN, Double.NaN);
     }

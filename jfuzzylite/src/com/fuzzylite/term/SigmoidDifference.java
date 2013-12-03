@@ -26,6 +26,10 @@ public class SigmoidDifference extends Term {
     protected double left, rising;
     protected double falling, right;
 
+    public SigmoidDifference() {
+        this("");
+    }
+
     public SigmoidDifference(String name) {
         this(name, Double.NaN, Double.NaN, Double.NaN, Double.NaN);
     }

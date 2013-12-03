@@ -113,6 +113,15 @@ public class Op {
         return Double.parseDouble(x);
     }
 
+    public static boolean isNumeric(String x) {
+        try {
+            toDouble(x);
+            return true;
+        } catch (Exception ex) {
+            return false;
+        }
+    }
+
     //TODO: Make custom increments by x
     public static boolean increment(int[] array, int min, int max) {
         int[] minArray = new int[array.length];

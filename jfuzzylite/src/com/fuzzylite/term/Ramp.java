@@ -25,6 +25,10 @@ public class Ramp extends Term {
 
     protected double start, end;
 
+    public Ramp() {
+        this("");
+    }
+
     public Ramp(String name) {
         this(name, Double.NaN, Double.NaN);
     }

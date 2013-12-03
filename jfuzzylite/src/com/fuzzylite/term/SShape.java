@@ -25,6 +25,10 @@ public class SShape extends Term {
 
     protected double start, end;
 
+    public SShape() {
+        this("");
+    }
+
     public SShape(String name) {
         this(name, Double.NaN, Double.NaN);
     }

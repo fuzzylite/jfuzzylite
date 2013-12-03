@@ -25,6 +25,10 @@ public class Triangle extends Term {
 
     protected double a, b, c;
 
+    public Triangle() {
+        this("");
+    }
+
     public Triangle(String name) {
         this(name, Double.NaN, Double.NaN, Double.NaN);
     }
@@ -45,7 +49,7 @@ public class Triangle extends Term {
         if (Double.isNaN(x)) {
             return Double.NaN;
         }
-        
+
         if (Op.isLt(x, a) || Op.isGt(x, c)) {
             return 0.0;
         } else if (Op.isEq(x, b)) {
@@ -100,6 +104,5 @@ public class Triangle extends Term {
         setB(parameters[1]);
         setC(parameters[2]);
     }
-    
-    
+
 }

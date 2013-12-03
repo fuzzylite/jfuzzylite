@@ -28,6 +28,10 @@ public class Linear extends Term {
     public List<Double> coefficients;
     public List<InputVariable> inputVariables;
 
+    public Linear() {
+        this("");
+    }
+
     public Linear(String name) {
         this(name, new ArrayList<Double>(), new ArrayList<InputVariable>());
     }

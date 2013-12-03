@@ -11,8 +11,7 @@
  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  See the License for the specific language governing permissions and
  limitations under the License.
-*/
-
+ */
 package com.fuzzylite.term;
 
 import static com.fuzzylite.Op.str;
@@ -24,6 +23,10 @@ import static com.fuzzylite.Op.str;
 public class Constant extends Term {
 
     protected double value;
+
+    public Constant() {
+        this("");
+    }
 
     public Constant(String name) {
         this(name, Double.NaN);
@@ -52,7 +55,7 @@ public class Constant extends Term {
         this.value = value;
     }
 
-        @Override
+    @Override
     public void configure(double[] parameters) {
         int required = 1;
         if (parameters.length < required) {

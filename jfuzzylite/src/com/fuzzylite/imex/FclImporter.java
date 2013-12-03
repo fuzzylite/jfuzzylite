@@ -43,6 +43,8 @@ import com.fuzzylite.norm.t.HamacherProduct;
 import com.fuzzylite.norm.t.Minimum;
 import com.fuzzylite.rule.Rule;
 import com.fuzzylite.rule.RuleBlock;
+import com.fuzzylite.term.Constant;
+import com.fuzzylite.term.Discrete;
 import com.fuzzylite.term.Function;
 import com.fuzzylite.term.Linear;
 import com.fuzzylite.term.Term;
@@ -53,7 +55,9 @@ import java.io.File;
 import java.io.StringReader;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.StringTokenizer;
 import java.util.logging.Level;
@@ -355,8 +359,100 @@ public class FclImporter extends Importer {
     }
 
     protected Term extractTerm(String line) {
-        //TODO: implement
-        return null;
+        String spacedLine = "";
+        for (char c : line.toCharArray()) {
+            if (c == '(' || c == ')' || c == ',') {
+                spacedLine += ' ';
+            } else if (c == ':') {
+                spacedLine += " :";
+            } else if (c == '=') {
+                spacedLine += "= ";
+            } else {
+                spacedLine += c;
+            }
+        }
+
+        final int S_KWTERM = 1, S_NAME = 2, S_ASSIGN = 3,
+                S_TERM_CLASS = 4, S_PARAMETERS = 5;
+        int state = S_KWTERM;
+        StringTokenizer tokenizer = new StringTokenizer(spacedLine);
+        String token = "", name = "", termClass = "";
+        List<String> parameters = new ArrayList<>();
+        while (tokenizer.hasMoreTokens()) {
+            token = tokenizer.nextToken();
+            if (state == S_KWTERM && "TERM".equals(token)) {
+                state = S_NAME;
+                continue;
+            }
+            if (state == S_NAME) {
+                name = token;
+                state = S_ASSIGN;
+                continue;
+            }
+            if (state == S_ASSIGN && ":=".equals(token)) {
+                state = S_TERM_CLASS;
+                continue;
+            }
+            if (state == S_TERM_CLASS) {
+                if (Op.isNumeric(token)) {
+                    termClass = Constant.class.getSimpleName();
+                    parameters.add(token);
+                } else if ("(".equals(token)) {
+                    termClass = Discrete.class.getSimpleName();
+                } else {
+                    termClass = token;
+                }
+                state = S_PARAMETERS;
+                continue;
+            }
+            if (state == S_PARAMETERS) {
+                if (!Function.class.getSimpleName().equals(termClass)
+                        && ("(".equals(token) || ")".equals(token) || ",".equals(token))) {
+                    continue;
+                }
+                if (";".equals(token)) {
+                    break;
+                }
+                parameters.add(token.trim());
+            }
+        }
+
+        if (state <= S_ASSIGN) {
+            throw new RuntimeException("[syntax error] malformed term in line: " + line);
+        }
+
+        double[] values = new double[parameters.size()];
+        if (!Function.class.getSimpleName().equals(termClass)) {
+            String parameter = "";
+            try {
+                for (int i = 0; i < parameters.size(); ++i) {
+                    parameter = parameters.get(i);
+                    values[i] = Op.toDouble(parameter);
+                }
+            } catch (Exception ex) {
+                throw new RuntimeException(String.format(
+                        "[syntax error] expected numeric value, "
+                        + "but found <%s> in line %s", parameter, line));
+            }
+        }
+
+        try {
+            Term result = FactoryManager.instance().getTerm().createInstance(termClass, values);
+            result.setName(Op.makeValidId(name));
+
+            if (Function.class.getSimpleName().equals(termClass) && !parameters.isEmpty()) {
+                String infix = Op.join(parameters, "");
+                if (infix.length() > 1 && infix.charAt(0) == '('
+                        && infix.charAt(infix.length() - 1) == ')') {
+                    infix = infix.substring(1, infix.length() - 2);
+                }
+                ((Function) result).setText(infix);
+            }
+
+            return result;
+        } catch (Exception ex) {
+            throw ex;
+        }
     }
 
     protected Term prepareTerm(Term term, Engine engine) {
@@ -505,7 +601,18 @@ public class FclImporter extends Importer {
         FuzzyLite.logger().setLevel(Level.INFO);
         File file = new File("examples/fcl/mamdani/SimpleDimmer.fcl");
         String fcl = Op.join(Files.readAllLines(file.toPath(), Charset.defaultCharset()), "\n");
-        new FclImporter().fromString(fcl);
+        FactoryManager.instance().getTerm().createInstance("Triangle");
+        Engine engine = new FclImporter().fromString(fcl);
+        String x = new FclExporter().toString(engine);
+        System.out.println(fcl.equals(x));
+        if (!fcl.equals(x)) {
+            System.out.println("=====================");
+            System.out.println("Original");
+            System.out.println(fcl);
+            System.out.println("=====================");
+            System.out.println("Copy");
+            System.out.println(x);
+        }
     }
 
 }
