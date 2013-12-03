@@ -14,7 +14,6 @@
  */
 package com.fuzzylite;
 
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
 
@@ -23,6 +22,22 @@ import java.util.Iterator;
  * @author jcrada
  */
 public class Op {
+
+    public static class Pair<Y, Z> {
+
+        public Y first;
+        public Z second;
+
+        public Pair() {
+            this.first = null;
+            this.second = null;
+        }
+
+        public Pair(Y first, Z second) {
+            this.first = first;
+            this.second = second;
+        }
+    }
 
     /*
      * Math Operations
@@ -212,6 +227,17 @@ public class Op {
         return result;
     }
 
+    public static String join(String[] x, String separator) {
+        String result = "";
+        for (int i = 0; i < x.length; ++i) {
+            result += x[i];
+            if (i + 1 < x.length) {
+                result += separator;
+            }
+        }
+        return result;
+    }
+
     @SafeVarargs
     public static <T> String join(String separator, T... x) {
         String result = "";
@@ -224,6 +250,19 @@ public class Op {
             }
             if (i + 1 < x.length) {
                 result += separator;
+            }
+        }
+        return result;
+    }
+
+    public static String makeValidId(String id) {
+        if (id == null) {
+            return null;
+        }
+        String result = "";
+        for (char c : id.toCharArray()) {
+            if (c == '_' || c == '.' || Character.isLetterOrDigit(c)) {
+                result += c;
             }
         }
         return result;

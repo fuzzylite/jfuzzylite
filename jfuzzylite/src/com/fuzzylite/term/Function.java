@@ -277,15 +277,15 @@ public class Function extends Term {
         this.loadOperators();
     }
 
-    public void load() throws Exception {
+    public void load() {
         load(this.text, this.engine);
     }
 
-    public void load(String text) throws Exception {
+    public void load(String text) {
         load(text, null);
     }
 
-    public void load(String text, Engine engine) throws Exception {
+    public void load(String text, Engine engine) {
         this.root = parse(text);
         this.text = text;
         this.engine = engine;
@@ -543,7 +543,7 @@ public class Function extends Term {
         return result.toString();
     }
 
-    public Node parse(String text) throws Exception {
+    public Node parse(String text) {
         if (text.isEmpty()) {
             return null;
         }

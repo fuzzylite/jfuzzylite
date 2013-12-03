@@ -22,6 +22,6 @@ import com.fuzzylite.Engine;
  */
 public abstract class Importer {
 
-    public abstract Engine fromString(String x);
+    public abstract Engine fromString(String text);
 
 }

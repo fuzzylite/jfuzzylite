@@ -25,8 +25,8 @@ import java.util.List;
  */
 public class Linear extends Term {
 
-    protected List<Double> coefficients;
-    protected List<InputVariable> inputVariables;
+    public List<Double> coefficients;
+    public List<InputVariable> inputVariables;
 
     public Linear(String name) {
         this(name, new ArrayList<Double>(), new ArrayList<InputVariable>());
@@ -89,12 +89,6 @@ public class Linear extends Term {
 
     //It is safe to pass the InputVariables from the Engine
     public void set(List<Double> coefficients, List<InputVariable> inputVariables) {
-        if (coefficients.size() != inputVariables.size() + 1) {
-            throw new RuntimeException(String.format(
-                    "[linear error] number of coefficient must match number of variables plus a constant c (e.g. ax+by+c), "
-                    + "but <%d> coefficients were found and <%d> variables are available",
-                    coefficients.size(), inputVariables.size()));
-        }
         this.coefficients = coefficients;
         this.inputVariables = new ArrayList<>(inputVariables);
     }
@@ -102,7 +96,7 @@ public class Linear extends Term {
     @Override
     public void configure(double[] parameters) {
         coefficients.clear();
-        for (double x : parameters){
+        for (double x : parameters) {
             coefficients.add(x);
         }
     }

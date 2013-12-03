@@ -15,6 +15,49 @@
 package com.fuzzylite.imex;
 
 import com.fuzzylite.Engine;
+import com.fuzzylite.FuzzyLite;
+import com.fuzzylite.Op;
+import com.fuzzylite.defuzzifier.Bisector;
+import com.fuzzylite.defuzzifier.Centroid;
+import com.fuzzylite.defuzzifier.Defuzzifier;
+import com.fuzzylite.defuzzifier.LargestOfMaximum;
+import com.fuzzylite.defuzzifier.MeanOfMaximum;
+import com.fuzzylite.defuzzifier.SmallestOfMaximum;
+import com.fuzzylite.defuzzifier.WeightedAverage;
+import com.fuzzylite.defuzzifier.WeightedSum;
+import com.fuzzylite.factory.FactoryManager;
+import com.fuzzylite.norm.SNorm;
+import com.fuzzylite.norm.TNorm;
+import com.fuzzylite.norm.s.AlgebraicSum;
+import com.fuzzylite.norm.s.BoundedSum;
+import com.fuzzylite.norm.s.DrasticSum;
+import com.fuzzylite.norm.s.EinsteinSum;
+import com.fuzzylite.norm.s.HamacherSum;
+import com.fuzzylite.norm.s.Maximum;
+import com.fuzzylite.norm.s.NormalizedSum;
+import com.fuzzylite.norm.t.AlgebraicProduct;
+import com.fuzzylite.norm.t.BoundedDifference;
+import com.fuzzylite.norm.t.DrasticProduct;
+import com.fuzzylite.norm.t.EinsteinProduct;
+import com.fuzzylite.norm.t.HamacherProduct;
+import com.fuzzylite.norm.t.Minimum;
+import com.fuzzylite.rule.Rule;
+import com.fuzzylite.rule.RuleBlock;
+import com.fuzzylite.term.Function;
+import com.fuzzylite.term.Linear;
+import com.fuzzylite.term.Term;
+import com.fuzzylite.variable.InputVariable;
+import com.fuzzylite.variable.OutputVariable;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.StringReader;
+import java.nio.charset.Charset;
+import java.nio.file.Files;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.StringTokenizer;
+import java.util.logging.Level;
+import java.util.regex.Pattern;
 
 /**
  *
@@ -23,8 +66,446 @@ import com.fuzzylite.Engine;
 public class FclImporter extends Importer {
 
     @Override
-    public Engine fromString(String x) {
-        return new Engine();
+    public Engine fromString(String fcl) {
+        Engine engine = new Engine();
+
+        Map<String, String> tags = new HashMap<>();
+        tags.put("VAR_INPUT", "END_VAR");
+        tags.put("VAR_OUTPUT", "END_VAR");
+        tags.put("FUZZIFY", "END_FUZZIFY");
+        tags.put("DEFUZZIFY", "END_DEFUZZIFY");
+        tags.put("RULEBLOCK", "END_RULEBLOCK");
+
+        String currentTag = "", closingTag = "";
+        StringBuilder block = new StringBuilder();
+        BufferedReader fclReader = new BufferedReader(new StringReader(fcl));
+        int lineNumber = 0;
+        String line;
+        try {
+            while ((line = fclReader.readLine()) != null) {
+                ++lineNumber;
+                line = line.trim();
+                if (line.isEmpty() || line.charAt(0) == '#') {
+                    continue;
+                }
+                line = line.replaceAll(";", "");
+                StringTokenizer tokenizer = new StringTokenizer(line);
+                String firstToken = tokenizer.nextToken();
+
+                if ("FUNCTION_BLOCK".equals(firstToken)) {
+                    if (tokenizer.hasMoreTokens()) {
+                        StringBuilder name = new StringBuilder();
+                        name.append(tokenizer.nextToken());
+                        while (tokenizer.hasMoreTokens()) {
+                            name.append(" ").append(tokenizer.nextToken());
+                        }
+                        engine.setName(name.toString());
+                    }
+                    continue;
+                }
+
+                if ("END_FUNCTION_BLOCK".equals(firstToken)) {
+                    break;
+                }
+
+                if (currentTag.isEmpty()) {
+                    if (!tags.containsKey(firstToken)) {
+                        throw new RuntimeException(String.format(
+                                "[syntax error] unknown block definition <%s> in line <%d>: %s",
+                                firstToken, lineNumber, line));
+                    }
+
+                    currentTag = firstToken;
+                    closingTag = tags.get(firstToken);
+                    block.setLength(0);
+                    block.append(line).append("\n");
+                    continue;
+                }
+
+                if (!currentTag.isEmpty()) {
+                    if (firstToken.equals(closingTag)) {
+                        processBlock(currentTag, block.toString(), engine);
+                        currentTag = "";
+                        closingTag = "";
+                    } else if (tags.containsKey(firstToken)) {
+                        //if opening new block without closing the previous one
+                        throw new RuntimeException(String.format(
+                                "[syntax error] expected <%s> before <%s> in line: %s",
+                                closingTag, firstToken, line));
+                    } else {
+                        block.append(line).append("\n");
+                    }
+                    continue;
+                }
+
+                if (!currentTag.isEmpty()) {
+                    String error = "[syntax error] ";
+                    if (block.length() > 0) {
+                        error += String.format("expected <%s> for block:\n%s", closingTag, block.toString());
+                    } else {
+                        error += String.format("expected <%s>, but not found");
+                    }
+                    throw new RuntimeException(error);
+                }
+            }
+        } catch (Exception ex) {
+            throw new RuntimeException(ex);
+        }
+        return engine;
+    }
+
+    protected void processBlock(String tag, String block, Engine engine) throws Exception {
+        if ("VAR_INPUT".equals(tag) || "VAR_OUTPUT".equals(tag)) {
+            processVar(tag, block, engine);
+        } else if ("FUZZIFY".equals(tag)) {
+            processFuzzify(block, engine);
+        } else if ("DEFUZZIFY".equals(tag)) {
+            processDefuzzify(block, engine);
+        } else if ("RULEBLOCK".equals(tag)) {
+            processRuleBlock(block, engine);
+        } else {
+            throw new RuntimeException(String.format(
+                    "[syntax error] unexpected tag <%s> for block:\n%s",
+                    tag, block));
+        }
+    }
+
+    protected void processVar(String tag, String block, Engine engine) throws Exception {
+        BufferedReader reader = new BufferedReader(new StringReader(block));
+        reader.readLine();//discard first line (VAR_INPUT)
+        String line;
+        while ((line = reader.readLine()) != null) {
+            String[] token = line.split(Pattern.quote(":"));
+            if (token.length != 2) {
+                throw new RuntimeException(String.format(
+                        "[syntax error] expected property of type "
+                        + "(key : value) in line: %s", line));
+            }
+            String name = Op.makeValidId(token[0]);
+            if ("VAR_INPUT".equals(tag)) {
+                engine.addInputVariable(new InputVariable(name));
+            } else if ("VAR_OUTPUT".equals(tag)) {
+                engine.addOutputVariable(new OutputVariable(name));
+            } else {
+                throw new RuntimeException(String.format(
+                        "[syntax error] unexpected tag <%s> in line: %s",
+                        tag, line));
+            }
+        }
+
+    }
+
+    protected void processFuzzify(String block, Engine engine) throws Exception {
+        BufferedReader reader = new BufferedReader(new StringReader(block));
+        String line = reader.readLine();
+        String name;
+        int index = line.indexOf(' ');
+        if (index >= 0) {
+            name = Op.makeValidId(line.substring(index + 1));
+        } else {
+            throw new RuntimeException("[syntax error] expected name of input variable in line: " + line);
+        }
+        if (!engine.hasInputVariable(name)) {
+            throw new RuntimeException(String.format(
+                    "[syntax error] engine does not contain input variable <%s> from line: %s",
+                    name, line));
+        }
+        InputVariable inputVariable = engine.getInputVariable(name);
+        while ((line = reader.readLine()) != null) {
+            StringTokenizer tokenizer = new StringTokenizer(line);
+            String firstToken = tokenizer.nextToken();
+            if ("RANGE".equals(firstToken)) {
+                Op.Pair<Double, Double> range = extractRange(line);
+                inputVariable.setRange(range.first, range.second);
+            } else if ("TERM".equals(firstToken)) {
+                inputVariable.addTerm(prepareTerm(extractTerm(line), engine));
+            } else {
+                throw new RuntimeException(String.format(
+                        "[syntax error] token <%s> not recognized", firstToken));
+            }
+        }
+    }
+
+    protected void processDefuzzify(String block, Engine engine) throws Exception {
+        BufferedReader reader = new BufferedReader(new StringReader(block));
+        String line = reader.readLine();
+        String name;
+        int index = line.indexOf(' ');
+        if (index >= 0) {
+            name = Op.makeValidId(line.substring(index + 1));
+        } else {
+            throw new RuntimeException("[syntax error] expected name of output variable in line: " + line);
+        }
+        if (!engine.hasOutputVariable(name)) {
+            throw new RuntimeException(String.format(
+                    "[syntax error] engine does not contain output variable <%s> from line: %s",
+                    name, line));
+        }
+        OutputVariable outputVariable = engine.getOutputVariable(name);
+        while ((line = reader.readLine()) != null) {
+            StringTokenizer tokenizer = new StringTokenizer(line);
+            String firstToken = tokenizer.nextToken();
+
+            if ("TERM".equals(firstToken)) {
+                outputVariable.addTerm(prepareTerm(extractTerm(line), engine));
+            } else if ("METHOD".equals(firstToken)) {
+                outputVariable.setDefuzzifier(extractDefuzzifier(line));
+            } else if ("ACCU".equals(firstToken)) {
+                outputVariable.getOutput().setAccumulation(extractSNorm(line));
+            } else if ("DEFAULT".equals(firstToken)) {
+                Op.Pair<Double, Boolean> defaultAndLock = extractDefaultValue(line);
+                outputVariable.setDefaultValue(defaultAndLock.first);
+                outputVariable.setLockValidOutput(defaultAndLock.second);
+            } else if ("RANGE".equals(firstToken)) {
+                Op.Pair<Double, Double> range = extractRange(line);
+                outputVariable.setRange(range.first, range.second);
+            } else if ("LOCK".equals(firstToken)) {
+                Op.Pair<Boolean, Boolean> output_range = extractLocksOutputAndRange(line);
+                outputVariable.setLockValidOutput(output_range.first);
+                outputVariable.setLockOutputRange(output_range.second);
+            } else {
+                throw new RuntimeException(String.format(
+                        "[syntax error] unexpected token <%s>", firstToken));
+            }
+        }
+    }
+
+    protected void processRuleBlock(String block, Engine engine) throws Exception {
+        BufferedReader reader = new BufferedReader(new StringReader(block));
+        String line = reader.readLine();
+        String name = "";
+        int index = line.indexOf(' ');
+        if (index >= 0) {
+            name = line.substring(index + 1); //does not need to be valid name
+        }
+        RuleBlock ruleBlock = new RuleBlock(name);
+        engine.addRuleBlock(ruleBlock);
+
+        while ((line = reader.readLine()) != null) {
+            String firstToken = line.substring(0, line.indexOf(' '));
+            if ("AND".equals(firstToken)) {
+                ruleBlock.setConjunction(extractTNorm(line));
+            } else if ("OR".equals(firstToken)) {
+                ruleBlock.setDisjunction(extractSNorm(line));
+            } else if ("ACT".equals(firstToken)) {
+                ruleBlock.setActivation(extractTNorm(line));
+            } else if ("RULE".equals(firstToken)) {
+                int ruleStart = line.indexOf(':');
+                if (ruleStart < 0) {
+                    ruleStart = "RULE".length();
+                }
+                String rule = line.substring(ruleStart + 1).trim();
+                ruleBlock.addRule(Rule.parse(rule, engine));
+            } else {
+                throw new RuntimeException(String.format(
+                        "[syntax error] keyword <%s> not recognized in line %s",
+                        firstToken, line));
+            }
+        }
+    }
+
+    protected TNorm extractTNorm(String line) {
+        String[] token = line.split(Pattern.quote(":"));
+        if (token.length != 2) {
+            throw new RuntimeException("[syntax error] "
+                    + "expected property of type (key : value) in line: " + line);
+        }
+        String name = token[1].trim();
+        String className = null;
+        if ("MIN".equals(name)) {
+            className = Minimum.class.getSimpleName();
+        } else if ("PROD".equals(name)) {
+            className = AlgebraicProduct.class.getSimpleName();
+        } else if ("BDIF".equals(name)) {
+            className = BoundedDifference.class.getSimpleName();
+        } else if ("DPROD".equals(name)) {
+            className = DrasticProduct.class.getSimpleName();
+        } else if ("EPROD".equals(name)) {
+            className = EinsteinProduct.class.getSimpleName();
+        } else if ("HPROD".equals(name)) {
+            className = HamacherProduct.class.getSimpleName();
+        }
+        return FactoryManager.instance().getTNorm().createInstance(className);
+    }
+
+    protected SNorm extractSNorm(String line) {
+        String[] token = line.split(Pattern.quote(":"));
+        if (token.length != 2) {
+            throw new RuntimeException("[syntax error] "
+                    + "expected property of type (key : value) in line: " + line);
+        }
+        String name = token[1].trim();
+        String className = name;
+        if ("MAX".equals(name)) {
+            className = Maximum.class.getSimpleName();
+        } else if ("ASUM".equals(name)) {
+            className = AlgebraicSum.class.getSimpleName();
+        } else if ("BSUM".equals(name)) {
+            className = BoundedSum.class.getSimpleName();
+        } else if ("NSUM".equals(name)) {
+            className = NormalizedSum.class.getSimpleName();
+        } else if ("DSUM".equals(name)) {
+            className = DrasticSum.class.getSimpleName();
+        } else if ("ESUM".equals(name)) {
+            className = EinsteinSum.class.getSimpleName();
+        } else if ("HSUM".equals(name)) {
+            className = HamacherSum.class.getSimpleName();
+        }
+        return FactoryManager.instance().getSNorm().createInstance(className);
+    }
+
+    protected Term extractTerm(String line) {
+        //TODO: implement
+        return null;
+    }
+
+    protected Term prepareTerm(Term term, Engine engine) {
+        if (term instanceof Linear) {
+            Linear linear = (Linear) term;
+            linear.set(linear.coefficients, engine.getInputVariables());
+        } else if (term instanceof Function) {
+            Function function = (Function) term;
+            function.setEngine(engine);
+            function.load();
+        }
+        return term;
+    }
+
+    protected Defuzzifier extractDefuzzifier(String line) {
+        String[] token = line.split(Pattern.quote(":"));
+        if (token.length != 2) {
+            throw new RuntimeException("[syntax error] "
+                    + "expected property of type (key : value) in line: " + line);
+        }
+        String name = token[1].trim();
+        String className = name;
+        if ("COG".equals(className)) {
+            className = Centroid.class.getSimpleName();
+        } else if ("COA".equals(className)) {
+            className = Bisector.class.getSimpleName();
+        } else if ("LM".equals(className)) {
+            className = SmallestOfMaximum.class.getSimpleName();
+        } else if ("RM".equals(className)) {
+            className = LargestOfMaximum.class.getSimpleName();
+        } else if ("MM".equals(className)) {
+            className = MeanOfMaximum.class.getSimpleName();
+        } else if ("COGS".equals(className)) {
+            className = WeightedAverage.class.getSimpleName();
+        } else if ("COGSS".equals(className)) {
+            className = WeightedSum.class.getSimpleName();
+        }
+        return FactoryManager.instance().getDefuzzifier().createInstance(className);
+    }
+
+    protected Op.Pair<Double, Boolean> extractDefaultValue(String line) {
+        String[] token = line.split(Pattern.quote(":="));
+        if (token.length != 2) {
+            throw new RuntimeException("[syntax error] "
+                    + "expected property of type (key := value) in line: " + line);
+        }
+        String[] values = token[1].split(Pattern.quote("|"));
+        String defaultValue = values[0].replaceAll(";", "").trim();
+        String nc = "";
+        if (values.length == 2) {
+            nc = values[1].replaceAll(";", "").trim();
+        }
+        double value;
+        try {
+            value = Op.toDouble(defaultValue);
+        } catch (Exception ex) {
+            throw new RuntimeException(String.format(
+                    "[syntax error] expected numeric value, but found <%s> in line %s",
+                    defaultValue, line));
+        }
+
+        boolean lockValidOutput = nc.equals("NC");
+        if (!(lockValidOutput || nc.isEmpty())) {
+            throw new RuntimeException(String.format(
+                    "[syntax error] expected keyword <NC>, but found <%s> in line: %s",
+                    nc, line));
+        }
+        return new Op.Pair<>(value, lockValidOutput);
+    }
+
+    protected Op.Pair<Double, Double> extractRange(String line) {
+        String[] token = line.split(Pattern.quote(":="));
+        if (token.length != 2) {
+            throw new RuntimeException("[syntax error] "
+                    + "expected property of type (key := value) in line: " + line);
+        }
+
+        String rangeToken = token[1];
+
+        String range = "";
+        for (char c : rangeToken.toCharArray()) {
+            if (c == '(' || c == ')' || c == ' ' || c == ';') {
+                continue;
+            }
+            range += c;
+        }
+
+        token = range.split(Pattern.quote(".."));
+        if (token.length != 2) {
+            throw new RuntimeException(String.format("[syntax error] expected property of type"
+                    + " 'start .. end', but found <%s> in line: %s", range, line));
+        }
+
+        double minimum, maximum;
+        int index = -1;
+        try {
+            minimum = Op.toDouble(token[index = 0]);
+            maximum = Op.toDouble(token[index = 1]);
+        } catch (Exception ex) {
+            throw new RuntimeException(String.format(
+                    "[syntax error] expected numeric value, but found <%s> in line %s",
+                    token[index], line));
+        }
+
+        return new Op.Pair<>(minimum, maximum);
+    }
+
+    protected Op.Pair<Boolean, Boolean> extractLocksOutputAndRange(String line) {
+        int index = line.indexOf(':');
+        if (index < 0) {
+            throw new RuntimeException("[syntax error] expected property of type "
+                    + "'key : value' in line: " + line);
+        }
+        boolean output, range;
+        String value = line.substring(index + 1).replaceAll(";", "");
+        String[] flags = value.split(Pattern.quote("|"));
+        if (flags.length == 1) {
+            String flag = flags[0].trim();
+            output = "VALID".equals(flag);
+            range = ("RANGE".equals(flag));
+            if (!(output || range)) {
+                throw new RuntimeException(String.format(
+                        "[syntax error] expected locking flags "
+                        + "<VALID|RANGE>, but found <%s> in line: %s", flag, line));
+            }
+        } else if (flags.length == 2) {
+            String flagA = flags[0].trim();
+            String flagB = flags[1].trim();
+            output = ("VALID".equals(flagA) || "VALID".equals(flagB));
+            range = ("RANGE".equals(flagA) || "RANGE".equals(flagB));
+            if (!(output && range)) {
+                throw new RuntimeException(String.format(
+                        "[syntax error] expected locking flags <VALID|RANGE>, "
+                        + "but found <%s|%s> in line %s", flags[0], flags[1], line));
+            }
+        } else {
+            throw new RuntimeException(String.format(
+                    "[syntax error] expected locking flags <VALID|RANGE>, "
+                    + "but found <%s> in line: ", value, line));
+        }
+
+        return new Op.Pair<>(output, range);
+    }
+
+    public static void main(String[] args) throws Exception {
+        FuzzyLite.logger().setLevel(Level.INFO);
+        File file = new File("examples/fcl/mamdani/SimpleDimmer.fcl");
+        String fcl = Op.join(Files.readAllLines(file.toPath(), Charset.defaultCharset()), "\n");
+        new FclImporter().fromString(fcl);
     }
 
 }
