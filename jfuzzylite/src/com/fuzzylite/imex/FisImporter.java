@@ -16,7 +16,31 @@ package com.fuzzylite.imex;
 
 import com.fuzzylite.Engine;
 import com.fuzzylite.Op;
+import com.fuzzylite.defuzzifier.Bisector;
+import com.fuzzylite.defuzzifier.Centroid;
+import com.fuzzylite.defuzzifier.LargestOfMaximum;
+import com.fuzzylite.defuzzifier.MeanOfMaximum;
+import com.fuzzylite.defuzzifier.SmallestOfMaximum;
+import com.fuzzylite.defuzzifier.WeightedAverage;
+import com.fuzzylite.defuzzifier.WeightedSum;
+import com.fuzzylite.norm.s.AlgebraicSum;
+import com.fuzzylite.norm.s.BoundedSum;
+import com.fuzzylite.norm.s.DrasticSum;
+import com.fuzzylite.norm.s.EinsteinSum;
+import com.fuzzylite.norm.s.HamacherSum;
+import com.fuzzylite.norm.s.Maximum;
+import com.fuzzylite.norm.s.NormalizedSum;
+import com.fuzzylite.norm.t.AlgebraicProduct;
+import com.fuzzylite.norm.t.BoundedDifference;
+import com.fuzzylite.norm.t.DrasticProduct;
+import com.fuzzylite.norm.t.EinsteinProduct;
+import com.fuzzylite.norm.t.HamacherProduct;
+import com.fuzzylite.norm.t.Minimum;
+import com.fuzzylite.term.Function;
+import com.fuzzylite.term.Linear;
 import com.fuzzylite.term.Term;
+import com.fuzzylite.variable.InputVariable;
+import com.fuzzylite.variable.OutputVariable;
 import com.fuzzylite.variable.Variable;
 import java.io.BufferedReader;
 import java.io.StringReader;
@@ -135,12 +159,80 @@ public class FisImporter extends Importer {
         }
     }
 
-    protected void importInput(String section, Engine engine) {
+    protected void importInput(String section, Engine engine) throws Exception {
+        BufferedReader reader = new BufferedReader(new StringReader(section));
+        reader.readLine(); //ignore first line [InputX]
 
+        InputVariable inputVariable = new InputVariable();
+        engine.addInputVariable(inputVariable);
+
+        String line;
+        while ((line = reader.readLine()) != null) {
+            String[] keyValue = line.split(Pattern.quote("="));
+            if (keyValue.length != 2) {
+                throw new RuntimeException(String.format(
+                        "[syntax error] expected a property of type "
+                        + "'key=value', but found <%s>", line));
+            }
+            String key = keyValue[0].trim();
+            String value = keyValue[1].trim();
+
+            if ("Name".equals(key)) {
+                inputVariable.setName(Op.makeValidId(value));
+            } else if ("Range".equals(key)) {
+                Op.Pair<Double, Double> minmax = extractRange(value);
+                inputVariable.setMinimum(minmax.first);
+                inputVariable.setMaximum(minmax.second);
+            } else if (key.startsWith("MF")) {
+                inputVariable.addTerm(prepareTerm(extractTerm(value), engine));
+            } else if ("NumMFs".equals(key)) {
+                //ignore
+            } else {
+                throw new RuntimeException(String.format(
+                        "[import error] token <%s> not recognized", key));
+            }
+        }
     }
 
-    protected void importOutput(String section, Engine engine) {
+    protected void importOutput(String section, Engine engine) throws Exception {
+        BufferedReader reader = new BufferedReader(new StringReader(section));
+        reader.readLine(); //ignore first line [InputX]
 
+        OutputVariable outputVariable = new OutputVariable();
+        engine.addOutputVariable(outputVariable);
+
+        String line;
+        while ((line = reader.readLine()) != null) {
+            String[] keyValue = line.split(Pattern.quote("="));
+            if (keyValue.length != 2) {
+                throw new RuntimeException(String.format(
+                        "[syntax error] expected a property of type "
+                        + "'key=value', but found <%s>", line));
+            }
+            String key = keyValue[0].trim();
+            String value = keyValue[1].trim();
+
+            if ("Name".equals(key)) {
+                outputVariable.setName(Op.makeValidId(value));
+            } else if ("Range".equals(key)) {
+                Op.Pair<Double, Double> minmax = extractRange(value);
+                outputVariable.setMinimum(minmax.first);
+                outputVariable.setMaximum(minmax.second);
+            } else if (key.startsWith("MF")) {
+                outputVariable.addTerm(prepareTerm(extractTerm(value), engine));
+            } else if ("Default".equals(key)) {
+                outputVariable.setDefaultValue(Op.toDouble(value));
+            } else if ("LockValid".equals(key)) {
+                outputVariable.setLockValidOutput((int) Op.toDouble(value) == 1);
+            } else if ("LockRange".equals(key)) {
+                outputVariable.setLockOutputRange((int) Op.toDouble(value) == 1);
+            } else if ("NumMFs".equals(key)) {
+                //ignore
+            } else {
+                throw new RuntimeException(String.format(
+                        "[import error] token <%s> not recognized", key));
+            }
+        }
     }
 
     protected void importRules(String section, Engine engine) {
@@ -152,15 +244,75 @@ public class FisImporter extends Importer {
     }
 
     protected String tnorm(String name) {
-        return "";
+        if ("min".equals(name)) {
+            return Minimum.class.getSimpleName();
+        }
+        if ("prod".equals(name)) {
+            return AlgebraicProduct.class.getSimpleName();
+        }
+        if ("bounded_difference".equals(name)) {
+            return BoundedDifference.class.getSimpleName();
+        }
+        if ("drastic_product".equals(name)) {
+            return DrasticProduct.class.getSimpleName();
+        }
+        if ("einstein_product".equals(name)) {
+            return EinsteinProduct.class.getSimpleName();
+        }
+        if ("hamacher_product".equals(name)) {
+            return HamacherProduct.class.getSimpleName();
+        }
+        return name;
     }
 
     protected String snorm(String name) {
-        return "";
+        if ("max".equals(name)) {
+            return Maximum.class.getSimpleName();
+        }
+        if ("sum".equals(name) || "probor".equals(name)) {
+            return AlgebraicSum.class.getSimpleName();
+        }
+        if ("bounded_sum".equals(name)) {
+            return BoundedSum.class.getSimpleName();
+        }
+        if ("normalized_sum".equals(name)) {
+            return NormalizedSum.class.getSimpleName();
+        }
+        if ("drastic_sum".equals(name)) {
+            return DrasticSum.class.getSimpleName();
+        }
+        if ("einstein_sum".equals(name)) {
+            return EinsteinSum.class.getSimpleName();
+        }
+        if ("hamacher_sum".equals(name)) {
+            return HamacherSum.class.getSimpleName();
+        }
+        return name;
     }
 
     protected String defuzzifier(String name) {
-        return "";
+        if ("centroid".equals(name)) {
+            return Centroid.class.getSimpleName();
+        }
+        if ("bisector".equals(name)) {
+            return Bisector.class.getSimpleName();
+        }
+        if ("lom".equals(name)) {
+            return LargestOfMaximum.class.getSimpleName();
+        }
+        if ("mom".equals(name)) {
+            return MeanOfMaximum.class.getSimpleName();
+        }
+        if ("som".equals(name)) {
+            return SmallestOfMaximum.class.getSimpleName();
+        }
+        if ("wtaver".equals(name)) {
+            return WeightedAverage.class.getSimpleName();
+        }
+        if ("wtsum".equals(name)) {
+            return WeightedSum.class.getSimpleName();
+        }
+        return name;
     }
 
     protected Term extractTerm(String fis) {
@@ -168,6 +320,15 @@ public class FisImporter extends Importer {
     }
 
     protected Term prepareTerm(Term term, Engine engine) {
+        if (term instanceof Linear) {
+            Linear linear = (Linear) term;
+            linear.set(linear.coefficients, engine.getInputVariables());
+        } else if (term instanceof Function) {
+            Function function = (Function) term;
+            function.setEngine(engine);
+            //TODO:make sure builtin functions are loaded.
+            function.load();
+        }
         return term;
     }
 
