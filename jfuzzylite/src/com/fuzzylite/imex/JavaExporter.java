@@ -87,7 +87,7 @@ public class JavaExporter extends Exporter {
         return result.toString();
     }
 
-    public String toString(InputVariable inputVariable, Engine engine) {
+    protected String toString(InputVariable inputVariable, Engine engine) {
         int index = engine.getInputVariables().indexOf(inputVariable) + 1;
         StringBuilder result = new StringBuilder();
         result.append(String.format(
@@ -106,7 +106,7 @@ public class JavaExporter extends Exporter {
         return result.toString();
     }
 
-    public String toString(OutputVariable outputVariable, Engine engine) {
+    protected String toString(OutputVariable outputVariable, Engine engine) {
         int index = engine.getOutputVariables().indexOf(outputVariable) + 1;
         StringBuilder result = new StringBuilder();
         result.append(String.format(
@@ -140,7 +140,7 @@ public class JavaExporter extends Exporter {
         return result.toString();
     }
 
-    public String toString(RuleBlock ruleBlock, Engine engine) {
+    protected String toString(RuleBlock ruleBlock, Engine engine) {
         int index = engine.getRuleBlocks().indexOf(ruleBlock) + 1;
         StringBuilder result = new StringBuilder();
         result.append(String.format(
@@ -163,7 +163,7 @@ public class JavaExporter extends Exporter {
         return result.toString();
     }
 
-    public String toString(Term term) {
+    protected String toString(Term term) {
         if (term == null) {
             return "null";
         }
@@ -282,7 +282,7 @@ public class JavaExporter extends Exporter {
         return term.toString();
     }
 
-    public String toString(Defuzzifier defuzzifier) {
+    protected String toString(Defuzzifier defuzzifier) {
         if (defuzzifier == null) {
             return "null";
         }
@@ -303,7 +303,7 @@ public class JavaExporter extends Exporter {
         return String.format("new %s()", norm.getClass().getSimpleName());
     }
 
-    public String toString(double value) {
+    protected String toString(double value) {
         if (Double.isNaN(value)) {
             return "Double.NaN";
         } else if (Double.isInfinite(value)) {

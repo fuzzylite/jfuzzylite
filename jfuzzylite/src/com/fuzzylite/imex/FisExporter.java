@@ -86,7 +86,6 @@ import java.util.List;
 public class FisExporter extends Exporter {
 
     //TODO: fix rule if x is any, appears as 0.nan in advanced TS example.
-    
     @Override
     public String toString(Engine engine) {
         if (engine.numberOfRuleBlocks() != 1) {
@@ -104,7 +103,7 @@ public class FisExporter extends Exporter {
         return result.toString();
     }
 
-    public String exportSystem(Engine engine) {
+    protected String exportSystem(Engine engine) {
         StringBuilder result = new StringBuilder();
         result.append("[System]\n");
         result.append(String.format("Name='%s'\n", engine.getName()));
@@ -122,7 +121,7 @@ public class FisExporter extends Exporter {
         return result.toString();
     }
 
-    public String exportInputs(Engine engine) {
+    protected String exportInputs(Engine engine) {
         StringBuilder result = new StringBuilder();
 
         for (int i = 0; i < engine.numberOfInputVariables(); ++i) {
@@ -143,7 +142,7 @@ public class FisExporter extends Exporter {
         return result.toString();
     }
 
-    public String exportOutputs(Engine engine) {
+    protected String exportOutputs(Engine engine) {
         StringBuilder result = new StringBuilder();
 
         for (int i = 0; i < engine.numberOfOutputVariables(); ++i) {
@@ -167,7 +166,7 @@ public class FisExporter extends Exporter {
         return result.toString();
     }
 
-    public String exportRules(Engine engine) {
+    protected String exportRules(Engine engine) {
         StringBuilder result = new StringBuilder();
 
         result.append("[Rules]\n");
@@ -178,7 +177,7 @@ public class FisExporter extends Exporter {
         return result.toString();
     }
 
-    public String exportRule(Rule rule, Engine engine) {
+    protected String exportRule(Rule rule, Engine engine) {
         List<Proposition> propositions = new ArrayList<>();
         List<Operator> operators = new ArrayList<>();
         Deque<Expression> queue = new ArrayDeque<>();
@@ -237,7 +236,7 @@ public class FisExporter extends Exporter {
         return result.toString();
     }
 
-    public String extractType(Engine engine) {
+    protected String extractType(Engine engine) {
         if (engine.numberOfOutputVariables() > 0) {
             int sugeno = 0, mamdani = 0;
             for (OutputVariable outputVariable : engine.getOutputVariables()) {
@@ -258,7 +257,7 @@ public class FisExporter extends Exporter {
         return "unknown";
     }
 
-    public String extractAccumulation(Engine engine) {
+    protected String extractAccumulation(Engine engine) {
         SNorm accumulation = null;
         for (OutputVariable outputVariable : engine.getOutputVariables()) {
             SNorm other = outputVariable.getOutput().getAccumulation();
@@ -273,7 +272,7 @@ public class FisExporter extends Exporter {
         return toString(accumulation);
     }
 
-    public String extractDefuzzifier(Engine engine) {
+    protected String extractDefuzzifier(Engine engine) {
         Defuzzifier defuzzifier = null;
         for (OutputVariable outputVariable : engine.getOutputVariables()) {
             Defuzzifier other = outputVariable.getDefuzzifier();
@@ -288,7 +287,7 @@ public class FisExporter extends Exporter {
         return toString(defuzzifier);
     }
 
-    public String translate(List<Proposition> propositions, List<Variable> variables) {
+    protected String translate(List<Proposition> propositions, List<Variable> variables) {
         StringBuilder result = new StringBuilder();
         for (Variable variable : variables) {
             int termIndexPlusOne = 0;
@@ -341,7 +340,7 @@ public class FisExporter extends Exporter {
         return result.toString();
     }
 
-    public String toString(Term term) {
+    protected String toString(Term term) {
         if (term instanceof Bell) {
             Bell t = (Bell) term;
             return String.format("'%s':'gbellmf',[%s]", term.getName(),
@@ -414,7 +413,7 @@ public class FisExporter extends Exporter {
         if (term instanceof SigmoidProduct) {
             SigmoidProduct t = (SigmoidProduct) term;
             return String.format("'%s':'psigmf',[%s]", term.getName(),
-                    Op.join(" ",t.getRising(), t.getLeft(), 
+                    Op.join(" ", t.getRising(), t.getLeft(),
                             t.getFalling(), t.getRight()));
         }
         if (term instanceof SShape) {
@@ -437,11 +436,11 @@ public class FisExporter extends Exporter {
             return String.format("'%s':'zmf',[%s]", term.getName(),
                     Op.join(" ", t.getStart(), t.getEnd()));
         }
-        throw new RuntimeException(String.format("[export error] "+
-                "term of class <%s> not supported", term.getClass().getName()));
+        throw new RuntimeException(String.format("[export error] "
+                + "term of class <%s> not supported", term.getClass().getName()));
     }
 
-    public String toString(Defuzzifier defuzzifier) {
+    protected String toString(Defuzzifier defuzzifier) {
         if (defuzzifier == null) {
             return "";
         }
@@ -469,7 +468,7 @@ public class FisExporter extends Exporter {
         return defuzzifier.getClass().getSimpleName();
     }
 
-    public String toString(Norm norm) {
+    protected String toString(Norm norm) {
         if (norm == null) {
             return "";
         }

@@ -88,10 +88,19 @@ public class FclImporter extends Importer {
         try {
             while ((line = fclReader.readLine()) != null) {
                 ++lineNumber;
+                if (line.contains("//")) {
+                    line = line.substring(0, line.indexOf("//"));
+                }
+                //TODO: ignore multiline comments
+                if (line.contains("/*")) {
+                    line = line.substring(0, line.indexOf("/*"));
+                }
                 line = line.trim();
+                
                 if (line.isEmpty() || line.charAt(0) == '#') {
                     continue;
                 }
+
                 line = line.replaceAll(";", "");
                 StringTokenizer tokenizer = new StringTokenizer(line);
                 String firstToken = tokenizer.nextToken();
@@ -605,14 +614,14 @@ public class FclImporter extends Importer {
         Engine engine = new FclImporter().fromString(fcl);
         String x = new FclExporter().toString(engine);
         System.out.println(fcl.equals(x));
-        if (!fcl.equals(x)) {
-            System.out.println("=====================");
-            System.out.println("Original");
-            System.out.println(fcl);
-            System.out.println("=====================");
-            System.out.println("Copy");
-            System.out.println(x);
-        }
+//        if (!fcl.equals(x)) {
+//            System.out.println("=====================");
+//            System.out.println("Original");
+//            System.out.println(fcl);
+//            System.out.println("=====================");
+//            System.out.println("Copy");
+//            System.out.println(x);
+//        }
     }
 
 }

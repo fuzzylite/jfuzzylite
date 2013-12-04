@@ -119,7 +119,7 @@ public class FclExporter extends Exporter {
         return result.toString();
     }
 
-    String toString(InputVariable inputVariable) {
+    protected String toString(InputVariable inputVariable) {
         StringBuilder result = new StringBuilder();
         result.append(String.format("FUZZIFY %s\n", inputVariable.getName()));
         result.append(String.format("  RANGE := (%s .. %s);\n",
@@ -133,7 +133,7 @@ public class FclExporter extends Exporter {
         return result.toString();
     }
 
-    String toString(OutputVariable outputVariable) {
+    protected String toString(OutputVariable outputVariable) {
         StringBuilder result = new StringBuilder();
 
         result.append(String.format("DEFUZZIFY %s\n", outputVariable.getName()));
@@ -169,7 +169,7 @@ public class FclExporter extends Exporter {
         return result.toString();
     }
 
-    String toString(RuleBlock ruleBlock) {
+    protected String toString(RuleBlock ruleBlock) {
         StringBuilder result = new StringBuilder();
         result.append(String.format("RULEBLOCK %s\n", ruleBlock.getName()));
         result.append(String.format("  AND : %s;\n", toString(ruleBlock.getConjunction())));
@@ -185,7 +185,7 @@ public class FclExporter extends Exporter {
         return result.toString();
     }
 
-    String toString(Term term) {
+    protected String toString(Term term) {
         if (term == null) {
             return "null";
         }
@@ -300,7 +300,7 @@ public class FclExporter extends Exporter {
         return term.toString();
     }
 
-    String toString(Defuzzifier defuzzifier) {
+    protected String toString(Defuzzifier defuzzifier) {
         if (defuzzifier == null) {
             return "";
         }
@@ -328,7 +328,7 @@ public class FclExporter extends Exporter {
         return defuzzifier.getClass().getSimpleName();
     }
 
-    String toString(Norm norm) {
+    protected String toString(Norm norm) {
         if (norm == null) {
             return "";
         }
