@@ -15,6 +15,7 @@
 package com.fuzzylite.imex;
 
 import com.fuzzylite.Engine;
+import com.fuzzylite.FuzzyLite;
 import com.fuzzylite.Op;
 import com.fuzzylite.defuzzifier.Bisector;
 import com.fuzzylite.defuzzifier.Centroid;
@@ -23,6 +24,11 @@ import com.fuzzylite.defuzzifier.MeanOfMaximum;
 import com.fuzzylite.defuzzifier.SmallestOfMaximum;
 import com.fuzzylite.defuzzifier.WeightedAverage;
 import com.fuzzylite.defuzzifier.WeightedSum;
+import com.fuzzylite.factory.FactoryManager;
+import com.fuzzylite.hedge.Extremely;
+import com.fuzzylite.hedge.Not;
+import com.fuzzylite.hedge.Somewhat;
+import com.fuzzylite.hedge.Very;
 import com.fuzzylite.norm.s.AlgebraicSum;
 import com.fuzzylite.norm.s.BoundedSum;
 import com.fuzzylite.norm.s.DrasticSum;
@@ -36,16 +42,41 @@ import com.fuzzylite.norm.t.DrasticProduct;
 import com.fuzzylite.norm.t.EinsteinProduct;
 import com.fuzzylite.norm.t.HamacherProduct;
 import com.fuzzylite.norm.t.Minimum;
+import com.fuzzylite.rule.Rule;
+import com.fuzzylite.rule.RuleBlock;
+import com.fuzzylite.term.Bell;
+import com.fuzzylite.term.Constant;
+import com.fuzzylite.term.Discrete;
 import com.fuzzylite.term.Function;
+import com.fuzzylite.term.Gaussian;
+import com.fuzzylite.term.GaussianProduct;
 import com.fuzzylite.term.Linear;
+import com.fuzzylite.term.PiShape;
+import com.fuzzylite.term.Ramp;
+import com.fuzzylite.term.Rectangle;
+import com.fuzzylite.term.SShape;
+import com.fuzzylite.term.Sigmoid;
+import com.fuzzylite.term.SigmoidDifference;
+import com.fuzzylite.term.SigmoidProduct;
 import com.fuzzylite.term.Term;
+import com.fuzzylite.term.Trapezoid;
+import com.fuzzylite.term.Triangle;
+import com.fuzzylite.term.ZShape;
 import com.fuzzylite.variable.InputVariable;
 import com.fuzzylite.variable.OutputVariable;
 import com.fuzzylite.variable.Variable;
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.StringReader;
+import java.nio.charset.Charset;
+import java.nio.file.Files;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
+import java.util.logging.Level;
 import java.util.regex.Pattern;
 
 /**
@@ -106,12 +137,13 @@ public class FisImporter extends Importer {
                     importSystem(section, engine, methods);
                 } else if (section.startsWith("[Input")) {
                     importInput(section, engine);
-                } else if (section.startsWith("Output")) {
+                } else if (section.startsWith("[Output")) {
                     importOutput(section, engine);
                 } else if (section.startsWith("[Rules]")) {
                     importRules(section, engine);
                 } else {
-                    throw new RuntimeException("[import error] section <%s> not recognized");
+                    throw new RuntimeException(String.format(
+                            "[import error] section not recognized: %s", section));
                 }
                 engine.configure(tnorm(methods[and]), snorm(methods[or]),
                         tnorm(methods[imp]), snorm(methods[agg]),
@@ -235,12 +267,150 @@ public class FisImporter extends Importer {
         }
     }
 
-    protected void importRules(String section, Engine engine) {
+    protected void importRules(String section, Engine engine) throws Exception {
+        BufferedReader reader = new BufferedReader(new StringReader(section));
+        reader.readLine(); //ignore first line [Rules]
+
+        RuleBlock ruleBlock = new RuleBlock();
+        engine.addRuleBlock(ruleBlock);
+
+        String line;
+        while ((line = reader.readLine()) != null) {
+            String[] inputsAndRest = line.split(Pattern.quote(","));
+            if (inputsAndRest.length != 2) {
+                throw new RuntimeException(String.format(
+                        "[syntax error] expected rule to match pattern "
+                        + "<'i '+, 'o '+ (w) : '1|2'>, but found instead <%s>", line));
+            }
+
+            String[] outputsAndRest = inputsAndRest[1].split(Pattern.quote(":"));
+            if (outputsAndRest.length != 2) {
+                throw new RuntimeException(String.format(
+                        "[syntax error] expected rule to match pattern "
+                        + "<'i '+, 'o '+ (w) : '1|2'>, but found instead <%s>", line));
+            }
+            String[] inputs = inputsAndRest[0].trim().split(Pattern.quote(" "));
+            String[] outputs = outputsAndRest[0].trim().split(Pattern.quote(" "));
+            String weightInParenthesis = outputs[outputs.length - 1];
+            outputs = Arrays.copyOf(outputs, outputs.length - 1);
+            String connector = outputsAndRest[1].trim();
+
+            if (inputs.length != engine.numberOfInputVariables()) {
+                throw new RuntimeException(String.format(
+                        "[syntax error] expected <%d> input variables, "
+                        + "but found <%d> input variables in rule <%s>",
+                        engine.numberOfInputVariables(),
+                        inputs.length, line));
+            }
+            if (outputs.length != engine.numberOfOutputVariables()) {
+                throw new RuntimeException(String.format(
+                        "[syntax error] expected <%d> output variables, "
+                        + "but found <%d> output variables in rule <%s>",
+                        engine.numberOfOutputVariables(),
+                        outputs.length, line));
+            }
+
+            List<String> antecedent = new ArrayList<>();
+            List<String> consequent = new ArrayList<>();
+
+            for (int i = 0; i < inputs.length; ++i) {
+                double inputCode = Op.toDouble(inputs[i]);
+                if (Op.isEq(inputCode, 0.0)) {
+                    continue;
+                }
+                InputVariable inputVariable = engine.getInputVariable(i);
+                String proposition = String.format("%s %s %s",
+                        inputVariable.getName(), Rule.FL_IS,
+                        translateProposition(inputCode, inputVariable));
+                antecedent.add(proposition);
+            }
+
+            for (int i = 0; i < outputs.length; ++i) {
+                double outputCode = Op.toDouble(outputs[i]);
+                if (Op.isEq(outputCode, 0.0)) {
+                    continue;
+                }
+                OutputVariable outputVariable = engine.getOutputVariable(i);
+                String proposition = String.format("%s %s %s",
+                        outputVariable.getName(), Rule.FL_IS,
+                        translateProposition(outputCode, outputVariable));
+                consequent.add(proposition);
+            }
+
+            StringBuilder rule = new StringBuilder();
+            rule.append(Rule.FL_IF).append(" ");
+            for (Iterator<String> it = antecedent.iterator(); it.hasNext();) {
+                rule.append(it.next());
+                if (it.hasNext()) {
+                    rule.append(" ");
+                    if ("1".equals(connector)) {
+                        rule.append(Rule.FL_AND).append(" ");
+                    } else if ("2".equals(connector)) {
+                        rule.append(Rule.FL_OR).append(" ");
+                    } else {
+                        throw new RuntimeException(String.format(
+                                "[syntax error] connector <%s> not recognized",
+                                connector));
+                    }
+                }
+            }
+
+            rule.append(String.format(" %s ", Rule.FL_THEN));
+            for (Iterator<String> it = consequent.iterator(); it.hasNext();) {
+                rule.append(it.next());
+                if (it.hasNext()) {
+                    rule.append(String.format(" %s ", Rule.FL_AND));
+                }
+            }
+
+            String weightString = "";
+            for (char c : weightInParenthesis.toCharArray()) {
+                if (c == '(' || c == ')' || c == ' ') {
+                    continue;
+                }
+                weightString += c;
+            }
+            double weight = Op.toDouble(weightString);
+            if (!Op.isEq(weight, 1.0)) {
+                rule.append(String.format(" %s %s",
+                        Rule.FL_WITH, Op.str(weight)));
+            }
+
+            ruleBlock.addRule(Rule.parse(rule.toString(), engine));
+        }
 
     }
 
-    protected String translateProposition(float code, Variable variable) {
-        return "";
+    protected String translateProposition(double code, Variable variable) {
+        int intPart = (int) Math.abs(Math.floor(code)) - 1;
+        double fracPart = code % 1;
+
+        if (intPart < 0 || intPart > variable.numberOfTerms()) {
+            throw new RuntimeException(String.format(
+                    "[syntax error] the code <%s> refers to a term out of range "
+                    + "from variable <%s>", Op.str(code), variable.getName()));
+        }
+
+        StringBuilder result = new StringBuilder();
+        if (code < 0) {
+            result.append(new Not().getName()).append(" ");
+        }
+        if (Op.isEq(fracPart, 0.05)) {
+            result.append(new Somewhat().getName()).append(" ");
+        } else if (Op.isEq(fracPart, 0.2)) {
+            result.append(new Very().getName()).append(" ");
+        } else if (Op.isEq(fracPart, 0.3)) {
+            result.append(new Extremely().getName()).append(" ");
+        } else if (Op.isEq(fracPart, 0.4)) {
+            result.append(new Very().getName()).append(" ");
+            result.append(new Very().getName()).append(" ");
+        } else if (!Op.isEq(fracPart, 0)) {
+            throw new RuntimeException(String.format(
+                    "[syntax error] no hedge defined in FIS format for <%s>",
+                    Op.str(fracPart)));
+        }
+        result.append(variable.getTerm(intPart).getName());
+        return result.toString();
     }
 
     protected String tnorm(String name) {
@@ -315,8 +485,57 @@ public class FisImporter extends Importer {
         return name;
     }
 
+    protected Op.Pair<Double, Double> extractRange(String range) {
+        String[] minmax = range.split(Pattern.quote(" "));
+        if (minmax.length != 2) {
+            throw new RuntimeException(String.format(
+                    "[syntax error] expected range in format '[begin end]', "
+                    + "but found <%s>", range));
+        }
+        String begin = minmax[0];
+        String end = minmax[1];
+        if (begin.charAt(0) != '[' || end.charAt(end.length() - 1) != ']') {
+            throw new RuntimeException(String.format(
+                    "[syntax error] expected range in format '[begin end]', "
+                    + "but found <%s>", range));
+        }
+        Op.Pair<Double, Double> result = new Op.Pair<>();
+        result.first = Op.toDouble(begin.substring(1));
+        result.second = Op.toDouble(end.substring(0, end.length() - 1));
+        return result;
+    }
+
     protected Term extractTerm(String fis) {
-        return null;
+        String line = "";
+        for (char c : fis.toCharArray()) {
+            if (!(c == '[' || c == ']')) {
+                line += c;
+            }
+        }
+
+        String[] nameTerm = line.split(Pattern.quote(":"));
+        if (nameTerm.length != 2) {
+            throw new RuntimeException(String.format(
+                    "[syntax error] expected term in format 'name':'class',[params], "
+                    + "but found <%s>", line));
+        }
+
+        String[] termParams = nameTerm[1].split(Pattern.quote(","));
+        if (termParams.length != 2) {
+            throw new RuntimeException(String.format(
+                    "[syntax error] expected term in format 'name':'class',[params], "
+                    + "but found <%s>", line));
+        }
+
+        String[] parameters = termParams[1].split(Pattern.quote(" "));
+        for (int i = 0; i < parameters.length; ++i) {
+            parameters[i] = parameters[i].trim();
+        }
+
+        return createInstance(
+                termParams[0].trim(),
+                nameTerm[0].trim(),
+                parameters);
     }
 
     protected Term prepareTerm(Term term, Engine engine) {
@@ -326,18 +545,92 @@ public class FisImporter extends Importer {
         } else if (term instanceof Function) {
             Function function = (Function) term;
             function.setEngine(engine);
-            //TODO:make sure builtin functions are loaded.
+            //builtin functions are loaded from TermFactory
             function.load();
         }
         return term;
     }
 
-    protected Term createInstance(String mClass, String name, List<String> parameters) {
-        return null;
+    protected Term createInstance(String mClass, String name, String[] parameters) {
+        Map<String, String> mapping = new HashMap<>();
+        mapping.put("discretemf", Discrete.class.getSimpleName());
+        mapping.put("constant", Constant.class.getSimpleName());
+        mapping.put("function", Function.class.getSimpleName());
+        mapping.put("gbellmf", Bell.class.getSimpleName());
+        mapping.put("gaussmf", Gaussian.class.getSimpleName());
+        mapping.put("gauss2mf", GaussianProduct.class.getSimpleName());
+        mapping.put("linear", Linear.class.getSimpleName());
+        mapping.put("pimf", PiShape.class.getSimpleName());
+        mapping.put("rampmf", Ramp.class.getSimpleName());
+        mapping.put("rectmf", Rectangle.class.getSimpleName());
+        mapping.put("smf", SShape.class.getSimpleName());
+        mapping.put("sigmf", Sigmoid.class.getSimpleName());
+        mapping.put("dsigmf", SigmoidDifference.class.getSimpleName());
+        mapping.put("psigmf", SigmoidProduct.class.getSimpleName());
+        mapping.put("trapmf", Trapezoid.class.getSimpleName());
+        mapping.put("trimf", Triangle.class.getSimpleName());
+        mapping.put("zmf", ZShape.class.getSimpleName());
+
+        double[] sortedParameters = new double[parameters.length];
+        if (!"function".equals(mClass)) {
+            for (int i = 0; i < parameters.length; ++i) {
+                sortedParameters[i] = Op.toDouble(parameters[i]);
+            }
+        }
+
+        if ("gbellmf".equals(mClass) && parameters.length >= 3) {
+            sortedParameters[0] = Op.toDouble(parameters[2]);
+            sortedParameters[1] = Op.toDouble(parameters[0]);
+            sortedParameters[2] = Op.toDouble(parameters[1]);
+        } else if ("gaussmf".equals(mClass) && parameters.length >= 2) {
+            sortedParameters[0] = Op.toDouble(parameters[1]);
+            sortedParameters[1] = Op.toDouble(parameters[0]);
+        } else if ("gauss2mf".equals(mClass) && parameters.length >= 4) {
+            sortedParameters[0] = Op.toDouble(parameters[1]);
+            sortedParameters[1] = Op.toDouble(parameters[0]);
+            sortedParameters[2] = Op.toDouble(parameters[3]);
+            sortedParameters[3] = Op.toDouble(parameters[2]);
+        } else if ("sigmf".equals(mClass) && parameters.length >= 2) {
+            sortedParameters[0] = Op.toDouble(parameters[1]);
+            sortedParameters[1] = Op.toDouble(parameters[0]);
+        } else if ("dsigmf".equals(mClass) && parameters.length >= 4) {
+            sortedParameters[0] = Op.toDouble(parameters[1]);
+            sortedParameters[1] = Op.toDouble(parameters[0]);
+            sortedParameters[2] = Op.toDouble(parameters[2]);
+            sortedParameters[3] = Op.toDouble(parameters[3]);
+        } else if ("psigmf".equals(mClass) && parameters.length >= 4) {
+            sortedParameters[0] = Op.toDouble(parameters[1]);
+            sortedParameters[1] = Op.toDouble(parameters[0]);
+            sortedParameters[2] = Op.toDouble(parameters[2]);
+            sortedParameters[3] = Op.toDouble(parameters[3]);
+        }
+
+        String flClass = mapping.get(mClass);
+        if (flClass == null) {
+            flClass = mClass;
+        }
+
+        Term result = FactoryManager.instance().
+                getTerm().createInstance(flClass, sortedParameters);
+        result.setName(Op.makeValidId(name));
+        if ("function".equals(mClass) && parameters.length > 0) {
+            String text = "";
+            for (String parameter : parameters) {
+                text += parameter;
+            }
+            ((Function) result).setText(text);
+        }
+        return result;
+
     }
 
-    protected Op.Pair<Double, Double> extractRange(String range) {
-        return null;
+    public static void main(String[] args) throws Exception {
+        FuzzyLite.logger().setLevel(Level.INFO);
+        File file = new File("examples/fis/mamdani/SimpleDimmer.fis");
+        String fis = Op.join(Files.readAllLines(file.toPath(), Charset.defaultCharset()), "\n");
+        Engine engine = new FisImporter().fromString(fis);
+        String x = new FisExporter().toString(engine);
+        System.out.println(x);
     }
 
 }
