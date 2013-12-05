@@ -46,7 +46,7 @@ public class FactoryManager {
     public static void main(String[] args) throws Exception {
     }
 
-    public DefuzzifierFactory getDefuzzifier() {
+    public DefuzzifierFactory defuzzifier() {
         return defuzzifier;
     }
 
@@ -54,7 +54,7 @@ public class FactoryManager {
         this.defuzzifier = defuzzifier;
     }
 
-    public HedgeFactory getHedge() {
+    public HedgeFactory hedge() {
         return hedge;
     }
 
@@ -62,7 +62,7 @@ public class FactoryManager {
         this.hedge = hedge;
     }
 
-    public SNormFactory getSNorm() {
+    public SNormFactory snorm() {
         return sNorm;
     }
 
@@ -70,7 +70,7 @@ public class FactoryManager {
         this.sNorm = sNorm;
     }
 
-    public TNormFactory getTNorm() {
+    public TNormFactory tnorm() {
         return tNorm;
     }
 
@@ -78,7 +78,7 @@ public class FactoryManager {
         this.tNorm = tNorm;
     }
 
-    public TermFactory getTerm() {
+    public TermFactory term() {
         return term;
     }
 

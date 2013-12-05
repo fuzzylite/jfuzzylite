@@ -338,7 +338,7 @@ public class FclImporter extends Importer {
         } else if ("HPROD".equals(name)) {
             className = HamacherProduct.class.getSimpleName();
         }
-        return FactoryManager.instance().getTNorm().createInstance(className);
+        return FactoryManager.instance().tnorm().createInstance(className);
     }
 
     protected SNorm extractSNorm(String line) {
@@ -364,7 +364,7 @@ public class FclImporter extends Importer {
         } else if ("HSUM".equals(name)) {
             className = HamacherSum.class.getSimpleName();
         }
-        return FactoryManager.instance().getSNorm().createInstance(className);
+        return FactoryManager.instance().snorm().createInstance(className);
     }
 
     protected Term extractTerm(String line) {
@@ -446,7 +446,7 @@ public class FclImporter extends Importer {
         }
 
         try {
-            Term result = FactoryManager.instance().getTerm().createInstance(termClass, values);
+            Term result = FactoryManager.instance().term().createInstance(termClass, values);
             result.setName(Op.makeValidId(name));
 
             if (Function.class.getSimpleName().equals(termClass) && !parameters.isEmpty()) {
@@ -499,7 +499,7 @@ public class FclImporter extends Importer {
         } else if ("COGSS".equals(className)) {
             className = WeightedSum.class.getSimpleName();
         }
-        return FactoryManager.instance().getDefuzzifier().createInstance(className);
+        return FactoryManager.instance().defuzzifier().createInstance(className);
     }
 
     protected Op.Pair<Double, Boolean> extractDefaultValue(String line) {
@@ -610,7 +610,7 @@ public class FclImporter extends Importer {
         FuzzyLite.logger().setLevel(Level.INFO);
         File file = new File("examples/fcl/mamdani/SimpleDimmer.fcl");
         String fcl = Op.join(Files.readAllLines(file.toPath(), Charset.defaultCharset()), "\n");
-        FactoryManager.instance().getTerm().createInstance("Triangle");
+        FactoryManager.instance().term().createInstance("Triangle");
         Engine engine = new FclImporter().fromString(fcl);
         String x = new FclExporter().toString(engine);
         System.out.println(fcl.equals(x));

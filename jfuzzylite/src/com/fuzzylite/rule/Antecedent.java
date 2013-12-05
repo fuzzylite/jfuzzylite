@@ -84,7 +84,7 @@ public class Antecedent {
                 if (engine.hasHedge(token)) {
                     hedge = engine.getHedge(token);
                 } else {
-                    HedgeFactory hedgeFactory = FactoryManager.instance().getHedge();
+                    HedgeFactory hedgeFactory = FactoryManager.instance().hedge();
                     if (hedgeFactory.isRegistered(token)) {
                         hedge = hedgeFactory.createInstance(token);
                         engine.addHedge(hedge);

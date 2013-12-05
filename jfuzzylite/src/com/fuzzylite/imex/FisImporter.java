@@ -610,8 +610,7 @@ public class FisImporter extends Importer {
             flClass = mClass;
         }
 
-        Term result = FactoryManager.instance().
-                getTerm().createInstance(flClass, sortedParameters);
+        Term result = FactoryManager.instance().term().createInstance(flClass, sortedParameters);
         result.setName(Op.makeValidId(name));
         if ("function".equals(mClass) && parameters.length > 0) {
             String text = "";

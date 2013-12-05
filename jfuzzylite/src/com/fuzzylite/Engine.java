@@ -138,8 +138,8 @@ public class Engine {
 
     public void configure(String conjunction, String disjunction,
             String activation, String accumulation, String defuzzifier, int resolution) {
-        TNormFactory tnormFactory = FactoryManager.instance().getTNorm();
-        SNormFactory snormFactory = FactoryManager.instance().getSNorm();
+        TNormFactory tnormFactory = FactoryManager.instance().tnorm();
+        SNormFactory snormFactory = FactoryManager.instance().snorm();
 
         TNorm objConjunction = tnormFactory.createInstance(conjunction);
         SNorm objDisjunction = snormFactory.createInstance(disjunction);
@@ -147,7 +147,7 @@ public class Engine {
         SNorm objAccumulation = snormFactory.createInstance(accumulation);
 
         DefuzzifierFactory defuzzifierFactory
-                = FactoryManager.instance().getDefuzzifier();
+                = FactoryManager.instance().defuzzifier();
         Defuzzifier objDefuzzifier = defuzzifierFactory.createInstance(defuzzifier);
         if (objDefuzzifier instanceof IntegralDefuzzifier) {
             ((IntegralDefuzzifier) objDefuzzifier).setResolution(resolution);
