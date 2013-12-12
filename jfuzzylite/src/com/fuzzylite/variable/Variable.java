@@ -115,6 +115,10 @@ public class Variable {
         setMaximum(maximum);
     }
 
+    public double range() {
+        return this.maximum - this.minimum;
+    }
+
     public double getMinimum() {
         return minimum;
     }

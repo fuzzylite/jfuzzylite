@@ -264,7 +264,7 @@ public class FclImporter extends Importer {
             } else if ("METHOD".equals(firstToken)) {
                 outputVariable.setDefuzzifier(extractDefuzzifier(line));
             } else if ("ACCU".equals(firstToken)) {
-                outputVariable.getOutput().setAccumulation(extractSNorm(line));
+                outputVariable.output().setAccumulation(extractSNorm(line));
             } else if ("DEFAULT".equals(firstToken)) {
                 Op.Pair<Double, Boolean> defaultAndLock = extractDefaultValue(line);
                 outputVariable.setDefaultValue(defaultAndLock.first);

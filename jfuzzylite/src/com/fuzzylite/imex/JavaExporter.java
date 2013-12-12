@@ -19,7 +19,6 @@ import com.fuzzylite.Op;
 import static com.fuzzylite.Op.str;
 import com.fuzzylite.defuzzifier.Defuzzifier;
 import com.fuzzylite.defuzzifier.IntegralDefuzzifier;
-import com.fuzzylite.example.ts.SimpleDimmer;
 import com.fuzzylite.norm.Norm;
 import com.fuzzylite.rule.Rule;
 import com.fuzzylite.rule.RuleBlock;
@@ -129,8 +128,8 @@ public class JavaExporter extends Exporter {
                 "outputVariable%d.setDefuzzifier(%s);\n", index,
                 toString(outputVariable.getDefuzzifier())));
         result.append(String.format(
-                "outputVariable%d.getOutput().setAccumulation(%s);\n",
-                index, toString(outputVariable.getOutput().getAccumulation())));
+                "outputVariable%d.output().setAccumulation(%s);\n",
+                index, toString(outputVariable.output().getAccumulation())));
         for (Term term : outputVariable.getTerms()) {
             result.append(String.format("outputVariable%d.addTerm(%s);\n",
                     index, toString(term)));
@@ -311,10 +310,6 @@ public class JavaExporter extends Exporter {
                     : "Double.NEGATIVE_INFINITY";
         }
         return str(value);
-    }
-
-    public static void main(String[] args) {
-        System.out.println(new JavaExporter().toString(new SimpleDimmer()));
     }
 
 }

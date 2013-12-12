@@ -27,7 +27,6 @@ import com.fuzzylite.defuzzifier.MeanOfMaximum;
 import com.fuzzylite.defuzzifier.SmallestOfMaximum;
 import com.fuzzylite.defuzzifier.WeightedAverage;
 import com.fuzzylite.defuzzifier.WeightedSum;
-import com.fuzzylite.example.ts.SimpleDimmer;
 import com.fuzzylite.hedge.Extremely;
 import com.fuzzylite.hedge.Hedge;
 import com.fuzzylite.hedge.Not;
@@ -260,7 +259,7 @@ public class FisExporter extends Exporter {
     protected String extractAccumulation(Engine engine) {
         SNorm accumulation = null;
         for (OutputVariable outputVariable : engine.getOutputVariables()) {
-            SNorm other = outputVariable.getOutput().getAccumulation();
+            SNorm other = outputVariable.output().getAccumulation();
             if (accumulation == null) {
                 accumulation = other;
             } else if (!accumulation.getClass().equals(other.getClass())) {
@@ -515,11 +514,6 @@ public class FisExporter extends Exporter {
             return "hamacher_sum";
         }
         return norm.getClass().getSimpleName();
-    }
-
-    public static void main(String[] args) {
-        String x = null;
-        System.out.println(new FisExporter().toString(new SimpleDimmer()));
     }
 
 }

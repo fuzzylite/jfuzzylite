@@ -292,7 +292,7 @@ public class Console {
         outputVariable1.setLockValidOutput(false);
         outputVariable1.setDefaultValue(Double.NaN);
         outputVariable1.setDefuzzifier(new Centroid(200));
-        outputVariable1.getOutput().setAccumulation(new Maximum());
+        outputVariable1.output().setAccumulation(new Maximum());
         outputVariable1.addTerm(new Triangle("LOW", 0.000, 0.500, 1.000));
         outputVariable1.addTerm(new Triangle("MEDIUM", 0.500, 1.000, 1.500));
         outputVariable1.addTerm(new Triangle("HIGH", 1.000, 1.500, 2.000));
@@ -336,7 +336,7 @@ public class Console {
         outputVariable1.setLockValidOutput(true);
         outputVariable1.setDefaultValue(Double.NaN);
         outputVariable1.setDefuzzifier(new WeightedAverage());
-        outputVariable1.getOutput().setAccumulation(null);
+        outputVariable1.output().setAccumulation(null);
         outputVariable1.addTerm(new Constant("f1", 0.840));
         outputVariable1.addTerm(new Constant("f2", 0.450));
         outputVariable1.addTerm(new Constant("f3", 0.040));
@@ -355,7 +355,7 @@ public class Console {
         outputVariable2.setLockValidOutput(true);
         outputVariable2.setDefaultValue(Double.NaN);
         outputVariable2.setDefuzzifier(new WeightedAverage());
-        outputVariable2.getOutput().setAccumulation(null);
+        outputVariable2.output().setAccumulation(null);
         outputVariable2.addTerm(Function.create("fx", "sin(inputX)/inputX", engine, true));
         engine.addOutputVariable(outputVariable2);
 
@@ -366,7 +366,7 @@ public class Console {
         outputVariable3.setLockValidOutput(false);
         outputVariable3.setDefaultValue(Double.NaN);
         outputVariable3.setDefuzzifier(new WeightedAverage());
-        outputVariable3.getOutput().setAccumulation(null);
+        outputVariable3.output().setAccumulation(null);
         outputVariable3.addTerm(Function.create("diff", "fabs(outputFx-trueFx)", engine, true));
         engine.addOutputVariable(outputVariable3);
 

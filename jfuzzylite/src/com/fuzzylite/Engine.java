@@ -73,14 +73,14 @@ public class Engine {
             inputVariable.setInputValue(Double.NaN);
         }
         for (OutputVariable outputVariable : this.outputVariables) {
-            outputVariable.getOutput().clear();
+            outputVariable.output().clear();
             outputVariable.setLastValidOutput(Double.NaN);
         }
     }
 
     public void process() {
         for (OutputVariable outputVariable : outputVariables) {
-            outputVariable.getOutput().clear();
+            outputVariable.output().clear();
         }
         /*
          * BEGIN: Debug information
@@ -121,7 +121,7 @@ public class Engine {
                         outputVariable.getName(), str(outputValue)));
                 logger.info(String.format("%s.fuzzy=%s",
                         outputVariable.getName(), outputVariable.fuzzify(outputValue)));
-                logger.info(outputVariable.getOutput().toString());
+                logger.info(outputVariable.output().toString());
                 logger.info("==========================");
             }
         }
@@ -165,7 +165,7 @@ public class Engine {
         }
         for (OutputVariable outputVariable : this.outputVariables) {
             outputVariable.setDefuzzifier(defuzzifier);
-            outputVariable.getOutput().setAccumulation(accumulation);
+            outputVariable.output().setAccumulation(accumulation);
         }
     }
 
@@ -209,7 +209,7 @@ public class Engine {
                             "- Output variable <%s> has no defuzzifier\n",
                             outputVariable.getName()));
                 } else if (defuzzifier instanceof IntegralDefuzzifier
-                        && outputVariable.getOutput().getAccumulation() == null) {
+                        && outputVariable.output().getAccumulation() == null) {
                     message.append(String.format(
                             "- Output variable <%s> has no Accumulation\n"));
                 }

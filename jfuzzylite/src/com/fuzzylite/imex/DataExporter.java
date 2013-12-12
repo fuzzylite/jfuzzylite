@@ -15,9 +15,7 @@
 package com.fuzzylite.imex;
 
 import com.fuzzylite.Engine;
-import com.fuzzylite.FuzzyLite;
 import com.fuzzylite.Op;
-import com.fuzzylite.example.ts.SimpleDimmer;
 import com.fuzzylite.variable.InputVariable;
 import com.fuzzylite.variable.OutputVariable;
 import java.io.StringWriter;
@@ -129,13 +127,6 @@ public class DataExporter extends Exporter {
             overflow = Op.increment(sampleValues, minSampleValues, maxSampleValues);
         }
         writer.flush();
-    }
-
-    public static void main(String[] args) {
-        SimpleDimmer dimmer = new SimpleDimmer();
-        DataExporter exporter = new DataExporter();
-        FuzzyLite.setDecimals(6);
-        System.out.println(exporter.toString(dimmer));
     }
 
 }

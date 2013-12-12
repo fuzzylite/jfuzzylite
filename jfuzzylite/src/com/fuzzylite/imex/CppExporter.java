@@ -19,7 +19,6 @@ import com.fuzzylite.Op;
 import static com.fuzzylite.Op.str;
 import com.fuzzylite.defuzzifier.Defuzzifier;
 import com.fuzzylite.defuzzifier.IntegralDefuzzifier;
-import com.fuzzylite.example.ts.SimpleDimmer;
 import com.fuzzylite.norm.Norm;
 import com.fuzzylite.rule.Rule;
 import com.fuzzylite.rule.RuleBlock;
@@ -120,7 +119,7 @@ public class CppExporter extends Exporter {
                 toString(outputVariable.getDefuzzifier())));
         result.append(String.format(
                 "outputVariable%d->output()->setAccumulation(%s);\n",
-                index, toString(outputVariable.getOutput().getAccumulation())));
+                index, toString(outputVariable.output().getAccumulation())));
         for (Term term : outputVariable.getTerms()) {
             result.append(String.format("outputVariable%d->addTerm(%s);\n",
                     index, toString(term)));
@@ -300,10 +299,6 @@ public class CppExporter extends Exporter {
                     : "-fl::inf";
         }
         return str(value);
-    }
-
-    public static void main(String[] args) {
-        System.out.println(new CppExporter().toString(new SimpleDimmer()));
     }
 
 }

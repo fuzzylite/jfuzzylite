@@ -99,12 +99,8 @@ public class OutputVariable extends Variable {
         this.output.setMaximum(maximum);
     }
 
-    public Accumulated getOutput() {
+    public Accumulated output() {
         return output;
-    }
-
-    public void setOutput(Accumulated output) {
-        this.output = output;
     }
 
     public Defuzzifier getDefuzzifier() {

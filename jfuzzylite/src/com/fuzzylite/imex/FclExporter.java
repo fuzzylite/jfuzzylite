@@ -25,7 +25,6 @@ import com.fuzzylite.defuzzifier.MeanOfMaximum;
 import com.fuzzylite.defuzzifier.SmallestOfMaximum;
 import com.fuzzylite.defuzzifier.WeightedAverage;
 import com.fuzzylite.defuzzifier.WeightedSum;
-import com.fuzzylite.example.ts.SimpleDimmer;
 import com.fuzzylite.norm.Norm;
 import com.fuzzylite.norm.s.AlgebraicSum;
 import com.fuzzylite.norm.s.BoundedSum;
@@ -161,7 +160,7 @@ public class FclExporter extends Exporter {
         result.append(String.format("  METHOD : %s;\n",
                 toString(outputVariable.getDefuzzifier())));
         result.append(String.format("  ACCU : %s;\n",
-                toString(outputVariable.getOutput().getAccumulation())));
+                toString(outputVariable.output().getAccumulation())));
         result.append(String.format("  DEFAULT := %s;\n",
                 str(outputVariable.getDefaultValue())));
 
@@ -375,10 +374,6 @@ public class FclExporter extends Exporter {
             return "HSUM";
         }
         return norm.getClass().getSimpleName();
-    }
-
-    public static void main(String[] args) {
-        System.out.println(new FclExporter().toString(new SimpleDimmer()));
     }
 
 }

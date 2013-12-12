@@ -75,7 +75,7 @@ public class Example {
         outputVariable1.setLockValidOutput(false);
         outputVariable1.setDefaultValue(Double.NaN);
         outputVariable1.setDefuzzifier(new Centroid(200));
-        outputVariable1.getOutput().setAccumulation(new Maximum());
+        outputVariable1.output().setAccumulation(new Maximum());
         outputVariable1.addTerm(new Sigmoid("A", 0.500, -20.000));
         outputVariable1.addTerm(new ZShape("B", 0.000, 1.000));
         outputVariable1.addTerm(new Ramp("C", 1.000, 0.000));
