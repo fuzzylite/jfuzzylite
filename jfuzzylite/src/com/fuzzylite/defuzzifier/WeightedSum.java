@@ -11,9 +11,7 @@
  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  See the License for the specific language governing permissions and
  limitations under the License.
-*/
-
-
+ */
 package com.fuzzylite.defuzzifier;
 
 import com.fuzzylite.term.Accumulated;
@@ -24,13 +22,12 @@ import com.fuzzylite.term.Thresholded;
  *
  * @author jcrada
  */
-public class WeightedSum  extends Defuzzifier{
+public class WeightedSum extends Defuzzifier {
 
     @Override
     public double defuzzify(Term term, double minimum, double maximum) {
         Accumulated takagiSugeno = (Accumulated) term;
         double sum = 0.0;
-        double weights = 0.0;
         for (Term t : takagiSugeno.getTerms()) {
             Thresholded thresholded = (Thresholded) t;
             /**
@@ -41,11 +38,12 @@ public class WeightedSum  extends Defuzzifier{
              * threshold w will give the same for takagi-sugeno, plus provide
              * tsukamoto*
              */
-            double z = thresholded.getTerm().membership(thresholded.getThreshold());
-            sum += thresholded.getThreshold() * z;
-            weights += thresholded.getThreshold();
+            double w = thresholded.getThreshold();
+            double z = Tsukamoto.tsukamoto(thresholded,
+                    takagiSugeno.getMinimum(), takagiSugeno.getMaximum());
+            sum += w * z;
         }
-        return sum / weights;
+        return sum;
     }
 
 }

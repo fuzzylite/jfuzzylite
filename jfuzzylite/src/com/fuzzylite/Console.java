@@ -261,8 +261,8 @@ public class Console {
                 resolution = Integer.parseInt(options.get(KW_DATA_RESOLUTION_VARIABLE));
             } else if (options.containsKey(KW_DATA_RESOLUTION_TOTAL)) {
                 int total = Integer.parseInt(options.get(KW_DATA_RESOLUTION_TOTAL));
-                resolution = Math.max(1, (int) Math.round(
-                        Math.pow(total, 1.0 / engine.numberOfInputVariables())));
+                resolution = Math.max(1, -1 + (int) (Math.pow(
+                        total, 1.0 / engine.numberOfInputVariables())));
             }
             exporter = new DataExporter(separator, resolution);
         } else {

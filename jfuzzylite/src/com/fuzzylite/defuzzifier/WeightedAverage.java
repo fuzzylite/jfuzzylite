@@ -28,6 +28,7 @@ public class WeightedAverage extends Defuzzifier {
     public double defuzzify(Term term, double minimum, double maximum) {
         Accumulated takagiSugeno = (Accumulated) term;
         double sum = 0.0;
+        double weights = 0.0;
         for (Term t : takagiSugeno.getTerms()) {
             Thresholded thresholded = (Thresholded) t;
             /**
@@ -38,9 +39,12 @@ public class WeightedAverage extends Defuzzifier {
              * threshold w will give the same for takagi-sugeno, plus provide
              * tsukamoto*
              */
-            double z = thresholded.getTerm().membership(thresholded.getThreshold());
-            sum += thresholded.getThreshold() * z;
+            double w = thresholded.getThreshold();
+            double z = Tsukamoto.tsukamoto(thresholded,
+                    takagiSugeno.getMinimum(), takagiSugeno.getMaximum());
+            sum += w * z;
+            weights += w;
         }
-        return sum;
+        return sum / weights;
     }
 }
