@@ -50,7 +50,7 @@ public class OutputVariable extends Variable {
 
     public double defuzzify() {
         double result;
-        boolean isValid = this.output.getTerms().size() > 0;
+        boolean isValid = this.enabled && !this.output.getTerms().isEmpty();
         if (isValid) {
             result = this.defuzzifier.defuzzify(output, minimum, maximum);
         } else {
@@ -78,7 +78,7 @@ public class OutputVariable extends Variable {
 
     public double defuzzifyNoLocks() {
         double result;
-        boolean isValid = output.getTerms().size() > 0;
+        boolean isValid = this.enabled && !output.getTerms().isEmpty();
         if (isValid) {
             result = this.defuzzifier.defuzzify(output, minimum, maximum);
         } else {

@@ -317,7 +317,7 @@ public class FisExporter extends Exporter {
                     } else if (hedge instanceof Very) {
                         plusHedge += 2;
                     } else {
-                        plusHedge = -1;
+                        plusHedge = -1; // Unreconized hedge combination (e.g. Any)
                     }
                 }
                 break;
@@ -327,12 +327,10 @@ public class FisExporter extends Exporter {
                 result.append("-");
             }
             result.append(termIndexPlusOne);
-            if (!Op.isEq(plusHedge, 0.0)) {
-                if (plusHedge < 0) {
-                    result.append(String.format(".%s", Op.str(Double.NaN)));
-                } else {
-                    result.append(String.format(".%i", plusHedge));
-                }
+            if (Op.isGE(plusHedge, 0.0)) {
+                result.append(String.format(".%d", plusHedge));
+            } else {
+                result.append(".?"); //Unreconized hedge combination
             }
             result.append(" ");
         }

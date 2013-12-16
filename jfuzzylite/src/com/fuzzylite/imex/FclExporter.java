@@ -99,19 +99,13 @@ public class FclExporter extends Exporter {
             result.append(toString(inputVariable)).append("\n");
         }
 
-        result.append("\n");
-
         for (OutputVariable outputVariable : engine.getOutputVariables()) {
             result.append(toString(outputVariable)).append("\n");
         }
 
-        result.append("\n");
-
         for (RuleBlock ruleBlock : engine.getRuleBlocks()) {
             result.append(toString(ruleBlock)).append("\n");
         }
-
-        result.append("\n");
 
         result.append("END_FUNCTION_BLOCK\n");
 
@@ -128,7 +122,7 @@ public class FclExporter extends Exporter {
             result.append(String.format("  TERM %s := %s;\n",
                     term.getName(), toString(term)));
         }
-        result.append("END_FUZZIFY");
+        result.append("END_FUZZIFY\n");
         return result.toString();
     }
 
@@ -139,10 +133,8 @@ public class FclExporter extends Exporter {
         result.append(String.format("  RANGE := (%s .. %s);\n",
                 Op.str(outputVariable.getMinimum()), Op.str(outputVariable.getMaximum())));
         for (Term term : outputVariable.getTerms()) {
-            result.append(String.format("  TERM %s := %s;\n",
-                    term.getName(), toString(term)));
+            result.append(String.format("  TERM %s := %s;\n", term.getName(), toString(term)));
         }
-        result.append("\n");
 
         if (outputVariable.isLockOutputRange() || outputVariable.isLockValidOutput()) {
             String lock = "";
@@ -157,30 +149,39 @@ public class FclExporter extends Exporter {
             }
             result.append(String.format("  LOCK : %s;\n", lock));
         }
-        result.append(String.format("  METHOD : %s;\n",
-                toString(outputVariable.getDefuzzifier())));
-        result.append(String.format("  ACCU : %s;\n",
-                toString(outputVariable.output().getAccumulation())));
+        if (outputVariable.getDefuzzifier() != null) {
+            result.append(String.format("  METHOD : %s;\n",
+                    toString(outputVariable.getDefuzzifier())));
+        }
+        if (outputVariable.output().getAccumulation() != null) {
+            result.append(String.format("  ACCU : %s;\n",
+                    toString(outputVariable.output().getAccumulation())));
+        }
         result.append(String.format("  DEFAULT := %s;\n",
                 str(outputVariable.getDefaultValue())));
 
-        result.append("END_DEFUZZIFY");
+        result.append("END_DEFUZZIFY\n");
         return result.toString();
     }
 
     protected String toString(RuleBlock ruleBlock) {
         StringBuilder result = new StringBuilder();
         result.append(String.format("RULEBLOCK %s\n", ruleBlock.getName()));
-        result.append(String.format("  AND : %s;\n", toString(ruleBlock.getConjunction())));
-        result.append(String.format("  OR : %s;\n", toString(ruleBlock.getDisjunction())));
-        result.append(String.format("  ACT : %s;\n", toString(ruleBlock.getActivation())));
+        if (ruleBlock.getConjunction() != null) {
+            result.append(String.format("  AND : %s;\n", toString(ruleBlock.getConjunction())));
+        }
+        if (ruleBlock.getDisjunction() != null) {
+            result.append(String.format("  OR : %s;\n", toString(ruleBlock.getDisjunction())));
+        }
+        if (ruleBlock.getActivation() != null) {
+            result.append(String.format("  ACT : %s;\n", toString(ruleBlock.getActivation())));
+        }
 
-        result.append("\n");
         int index = 1;
         for (Rule rule : ruleBlock.getRules()) {
             result.append(String.format("  RULE %d : %s\n", index++, rule.getText()));
         }
-        result.append("END_RULEBLOCK");
+        result.append("END_RULEBLOCK\n");
         return result.toString();
     }
 

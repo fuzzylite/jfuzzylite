@@ -96,7 +96,7 @@ public class FclImporter extends Importer {
                     line = line.substring(0, line.indexOf("/*"));
                 }
                 line = line.trim();
-                
+
                 if (line.isEmpty() || line.charAt(0) == '#') {
                     continue;
                 }
@@ -268,7 +268,8 @@ public class FclImporter extends Importer {
             } else if ("DEFAULT".equals(firstToken)) {
                 Op.Pair<Double, Boolean> defaultAndLock = extractDefaultValue(line);
                 outputVariable.setDefaultValue(defaultAndLock.first);
-                outputVariable.setLockValidOutput(defaultAndLock.second);
+                outputVariable.setLockValidOutput(defaultAndLock.second
+                        || outputVariable.isLockValidOutput());
             } else if ("RANGE".equals(firstToken)) {
                 Op.Pair<Double, Double> range = extractRange(line);
                 outputVariable.setRange(range.first, range.second);
@@ -371,7 +372,7 @@ public class FclImporter extends Importer {
         String spacedLine = "";
         for (char c : line.toCharArray()) {
             if (c == '(' || c == ')' || c == ',') {
-                spacedLine += ' ';
+                spacedLine += " " + c + " ";
             } else if (c == ':') {
                 spacedLine += " :";
             } else if (c == '=') {
@@ -385,7 +386,7 @@ public class FclImporter extends Importer {
                 S_TERM_CLASS = 4, S_PARAMETERS = 5;
         int state = S_KWTERM;
         StringTokenizer tokenizer = new StringTokenizer(spacedLine);
-        String token = "", name = "", termClass = "";
+        String token, name = "", termClass = "";
         List<String> parameters = new ArrayList<>();
         while (tokenizer.hasMoreTokens()) {
             token = tokenizer.nextToken();
@@ -453,7 +454,7 @@ public class FclImporter extends Importer {
                 String infix = Op.join(parameters, "");
                 if (infix.length() > 1 && infix.charAt(0) == '('
                         && infix.charAt(infix.length() - 1) == ')') {
-                    infix = infix.substring(1, infix.length() - 2);
+                    infix = infix.substring(1, infix.length() - 1);
                 }
                 ((Function) result).setText(infix);
             }

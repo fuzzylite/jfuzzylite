@@ -35,6 +35,7 @@ public class Variable {
     protected String name;
     protected double minimum, maximum;
     protected List<Term> terms;
+    protected boolean enabled;
 
     public Variable(String name) {
         this(name, Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY);
@@ -45,6 +46,7 @@ public class Variable {
         this.minimum = minimum;
         this.maximum = maximum;
         this.terms = new ArrayList<>();
+        this.enabled = true;
     }
 
     public String fuzzify(double x) {
@@ -133,6 +135,14 @@ public class Variable {
 
     public void setMaximum(double maximum) {
         this.maximum = maximum;
+    }
+
+    public void setEnabled(boolean enabled) {
+        this.enabled = enabled;
+    }
+
+    public boolean isEnabled() {
+        return this.enabled;
     }
 
     /*

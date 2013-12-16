@@ -74,7 +74,9 @@ public class Proposition extends Expression {
         for (Hedge hedge : hedges) {
             result += hedge.getName() + " ";
         }
-        result += term.getName();
+        if (term != null) { //term is null when hedge is any
+            result += term.getName();
+        }
         return result;
     }
 

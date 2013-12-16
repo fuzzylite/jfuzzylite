@@ -44,6 +44,7 @@ import java.io.Writer;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.logging.Level;
 
 /**
  *
@@ -350,7 +351,7 @@ public class Console {
 
         OutputVariable outputVariable2 = new OutputVariable();
         outputVariable2.setName("trueFx");
-        outputVariable2.setRange(Double.NaN, Double.NaN);
+        outputVariable2.setRange(-1, 1);
         outputVariable2.setLockOutputRange(false);
         outputVariable2.setLockValidOutput(true);
         outputVariable2.setDefaultValue(Double.NaN);
@@ -361,7 +362,7 @@ public class Console {
 
         OutputVariable outputVariable3 = new OutputVariable();
         outputVariable3.setName("diffFx");
-        outputVariable3.setRange(Double.NaN, Double.NaN);
+        outputVariable3.setRange(-1, 1);
         outputVariable3.setLockOutputRange(false);
         outputVariable3.setLockValidOutput(false);
         outputVariable3.setDefaultValue(Double.NaN);
@@ -391,6 +392,7 @@ public class Console {
     }
 
     public static void main(String[] args) {
+//        FuzzyLite.logger().setLevel(Level.INFO);
         if (args.length == 0) {
             System.out.println(usage());
             return;

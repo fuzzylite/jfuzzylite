@@ -152,6 +152,9 @@ public class Consequent {
 
     public void modify(double activationDegree, TNorm activation) {
         for (Proposition proposition : conclusions) {
+            if (!proposition.variable.isEnabled()){
+                continue;
+            }
             double threshold = activationDegree;
             for (Hedge hedge : proposition.getHedges()) {
                 threshold = hedge.hedge(threshold);

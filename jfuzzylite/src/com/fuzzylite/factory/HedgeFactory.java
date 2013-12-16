@@ -29,11 +29,11 @@ import com.fuzzylite.hedge.Very;
 public class HedgeFactory extends Factory<Hedge> {
 
     public HedgeFactory() {
-        register(Any.class);
-        register(Extremely.class);
-        register(Not.class);
-        register(Seldom.class);
-        register(Somewhat.class);
-        register(Very.class);
+        register(new Any().getName(), Any.class);
+        register(new Extremely().getName(), Extremely.class);
+        register(new Not().getName(), Not.class);
+        register(new Seldom().getName(), Seldom.class);
+        register(new Somewhat().getName(), Somewhat.class);
+        register(new Very().getName(), Very.class);
     }
 }
