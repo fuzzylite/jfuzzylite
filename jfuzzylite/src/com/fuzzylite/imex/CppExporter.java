@@ -77,78 +77,86 @@ public class CppExporter extends Exporter {
     }
 
     protected String toString(InputVariable inputVariable, Engine engine) {
-        int index = engine.getInputVariables().indexOf(inputVariable) + 1;
+        String name = "inputVariable";
+        if (engine.numberOfInputVariables() > 1) {
+            name += engine.getInputVariables().indexOf(inputVariable) + 1;
+        }
         StringBuilder result = new StringBuilder();
         result.append(String.format(
-                "fl::InputVariable* inputVariable%d = new fl::InputVariable;\n", index));
+                "fl::InputVariable* %s = new fl::InputVariable;\n", name));
         result.append(String.format(
-                "inputVariable%d->setName(\"%s\");\n", index, inputVariable.getName()));
+                "%s->setName(\"%s\");\n", name, inputVariable.getName()));
         result.append(String.format(
-                "inputVariable%d->setRange(%s, %s);\n", index,
+                "%s->setRange(%s, %s);\n", name,
                 toString(inputVariable.getMinimum()), toString(inputVariable.getMaximum())));
         for (Term term : inputVariable.getTerms()) {
-            result.append(String.format("inputVariable%d->addTerm(%s);\n",
-                    index, toString(term)));
+            result.append(String.format("%s->addTerm(%s);\n",
+                    name, toString(term)));
         }
         result.append(String.format(
-                "engine->addInputVariable(inputVariable%d);\n", index));
+                "engine->addInputVariable(%s);\n", name));
         return result.toString();
     }
 
     protected String toString(OutputVariable outputVariable, Engine engine) {
-        int index = engine.getOutputVariables().indexOf(outputVariable) + 1;
+        String name = "outputVariable";
+        if (engine.numberOfOutputVariables() > 1) {
+            name += engine.getOutputVariables().indexOf(outputVariable) + 1;
+        }
         StringBuilder result = new StringBuilder();
         result.append(String.format(
-                "fl::OutputVariable* outputVariable%d = new fl::OutputVariable;\n", index));
+                "fl::OutputVariable* %s = new fl::OutputVariable;\n", name));
         result.append(String.format(
-                "outputVariable%d->setName(\"%s\");\n", index, outputVariable.getName()));
+                "%s->setName(\"%s\");\n", name, outputVariable.getName()));
         result.append(String.format(
-                "outputVariable%d->setRange(%s, %s);\n", index,
+                "%s->setRange(%s, %s);\n", name,
                 toString(outputVariable.getMinimum()), toString(outputVariable.getMaximum())));
         result.append(String.format(
-                "outputVariable%d->setLockOutputRange(%s);\n", index,
+                "%s->setLockOutputRange(%s);\n", name,
                 outputVariable.isLockOutputRange()));
         result.append(String.format(
-                "outputVariable%d->setLockValidOutput(%s);\n", index,
+                "%s->setLockValidOutput(%s);\n", name,
                 outputVariable.isLockValidOutput()));
         result.append(String.format(
-                "outputVariable%d->setDefaultValue(%s);\n", index,
+                "%s->setDefaultValue(%s);\n", name,
                 toString(outputVariable.getDefaultValue())));
         result.append(String.format(
-                "outputVariable%d->setDefuzzifier(%s);\n", index,
+                "%s->setDefuzzifier(%s);\n", name,
                 toString(outputVariable.getDefuzzifier())));
         result.append(String.format(
-                "outputVariable%d->output()->setAccumulation(%s);\n",
-                index, toString(outputVariable.output().getAccumulation())));
+                "%s->output()->setAccumulation(%s);\n",
+                name, toString(outputVariable.output().getAccumulation())));
         for (Term term : outputVariable.getTerms()) {
-            result.append(String.format("outputVariable%d->addTerm(%s);\n",
-                    index, toString(term)));
+            result.append(String.format("%s->addTerm(%s);\n",
+                    name, toString(term)));
         }
         result.append(String.format(
-                "engine->addOutputVariable(outputVariable%d);\n", index));
+                "engine->addOutputVariable(%s);\n", name));
         return result.toString();
     }
 
     protected String toString(RuleBlock ruleBlock, Engine engine) {
-        int index = engine.getRuleBlocks().indexOf(ruleBlock) + 1;
+        String name = "ruleBlock";
+        if (engine.numberOfRuleBlocks() > 1) {
+            name += engine.getRuleBlocks().indexOf(ruleBlock) + 1;
+        }
         StringBuilder result = new StringBuilder();
         result.append(String.format(
-                "fl::RuleBlock* ruleBlock%d = new fl::RuleBlock;\n", index));
+                "fl::RuleBlock* %s = new fl::RuleBlock;\n", name));
         result.append(String.format(
-                "ruleBlock%d->setName(\"%s\");\n", index, ruleBlock.getName()));
+                "%s->setName(\"%s\");\n", name, ruleBlock.getName()));
         result.append(String.format(
-                "ruleBlock%d->setConjunction(%s);\n", index, toString(ruleBlock.getConjunction())));
+                "%s->setConjunction(%s);\n", name, toString(ruleBlock.getConjunction())));
         result.append(String.format(
-                "ruleBlock%d->setDisjunction(%s);\n", index, toString(ruleBlock.getDisjunction())));
+                "%s->setDisjunction(%s);\n", name, toString(ruleBlock.getDisjunction())));
         result.append(String.format(
-                "ruleBlock%d->setActivation(%s);\n", index, toString(ruleBlock.getActivation())));
+                "%s->setActivation(%s);\n", name, toString(ruleBlock.getActivation())));
         for (Rule rule : ruleBlock.getRules()) {
-            result.append(String.format(
-                    "ruleBlock%d->addRule(fl::Rule::parse(\"%s\", engine));\n",
-                    index, rule.getText()));
+            result.append(String.format("%s->addRule(fl::Rule::parse(\"%s\", engine));\n",
+                    name, rule.getText()));
         }
         result.append(String.format(
-                "engine->addRuleBlock(ruleBlock%d);\n", index));
+                "engine->addRuleBlock(%s);\n", name));
         return result.toString();
     }
 
