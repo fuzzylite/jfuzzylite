@@ -18,6 +18,7 @@ import com.fuzzylite.Op;
 import com.fuzzylite.variable.InputVariable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Pattern;
 
 /**
  *
@@ -42,6 +43,23 @@ public class Linear extends Term {
         this.coefficients = coefficients;
         //Copy elements to prevent changing the Engine's input variables
         this.inputVariables = new ArrayList<>(inputVariables);
+    }
+    
+        @Override
+    public String parameters() {
+        return Op.join(coefficients, " ");
+    }
+
+    @Override
+    public void configure(String parameters) {
+        if (parameters.isEmpty()) {
+            return;
+        }
+        coefficients.clear();
+        String[] values = parameters.split(Pattern.quote(" "));
+        for (String x : values){
+            coefficients.add(Op.toDouble(x));
+        }
     }
 
     //It is safe to pass the InputVariables from the Engine
@@ -78,11 +96,6 @@ public class Linear extends Term {
         return result;
     }
 
-    @Override
-    public String toString() {
-        return Linear.class.getSimpleName() + " (" + Op.join(this.coefficients, ", ") + ")";
-    }
-
     public List<Double> getCoefficients() {
         return coefficients;
     }
@@ -95,14 +108,6 @@ public class Linear extends Term {
     public void set(List<Double> coefficients, List<InputVariable> inputVariables) {
         this.coefficients = coefficients;
         this.inputVariables = new ArrayList<>(inputVariables);
-    }
-
-    @Override
-    public void configure(double[] parameters) {
-        coefficients.clear();
-        for (double x : parameters) {
-            coefficients.add(x);
-        }
     }
 
 }

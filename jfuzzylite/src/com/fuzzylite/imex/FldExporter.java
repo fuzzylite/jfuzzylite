@@ -27,23 +27,23 @@ import java.util.List;
  *
  * @author jcrada
  */
-public class DataExporter extends Exporter {
+public class FldExporter extends Exporter {
 
-    public static final int DEFAULT_RESOLUTION = 100;
+    public static final int DEFAULT_MAXIMUM = 1024;
     public static final String DEFAULT_SEPARATOR = " ";
-    
-    protected String separator;
-    protected int resolution;
 
-    public DataExporter(){
-        this(DEFAULT_SEPARATOR, DEFAULT_RESOLUTION);
+    protected String separator;
+    protected int maximum;
+
+    public FldExporter() {
+        this(DEFAULT_SEPARATOR, DEFAULT_MAXIMUM);
     }
-    
-    public DataExporter(String separator, int resolution){
+
+    public FldExporter(String separator, int maximum) {
         this.separator = separator;
-        this.resolution = resolution;
+        this.maximum = maximum;
     }
-    
+
     public String getSeparator() {
         return separator;
     }
@@ -52,33 +52,34 @@ public class DataExporter extends Exporter {
         this.separator = separator;
     }
 
-    public int getResolution() {
-        return resolution;
+    public int getMaximum() {
+        return maximum;
     }
 
-    public void setResolution(int resolution) {
-        this.resolution = resolution;
+    public void setMaximum(int maximum) {
+        this.maximum = maximum;
     }
+
     @Override
     public String toString(Engine engine) {
         return toString(engine, this.separator);
     }
 
     public String toString(Engine engine, String separator) {
-        return toString(engine, separator, this.resolution);
+        return toString(engine, separator, this.maximum);
     }
 
-    public String toString(Engine engine, String separator, int resolution) {
+    public String toString(Engine engine, String separator, int maximum) {
         StringWriter writer = new StringWriter();
         try {
-            toWriter(engine, writer, separator, resolution);
+            toWriter(engine, writer, separator, maximum);
         } catch (Exception ex) {
             throw new RuntimeException("[exporter error] an exception occurred while exporting the results", ex);
         }
         return writer.toString();
     }
 
-    public void toWriter(Engine engine, Writer writer, String separator, int resolution)
+    public void toWriter(Engine engine, Writer writer, String separator, int maximum)
             throws Exception {
 
         List<String> variables = new ArrayList<>();
@@ -91,13 +92,16 @@ public class DataExporter extends Exporter {
 
         writer.write(Op.join(variables, separator) + "\n");
 
+        int resolution = (int) Math.max(1.0, Math.pow(
+                maximum, 1.0 / engine.numberOfInputVariables()));
+
         int sampleValues[] = new int[engine.numberOfInputVariables()];
         int minSampleValues[] = new int[engine.numberOfInputVariables()];
         int maxSampleValues[] = new int[engine.numberOfInputVariables()];
         for (int i = 0; i < engine.numberOfInputVariables(); ++i) {
             sampleValues[i] = 0;
             minSampleValues[i] = 0;
-            maxSampleValues[i] = resolution;
+            maxSampleValues[i] = resolution - 1;//increment goes one more
         }
 
         engine.restart();

@@ -17,6 +17,7 @@ package com.fuzzylite.variable;
 import com.fuzzylite.Op;
 import static com.fuzzylite.Op.str;
 import com.fuzzylite.defuzzifier.Defuzzifier;
+import com.fuzzylite.imex.FllExporter;
 import com.fuzzylite.term.Term;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -70,15 +71,7 @@ public class Variable {
 
     @Override
     public String toString() {
-        String result = name + " [";
-        for (Iterator<Term> it = terms.iterator(); it.hasNext();) {
-            result += it.next().toString();
-            if (it.hasNext()) {
-                result += ", ";
-            }
-        }
-        result += "]";
-        return result;
+        return new FllExporter("", "; ").toString(this);
     }
 
     public void sort(final Defuzzifier defuzzifier) {
@@ -186,10 +179,6 @@ public class Variable {
 
     public int numberOfTerms() {
         return this.terms.size();
-    }
-
-    public boolean isEmpty() {
-        return this.terms.isEmpty();
     }
 
     public List<Term> getTerms() {

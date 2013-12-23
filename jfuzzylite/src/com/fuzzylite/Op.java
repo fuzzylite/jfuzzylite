@@ -38,6 +38,7 @@ public class Op {
             this.second = second;
         }
 
+        @Override
         public String toString() {
             return "{" + this.first + ":" + this.second + "}";
         }
@@ -47,23 +48,43 @@ public class Op {
      * Math Operations
      */
     public static boolean isEq(double a, double b) {
-        return Math.abs(a - b) < FuzzyLite.getMachEps();
+        return isEq(a, b, FuzzyLite.getMachEps());
+    }
+
+    public static boolean isEq(double a, double b, double macheps) {
+        return Math.abs(a - b) < macheps;
     }
 
     public static boolean isLt(double a, double b) {
-        return !isEq(a, b) && a < b;
+        return isLt(a, b, FuzzyLite.getMachEps());
+    }
+
+    public static boolean isLt(double a, double b, double macheps) {
+        return !isEq(a, b, macheps) && a < b;
     }
 
     public static boolean isLE(double a, double b) {
-        return isEq(a, b) || a < b;
+        return isLE(a, b, FuzzyLite.getMachEps());
+    }
+
+    public static boolean isLE(double a, double b, double macheps) {
+        return isEq(a, b, macheps) || a < b;
     }
 
     public static boolean isGt(double a, double b) {
-        return !isEq(a, b) && a > b;
+        return isGt(a, b, FuzzyLite.getMachEps());
+    }
+
+    public static boolean isGt(double a, double b, double macheps) {
+        return !isEq(a, b, macheps) && a > b;
     }
 
     public static boolean isGE(double a, double b) {
-        return isEq(a, b) || a > b;
+        return isGE(a, b, FuzzyLite.getMachEps());
+    }
+
+    public static boolean isGE(double a, double b, double macheps) {
+        return isEq(a, b, macheps) || a > b;
     }
 
     public static double add(double a, double b) {
@@ -281,7 +302,4 @@ public class Op {
         return result;
     }
 
-    public static void main(String[] args) {
-        System.out.println(Op.join(",", 0.3, 0.6666666, 0.333333333, 1 / 9.0));
-    }
 }

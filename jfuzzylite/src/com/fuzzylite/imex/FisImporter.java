@@ -25,8 +25,10 @@ import com.fuzzylite.defuzzifier.SmallestOfMaximum;
 import com.fuzzylite.defuzzifier.WeightedAverage;
 import com.fuzzylite.defuzzifier.WeightedSum;
 import com.fuzzylite.factory.FactoryManager;
+import com.fuzzylite.hedge.Any;
 import com.fuzzylite.hedge.Extremely;
 import com.fuzzylite.hedge.Not;
+import com.fuzzylite.hedge.Seldom;
 import com.fuzzylite.hedge.Somewhat;
 import com.fuzzylite.hedge.Very;
 import com.fuzzylite.norm.s.AlgebraicSum;
@@ -96,17 +98,15 @@ public class FisImporter extends Importer {
         List<String> sections = new ArrayList<>();
         try {
             while ((line = fisReader.readLine()) != null) {
-                if (line.contains("//")) {
-                    line = line.substring(0, line.indexOf("//"));
+                String[] comments = line.split(Pattern.quote("//"));
+                if (comments.length > 1) {
+                    line = comments[0];
                 }
-                //TODO: ignore multiline comments
-                if (line.contains("/*")) {
-                    line = line.substring(0, line.indexOf("/*"));
+                comments = line.split(Pattern.quote("#"));
+                if (comments.length > 1) {
+                    line = comments[0];
                 }
-                if (line.contains("#")) {
-                    line = line.substring(0, line.indexOf("/*"));
-                }
-                line = line.trim().replaceAll("'", "");
+                line = line.trim().replaceAll(Pattern.quote("'"), "");
                 // (%) indicates a comment only when used at the start of line
                 if (line.isEmpty() || line.charAt(0) == '%') {
                     continue;
@@ -211,6 +211,8 @@ public class FisImporter extends Importer {
 
             if ("Name".equals(key)) {
                 inputVariable.setName(Op.makeValidId(value));
+            } else if (key == "Enabled") {
+                inputVariable.setEnabled(Op.isEq(Op.toDouble(value), 1.0));
             } else if ("Range".equals(key)) {
                 Op.Pair<Double, Double> minmax = extractRange(value);
                 inputVariable.setMinimum(minmax.first);
@@ -246,6 +248,8 @@ public class FisImporter extends Importer {
 
             if ("Name".equals(key)) {
                 outputVariable.setName(Op.makeValidId(value));
+            } else if (key == "Enabled") {
+                outputVariable.setEnabled(Op.isEq(Op.toDouble(value), 1.0));
             } else if ("Range".equals(key)) {
                 Op.Pair<Double, Double> minmax = extractRange(value);
                 outputVariable.setMinimum(minmax.first);
@@ -382,20 +386,23 @@ public class FisImporter extends Importer {
     }
 
     protected String translateProposition(double code, Variable variable) {
-        int intPart = (int) Math.abs(Math.floor(code)) - 1;
-        double fracPart = code % 1;
+        int intPart = (int) Math.floor(Math.abs(code)) - 1;
+        double fracPart = Math.abs(code) % 1;
 
-        if (intPart < 0 || intPart > variable.numberOfTerms()) {
+        if (intPart > variable.numberOfTerms()) {
             throw new RuntimeException(String.format(
                     "[syntax error] the code <%s> refers to a term out of range "
                     + "from variable <%s>", Op.str(code), variable.getName()));
         }
 
+        boolean isAny = intPart < 0;
         StringBuilder result = new StringBuilder();
         if (code < 0) {
             result.append(new Not().getName()).append(" ");
         }
-        if (Op.isEq(fracPart, 0.05)) {
+        if (Op.isEq(fracPart, 0.01)) {
+            result.append(new Seldom().getName()).append(" ");
+        } else if (Op.isEq(fracPart, 0.05)) {
             result.append(new Somewhat().getName()).append(" ");
         } else if (Op.isEq(fracPart, 0.2)) {
             result.append(new Very().getName()).append(" ");
@@ -404,12 +411,16 @@ public class FisImporter extends Importer {
         } else if (Op.isEq(fracPart, 0.4)) {
             result.append(new Very().getName()).append(" ");
             result.append(new Very().getName()).append(" ");
+        } else if (Op.isEq(fracPart, 0.99)) {
+            result.append(new Any().getName()).append(" ");
         } else if (!Op.isEq(fracPart, 0)) {
             throw new RuntimeException(String.format(
                     "[syntax error] no hedge defined in FIS format for <%s>",
                     Op.str(fracPart)));
         }
-        result.append(variable.getTerm(intPart).getName());
+        if (!isAny) {
+            result.append(variable.getTerm(intPart).getName());
+        }
         return result.toString();
     }
 
@@ -610,26 +621,13 @@ public class FisImporter extends Importer {
             flClass = mClass;
         }
 
-        Term result = FactoryManager.instance().term().createInstance(flClass, sortedParameters);
+        Term result = FactoryManager.instance().term().createInstance(flClass);
         result.setName(Op.makeValidId(name));
-        if ("function".equals(mClass) && parameters.length > 0) {
-            String text = "";
-            for (String parameter : parameters) {
-                text += parameter;
-            }
-            ((Function) result).setText(text);
+        if (result instanceof Function) {
+            result.configure(Op.join(parameters, ""));
+        } else {
+            result.configure(Op.join(sortedParameters, " "));
         }
         return result;
-
     }
-
-    public static void main(String[] args) throws Exception {
-        FuzzyLite.logger().setLevel(Level.INFO);
-        File file = new File("examples/fis/mamdani/SimpleDimmer.fis");
-        String fis = Op.join(Files.readAllLines(file.toPath(), Charset.defaultCharset()), "\n");
-        Engine engine = new FisImporter().fromString(fis);
-        String x = new FisExporter().toString(engine);
-        System.out.println(x);
-    }
-
 }

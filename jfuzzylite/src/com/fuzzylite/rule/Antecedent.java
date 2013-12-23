@@ -113,7 +113,7 @@ public class Antecedent {
                 if (Rule.FL_AND.equals(token) || Rule.FL_OR.equals(token)) {
                     if (expressionStack.size() != 2) {
                         throw new RuntimeException(String.format(
-                                "[syntax error] logical operator <%s> expects two operands, but found <%i>",
+                                "[syntax error] logical operator <%s> expects two operands, but found <%d>",
                                 token, expressionStack.size()));
                     }
                     Operator operator = new Operator();
@@ -149,7 +149,7 @@ public class Antecedent {
         }
         if (expressionStack.size() != 1) {
             throw new RuntimeException(String.format(
-                    "[syntax error] stack expected to contain the root, but contains %i nodes",
+                    "[syntax error] stack expected to contain the root, but contains %d nodes",
                     expressionStack.size()));
         }
         this.root = expressionStack.pop();

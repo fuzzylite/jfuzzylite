@@ -15,7 +15,7 @@
 package com.fuzzylite.term;
 
 import com.fuzzylite.Op;
-import static com.fuzzylite.Op.str;
+import java.util.regex.Pattern;
 
 /**
  *
@@ -45,6 +45,28 @@ public class Triangle extends Term {
     }
 
     @Override
+    public String parameters() {
+        return Op.join(" ", a, b, c);
+    }
+
+    @Override
+    public void configure(String parameters) {
+        if (parameters.isEmpty()) {
+            return;
+        }
+        String[] values = parameters.split(Pattern.quote(" "));
+        int required = 3;
+        if (values.length < required) {
+            throw new RuntimeException(String.format(
+                    "[configuration error] term <%s> requires <%d> parameters",
+                    this.getClass().getSimpleName(), required));
+        }
+        setA(Op.toDouble(values[0]));
+        setB(Op.toDouble(values[1]));
+        setC(Op.toDouble(values[2]));
+    }
+
+    @Override
     public double membership(double x) {
         if (Double.isNaN(x)) {
             return Double.NaN;
@@ -59,13 +81,6 @@ public class Triangle extends Term {
         } else {
             return (c - x) / (c - b);
         }
-    }
-
-    @Override
-    public String toString() {
-        String result = Triangle.class.getSimpleName();
-        result += "(" + Op.join(", ", str(a), str(b), str(c)) + ")";
-        return result;
     }
 
     public double getA() {
@@ -90,19 +105,6 @@ public class Triangle extends Term {
 
     public void setC(double c) {
         this.c = c;
-    }
-
-    @Override
-    public void configure(double[] parameters) {
-        int required = 3;
-        if (parameters.length < required) {
-            throw new RuntimeException(String.format(
-                    "[configuration error] term <%s> requires <%d> parameters",
-                    this.getClass().getSimpleName(), required));
-        }
-        setA(parameters[0]);
-        setB(parameters[1]);
-        setC(parameters[2]);
     }
 
 }

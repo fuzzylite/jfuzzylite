@@ -41,34 +41,35 @@ import com.fuzzylite.norm.t.HamacherProduct;
 import com.fuzzylite.norm.t.Minimum;
 import com.fuzzylite.rule.Rule;
 import com.fuzzylite.rule.RuleBlock;
-import com.fuzzylite.term.Bell;
 import com.fuzzylite.term.Constant;
 import com.fuzzylite.term.Discrete;
-import com.fuzzylite.term.Function;
-import com.fuzzylite.term.Gaussian;
-import com.fuzzylite.term.GaussianProduct;
-import com.fuzzylite.term.Linear;
-import com.fuzzylite.term.PiShape;
-import com.fuzzylite.term.Ramp;
-import com.fuzzylite.term.Rectangle;
-import com.fuzzylite.term.SShape;
-import com.fuzzylite.term.Sigmoid;
-import com.fuzzylite.term.SigmoidDifference;
-import com.fuzzylite.term.SigmoidProduct;
 import com.fuzzylite.term.Term;
-import com.fuzzylite.term.Trapezoid;
-import com.fuzzylite.term.Triangle;
-import com.fuzzylite.term.ZShape;
 import com.fuzzylite.variable.InputVariable;
 import com.fuzzylite.variable.OutputVariable;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  *
  * @author jcrada
  */
 public class FclExporter extends Exporter {
+
+    protected String indent;
+
+    public FclExporter() {
+        this("  ");
+    }
+
+    public FclExporter(String indent) {
+        this.indent = indent;
+    }
+
+    public String getIndent() {
+        return indent;
+    }
+
+    public void setIndent(String indent) {
+        this.indent = indent;
+    }
 
     @Override
     public String toString(Engine engine) {
@@ -115,6 +116,8 @@ public class FclExporter extends Exporter {
     protected String toString(InputVariable inputVariable) {
         StringBuilder result = new StringBuilder();
         result.append(String.format("FUZZIFY %s\n", inputVariable.getName()));
+        result.append(String.format("ENABLED : %s\n",
+                String.valueOf(inputVariable.isEnabled())));
         result.append(String.format("  RANGE := (%s .. %s);\n",
                 Op.str(inputVariable.getMinimum()), Op.str(inputVariable.getMaximum())));
 
@@ -130,6 +133,8 @@ public class FclExporter extends Exporter {
         StringBuilder result = new StringBuilder();
 
         result.append(String.format("DEFUZZIFY %s\n", outputVariable.getName()));
+        result.append(String.format("ENABLED : %s\n",
+                String.valueOf(outputVariable.isEnabled())));
         result.append(String.format("  RANGE := (%s .. %s);\n",
                 Op.str(outputVariable.getMinimum()), Op.str(outputVariable.getMaximum())));
         for (Term term : outputVariable.getTerms()) {
@@ -153,9 +158,9 @@ public class FclExporter extends Exporter {
             result.append(String.format("  METHOD : %s;\n",
                     toString(outputVariable.getDefuzzifier())));
         }
-        if (outputVariable.output().getAccumulation() != null) {
+        if (outputVariable.fuzzyOutput().getAccumulation() != null) {
             result.append(String.format("  ACCU : %s;\n",
-                    toString(outputVariable.output().getAccumulation())));
+                    toString(outputVariable.fuzzyOutput().getAccumulation())));
         }
         result.append(String.format("  DEFAULT := %s;\n",
                 str(outputVariable.getDefaultValue())));
@@ -167,6 +172,8 @@ public class FclExporter extends Exporter {
     protected String toString(RuleBlock ruleBlock) {
         StringBuilder result = new StringBuilder();
         result.append(String.format("RULEBLOCK %s\n", ruleBlock.getName()));
+        result.append(String.format("ENABLED : %s\n",
+                String.valueOf(ruleBlock.isEnabled())));
         if (ruleBlock.getConjunction() != null) {
             result.append(String.format("  AND : %s;\n", toString(ruleBlock.getConjunction())));
         }
@@ -187,117 +194,28 @@ public class FclExporter extends Exporter {
 
     protected String toString(Term term) {
         if (term == null) {
-            return "null";
+            return "";
         }
-        if (term instanceof Bell) {
-            Bell t = (Bell) term;
-            return String.format("%s (%s)",
-                    Bell.class.getSimpleName(),
-                    Op.join(", ", t.getCenter(), t.getWidth(), t.getSlope()));
-        }
-        if (term instanceof Constant) {
-            Constant t = (Constant) term;
-            return String.format("%s", str(t.getValue()));
-        }
+
         if (term instanceof Discrete) {
-            Discrete t = (Discrete) term;
-            List<Double> xy = new ArrayList<>();
-            for (int i = 0; i < t.x.size(); ++i) {
-                xy.add(t.x.get(i));
-                xy.add(t.y.get(i));
+            StringBuilder result = new StringBuilder();
+            Discrete discrete = (Discrete) term;
+            for (int i = 0; i < discrete.x.size(); ++i) {
+                result.append(String.format("(%s, %s)",
+                        Op.str(discrete.x.get(i)), Op.str(discrete.y.get(i))));
+                if (i + 1 < discrete.x.size()) {
+                    result.append(" ");
+                }
             }
-            return String.format("(%s)", Op.join(xy, ", "));
+            return result.toString();
         }
 
-        if (term instanceof Function) {
-            Function t = (Function) term;
-            return String.format("%s (%s)",
-                    Function.class.getSimpleName(), t.getText());
-        }
-        if (term instanceof Gaussian) {
-            Gaussian t = (Gaussian) term;
-            return String.format("%s (%s)",
-                    Gaussian.class.getSimpleName(),
-                    Op.join(", ", t.getMean(), t.getStandardDeviation()));
-        }
-        if (term instanceof GaussianProduct) {
-            GaussianProduct t = (GaussianProduct) term;
-            return String.format("%s (%s)",
-                    GaussianProduct.class.getSimpleName(),
-                    Op.join(", ", t.getMeanA(), t.getStandardDeviationA(),
-                            t.getMeanB(), t.getStandardDeviationB()));
-        }
-        if (term instanceof Linear) {
-            Linear t = (Linear) term;
-            return String.format("%s (%s)",
-                    Linear.class.getSimpleName(),
-                    Op.join(t.getCoefficients(), ", "));
-        }
-        if (term instanceof PiShape) {
-            PiShape t = (PiShape) term;
-            return String.format("%s (%s)",
-                    PiShape.class.getSimpleName(),
-                    Op.join(", ", t.getBottomLeft(), t.getTopLeft(),
-                            t.getTopRight(), t.getBottomRight()));
-        }
-        if (term instanceof Ramp) {
-            Ramp t = (Ramp) term;
-            return String.format("%s (%s)",
-                    Ramp.class.getSimpleName(),
-                    Op.join(", ", t.getStart(), t.getEnd()));
-        }
-        if (term instanceof Rectangle) {
-            Rectangle t = (Rectangle) term;
-            return String.format("%s (%s)",
-                    Rectangle.class.getSimpleName(),
-                    Op.join(", ", t.getMinimum(), t.getMaximum()));
-        }
-        if (term instanceof SigmoidDifference) {
-            SigmoidDifference t = (SigmoidDifference) term;
-            return String.format("%s (%s)",
-                    SigmoidDifference.class.getSimpleName(),
-                    Op.join(", ", t.getLeft(), t.getRising(),
-                            t.getFalling(), t.getRight()));
-        }
-        if (term instanceof Sigmoid) {
-            Sigmoid t = (Sigmoid) term;
-            return String.format("%s (%s)",
-                    Sigmoid.class.getSimpleName(),
-                    Op.join(", ", t.getInflection(), t.getSlope()));
-        }
-        if (term instanceof SigmoidProduct) {
-            SigmoidProduct t = (SigmoidProduct) term;
-            return String.format("%s (%s)",
-                    SigmoidProduct.class.getSimpleName(),
-                    Op.join(", ", t.getLeft(), t.getRising(),
-                            t.getFalling(), t.getRight()));
-        }
-        if (term instanceof SShape) {
-            SShape t = (SShape) term;
-            return String.format("%s (%s)",
-                    SShape.class.getSimpleName(),
-                    Op.join(", ", t.getStart(), t.getEnd()));
-        }
-        if (term instanceof Trapezoid) {
-            Trapezoid t = (Trapezoid) term;
-            return String.format("%s (%s)",
-                    Trapezoid.class.getSimpleName(),
-                    Op.join(", ", t.getA(), t.getB(), t.getC(), t.getD()));
-        }
-        if (term instanceof Triangle) {
-            Triangle t = (Triangle) term;
-            return String.format("%s (%s)",
-                    Triangle.class.getSimpleName(),
-                    Op.join(", ", t.getA(), t.getB(), t.getC()));
-        }
-        if (term instanceof ZShape) {
-            ZShape t = (ZShape) term;
-            return String.format("%s (%s)",
-                    ZShape.class.getSimpleName(),
-                    Op.join(", ", t.getStart(), t.getEnd()));
+        if (term instanceof Constant) {
+            Constant constant = (Constant) term;
+            return Op.str(constant.getValue());
         }
 
-        return term.toString();
+        return term.getClass().getSimpleName() + " " + term.parameters();
     }
 
     protected String toString(Defuzzifier defuzzifier) {

@@ -15,7 +15,7 @@
 package com.fuzzylite.term;
 
 import com.fuzzylite.Op;
-import static com.fuzzylite.Op.str;
+import java.util.regex.Pattern;
 
 /**
  *
@@ -40,19 +40,33 @@ public class Gaussian extends Term {
     }
 
     @Override
+    public String parameters() {
+        return Op.join(" ", mean, standardDeviation);
+    }
+
+    @Override
+    public void configure(String parameters) {
+        if (parameters.isEmpty()) {
+            return;
+        }
+        String[] values = parameters.split(Pattern.quote(" "));
+        int required = 2;
+        if (values.length < required) {
+            throw new RuntimeException(String.format(
+                    "[configuration error] term <%s> requires <%d> parameters",
+                    this.getClass().getSimpleName(), required));
+        }
+        setMean(Op.toDouble(values[0]));
+        setStandardDeviation(Op.toDouble(values[1]));
+    }
+
+    @Override
     public double membership(double x) {
         if (Double.isNaN(x)) {
             return Double.NaN;
         }
         return Math.exp((-(x - mean) * (x - mean))
                 / (2 * standardDeviation * standardDeviation));
-    }
-
-    @Override
-    public String toString() {
-        String result = Gaussian.class.getSimpleName();
-        result += "(" + Op.join(", ", str(mean), str(standardDeviation)) + ")";
-        return result;
     }
 
     public double getMean() {
@@ -69,17 +83,5 @@ public class Gaussian extends Term {
 
     public void setStandardDeviation(double standardDeviation) {
         this.standardDeviation = standardDeviation;
-    }
-
-    @Override
-    public void configure(double[] parameters) {
-        int required = 2;
-        if (parameters.length < required) {
-            throw new RuntimeException(String.format(
-                    "[configuration error] term <%s> requires <%d> parameters",
-                    this.getClass().getSimpleName(), required));
-        }
-        setMean(parameters[0]);
-        setStandardDeviation(parameters[1]);
     }
 }

@@ -22,8 +22,7 @@ import com.fuzzylite.factory.FactoryManager;
 import com.fuzzylite.factory.SNormFactory;
 import com.fuzzylite.factory.TNormFactory;
 import com.fuzzylite.hedge.Hedge;
-import com.fuzzylite.imex.FclExporter;
-import com.fuzzylite.imex.FisExporter;
+import com.fuzzylite.imex.FllExporter;
 import com.fuzzylite.norm.SNorm;
 import com.fuzzylite.norm.TNorm;
 import com.fuzzylite.rule.Rule;
@@ -73,14 +72,14 @@ public class Engine {
             inputVariable.setInputValue(Double.NaN);
         }
         for (OutputVariable outputVariable : this.outputVariables) {
-            outputVariable.output().clear();
+            outputVariable.fuzzyOutput().clear();
             outputVariable.setLastValidOutput(Double.NaN);
         }
     }
 
     public void process() {
         for (OutputVariable outputVariable : outputVariables) {
-            outputVariable.output().clear();
+            outputVariable.fuzzyOutput().clear();
         }
         /*
          * BEGIN: Debug information
@@ -89,10 +88,15 @@ public class Engine {
         if (FuzzyLite.debug()) {
             for (InputVariable inputVariable : this.inputVariables) {
                 double inputValue = inputVariable.getInputValue();
-                logger.info(String.format(
-                        "%s.input=%s\n%s.fuzzy=%s",
-                        inputVariable.getName(), str(inputValue),
-                        inputVariable.getName(), inputVariable.fuzzify(inputValue)));
+                if (inputVariable.isEnabled()) {
+                    logger.info(String.format(
+                            "%s.input = %s\n%s.fuzzy = %s",
+                            inputVariable.getName(), str(inputValue),
+                            inputVariable.getName(), inputVariable.fuzzify(inputValue)));
+                } else {
+                    logger.info(String.format(
+                            "%s.enabled = false", inputVariable.getName()));
+                }
             }
         }
         /*
@@ -100,7 +104,9 @@ public class Engine {
          */
 
         for (RuleBlock ruleBlock : ruleBlocks) {
-            ruleBlock.activate();
+            if (ruleBlock.isEnabled()) {
+                ruleBlock.activate();
+            }
         }
 
         /*
@@ -108,21 +114,25 @@ public class Engine {
          */
         if (FuzzyLite.debug()) {
             for (OutputVariable outputVariable : this.outputVariables) {
-                logger.info(String.format("%s.default=%s",
-                        outputVariable.getName(), str(outputVariable.getDefaultValue())));
-                logger.info(String.format("%s.lockRange=%s",
-                        outputVariable.getName(), String.valueOf(outputVariable.isLockOutputRange())));
-                logger.info(String.format("%s.lockValid=%s",
-                        outputVariable.getName(), String.valueOf(outputVariable.isLockValidOutput())));
+                if (outputVariable.isEnabled()) {
+                    logger.info(String.format("%s.default = %s",
+                            outputVariable.getName(), str(outputVariable.getDefaultValue())));
+                    logger.info(String.format("%s.lockRange = %s",
+                            outputVariable.getName(), String.valueOf(outputVariable.isLockOutputRange())));
+                    logger.info(String.format("%s.lockValid = %s",
+                            outputVariable.getName(), String.valueOf(outputVariable.isLockValidOutput())));
 
-                //no locking is ever performed during this debugging block;
-                double outputValue = outputVariable.defuzzifyNoLocks();
-                logger.info(String.format("%s.output=%s",
-                        outputVariable.getName(), str(outputValue)));
-                logger.info(String.format("%s.fuzzy=%s",
-                        outputVariable.getName(), outputVariable.fuzzify(outputValue)));
-                logger.info(outputVariable.output().toString());
-                logger.info("==========================");
+                    //no locking is ever performed during this debugging block;
+                    double outputValue = outputVariable.defuzzifyNoLocks();
+                    logger.info(String.format("%s.output = %s",
+                            outputVariable.getName(), str(outputValue)));
+                    logger.info(String.format("%s.fuzzy = %s",
+                            outputVariable.getName(), outputVariable.fuzzify(outputValue)));
+                    logger.info(outputVariable.fuzzyOutput().toString());
+                    logger.info("==========================");
+                } else {
+                    logger.info(String.format("%s.enabled = false", outputVariable.getName()));
+                }
             }
         }
         /*
@@ -165,7 +175,7 @@ public class Engine {
         }
         for (OutputVariable outputVariable : this.outputVariables) {
             outputVariable.setDefuzzifier(defuzzifier);
-            outputVariable.output().setAccumulation(accumulation);
+            outputVariable.fuzzyOutput().setAccumulation(accumulation);
         }
     }
 
@@ -173,7 +183,6 @@ public class Engine {
         return isReady(new StringBuilder());
     }
 
-    //TODO: ignore "and/or" after "then"
     public boolean isReady(StringBuilder message) {
         message.setLength(0);
         if (this.inputVariables.isEmpty()) {
@@ -183,8 +192,8 @@ public class Engine {
             InputVariable inputVariable = this.inputVariables.get(i);
             if (inputVariable == null) {
                 message.append(String.format(
-                        "- Engine has a null input variable at index <%i>\n", i));
-            } else if (inputVariable.isEmpty()) {
+                        "- Engine has a null input variable at index <%d>\n", i));
+            } else if (inputVariable.getTerms().isEmpty()) {
                 //ignore because sometimes inputs can be empty: takagi-sugeno/matlab/slcpp1.fis
                 //message.append(String.format("- Input variable <%s> has no terms\n", inputVariable.getName()));
             }
@@ -197,9 +206,9 @@ public class Engine {
             OutputVariable outputVariable = this.outputVariables.get(i);
             if (outputVariable == null) {
                 message.append(String.format(
-                        "- Engine has a null output variable at index <%i>\n", i));
+                        "- Engine has a null output variable at index <%d>\n", i));
             } else {
-                if (outputVariable.isEmpty()) {
+                if (outputVariable.getTerms().isEmpty()) {
                     message.append(String.format(
                             "- Output variable <%s> has no terms\n", outputVariable.getName()));
                 }
@@ -209,7 +218,7 @@ public class Engine {
                             "- Output variable <%s> has no defuzzifier\n",
                             outputVariable.getName()));
                 } else if (defuzzifier instanceof IntegralDefuzzifier
-                        && outputVariable.output().getAccumulation() == null) {
+                        && outputVariable.fuzzyOutput().getAccumulation() == null) {
                     message.append(String.format(
                             "- Output variable <%s> has no Accumulation\n"));
                 }
@@ -223,9 +232,9 @@ public class Engine {
             RuleBlock ruleBlock = this.ruleBlocks.get(i);
             if (ruleBlock == null) {
                 message.append(String.format(
-                        "- Engine has a null rule block at index <%i>\n", i));
+                        "- Engine has a null rule block at index <%d>\n", i));
             } else {
-                if (ruleBlock.isEmpty()) {
+                if (ruleBlock.getRules().isEmpty()) {
                     message.append(String.format(
                             "- Rule block <%s> has no rules\n", ruleBlock.getName()));
                 }
@@ -235,7 +244,7 @@ public class Engine {
                     Rule rule = ruleBlock.getRule(r);
                     if (rule == null) {
                         message.append(String.format(
-                                "- Rule block <%s> has a null rule at index <%i>\n",
+                                "- Rule block <%s> has a null rule at index <%d>\n",
                                 ruleBlock.getName(), r));
                     } else {
                         int thenIndex = rule.getText().indexOf(" " + Rule.FL_THEN + " ");
@@ -251,13 +260,13 @@ public class Engine {
                     message.append(String.format(
                             "- Rule block <%s> has no Conjunction\n", ruleBlock.getName()));
                     message.append(String.format(
-                            "- Rule block <%s> has %i rules that require Conjunction", ruleBlock.getName(), requiresConjunction));
+                            "- Rule block <%s> has %d rules that require Conjunction", ruleBlock.getName(), requiresConjunction));
                 }
                 if (requiresDisjunction > 0 && ruleBlock.getDisjunction() == null) {
                     message.append(String.format(
                             "- Rule block <%s> has no Disjunction\n", ruleBlock.getName()));
                     message.append(String.format(
-                            "- Rule block <%s> has %i rules that require Disjunction", ruleBlock.getName(), requiresDisjunction));
+                            "- Rule block <%s> has %d rules that require Disjunction", ruleBlock.getName(), requiresDisjunction));
                 }
                 if (ruleBlock.getActivation() == null) {
                     message.append(String.format(
@@ -268,13 +277,11 @@ public class Engine {
         return message.length() == 0;
     }
 
-    public String toFcl() {
-        return new FclExporter().toString(this);
+    @Override
+    public String toString() {
+        return new FllExporter().toString(this);
     }
 
-    public String toFis() {
-        return new FisExporter().toString(this);
-    }
 
     /*
      * InputVariables
@@ -386,7 +393,7 @@ public class Engine {
                 "[engine error] no output variable by name <%s>", name));
     }
 
-    public OutputVariable remoOutputVariable(int index) {
+    public OutputVariable removeOutputVariable(int index) {
         return this.outputVariables.remove(index);
     }
 

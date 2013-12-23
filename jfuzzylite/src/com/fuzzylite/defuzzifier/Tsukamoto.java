@@ -88,11 +88,11 @@ public class Tsukamoto {
         if (!Double.isNaN(z)) {
             double fz = monotonic.membership(z);
             //Compare difference between estimated and true value
-            if (!Op.isEq(w, fz)) {
+            if (!Op.isEq(w, fz, 1e-2)) {
                 FuzzyLite.logger().warning(String.format(
-                        "[tsukamoto warning] inaccurate computation of z because"
-                        + "expected w=f(z) in %s <%s>, "
-                        + "but w=%s f(z)=%s and z=%s",
+                        "[tsukamoto warning] difference <%s> might suggest an inaccurate "
+                        + "computation of z because it is expected w=f(z) in %s term <%s>, "
+                        + "but w=%s f(z)=%s and z=%s", Op.str(Math.abs(w-fz)),
                         monotonic.getClass().getSimpleName(), monotonic.getName(),
                         Op.str(w), Op.str(fz), Op.str(z)));
             }

@@ -15,7 +15,7 @@
 package com.fuzzylite.term;
 
 import com.fuzzylite.Op;
-import static com.fuzzylite.Op.str;
+import java.util.regex.Pattern;
 
 /**
  *
@@ -40,18 +40,32 @@ public class Sigmoid extends Term {
     }
 
     @Override
+    public String parameters() {
+        return Op.join(" ", inflection, slope);
+    }
+
+    @Override
+    public void configure(String parameters) {
+        if (parameters.isEmpty()) {
+            return;
+        }
+        String[] values = parameters.split(Pattern.quote(" "));
+        int required = 2;
+        if (values.length < required) {
+            throw new RuntimeException(String.format(
+                    "[configuration error] term <%s> requires <%d> parameters",
+                    this.getClass().getSimpleName(), required));
+        }
+        setInflection(Op.toDouble(values[0]));
+        setSlope(Op.toDouble(values[1]));
+    }
+
+    @Override
     public double membership(double x) {
         if (Double.isNaN(x)) {
             return Double.NaN;
         }
         return 1.0 / (1.0 + Math.exp(-slope * (x - inflection)));
-    }
-
-    @Override
-    public String toString() {
-        String result = Sigmoid.class.getSimpleName();
-        result += "(" + Op.join(", ", str(inflection), str(slope)) + ")";
-        return result;
     }
 
     public double getInflection() {
@@ -68,18 +82,6 @@ public class Sigmoid extends Term {
 
     public void setSlope(double slope) {
         this.slope = slope;
-    }
-
-    @Override
-    public void configure(double[] parameters) {
-        int required = 2;
-        if (parameters.length < required) {
-            throw new RuntimeException(String.format(
-                    "[configuration error] term <%s> requires <%d> parameters",
-                    this.getClass().getSimpleName(), required));
-        }
-        setInflection(parameters[0]);
-        setSlope(parameters[1]);
     }
 
 }

@@ -14,7 +14,7 @@
  */
 package com.fuzzylite.term;
 
-import static com.fuzzylite.Op.str;
+import com.fuzzylite.Op;
 
 /**
  *
@@ -38,13 +38,21 @@ public class Constant extends Term {
     }
 
     @Override
-    public double membership(double x) {
-        return this.value;
+    public String parameters() {
+        return Op.str(value);
     }
 
     @Override
-    public String toString() {
-        return Constant.class.getSimpleName() + " (" + str(this.value) + ")";
+    public void configure(String parameters) {
+        if (parameters.isEmpty()) {
+            return;
+        }
+        setValue(Op.toDouble(parameters));
+    }
+
+    @Override
+    public double membership(double x) {
+        return this.value;
     }
 
     public double getValue() {
@@ -55,14 +63,4 @@ public class Constant extends Term {
         this.value = value;
     }
 
-    @Override
-    public void configure(double[] parameters) {
-        int required = 1;
-        if (parameters.length < required) {
-            throw new RuntimeException(String.format(
-                    "[configuration error] term <%s> requires <%d> parameters",
-                    this.getClass().getSimpleName(), required));
-        }
-        setValue(parameters[0]);
-    }
 }

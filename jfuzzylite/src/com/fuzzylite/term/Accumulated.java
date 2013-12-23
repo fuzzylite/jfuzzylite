@@ -14,9 +14,10 @@
  */
 package com.fuzzylite.term;
 
+import com.fuzzylite.Op;
+import com.fuzzylite.imex.FllExporter;
 import com.fuzzylite.norm.SNorm;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -53,6 +54,24 @@ public class Accumulated extends Term {
     }
 
     @Override
+    public String parameters() {
+        FllExporter exporter = new FllExporter("", "; ");
+        StringBuilder result = new StringBuilder();
+        result.append(String.format("%s %s %s",
+                Op.str(minimum), Op.str(maximum),
+                exporter.toString(accumulation)));
+        for (Term term : terms){
+            result.append(" ").append(exporter.toString(term));
+        }
+        return result.toString();
+    }
+
+    @Override
+    public void configure(String parameters) {
+        //do nothing
+    }
+
+    @Override
     public double membership(double x) {
         if (Double.isNaN(x)) {
             return Double.NaN;
@@ -64,25 +83,7 @@ public class Accumulated extends Term {
         return mu;
     }
 
-    @Override
-    public String toString() {
-        String result = Accumulated.class.getSimpleName() + " (";
-        for (Iterator<Term> it = this.terms.iterator(); it.hasNext();) {
-            result += it.next().toString();
-            if (it.hasNext()) {
-                result += ", ";
-            }
-        }
-        result += ") using ";
-        if (accumulation == null) {
-            result += "no accumulation operator";
-        } else {
-            accumulation.getClass().getSimpleName();
-        }
-        return result;
-    }
-    
-    public void clear(){
+    public void clear() {
         this.terms.clear();
     }
 
@@ -118,8 +119,4 @@ public class Accumulated extends Term {
         this.accumulation = accumulation;
     }
 
-    @Override
-    public void configure(double[] parameters) {
-        //do nothing
-    }
 }

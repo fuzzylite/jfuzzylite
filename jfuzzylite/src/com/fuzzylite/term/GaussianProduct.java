@@ -15,7 +15,7 @@
 package com.fuzzylite.term;
 
 import com.fuzzylite.Op;
-import static com.fuzzylite.Op.str;
+import java.util.regex.Pattern;
 
 /**
  *
@@ -44,6 +44,29 @@ public class GaussianProduct extends Term {
     }
 
     @Override
+    public String parameters() {
+        return Op.join(" ", meanA, standardDeviationA, meanB, standardDeviationB);
+    }
+
+    @Override
+    public void configure(String parameters) {
+        if (parameters.isEmpty()) {
+            return;
+        }
+        String[] values = parameters.split(Pattern.quote(" "));
+        int required = 4;
+        if (values.length < required) {
+            throw new RuntimeException(String.format(
+                    "[configuration error] term <%s> requires <%d> parameters",
+                    this.getClass().getSimpleName(), required));
+        }
+        setMeanA(Op.toDouble(values[0]));
+        setStandardDeviationA(Op.toDouble(values[1]));
+        setMeanB(Op.toDouble(values[2]));
+        setStandardDeviationB(Op.toDouble(values[3]));
+    }
+
+    @Override
     public double membership(double x) {
         if (Double.isNaN(x)) {
             return Double.NaN;
@@ -55,14 +78,6 @@ public class GaussianProduct extends Term {
         double b = Math.exp((-(x - meanB) * (x - meanB)) / (2 * standardDeviationB * standardDeviationB))
                 * xGEb + (1 - xGEb);
         return a * b;
-    }
-
-    @Override
-    public String toString() {
-        String result = GaussianProduct.class.getSimpleName();
-        result += "(" + Op.join(", ", str(meanA), str(standardDeviationA),
-                str(meanB), str(standardDeviationB)) + ")";
-        return result;
     }
 
     public double getMeanA() {
@@ -97,17 +112,4 @@ public class GaussianProduct extends Term {
         this.standardDeviationB = standardDeviationB;
     }
 
-    @Override
-    public void configure(double[] parameters) {
-        int required = 4;
-        if (parameters.length < required) {
-            throw new RuntimeException(String.format(
-                    "[configuration error] term <%s> requires <%d> parameters",
-                    this.getClass().getSimpleName(), required));
-        }
-        setMeanA(parameters[0]);
-        setStandardDeviationA(parameters[1]);
-        setMeanB(parameters[2]);
-        setStandardDeviationB(parameters[3]);
-    }
 }

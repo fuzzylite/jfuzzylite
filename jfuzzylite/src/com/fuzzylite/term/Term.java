@@ -12,8 +12,9 @@
  See the License for the specific language governing permissions and
  limitations under the License.
  */
-
 package com.fuzzylite.term;
+
+import com.fuzzylite.imex.FllExporter;
 
 /**
  *
@@ -39,10 +40,15 @@ public abstract class Term implements Cloneable {
         this.name = name;
     }
 
+    @Override
+    public final String toString() {
+        return new FllExporter("", "; ").toString(this);
+    }
+
+    public abstract String parameters();
+
+    public abstract void configure(String parameters);
+
     public abstract double membership(double x);
 
-    public abstract void configure(double[] parameters);
-
-    @Override
-    public abstract String toString();
 }

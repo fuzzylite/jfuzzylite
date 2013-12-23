@@ -30,6 +30,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.StringTokenizer;
 import java.util.logging.Logger;
+import java.util.regex.Pattern;
 
 /**
  *
@@ -138,7 +139,7 @@ public class Function extends Term {
                             break;
                         default:
                             throw new RuntimeException(String.format(
-                                    "[function error] <%i>-ary element <%s> is not supported, "
+                                    "[function error] <%d>-ary element <%s> is not supported, "
                                     + "only unary and binary elements are",
                                     element.getArity(), element.toString()));
                     }
@@ -277,6 +278,19 @@ public class Function extends Term {
         this.loadOperators();
     }
 
+    @Override
+    public String parameters() {
+        return text;
+    }
+
+    @Override
+    public void configure(String parameters) {
+        if (parameters.isEmpty()) {
+            return;
+        }
+        setText(parameters);
+    }
+
     public void load() {
         load(this.text, this.engine);
     }
@@ -315,12 +329,6 @@ public class Function extends Term {
         return this.root.evaluate(this.variables);
     }
 
-    @Override
-    public String toString() {
-        return String.format("Function (%s)", this.text);
-    }
-
-    //TODO: update exporters.
     public static Function create(String name, String text, Engine engine) {
         return create(name, text, engine, true);
     }
@@ -454,7 +462,7 @@ public class Function extends Term {
         toSpace.add(",");
         String spacedText = text;
         for (String operator : toSpace) {
-            spacedText = spacedText.replace(operator, " " + operator + " ");
+            spacedText = spacedText.replace(Pattern.quote(operator), " " + operator + " ");
         }
 
         //Tokenizer
@@ -559,8 +567,8 @@ public class Function extends Term {
                 Operator op = getOperators().get(token);
                 if (op.getArity() > stack.size()) {
                     throw new RuntimeException(String.format(
-                            "[function error] operator <%s> has arity <%i>, "
-                            + "but <%i> elements are available",
+                            "[function error] operator <%s> has arity <%d>, "
+                            + "but <%d> elements are available",
                             op.name, op.getArity(), stack.size()));
                 }
 
@@ -575,8 +583,8 @@ public class Function extends Term {
                 BuiltInFunction function = getFunctions().get(token);
                 if (function.getArity() > stack.size()) {
                     throw new RuntimeException(String.format(
-                            "[function error] operator <%s> has arity <%i>, "
-                            + "but <%i> elements are available",
+                            "[function error] operator <%s> has arity <%d>, "
+                            + "but <%d> elements are available",
                             function.name, function.getArity(), stack.size()));
                 }
 
@@ -636,11 +644,6 @@ public class Function extends Term {
 
     public Map<String, BuiltInFunction> getFunctions() {
         return functions;
-    }
-
-    @Override
-    public void configure(double[] parameters) {
-        //do nothing
     }
 
     public static void main(String[] args) throws Exception {

@@ -24,7 +24,9 @@ import com.fuzzylite.imex.FisExporter;
 import com.fuzzylite.imex.FisImporter;
 import com.fuzzylite.imex.Importer;
 import com.fuzzylite.imex.JavaExporter;
-import com.fuzzylite.imex.DataExporter;
+import com.fuzzylite.imex.FldExporter;
+import com.fuzzylite.imex.FllExporter;
+import com.fuzzylite.imex.FllImporter;
 import com.fuzzylite.norm.s.Maximum;
 import com.fuzzylite.norm.t.AlgebraicProduct;
 import com.fuzzylite.norm.t.Minimum;
@@ -44,7 +46,6 @@ import java.io.Writer;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.logging.Level;
 
 /**
  *
@@ -57,19 +58,17 @@ public class Console {
     public static final String KW_OUTPUT_FILE = "-o";
     public static final String KW_OUTPUT_FORMAT = "-of";
     public static final String KW_EXAMPLE = "-ex";
-    public static final String KW_DATA_RESOLUTION_VARIABLE = "-rv";
-    public static final String KW_DATA_RESOLUTION_TOTAL = "-rt";
+    public static final String KW_DATA_MAXIMUM = "-max";
     public static final String KW_DATA_SEPARATOR = "-sep";
 
     public static String usage() {
         Map<String, String> options = new LinkedHashMap<>();
         options.put(KW_INPUT_FILE, "inputfile");
-        options.put(KW_INPUT_FORMAT, "fis,fcl");
+        options.put(KW_INPUT_FORMAT, "fll,fis,fcl");
         options.put(KW_OUTPUT_FILE, "outputfile");
-        options.put(KW_OUTPUT_FORMAT, "fis,fcl,cpp,java,dat");
+        options.put(KW_OUTPUT_FORMAT, "fll,fis,fcl,cpp,java,fld");
         options.put(KW_EXAMPLE, "(m)amdani,(t)akagi-sugeno");
-        options.put(KW_DATA_RESOLUTION_VARIABLE, "resolution(variable)");
-        options.put(KW_DATA_RESOLUTION_TOTAL, "resolution(total)");
+        options.put(KW_DATA_MAXIMUM, "maximum");
         options.put(KW_DATA_SEPARATOR, "separator");
 
         StringBuilder result = new StringBuilder();
@@ -114,12 +113,11 @@ public class Console {
         } else {
             Map<String, String> valid = new HashMap<>();
             valid.put(KW_INPUT_FILE, "inputfile");
-            valid.put(KW_INPUT_FORMAT, "fis,fcl");
+            valid.put(KW_INPUT_FORMAT, "fll,fis,fcl");
             valid.put(KW_OUTPUT_FILE, "outputfile");
-            valid.put(KW_OUTPUT_FORMAT, "fis,fcl,cpp,java,dat");
+            valid.put(KW_OUTPUT_FORMAT, "fis,fcl,cpp,java,fld");
             valid.put(KW_EXAMPLE, "(m)amdani,(t)akagi-sugeno");
-            valid.put(KW_DATA_RESOLUTION_VARIABLE, "resolution(variable)");
-            valid.put(KW_DATA_RESOLUTION_TOTAL, "resolution(total)");
+            valid.put(KW_DATA_MAXIMUM, "maximum");
             valid.put(KW_DATA_SEPARATOR, "separator");
             for (String option : options.keySet()) {
                 if (!valid.containsKey(option)) {
@@ -127,7 +125,6 @@ public class Console {
                             "[option error] option <%s> not supported", option));
                 }
             }
-
         }
         return options;
     }
@@ -142,17 +139,17 @@ public class Console {
 
         if (isExample) {
             Engine engine;
-            if (example.equalsIgnoreCase("m") || example.equalsIgnoreCase("mamdani")) {
+            if (example.equals("m") || example.equals("mamdani")) {
                 engine = mamdani();
-            } else if (example.equalsIgnoreCase("t") || example.equalsIgnoreCase("ts")
-                    || example.equalsIgnoreCase("takagi-sugeno")) {
+            } else if (example.equals("t") || example.equals("ts")
+                    || example.equals("takagi-sugeno")) {
                 engine = takagiSugeno();
             } else {
                 throw new RuntimeException(String.format(
                         "[option error] example <%s> not available", example));
             }
-            inputFormat = "fcl";
-            textEngine.append(new FclExporter().toString(engine));
+            inputFormat = "fll";
+            textEngine.append(new FllExporter().toString(engine));
         } else {
 
             String inputFilename = options.get(KW_INPUT_FILE);
@@ -231,9 +228,11 @@ public class Console {
             String inputFormat, String outputFormat, Map<String, String> options)
             throws Exception {
         Importer importer = null;
-        if ("fcl".equalsIgnoreCase(inputFormat)) {
+        if ("fll".equals(inputFormat)) {
+            importer = new FllImporter();
+        } else if ("fcl".equals(inputFormat)) {
             importer = new FclImporter();
-        } else if ("fis".equalsIgnoreCase(inputFormat)) {
+        } else if ("fis".equals(inputFormat)) {
             importer = new FisImporter();
         } else {
             throw new RuntimeException(String.format(
@@ -242,30 +241,29 @@ public class Console {
         Engine engine = importer.fromString(input);
 
         Exporter exporter = null;
-        if ("fcl".equalsIgnoreCase(outputFormat)) {
+        if ("fll".equals(outputFormat)) {
+            exporter = new FllExporter();
+        } else if ("fcl".equals(outputFormat)) {
             exporter = new FclExporter();
-        } else if ("fis".equalsIgnoreCase(outputFormat)) {
+        } else if ("fis".equals(outputFormat)) {
             exporter = new FisExporter();
-        } else if ("c++".equalsIgnoreCase(outputFormat)
-                || "cpp".equalsIgnoreCase(outputFormat)) {
+        } else if ("c++".equals(outputFormat)
+                || "cpp".equals(outputFormat)) {
             exporter = new CppExporter();
-        } else if ("java".equalsIgnoreCase(outputFormat)) {
+        } else if ("java".equals(outputFormat)) {
             exporter = new JavaExporter();
-        } else if ("dat".equalsIgnoreCase(outputFormat)) {
-            String separator = DataExporter.DEFAULT_SEPARATOR;
-            int resolution = DataExporter.DEFAULT_RESOLUTION;
+        } else if ("fld".equals(outputFormat)) {
+            String separator = FldExporter.DEFAULT_SEPARATOR;
             if (options.containsKey(KW_DATA_SEPARATOR)) {
                 separator = options.get(KW_DATA_SEPARATOR);
             }
 
-            if (options.containsKey(KW_DATA_RESOLUTION_VARIABLE)) {
-                resolution = Integer.parseInt(options.get(KW_DATA_RESOLUTION_VARIABLE));
-            } else if (options.containsKey(KW_DATA_RESOLUTION_TOTAL)) {
-                int total = Integer.parseInt(options.get(KW_DATA_RESOLUTION_TOTAL));
-                resolution = Math.max(1, -1 + (int) (Math.pow(
-                        total, 1.0 / engine.numberOfInputVariables())));
+            int maximum = FldExporter.DEFAULT_MAXIMUM;
+            if (options.containsKey(KW_DATA_MAXIMUM)) {
+                maximum = Integer.parseInt(options.get(KW_DATA_MAXIMUM));
+
             }
-            exporter = new DataExporter(separator, resolution);
+            exporter = new FldExporter(separator, maximum);
         } else {
             throw new RuntimeException(String.format(
                     "[export error] format <%s> not supported", outputFormat));
@@ -293,7 +291,7 @@ public class Console {
         outputVariable1.setLockValidOutput(false);
         outputVariable1.setDefaultValue(Double.NaN);
         outputVariable1.setDefuzzifier(new Centroid(200));
-        outputVariable1.output().setAccumulation(new Maximum());
+        outputVariable1.fuzzyOutput().setAccumulation(new Maximum());
         outputVariable1.addTerm(new Triangle("LOW", 0.000, 0.500, 1.000));
         outputVariable1.addTerm(new Triangle("MEDIUM", 0.500, 1.000, 1.500));
         outputVariable1.addTerm(new Triangle("HIGH", 1.000, 1.500, 2.000));
@@ -337,7 +335,7 @@ public class Console {
         outputVariable1.setLockValidOutput(true);
         outputVariable1.setDefaultValue(Double.NaN);
         outputVariable1.setDefuzzifier(new WeightedAverage());
-        outputVariable1.output().setAccumulation(null);
+        outputVariable1.fuzzyOutput().setAccumulation(null);
         outputVariable1.addTerm(new Constant("f1", 0.840));
         outputVariable1.addTerm(new Constant("f2", 0.450));
         outputVariable1.addTerm(new Constant("f3", 0.040));
@@ -356,7 +354,7 @@ public class Console {
         outputVariable2.setLockValidOutput(true);
         outputVariable2.setDefaultValue(Double.NaN);
         outputVariable2.setDefuzzifier(new WeightedAverage());
-        outputVariable2.output().setAccumulation(null);
+        outputVariable2.fuzzyOutput().setAccumulation(null);
         outputVariable2.addTerm(Function.create("fx", "sin(inputX)/inputX", engine, true));
         engine.addOutputVariable(outputVariable2);
 
@@ -367,7 +365,7 @@ public class Console {
         outputVariable3.setLockValidOutput(false);
         outputVariable3.setDefaultValue(Double.NaN);
         outputVariable3.setDefuzzifier(new WeightedAverage());
-        outputVariable3.output().setAccumulation(null);
+        outputVariable3.fuzzyOutput().setAccumulation(null);
         outputVariable3.addTerm(Function.create("diff", "fabs(outputFx-trueFx)", engine, true));
         engine.addOutputVariable(outputVariable3);
 

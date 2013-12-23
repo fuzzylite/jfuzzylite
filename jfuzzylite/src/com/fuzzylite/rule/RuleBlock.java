@@ -17,6 +17,7 @@ package com.fuzzylite.rule;
 import com.fuzzylite.FuzzyLite;
 import com.fuzzylite.Op;
 import static com.fuzzylite.Op.str;
+import com.fuzzylite.imex.FllExporter;
 import com.fuzzylite.norm.SNorm;
 import com.fuzzylite.norm.TNorm;
 import java.util.ArrayList;
@@ -33,6 +34,7 @@ public class RuleBlock {
     protected TNorm conjunction;
     protected SNorm disjunction;
     protected TNorm activation;
+    protected boolean enabled;
 
     public RuleBlock() {
         this("");
@@ -52,6 +54,7 @@ public class RuleBlock {
         this.disjunction = disjunction;
         this.activation = activation;
         this.rules = new ArrayList<>();
+        this.enabled = true;
     }
 
     public void activate() {
@@ -62,6 +65,11 @@ public class RuleBlock {
                 rule.activate(activationDegree, activation);
             }
         }
+    }
+
+    @Override
+    public String toString() {
+        return new FllExporter("", "; ").toString(this);
     }
 
     public String getName() {
@@ -96,6 +104,14 @@ public class RuleBlock {
         this.activation = activation;
     }
 
+    public boolean isEnabled() {
+        return this.enabled;
+    }
+
+    public void setEnabled(boolean enabled) {
+        this.enabled = enabled;
+    }
+
     /*
      * Rules
      */
@@ -113,10 +129,6 @@ public class RuleBlock {
 
     public int numberOfRules() {
         return this.rules.size();
-    }
-    
-    public boolean isEmpty(){
-        return this.rules.isEmpty();
     }
 
     public List<Rule> getRules() {

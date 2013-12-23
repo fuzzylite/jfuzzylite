@@ -15,7 +15,7 @@
 package com.fuzzylite.term;
 
 import com.fuzzylite.Op;
-import static com.fuzzylite.Op.str;
+import java.util.regex.Pattern;
 
 /**
  *
@@ -26,9 +26,10 @@ public class PiShape extends Term {
     protected double bottomLeft, topLeft;
     protected double topRight, bottomRight;
 
-    public PiShape(){
+    public PiShape() {
         this("");
     }
+
     public PiShape(String name) {
         this(name, Double.NaN, Double.NaN, Double.NaN, Double.NaN);
     }
@@ -40,6 +41,29 @@ public class PiShape extends Term {
         this.topLeft = topLeft;
         this.topRight = topRight;
         this.bottomRight = bottomRight;
+    }
+
+    @Override
+    public String parameters() {
+        return Op.join(" ", bottomLeft, topLeft, topRight, bottomRight);
+    }
+
+    @Override
+    public void configure(String parameters) {
+        if (parameters.isEmpty()) {
+            return;
+        }
+        String[] values = parameters.split(Pattern.quote(" "));
+        int required = 4;
+        if (values.length < required) {
+            throw new RuntimeException(String.format(
+                    "[configuration error] term <%s> requires <%d> parameters",
+                    this.getClass().getSimpleName(), required));
+        }
+        setBottomLeft(Op.toDouble(values[0]));
+        setTopLeft(Op.toDouble(values[1]));
+        setTopRight(Op.toDouble(values[2]));
+        setBottomRight(Op.toDouble(values[3]));
     }
 
     @Override
@@ -68,14 +92,6 @@ public class PiShape extends Term {
         }
 
         return 0.0;
-    }
-
-    @Override
-    public String toString() {
-        String result = PiShape.class.getSimpleName();
-        result += "(" + Op.join(", ", str(bottomLeft), str(topLeft),
-                str(topRight), str(bottomRight)) + ")";
-        return result;
     }
 
     public double getBottomLeft() {
@@ -110,19 +126,4 @@ public class PiShape extends Term {
         this.bottomRight = bottomRight;
     }
 
-    @Override
-    public void configure(double[] parameters) {
-        int required = 4;
-        if (parameters.length < required) {
-            throw new RuntimeException(String.format(
-                    "[configuration error] term <%s> requires <%d> parameters",
-                    this.getClass().getSimpleName(), required));
-        }
-        setBottomLeft(parameters[0]);
-        setTopLeft(parameters[1]);
-        setTopRight(parameters[2]);
-        setBottomRight(parameters[3]);
-    }
-    
-    
 }

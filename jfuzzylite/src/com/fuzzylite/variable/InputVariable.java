@@ -14,6 +14,8 @@
  */
 package com.fuzzylite.variable;
 
+import com.fuzzylite.imex.FllExporter;
+
 /**
  *
  * @author jcrada
@@ -32,6 +34,7 @@ public class InputVariable extends Variable {
 
     public InputVariable(String name, double minimum, double maximum) {
         super(name, minimum, maximum);
+        this.inputValue = Double.NaN;
     }
 
     public double getInputValue() {
@@ -40,6 +43,11 @@ public class InputVariable extends Variable {
 
     public void setInputValue(double inputValue) {
         this.inputValue = inputValue;
+    }
+
+    @Override
+    public String toString() {
+        return new FllExporter("", "; ").toString(this);
     }
 
 }

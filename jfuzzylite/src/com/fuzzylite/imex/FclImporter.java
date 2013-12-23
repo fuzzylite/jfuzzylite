@@ -15,7 +15,6 @@
 package com.fuzzylite.imex;
 
 import com.fuzzylite.Engine;
-import com.fuzzylite.FuzzyLite;
 import com.fuzzylite.Op;
 import com.fuzzylite.defuzzifier.Bisector;
 import com.fuzzylite.defuzzifier.Centroid;
@@ -51,16 +50,12 @@ import com.fuzzylite.term.Term;
 import com.fuzzylite.variable.InputVariable;
 import com.fuzzylite.variable.OutputVariable;
 import java.io.BufferedReader;
-import java.io.File;
 import java.io.StringReader;
-import java.nio.charset.Charset;
-import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.StringTokenizer;
-import java.util.logging.Level;
 import java.util.regex.Pattern;
 
 /**
@@ -88,20 +83,14 @@ public class FclImporter extends Importer {
         try {
             while ((line = fclReader.readLine()) != null) {
                 ++lineNumber;
-                if (line.contains("//")) {
-                    line = line.substring(0, line.indexOf("//"));
-                }
-                //TODO: ignore multiline comments
-                if (line.contains("/*")) {
-                    line = line.substring(0, line.indexOf("/*"));
-                }
-                line = line.trim();
+                String[] comments = line.split(Pattern.quote("//"));
+                line = comments[0].trim();
 
                 if (line.isEmpty() || line.charAt(0) == '#') {
                     continue;
                 }
 
-                line = line.replaceAll(";", "");
+                line = line.replaceAll(Pattern.quote(";"), "");
                 StringTokenizer tokenizer = new StringTokenizer(line);
                 String firstToken = tokenizer.nextToken();
 
@@ -230,6 +219,8 @@ public class FclImporter extends Importer {
             if ("RANGE".equals(firstToken)) {
                 Op.Pair<Double, Double> range = extractRange(line);
                 inputVariable.setRange(range.first, range.second);
+            } else if ("ENABLED".equals(firstToken)) {
+                inputVariable.setEnabled(extractEnabled(line));
             } else if ("TERM".equals(firstToken)) {
                 inputVariable.addTerm(prepareTerm(extractTerm(line), engine));
             } else {
@@ -264,7 +255,7 @@ public class FclImporter extends Importer {
             } else if ("METHOD".equals(firstToken)) {
                 outputVariable.setDefuzzifier(extractDefuzzifier(line));
             } else if ("ACCU".equals(firstToken)) {
-                outputVariable.output().setAccumulation(extractSNorm(line));
+                outputVariable.fuzzyOutput().setAccumulation(extractSNorm(line));
             } else if ("DEFAULT".equals(firstToken)) {
                 Op.Pair<Double, Boolean> defaultAndLock = extractDefaultValue(line);
                 outputVariable.setDefaultValue(defaultAndLock.first);
@@ -277,6 +268,8 @@ public class FclImporter extends Importer {
                 Op.Pair<Boolean, Boolean> output_range = extractLocksOutputAndRange(line);
                 outputVariable.setLockValidOutput(output_range.first);
                 outputVariable.setLockOutputRange(output_range.second);
+            } else if ("ENABLED".equals(firstToken)) {
+                outputVariable.setEnabled(extractEnabled(line));
             } else {
                 throw new RuntimeException(String.format(
                         "[syntax error] unexpected token <%s>", firstToken));
@@ -303,6 +296,8 @@ public class FclImporter extends Importer {
                 ruleBlock.setDisjunction(extractSNorm(line));
             } else if ("ACT".equals(firstToken)) {
                 ruleBlock.setActivation(extractTNorm(line));
+            } else if ("ENABLED".equals(firstToken)) {
+                ruleBlock.setEnabled(extractEnabled(line));
             } else if ("RULE".equals(firstToken)) {
                 int ruleStart = line.indexOf(':');
                 if (ruleStart < 0) {
@@ -431,32 +426,13 @@ public class FclImporter extends Importer {
             throw new RuntimeException("[syntax error] malformed term in line: " + line);
         }
 
-        double[] values = new double[parameters.size()];
-        if (!Function.class.getSimpleName().equals(termClass)) {
-            String parameter = "";
-            try {
-                for (int i = 0; i < parameters.size(); ++i) {
-                    parameter = parameters.get(i);
-                    values[i] = Op.toDouble(parameter);
-                }
-            } catch (Exception ex) {
-                throw new RuntimeException(String.format(
-                        "[syntax error] expected numeric value, "
-                        + "but found <%s> in line %s", parameter, line));
-            }
-        }
-
         try {
-            Term result = FactoryManager.instance().term().createInstance(termClass, values);
+            Term result = FactoryManager.instance().term().createInstance(termClass);
             result.setName(Op.makeValidId(name));
-
-            if (Function.class.getSimpleName().equals(termClass) && !parameters.isEmpty()) {
-                String infix = Op.join(parameters, "");
-                if (infix.length() > 1 && infix.charAt(0) == '('
-                        && infix.charAt(infix.length() - 1) == ')') {
-                    infix = infix.substring(1, infix.length() - 1);
-                }
-                ((Function) result).setText(infix);
+            if (result instanceof Function) {
+                result.configure(Op.join(parameters, ""));//remove spaces for text of function
+            } else {
+                result.configure(Op.join(parameters, " "));
             }
 
             return result;
@@ -472,6 +448,7 @@ public class FclImporter extends Importer {
         } else if (term instanceof Function) {
             Function function = (Function) term;
             function.setEngine(engine);
+            //builtin functions are loaded from TermFactory calling Function::create
             function.load();
         }
         return term;
@@ -510,10 +487,10 @@ public class FclImporter extends Importer {
                     + "expected property of type (key := value) in line: " + line);
         }
         String[] values = token[1].split(Pattern.quote("|"));
-        String defaultValue = values[0].replaceAll(";", "").trim();
+        String defaultValue = values[0].trim();
         String nc = "";
         if (values.length == 2) {
-            nc = values[1].replaceAll(";", "").trim();
+            nc = values[1].trim();
         }
         double value;
         try {
@@ -577,7 +554,7 @@ public class FclImporter extends Importer {
                     + "'key : value' in line: " + line);
         }
         boolean output, range;
-        String value = line.substring(index + 1).replaceAll(";", "");
+        String value = line.substring(index + 1);
         String[] flags = value.split(Pattern.quote("|"));
         if (flags.length == 1) {
             String flag = flags[0].trim();
@@ -607,22 +584,22 @@ public class FclImporter extends Importer {
         return new Op.Pair<>(output, range);
     }
 
-    public static void main(String[] args) throws Exception {
-        FuzzyLite.logger().setLevel(Level.INFO);
-        File file = new File("examples/fcl/mamdani/SimpleDimmer.fcl");
-        String fcl = Op.join(Files.readAllLines(file.toPath(), Charset.defaultCharset()), "\n");
-        FactoryManager.instance().term().createInstance("Triangle");
-        Engine engine = new FclImporter().fromString(fcl);
-        String x = new FclExporter().toString(engine);
-        System.out.println(fcl.equals(x));
-//        if (!fcl.equals(x)) {
-//            System.out.println("=====================");
-//            System.out.println("Original");
-//            System.out.println(fcl);
-//            System.out.println("=====================");
-//            System.out.println("Copy");
-//            System.out.println(x);
-//        }
+    protected boolean extractEnabled(String line) {
+        String[] tokens = line.split(Pattern.quote(":"));
+        if (tokens.length != 2) {
+            throw new RuntimeException("[syntax error] expected property of type "
+                    + "(key : value) in line: " + line);
+        }
+
+        String bool = tokens[1].trim();
+        if ("TRUE".equals(bool)) {
+            return true;
+        }
+        if ("FALSE".equals(bool)) {
+            return false;
+        }
+        throw new RuntimeException("[syntax error] expected boolean <TRUE|FALSE>, "
+                + "but found <" + line + ">");
     }
 
 }

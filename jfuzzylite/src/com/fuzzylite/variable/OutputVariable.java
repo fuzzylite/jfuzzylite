@@ -16,6 +16,7 @@ package com.fuzzylite.variable;
 
 import com.fuzzylite.Op;
 import com.fuzzylite.defuzzifier.Defuzzifier;
+import com.fuzzylite.imex.FllExporter;
 import com.fuzzylite.term.Accumulated;
 
 /**
@@ -24,7 +25,7 @@ import com.fuzzylite.term.Accumulated;
  */
 public class OutputVariable extends Variable {
 
-    protected Accumulated output;
+    protected Accumulated fuzzyOutput;
     protected Defuzzifier defuzzifier;
     protected double defaultValue;
     protected double lastValidOutput;
@@ -41,7 +42,7 @@ public class OutputVariable extends Variable {
 
     public OutputVariable(String name, double minimum, double maximum) {
         super(name, minimum, maximum);
-        this.output = new Accumulated("output", minimum, maximum);
+        this.fuzzyOutput = new Accumulated("fuzzyOutput", minimum, maximum);
         this.defaultValue = Double.NaN;
         this.lastValidOutput = Double.NaN;
         this.lockOutputRange = false;
@@ -50,9 +51,9 @@ public class OutputVariable extends Variable {
 
     public double defuzzify() {
         double result;
-        boolean isValid = this.enabled && !this.output.getTerms().isEmpty();
+        boolean isValid = this.enabled && !this.fuzzyOutput.getTerms().isEmpty();
         if (isValid) {
-            result = this.defuzzifier.defuzzify(output, minimum, maximum);
+            result = this.defuzzifier.defuzzify(fuzzyOutput, minimum, maximum);
         } else {
             //if a previous defuzzification was successfully performed and
             //and the output is supposed to not change when the output is empty
@@ -78,9 +79,9 @@ public class OutputVariable extends Variable {
 
     public double defuzzifyNoLocks() {
         double result;
-        boolean isValid = this.enabled && !output.getTerms().isEmpty();
+        boolean isValid = this.enabled && !fuzzyOutput.getTerms().isEmpty();
         if (isValid) {
-            result = this.defuzzifier.defuzzify(output, minimum, maximum);
+            result = this.defuzzifier.defuzzify(fuzzyOutput, minimum, maximum);
         } else {
             result = this.defaultValue;
         }
@@ -88,19 +89,24 @@ public class OutputVariable extends Variable {
     }
 
     @Override
+    public String toString() {
+        return new FllExporter("", "; ").toString(this);
+    }
+
+    @Override
     public void setMinimum(double minimum) {
         super.setMinimum(minimum);
-        this.output.setMinimum(minimum);
+        this.fuzzyOutput.setMinimum(minimum);
     }
 
     @Override
     public void setMaximum(double maximum) {
         super.setMaximum(maximum);
-        this.output.setMaximum(maximum);
+        this.fuzzyOutput.setMaximum(maximum);
     }
 
-    public Accumulated output() {
-        return output;
+    public Accumulated fuzzyOutput() {
+        return fuzzyOutput;
     }
 
     public Defuzzifier getDefuzzifier() {

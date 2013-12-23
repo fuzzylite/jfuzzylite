@@ -14,8 +14,9 @@
  */
 package com.fuzzylite.term;
 
+import com.fuzzylite.Op;
 import com.fuzzylite.norm.TNorm;
-import static com.fuzzylite.Op.str;
+import com.fuzzylite.imex.FllExporter;
 
 /**
  *
@@ -46,11 +47,16 @@ public class Thresholded extends Term {
     }
 
     @Override
-    public String toString() {
-        String result = Thresholded.class.getSimpleName();
-        result += String.format("(%s) thresholded to %s using <%s> activation",
-                term.toString(), str(threshold), activation.getClass().getSimpleName());
+    public String parameters() {
+        FllExporter exporter = new FllExporter();
+        String result = String.format("%s %s %s", Op.str(threshold),
+                exporter.toString(activation), exporter.toString(term));
         return result;
+    }
+
+    @Override
+    public void configure(String parameters) {
+        //do nothing
     }
 
     public Term getTerm() {
@@ -75,11 +81,6 @@ public class Thresholded extends Term {
 
     public void setActivation(TNorm activation) {
         this.activation = activation;
-    }
-
-    @Override
-    public void configure(double[] parameters) {
-        //do nothing
     }
 
 }

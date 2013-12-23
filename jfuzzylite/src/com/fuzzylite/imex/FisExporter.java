@@ -27,9 +27,11 @@ import com.fuzzylite.defuzzifier.MeanOfMaximum;
 import com.fuzzylite.defuzzifier.SmallestOfMaximum;
 import com.fuzzylite.defuzzifier.WeightedAverage;
 import com.fuzzylite.defuzzifier.WeightedSum;
+import com.fuzzylite.hedge.Any;
 import com.fuzzylite.hedge.Extremely;
 import com.fuzzylite.hedge.Hedge;
 import com.fuzzylite.hedge.Not;
+import com.fuzzylite.hedge.Seldom;
 import com.fuzzylite.hedge.Somewhat;
 import com.fuzzylite.hedge.Very;
 import com.fuzzylite.norm.Norm;
@@ -126,6 +128,7 @@ public class FisExporter extends Exporter {
         for (int i = 0; i < engine.numberOfInputVariables(); ++i) {
             InputVariable inputVariable = engine.getInputVariable(i);
             result.append(String.format("[Input%d]\n", (i + 1)));
+            result.append(String.format("Enabled=%d\n", inputVariable.isEnabled() ? 1 : 0));
             result.append(String.format("Name='%s'\n", inputVariable.getName()));
             result.append(String.format("Range=[%s %s]\n",
                     str(inputVariable.getMinimum()), str(inputVariable.getMaximum())));
@@ -147,6 +150,7 @@ public class FisExporter extends Exporter {
         for (int i = 0; i < engine.numberOfOutputVariables(); ++i) {
             OutputVariable outputVariable = engine.getOutputVariable(i);
             result.append(String.format("[Output%d]\n", (i + 1)));
+            result.append(String.format("Enabled=%d\n", outputVariable.isEnabled() ? 1 : 0));
             result.append(String.format("Name='%s'\n", outputVariable.getName()));
             result.append(String.format("Range=[%s %s]\n",
                     str(outputVariable.getMinimum()), str(outputVariable.getMaximum())));
@@ -259,7 +263,7 @@ public class FisExporter extends Exporter {
     protected String extractAccumulation(Engine engine) {
         SNorm accumulation = null;
         for (OutputVariable outputVariable : engine.getOutputVariables()) {
-            SNorm other = outputVariable.output().getAccumulation();
+            SNorm other = outputVariable.fuzzyOutput().getAccumulation();
             if (accumulation == null) {
                 accumulation = other;
             } else if (!accumulation.getClass().equals(other.getClass())) {
@@ -290,8 +294,8 @@ public class FisExporter extends Exporter {
         StringBuilder result = new StringBuilder();
         for (Variable variable : variables) {
             int termIndexPlusOne = 0;
-            int plusHedge = 0;
-            double negated = 1;
+            double plusHedge = 0;
+            int negated = 1;
             for (Proposition proposition : propositions) {
                 if (!variable.equals(proposition.getVariable())) {
                     continue;
@@ -310,14 +314,18 @@ public class FisExporter extends Exporter {
                 for (Hedge hedge : proposition.getHedges()) {
                     if (hedge instanceof Not) {
                         negated *= -1;
+                    } else if (hedge instanceof Seldom) {
+                        plusHedge += 0.01;
                     } else if (hedge instanceof Somewhat) {
-                        plusHedge += 5;
-                    } else if (hedge instanceof Extremely) {
-                        plusHedge += 3;
+                        plusHedge += 0.05;
                     } else if (hedge instanceof Very) {
-                        plusHedge += 2;
+                        plusHedge += 0.2;
+                    } else if (hedge instanceof Extremely) {
+                        plusHedge += 0.3;
+                    } else if (hedge instanceof Any) {
+                        plusHedge += 0.99;
                     } else {
-                        plusHedge = -1; // Unreconized hedge combination (e.g. Any)
+                        plusHedge = Double.NaN; // Unreconized hedge combination (e.g. Any)
                     }
                 }
                 break;
@@ -326,11 +334,10 @@ public class FisExporter extends Exporter {
             if (negated < 0) {
                 result.append("-");
             }
-            result.append(termIndexPlusOne);
-            if (Op.isGE(plusHedge, 0.0)) {
-                result.append(String.format(".%d", plusHedge));
-            } else {
-                result.append(".?"); //Unreconized hedge combination
+            if (!Double.isNaN(plusHedge)) {
+                result.append(Op.str(termIndexPlusOne + plusHedge));
+            } else { //Unreconized hedge combination
+                result.append(String.format("%d.?", termIndexPlusOne));
             }
             result.append(" ");
         }
@@ -394,7 +401,7 @@ public class FisExporter extends Exporter {
         if (term instanceof Rectangle) {
             Rectangle t = (Rectangle) term;
             return String.format("'%s':'rectmf',[%s]", term.getName(),
-                    Op.join(" ", t.getMinimum(), t.getMaximum()));
+                    Op.join(" ", t.getStart(), t.getEnd()));
         }
         if (term instanceof SigmoidDifference) {
             SigmoidDifference t = (SigmoidDifference) term;

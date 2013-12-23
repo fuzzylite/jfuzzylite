@@ -18,6 +18,7 @@ import java.util.ArrayList;
 import java.util.List;
 import com.fuzzylite.Op;
 import static com.fuzzylite.Op.str;
+import java.util.regex.Pattern;
 
 /**
  *
@@ -39,6 +40,40 @@ public class Discrete extends Term {
         this.name = name;
         this.x = x;
         this.y = y;
+    }
+
+    @Override
+    public String parameters() {
+        StringBuilder result = new StringBuilder();
+        for (int i = 0; i < x.size(); ++i) {
+            result.append(Op.join(" ", x.get(i), y.get(i)));
+            if (i + 1 < x.size()){
+                result.append(" ");
+            }
+        }
+        return result.toString();
+    }
+
+    @Override
+    public void configure(String parameters) {
+        if (parameters.isEmpty()) {
+            return;
+        }
+        String[] values = parameters.split(Pattern.quote(" "));
+
+        if (values.length % 2 != 0) {
+            throw new RuntimeException(String.format(
+                    "[configuration error] term <%s> requires an even set of parameters values (x,y), "
+                    + "but found <%d> values ",
+                    this.getClass().getSimpleName(), values.length));
+        }
+
+        x.clear();
+        y.clear();
+        for (int i = 0; i + 1 < values.length; i += 2) {
+            x.add(Op.toDouble(values[i]));
+            y.add(Op.toDouble(values[i + 1]));
+        }
     }
 
     public static Discrete create(String name, double... xy) {
@@ -106,38 +141,10 @@ public class Discrete extends Term {
     }
 
     @Override
-    public String toString() {
-        String result = Discrete.class.getSimpleName() + "(";
-        for (int i = 0; i < x.size(); ++i) {
-            result += str(x.get(i)) + " " + str(y.get(i));
-            if (i + 1 < x.size()) {
-                result += ", ";
-            }
-        }
-        result += ")";
-        return result;
-    }
-
-    @Override
     public Discrete clone() {
         return new Discrete(this.name,
                 new ArrayList<>(this.x),
                 new ArrayList<>(this.y));
     }
 
-    @Override
-    public void configure(double[] parameters) {
-        if (parameters.length % 2 != 0) {
-            throw new RuntimeException(String.format(
-                    "[configuration error] term <%s> requires a set of parameters for (x,y) values, "
-                    + "but found <%s> values",
-                    this.getClass().getSimpleName(), parameters.length));
-        }
-        this.x.clear();
-        this.y.clear();
-        for (int i = 0; i < parameters.length - 1; i += 2) {
-            this.x.add(parameters[i]);
-            this.y.add(parameters[i + 1]);
-        }
-    }
 }

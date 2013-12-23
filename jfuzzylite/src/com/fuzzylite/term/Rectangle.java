@@ -15,7 +15,7 @@
 package com.fuzzylite.term;
 
 import com.fuzzylite.Op;
-import static com.fuzzylite.Op.str;
+import java.util.regex.Pattern;
 
 /**
  *
@@ -23,7 +23,7 @@ import static com.fuzzylite.Op.str;
  */
 public class Rectangle extends Term {
 
-    protected double minimum, maximum;
+    protected double start, end;
 
     public Rectangle() {
         this("");
@@ -33,10 +33,31 @@ public class Rectangle extends Term {
         this(name, Double.NaN, Double.NaN);
     }
 
-    public Rectangle(String name, double minimum, double maximum) {
+    public Rectangle(String name, double start, double end) {
         this.name = name;
-        this.minimum = minimum;
-        this.maximum = maximum;
+        this.start = start;
+        this.end = end;
+    }
+
+    @Override
+    public String parameters() {
+        return Op.join(" ", start, end);
+    }
+
+    @Override
+    public void configure(String parameters) {
+        if (parameters.isEmpty()) {
+            return;
+        }
+        String[] values = parameters.split(Pattern.quote(" "));
+        int required = 2;
+        if (values.length < required) {
+            throw new RuntimeException(String.format(
+                    "[configuration error] term <%s> requires <%d> parameters",
+                    this.getClass().getSimpleName(), required));
+        }
+        setStart(Op.toDouble(values[0]));
+        setEnd(Op.toDouble(values[1]));
     }
 
     @Override
@@ -44,45 +65,26 @@ public class Rectangle extends Term {
         if (Double.isNaN(x)) {
             return Double.NaN;
         }
-        if (Op.isLt(x, minimum) || Op.isGt(x, maximum)) {
+        if (Op.isLt(x, start) || Op.isGt(x, end)) {
             return 0.0;
         }
         return 1.0;
     }
 
-    @Override
-    public String toString() {
-        String result = Rectangle.class.getSimpleName();
-        result += "(" + Op.join(", ", str(minimum), str(maximum)) + ")";
-        return result;
+    public double getStart() {
+        return start;
     }
 
-    public double getMinimum() {
-        return minimum;
+    public void setStart(double start) {
+        this.start = start;
     }
 
-    public void setMinimum(double minimum) {
-        this.minimum = minimum;
+    public double getEnd() {
+        return end;
     }
 
-    public double getMaximum() {
-        return maximum;
-    }
-
-    public void setMaximum(double maximum) {
-        this.maximum = maximum;
-    }
-
-    @Override
-    public void configure(double[] parameters) {
-        int required = 2;
-        if (parameters.length < required) {
-            throw new RuntimeException(String.format(
-                    "[configuration error] term <%s> requires <%d> parameters",
-                    this.getClass().getSimpleName(), required));
-        }
-        setMinimum(parameters[0]);
-        setMaximum(parameters[1]);
+    public void setEnd(double end) {
+        this.end = end;
     }
 
 }

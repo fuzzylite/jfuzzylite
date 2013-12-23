@@ -15,7 +15,7 @@
 package com.fuzzylite.term;
 
 import com.fuzzylite.Op;
-import static com.fuzzylite.Op.str;
+import java.util.regex.Pattern;
 
 /**
  *
@@ -42,6 +42,29 @@ public class Trapezoid extends Term {
     }
 
     @Override
+    public String parameters() {
+        return Op.join(" ", a, b, c, d);
+    }
+
+    @Override
+    public void configure(String parameters) {
+        if (parameters.isEmpty()) {
+            return;
+        }
+        String[] values = parameters.split(Pattern.quote(" "));
+        int required = 4;
+        if (values.length < required) {
+            throw new RuntimeException(String.format(
+                    "[configuration error] term <%s> requires <%d> parameters",
+                    this.getClass().getSimpleName(), required));
+        }
+        setA(Op.toDouble(values[0]));
+        setB(Op.toDouble(values[1]));
+        setC(Op.toDouble(values[2]));
+        setD(Op.toDouble(values[3]));
+    }
+
+    @Override
     public double membership(double x) {
         if (Double.isNaN(x)) {
             return Double.NaN;
@@ -57,13 +80,6 @@ public class Trapezoid extends Term {
             return (d - x) / (d - c);
         }
         return 0.0;
-    }
-
-    @Override
-    public String toString() {
-        String result = Trapezoid.class.getSimpleName();
-        result += "(" + Op.join(", ", str(a), str(b), str(c), str(d)) + ")";
-        return result;
     }
 
     public double getA() {
@@ -96,19 +112,5 @@ public class Trapezoid extends Term {
 
     public void setD(double d) {
         this.d = d;
-    }
-
-    @Override
-    public void configure(double[] parameters) {
-        int required = 4;
-        if (parameters.length < required) {
-            throw new RuntimeException(String.format(
-                    "[configuration error] term <%s> requires <%d> parameters",
-                    this.getClass().getSimpleName(), required));
-        }
-        setA(parameters[0]);
-        setB(parameters[1]);
-        setC(parameters[2]);
-        setD(parameters[3]);
     }
 }

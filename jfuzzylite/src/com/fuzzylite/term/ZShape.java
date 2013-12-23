@@ -16,6 +16,7 @@ package com.fuzzylite.term;
 
 import com.fuzzylite.Op;
 import static com.fuzzylite.Op.str;
+import java.util.regex.Pattern;
 
 /**
  *
@@ -40,6 +41,27 @@ public class ZShape extends Term {
     }
 
     @Override
+    public String parameters() {
+        return Op.join(" ", start, end);
+    }
+
+    @Override
+    public void configure(String parameters) {
+        if (parameters.isEmpty()) {
+            return;
+        }
+        String[] values = parameters.split(Pattern.quote(" "));
+        int required = 2;
+        if (values.length < required) {
+            throw new RuntimeException(String.format(
+                    "[configuration error] term <%s> requires <%d> parameters",
+                    this.getClass().getSimpleName(), required));
+        }
+        setStart(Op.toDouble(values[0]));
+        setEnd(Op.toDouble(values[1]));
+    }
+
+    @Override
     public double membership(double x) {
         if (Double.isNaN(x)) {
             return Double.NaN;
@@ -58,13 +80,6 @@ public class ZShape extends Term {
         return 0.0;
     }
 
-    @Override
-    public String toString() {
-        String result = ZShape.class.getSimpleName();
-        result += "(" + Op.join(", ", str(start), str(end)) + ")";
-        return result;
-    }
-
     public double getStart() {
         return start;
     }
@@ -81,15 +96,4 @@ public class ZShape extends Term {
         this.end = end;
     }
 
-    @Override
-    public void configure(double[] parameters) {
-        int required = 2;
-        if (parameters.length < required) {
-            throw new RuntimeException(String.format(
-                    "[configuration error] term <%s> requires <%d> parameters",
-                    this.getClass().getSimpleName(), required));
-        }
-        setStart(parameters[0]);
-        setEnd(parameters[1]);
-    }
 }

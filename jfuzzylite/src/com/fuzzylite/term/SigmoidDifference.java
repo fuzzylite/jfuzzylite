@@ -15,7 +15,7 @@
 package com.fuzzylite.term;
 
 import com.fuzzylite.Op;
-import static com.fuzzylite.Op.str;
+import java.util.regex.Pattern;
 
 /**
  *
@@ -44,6 +44,29 @@ public class SigmoidDifference extends Term {
     }
 
     @Override
+    public String parameters() {
+        return Op.join(" ", left, rising, falling, right);
+    }
+
+    @Override
+    public void configure(String parameters) {
+        if (parameters.isEmpty()) {
+            return;
+        }
+        String[] values = parameters.split(Pattern.quote(" "));
+        int required = 4;
+        if (values.length < required) {
+            throw new RuntimeException(String.format(
+                    "[configuration error] term <%s> requires <%d> parameters",
+                    this.getClass().getSimpleName(), required));
+        }
+        setLeft(Op.toDouble(values[0]));
+        setRising(Op.toDouble(values[1]));
+        setFalling(Op.toDouble(values[2]));
+        setRight(Op.toDouble(values[3]));
+    }
+
+    @Override
     public double membership(double x) {
         if (Double.isNaN(x)) {
             return Double.NaN;
@@ -51,13 +74,6 @@ public class SigmoidDifference extends Term {
         double a = 1.0 / (1 + Math.exp(-rising * (x - left)));
         double b = 1.0 / (1 + Math.exp(-falling * (x - right)));
         return Math.abs(a - b);
-    }
-
-    @Override
-    public String toString() {
-        String result = SigmoidDifference.class.getSimpleName();
-        result += "(" + Op.join(", ", str(left), str(rising), str(falling), str(right)) + ")";
-        return result;
     }
 
     public double getLeft() {
@@ -92,17 +108,4 @@ public class SigmoidDifference extends Term {
         this.right = right;
     }
 
-    @Override
-    public void configure(double[] parameters) {
-        int required = 4;
-        if (parameters.length < required) {
-            throw new RuntimeException(String.format(
-                    "[configuration error] term <%s> requires <%d> parameters",
-                    this.getClass().getSimpleName(), required));
-        }
-        setLeft(parameters[0]);
-        setRising(parameters[1]);
-        setFalling(parameters[2]);
-        setRight(parameters[3]);
-    }
 }

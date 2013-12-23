@@ -67,12 +67,4 @@ public class TermFactory extends Factory<Term> {
         }
         return result;
     }
-
-    public Term createInstance(String simpleName, double[] parameters) {
-        Term result = createInstance(simpleName);
-        if (result != null) {
-            result.configure(parameters);
-        }
-        return result;
-    }
 }
