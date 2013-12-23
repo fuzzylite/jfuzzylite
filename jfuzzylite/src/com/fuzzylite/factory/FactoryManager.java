@@ -43,9 +43,6 @@ public class FactoryManager {
     protected FactoryManager() {
     }
 
-    public static void main(String[] args) throws Exception {
-    }
-
     public DefuzzifierFactory defuzzifier() {
         return defuzzifier;
     }

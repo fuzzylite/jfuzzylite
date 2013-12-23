@@ -104,7 +104,7 @@ public class FisExporter extends Exporter {
         return result.toString();
     }
 
-    protected String exportSystem(Engine engine) {
+    public String exportSystem(Engine engine) {
         StringBuilder result = new StringBuilder();
         result.append("[System]\n");
         result.append(String.format("Name='%s'\n", engine.getName()));
@@ -122,7 +122,7 @@ public class FisExporter extends Exporter {
         return result.toString();
     }
 
-    protected String exportInputs(Engine engine) {
+    public String exportInputs(Engine engine) {
         StringBuilder result = new StringBuilder();
 
         for (int i = 0; i < engine.numberOfInputVariables(); ++i) {
@@ -144,7 +144,7 @@ public class FisExporter extends Exporter {
         return result.toString();
     }
 
-    protected String exportOutputs(Engine engine) {
+    public String exportOutputs(Engine engine) {
         StringBuilder result = new StringBuilder();
 
         for (int i = 0; i < engine.numberOfOutputVariables(); ++i) {
@@ -169,7 +169,7 @@ public class FisExporter extends Exporter {
         return result.toString();
     }
 
-    protected String exportRules(Engine engine) {
+    public String exportRules(Engine engine) {
         StringBuilder result = new StringBuilder();
 
         result.append("[Rules]\n");
@@ -180,7 +180,7 @@ public class FisExporter extends Exporter {
         return result.toString();
     }
 
-    protected String exportRule(Rule rule, Engine engine) {
+    public String exportRule(Rule rule, Engine engine) {
         List<Proposition> propositions = new ArrayList<>();
         List<Operator> operators = new ArrayList<>();
         Deque<Expression> queue = new ArrayDeque<>();
@@ -344,7 +344,7 @@ public class FisExporter extends Exporter {
         return result.toString();
     }
 
-    protected String toString(Term term) {
+    public String toString(Term term) {
         if (term instanceof Bell) {
             Bell t = (Bell) term;
             return String.format("'%s':'gbellmf',[%s]", term.getName(),
@@ -444,7 +444,7 @@ public class FisExporter extends Exporter {
                 + "term of class <%s> not supported", term.getClass().getName()));
     }
 
-    protected String toString(Defuzzifier defuzzifier) {
+    public String toString(Defuzzifier defuzzifier) {
         if (defuzzifier == null) {
             return "";
         }
@@ -472,7 +472,7 @@ public class FisExporter extends Exporter {
         return defuzzifier.getClass().getSimpleName();
     }
 
-    protected String toString(Norm norm) {
+    public String toString(Norm norm) {
         if (norm == null) {
             return "";
         }

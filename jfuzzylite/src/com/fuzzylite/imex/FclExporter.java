@@ -113,7 +113,7 @@ public class FclExporter extends Exporter {
         return result.toString();
     }
 
-    protected String toString(InputVariable inputVariable) {
+    public String toString(InputVariable inputVariable) {
         StringBuilder result = new StringBuilder();
         result.append(String.format("FUZZIFY %s\n", inputVariable.getName()));
         result.append(String.format(indent + "ENABLED : %s\n",
@@ -129,7 +129,7 @@ public class FclExporter extends Exporter {
         return result.toString();
     }
 
-    protected String toString(OutputVariable outputVariable) {
+    public String toString(OutputVariable outputVariable) {
         StringBuilder result = new StringBuilder();
 
         result.append(String.format("DEFUZZIFY %s\n", outputVariable.getName()));
@@ -169,7 +169,7 @@ public class FclExporter extends Exporter {
         return result.toString();
     }
 
-    protected String toString(RuleBlock ruleBlock) {
+    public String toString(RuleBlock ruleBlock) {
         StringBuilder result = new StringBuilder();
         result.append(String.format("RULEBLOCK %s\n", ruleBlock.getName()));
         result.append(String.format(indent + "ENABLED : %s\n",
@@ -192,7 +192,7 @@ public class FclExporter extends Exporter {
         return result.toString();
     }
 
-    protected String toString(Term term) {
+    public String toString(Term term) {
         if (term == null) {
             return "";
         }
@@ -218,7 +218,7 @@ public class FclExporter extends Exporter {
         return term.getClass().getSimpleName() + " " + term.parameters();
     }
 
-    protected String toString(Defuzzifier defuzzifier) {
+    public String toString(Defuzzifier defuzzifier) {
         if (defuzzifier == null) {
             return "";
         }
@@ -246,7 +246,7 @@ public class FclExporter extends Exporter {
         return defuzzifier.getClass().getSimpleName();
     }
 
-    protected String toString(Norm norm) {
+    public String toString(Norm norm) {
         if (norm == null) {
             return "";
         }

@@ -63,7 +63,7 @@ public class CppExporter extends Exporter {
         return result.toString();
     }
 
-    protected String toString(InputVariable inputVariable, Engine engine) {
+    public String toString(InputVariable inputVariable, Engine engine) {
         String name = "inputVariable";
         if (engine.numberOfInputVariables() > 1) {
             name += engine.getInputVariables().indexOf(inputVariable) + 1;
@@ -87,7 +87,7 @@ public class CppExporter extends Exporter {
         return result.toString();
     }
 
-    protected String toString(OutputVariable outputVariable, Engine engine) {
+    public String toString(OutputVariable outputVariable, Engine engine) {
         String name = "outputVariable";
         if (engine.numberOfOutputVariables() > 1) {
             name += engine.getOutputVariables().indexOf(outputVariable) + 1;
@@ -126,7 +126,7 @@ public class CppExporter extends Exporter {
         return result.toString();
     }
 
-    protected String toString(RuleBlock ruleBlock, Engine engine) {
+    public String toString(RuleBlock ruleBlock, Engine engine) {
         String name = "ruleBlock";
         if (engine.numberOfRuleBlocks() > 1) {
             name += engine.getRuleBlocks().indexOf(ruleBlock) + 1;
@@ -153,7 +153,7 @@ public class CppExporter extends Exporter {
         return result.toString();
     }
 
-    protected String toString(Term term) {
+    public String toString(Term term) {
         if (term == null) {
             return "NULL";
         }
@@ -189,7 +189,7 @@ public class CppExporter extends Exporter {
         return result;
     }
 
-    protected String toString(Defuzzifier defuzzifier) {
+    public String toString(Defuzzifier defuzzifier) {
         if (defuzzifier == null) {
             return "NULL";
         }
@@ -203,14 +203,14 @@ public class CppExporter extends Exporter {
                 defuzzifier.getClass().getSimpleName());
     }
 
-    protected String toString(Norm norm) {
+    public String toString(Norm norm) {
         if (norm == null) {
             return "NULL";
         }
         return String.format("new fl::%s", norm.getClass().getSimpleName());
     }
 
-    protected String toString(double value) {
+    public String toString(double value) {
         if (Double.isNaN(value)) {
             return "fl::nan";
         } else if (Double.isInfinite(value)) {

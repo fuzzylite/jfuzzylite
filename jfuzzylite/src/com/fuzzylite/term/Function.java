@@ -646,7 +646,7 @@ public class Function extends Term {
         return functions;
     }
 
-    public static void main(String[] args) throws Exception {
+    public static void test(String[] args) throws Exception {
         Logger log = FuzzyLite.logger();
         Function f = new Function();
         String text = "3+4*2/(1-5)^2^3";
