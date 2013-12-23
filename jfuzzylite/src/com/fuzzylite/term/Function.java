@@ -462,7 +462,7 @@ public class Function extends Term {
         toSpace.add(",");
         String spacedText = text;
         for (String operator : toSpace) {
-            spacedText = spacedText.replace(Pattern.quote(operator), " " + operator + " ");
+            spacedText = spacedText.replace(operator, " " + operator + " ");
         }
 
         //Tokenizer

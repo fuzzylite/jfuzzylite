@@ -325,7 +325,7 @@ public class FisExporter extends Exporter {
                     } else if (hedge instanceof Any) {
                         plusHedge += 0.99;
                     } else {
-                        plusHedge = Double.NaN; // Unreconized hedge combination (e.g. Any)
+                        plusHedge = Double.NaN; // Unreconized hedge combination
                     }
                 }
                 break;

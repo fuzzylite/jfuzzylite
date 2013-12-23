@@ -82,7 +82,7 @@ public class FclExporter extends Exporter {
 
         result.append("VAR_INPUT\n");
         for (InputVariable inputVariable : engine.getInputVariables()) {
-            result.append(String.format("  %s: REAL;\n", inputVariable.getName()));
+            result.append(String.format(indent + "%s: REAL;\n", inputVariable.getName()));
         }
         result.append("END_VAR\n");
 
@@ -90,7 +90,7 @@ public class FclExporter extends Exporter {
 
         result.append("VAR_OUTPUT\n");
         for (OutputVariable outputVariable : engine.getOutputVariables()) {
-            result.append(String.format("  %s: REAL;\n", outputVariable.getName()));
+            result.append(String.format(indent + "%s: REAL;\n", outputVariable.getName()));
         }
         result.append("END_VAR\n");
 
@@ -116,13 +116,13 @@ public class FclExporter extends Exporter {
     protected String toString(InputVariable inputVariable) {
         StringBuilder result = new StringBuilder();
         result.append(String.format("FUZZIFY %s\n", inputVariable.getName()));
-        result.append(String.format("ENABLED : %s\n",
+        result.append(String.format(indent + "ENABLED : %s\n",
                 String.valueOf(inputVariable.isEnabled())));
-        result.append(String.format("  RANGE := (%s .. %s);\n",
+        result.append(String.format(indent + "RANGE := (%s .. %s);\n",
                 Op.str(inputVariable.getMinimum()), Op.str(inputVariable.getMaximum())));
 
         for (Term term : inputVariable.getTerms()) {
-            result.append(String.format("  TERM %s := %s;\n",
+            result.append(String.format(indent + "TERM %s := %s;\n",
                     term.getName(), toString(term)));
         }
         result.append("END_FUZZIFY\n");
@@ -133,12 +133,12 @@ public class FclExporter extends Exporter {
         StringBuilder result = new StringBuilder();
 
         result.append(String.format("DEFUZZIFY %s\n", outputVariable.getName()));
-        result.append(String.format("ENABLED : %s\n",
+        result.append(String.format(indent + "ENABLED : %s\n",
                 String.valueOf(outputVariable.isEnabled())));
-        result.append(String.format("  RANGE := (%s .. %s);\n",
+        result.append(String.format(indent + "RANGE := (%s .. %s);\n",
                 Op.str(outputVariable.getMinimum()), Op.str(outputVariable.getMaximum())));
         for (Term term : outputVariable.getTerms()) {
-            result.append(String.format("  TERM %s := %s;\n", term.getName(), toString(term)));
+            result.append(String.format(indent + "TERM %s := %s;\n", term.getName(), toString(term)));
         }
 
         if (outputVariable.isLockOutputRange() || outputVariable.isLockValidOutput()) {
@@ -152,17 +152,17 @@ public class FclExporter extends Exporter {
                 }
                 lock += "VALID";
             }
-            result.append(String.format("  LOCK : %s;\n", lock));
+            result.append(String.format(indent + "LOCK : %s;\n", lock));
         }
         if (outputVariable.getDefuzzifier() != null) {
-            result.append(String.format("  METHOD : %s;\n",
+            result.append(String.format(indent + "METHOD : %s;\n",
                     toString(outputVariable.getDefuzzifier())));
         }
         if (outputVariable.fuzzyOutput().getAccumulation() != null) {
-            result.append(String.format("  ACCU : %s;\n",
+            result.append(String.format(indent + "ACCU : %s;\n",
                     toString(outputVariable.fuzzyOutput().getAccumulation())));
         }
-        result.append(String.format("  DEFAULT := %s;\n",
+        result.append(String.format(indent + "DEFAULT := %s;\n",
                 str(outputVariable.getDefaultValue())));
 
         result.append("END_DEFUZZIFY\n");
@@ -172,21 +172,21 @@ public class FclExporter extends Exporter {
     protected String toString(RuleBlock ruleBlock) {
         StringBuilder result = new StringBuilder();
         result.append(String.format("RULEBLOCK %s\n", ruleBlock.getName()));
-        result.append(String.format("ENABLED : %s\n",
+        result.append(String.format(indent + "ENABLED : %s\n",
                 String.valueOf(ruleBlock.isEnabled())));
         if (ruleBlock.getConjunction() != null) {
-            result.append(String.format("  AND : %s;\n", toString(ruleBlock.getConjunction())));
+            result.append(String.format(indent + "AND : %s;\n", toString(ruleBlock.getConjunction())));
         }
         if (ruleBlock.getDisjunction() != null) {
-            result.append(String.format("  OR : %s;\n", toString(ruleBlock.getDisjunction())));
+            result.append(String.format(indent + "OR : %s;\n", toString(ruleBlock.getDisjunction())));
         }
         if (ruleBlock.getActivation() != null) {
-            result.append(String.format("  ACT : %s;\n", toString(ruleBlock.getActivation())));
+            result.append(String.format(indent + "ACT : %s;\n", toString(ruleBlock.getActivation())));
         }
 
         int index = 1;
         for (Rule rule : ruleBlock.getRules()) {
-            result.append(String.format("  RULE %d : %s\n", index++, rule.getText()));
+            result.append(String.format(indent + "RULE %d : %s\n", index++, rule.getText()));
         }
         result.append("END_RULEBLOCK\n");
         return result.toString();

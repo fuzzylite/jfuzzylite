@@ -15,7 +15,6 @@
 package com.fuzzylite.imex;
 
 import com.fuzzylite.Engine;
-import com.fuzzylite.FuzzyLite;
 import com.fuzzylite.Op;
 import com.fuzzylite.defuzzifier.Bisector;
 import com.fuzzylite.defuzzifier.Centroid;
@@ -68,17 +67,13 @@ import com.fuzzylite.variable.InputVariable;
 import com.fuzzylite.variable.OutputVariable;
 import com.fuzzylite.variable.Variable;
 import java.io.BufferedReader;
-import java.io.File;
 import java.io.StringReader;
-import java.nio.charset.Charset;
-import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Level;
 import java.util.regex.Pattern;
 
 /**
