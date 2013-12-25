@@ -65,8 +65,8 @@ public class Tsukamoto {
             double difference = sshape.getEnd() - sshape.getStart();
             double a = sshape.getStart() + Math.sqrt(w * difference * difference / 2.0);
             double b = sshape.getEnd() + Math.sqrt(difference * difference * (w - 1.0) / -2.0);
-            if (Op.isLE(Math.abs(w - monotonic.membership(a)),
-                    Math.abs(w - monotonic.membership(b)))) {
+            if (Math.abs(w - monotonic.membership(a)) <
+                    Math.abs(w - monotonic.membership(b))) {
                 z = a;
             } else {
                 z = b;
@@ -77,8 +77,8 @@ public class Tsukamoto {
             double difference = zshape.getEnd() - zshape.getStart();
             double a = zshape.getStart() + Math.sqrt(difference * difference * (w - 1) / -2.0);
             double b = zshape.getEnd() + Math.sqrt(w * difference * difference / 2.0);
-            if (Op.isLE(Math.abs(w - monotonic.membership(a)),
-                    Math.abs(w - monotonic.membership(b)))) {
+            if (Math.abs(w - monotonic.membership(a)) < 
+                    Math.abs(w - monotonic.membership(b))){
                 z = a;
             } else {
                 z = b;
@@ -88,7 +88,7 @@ public class Tsukamoto {
         if (!Double.isNaN(z)) {
             double fz = monotonic.membership(z);
             //Compare difference between estimated and true value
-            if (!Op.isEq(w, fz, 1e-2)) {
+            if (!Op.isEq(w, fz, 0.1)) {
                 FuzzyLite.logger().warning(String.format(
                         "[tsukamoto warning] difference <%s> might suggest an inaccurate "
                         + "computation of z because it is expected w=f(z) in %s term <%s>, "

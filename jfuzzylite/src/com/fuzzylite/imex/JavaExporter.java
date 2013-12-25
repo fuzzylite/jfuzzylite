@@ -105,10 +105,10 @@ public class JavaExporter extends Exporter {
                 toString(outputVariable.getMinimum()), toString(outputVariable.getMaximum())));
         result.append(String.format(
                 "%s.setLockOutputRange(%s);\n", name,
-                outputVariable.isLockOutputRange()));
+                outputVariable.isLockingOutputRange()));
         result.append(String.format(
                 "%s.setLockValidOutput(%s);\n", name,
-                outputVariable.isLockValidOutput()));
+                outputVariable.isLockingValidOutput()));
         result.append(String.format(
                 "%s.setDefaultValue(%s);\n", name,
                 toString(outputVariable.getDefaultValue())));

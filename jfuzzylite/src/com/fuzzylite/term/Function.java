@@ -161,7 +161,7 @@ public class Function extends Term {
             } else {
                 result = value;
             }
-            FuzzyLite.logger().info(String.format("%s = %s", toPostfix(), str(result)));
+//            FuzzyLite.logger().info(String.format("%s = %s", toPostfix(), str(result)));
             return result;
         }
 

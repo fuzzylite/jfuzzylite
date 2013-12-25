@@ -118,9 +118,9 @@ public class Engine {
                     logger.info(String.format("%s.default = %s",
                             outputVariable.getName(), str(outputVariable.getDefaultValue())));
                     logger.info(String.format("%s.lockRange = %s",
-                            outputVariable.getName(), String.valueOf(outputVariable.isLockOutputRange())));
+                            outputVariable.getName(), String.valueOf(outputVariable.isLockingOutputRange())));
                     logger.info(String.format("%s.lockValid = %s",
-                            outputVariable.getName(), String.valueOf(outputVariable.isLockValidOutput())));
+                            outputVariable.getName(), String.valueOf(outputVariable.isLockingValidOutput())));
 
                     //no locking is ever performed during this debugging block;
                     double outputValue = outputVariable.defuzzifyNoLocks();

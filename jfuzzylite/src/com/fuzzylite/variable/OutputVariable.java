@@ -133,7 +133,7 @@ public class OutputVariable extends Variable {
         this.lastValidOutput = lastValidOutput;
     }
 
-    public boolean isLockOutputRange() {
+    public boolean isLockingOutputRange() {
         return lockOutputRange;
     }
 
@@ -141,7 +141,7 @@ public class OutputVariable extends Variable {
         this.lockOutputRange = lockOutputRange;
     }
 
-    public boolean isLockValidOutput() {
+    public boolean isLockingValidOutput() {
         return lockValidOutput;
     }
 

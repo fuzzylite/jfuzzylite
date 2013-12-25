@@ -260,7 +260,7 @@ public class FclImporter extends Importer {
                 Op.Pair<Double, Boolean> defaultAndLock = extractDefaultValue(line);
                 outputVariable.setDefaultValue(defaultAndLock.first);
                 outputVariable.setLockValidOutput(defaultAndLock.second
-                        || outputVariable.isLockValidOutput());
+                        || outputVariable.isLockingValidOutput());
             } else if ("RANGE".equals(firstToken)) {
                 Op.Pair<Double, Double> range = extractRange(line);
                 outputVariable.setRange(range.first, range.second);

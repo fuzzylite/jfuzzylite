@@ -109,7 +109,7 @@ public class FisExporter extends Exporter {
         result.append("[System]\n");
         result.append(String.format("Name='%s'\n", engine.getName()));
         result.append(String.format("Type='%s'\n", extractType(engine)));
-        result.append(String.format("Version=%s\n", FuzzyLite.VERSION));
+//        result.append(String.format("Version=%s\n", FuzzyLite.VERSION));
         result.append(String.format("NumInputs=%d\n", engine.numberOfInputVariables()));
         result.append(String.format("NumOutputs=%d\n", engine.numberOfOutputVariables()));
         RuleBlock ruleBlock = engine.getRuleBlock(0);
@@ -155,8 +155,8 @@ public class FisExporter extends Exporter {
             result.append(String.format("Range=[%s %s]\n",
                     str(outputVariable.getMinimum()), str(outputVariable.getMaximum())));
             result.append(String.format("Default=%s\n", str(outputVariable.getDefaultValue())));
-            result.append(String.format("LockValid=%d\n", outputVariable.isLockValidOutput() ? 1 : 0));
-            result.append(String.format("LockRange=%d\n", outputVariable.isLockOutputRange() ? 1 : 0));
+            result.append(String.format("LockValid=%d\n", outputVariable.isLockingValidOutput() ? 1 : 0));
+            result.append(String.format("LockRange=%d\n", outputVariable.isLockingOutputRange() ? 1 : 0));
             result.append(String.format("NumMFs=%d\n", outputVariable.numberOfTerms()));
             for (int t = 0; t < outputVariable.numberOfTerms(); ++t) {
                 Term term = outputVariable.getTerm(t);
@@ -222,7 +222,7 @@ public class FisExporter extends Exporter {
         }
 
         StringBuilder result = new StringBuilder();
-        result.append(translate(propositions, inputVariables));
+        result.append(translate(propositions, inputVariables)).append(", ");
         result.append(translate(rule.getConsequent().getConclusions(), outputVariables));
         result.append(String.format("(%s)", str(rule.getWeight())));
         String connector;
@@ -235,7 +235,7 @@ public class FisExporter extends Exporter {
         } else {
             connector = operators.get(0).getName();
         }
-        result.append(String.format(" : %s", connector));
+        result.append(" : ").append(connector);
         return result.toString();
     }
 
@@ -306,7 +306,7 @@ public class FisExporter extends Exporter {
                         break;
                     }
                 }
-                if (!proposition.getHedges().isEmpty()) {
+                if (proposition.getHedges().size() > 1) {
                     FuzzyLite.logger().warning("[export warning] "
                             + "only a few combinations of multiple "
                             + "hedges are supported in fis files");
@@ -384,7 +384,7 @@ public class FisExporter extends Exporter {
         }
         if (term instanceof Linear) {
             Linear t = (Linear) term;
-            return String.format("'%s':'linear','[%s]", term.getName(),
+            return String.format("'%s':'linear',[%s]", term.getName(),
                     Op.join(t.getCoefficients(), " "));
         }
         if (term instanceof PiShape) {

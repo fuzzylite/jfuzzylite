@@ -15,7 +15,6 @@
 package com.fuzzylite;
 
 import java.text.DecimalFormat;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
@@ -68,6 +67,7 @@ public class FuzzyLite {
 
     public static void setDebug(boolean debug) {
         DEBUG = debug;
+        //TODO: change logger.
     }
 
 }

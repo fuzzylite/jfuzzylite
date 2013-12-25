@@ -104,13 +104,13 @@ public class CppExporter extends Exporter {
                 toString(outputVariable.getMinimum()), toString(outputVariable.getMaximum())));
         result.append(String.format(
                 "%s->setLockOutputRange(%s);\n", name,
-                outputVariable.isLockOutputRange()));
-        result.append(String.format(
-                "%s->setLockValidOutput(%s);\n", name,
-                outputVariable.isLockValidOutput()));
+                outputVariable.isLockingOutputRange()));
         result.append(String.format(
                 "%s->setDefaultValue(%s);\n", name,
                 toString(outputVariable.getDefaultValue())));
+        result.append(String.format(
+                "%s->setLockValidOutput(%s);\n", name,
+                outputVariable.isLockingValidOutput()));
         result.append(String.format(
                 "%s->setDefuzzifier(%s);\n", name,
                 toString(outputVariable.getDefuzzifier())));
@@ -164,22 +164,22 @@ public class CppExporter extends Exporter {
                 xy.add(t.x.get(i));
                 xy.add(t.y.get(i));
             }
-            String result = String.format("fl::%s::create(\"%s\", %s)",
+            String result = String.format("fl::%s::create(\"%s\", %d, %s)",
                     Discrete.class.getSimpleName(), term.getName(),
-                    Op.join(xy, ", "));
+                    xy.size(), Op.join(xy, ", "));
             return result;
         }
         if (term instanceof Function) {
             Function t = (Function) term;
-            String result = String.format("fl::%s::create(\"%s\", \"%s\", engine, true)",
+            String result = String.format("fl::%s::create(\"%s\", \"%s\", engine)",
                     Function.class.getSimpleName(), term.getName(),
                     t.getText());
             return result;
         }
         if (term instanceof Linear) {
             Linear t = (Linear) term;
-            String result = String.format("fl::create(\"%s\", engine->inputVariables(), %s)",
-                    term.getName(), Op.join(t.getCoefficients(), ", "));
+            String result = String.format("fl::%s::create(\"%s\", engine->inputVariables(), %s)",
+                    Linear.class.getSimpleName(), term.getName(), Op.join(t.getCoefficients(), ", "));
             return result;
         }
 
