@@ -92,7 +92,7 @@ public class FldExporter extends Exporter {
 
         writer.write(Op.join(variables, separator) + "\n");
 
-        int resolution = (int) Math.max(1.0, Math.pow(
+        int resolution = -1 + (int) Math.max(1.0, Math.pow(
                 maximum, 1.0 / engine.numberOfInputVariables()));
 
         int sampleValues[] = new int[engine.numberOfInputVariables()];
@@ -101,7 +101,7 @@ public class FldExporter extends Exporter {
         for (int i = 0; i < engine.numberOfInputVariables(); ++i) {
             sampleValues[i] = 0;
             minSampleValues[i] = 0;
-            maxSampleValues[i] = resolution - 1;//increment goes one more
+            maxSampleValues[i] = resolution;
         }
 
         engine.restart();

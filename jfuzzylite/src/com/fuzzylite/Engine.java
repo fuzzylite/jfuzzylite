@@ -84,17 +84,17 @@ public class Engine {
         /*
          * BEGIN: Debug information
          */
-        Logger logger = FuzzyLite.logger();
         if (FuzzyLite.debug()) {
+            Logger logger = FuzzyLite.logger();
             for (InputVariable inputVariable : this.inputVariables) {
                 double inputValue = inputVariable.getInputValue();
                 if (inputVariable.isEnabled()) {
-                    logger.info(String.format(
+                    logger.fine(String.format(
                             "%s.input = %s\n%s.fuzzy = %s",
                             inputVariable.getName(), str(inputValue),
                             inputVariable.getName(), inputVariable.fuzzify(inputValue)));
                 } else {
-                    logger.info(String.format(
+                    logger.fine(String.format(
                             "%s.enabled = false", inputVariable.getName()));
                 }
             }
@@ -113,25 +113,26 @@ public class Engine {
          * BEGIN: Debug information
          */
         if (FuzzyLite.debug()) {
+            Logger logger = FuzzyLite.logger();
             for (OutputVariable outputVariable : this.outputVariables) {
                 if (outputVariable.isEnabled()) {
-                    logger.info(String.format("%s.default = %s",
+                    logger.fine(String.format("%s.default = %s",
                             outputVariable.getName(), str(outputVariable.getDefaultValue())));
-                    logger.info(String.format("%s.lockRange = %s",
+                    logger.fine(String.format("%s.lockRange = %s",
                             outputVariable.getName(), String.valueOf(outputVariable.isLockingOutputRange())));
-                    logger.info(String.format("%s.lockValid = %s",
+                    logger.fine(String.format("%s.lockValid = %s",
                             outputVariable.getName(), String.valueOf(outputVariable.isLockingValidOutput())));
 
                     //no locking is ever performed during this debugging block;
                     double outputValue = outputVariable.defuzzifyNoLocks();
-                    logger.info(String.format("%s.output = %s",
+                    logger.fine(String.format("%s.output = %s",
                             outputVariable.getName(), str(outputValue)));
-                    logger.info(String.format("%s.fuzzy = %s",
+                    logger.fine(String.format("%s.fuzzy = %s",
                             outputVariable.getName(), outputVariable.fuzzify(outputValue)));
-                    logger.info(outputVariable.fuzzyOutput().toString());
-                    logger.info("==========================");
+                    logger.fine(outputVariable.fuzzyOutput().toString());
+                    logger.fine("==========================");
                 } else {
-                    logger.info(String.format("%s.enabled = false", outputVariable.getName()));
+                    logger.fine(String.format("%s.enabled = false", outputVariable.getName()));
                 }
             }
         }

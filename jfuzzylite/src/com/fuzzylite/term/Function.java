@@ -30,7 +30,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.StringTokenizer;
 import java.util.logging.Logger;
-import java.util.regex.Pattern;
 
 /**
  *
@@ -161,7 +160,7 @@ public class Function extends Term {
             } else {
                 result = value;
             }
-//            FuzzyLite.logger().info(String.format("%s = %s", toPostfix(), str(result)));
+            FuzzyLite.logger().finest(String.format("%s = %s", toPostfix(), str(result)));
             return result;
         }
 

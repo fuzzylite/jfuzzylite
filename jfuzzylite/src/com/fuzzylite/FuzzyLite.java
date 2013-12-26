@@ -15,6 +15,7 @@
 package com.fuzzylite;
 
 import java.text.DecimalFormat;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
@@ -30,7 +31,6 @@ public class FuzzyLite {
     protected static DecimalFormat DF = new DecimalFormat("0.000");
     protected static int DECIMALS = 3;
     protected static double MACHEPS = 1e-5; //Machine epsilon to differentiate numbers
-    protected static boolean DEBUG = false;
 
     public static Logger logger() {
         return Logger.getGlobal();
@@ -61,13 +61,37 @@ public class FuzzyLite {
         MACHEPS = macheps;
     }
 
+    public static void setLogging(boolean logging) {
+        if (logging) {
+            if (logger().getLevel() == null || Level.OFF.equals(logger().getLevel())) {
+                logger().setLevel(Level.INFO);
+            }
+        } else {
+            logger().setLevel(Level.OFF);
+        }
+    }
+
+    public static boolean isLogging() {
+        return !(logger().getLevel() == null || Level.OFF.equals(logger().getLevel()));
+    }
+
     public static boolean debug() {
-        return DEBUG;
+        return logger().getLevel() != null
+                && logger().getLevel().intValue() < Level.INFO.intValue();
     }
 
     public static void setDebug(boolean debug) {
-        DEBUG = debug;
-        //TODO: change logger.
+        if (debug) {
+            if (logger().getLevel() == null
+                    || logger().getLevel().intValue() >= Level.INFO.intValue()) {
+                logger().setLevel(Level.FINER);
+            }
+        } else {
+            if (logger().getLevel() != null
+                    && logger().getLevel().intValue() < Level.INFO.intValue()) {
+                logger().setLevel(Level.INFO);
+            }
+        }
     }
 
 }

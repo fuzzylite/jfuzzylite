@@ -26,13 +26,11 @@ import com.fuzzylite.imex.FllImporter;
 import com.fuzzylite.imex.Importer;
 import com.fuzzylite.imex.JavaExporter;
 import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Level;
 
 /**
  *
@@ -189,13 +187,13 @@ public class Main {
     }
 
     public static void main(String[] args) throws Exception {
-        FuzzyLite.logger().setLevel(Level.WARNING);
-        FuzzyLite.setDecimals(8);
+        FuzzyLite.setDecimals(3);
         exportAllExamples("fis", "fll");
         exportAllExamples("fis", "fcl");
         exportAllExamples("fis", "fis");
         exportAllExamples("fis", "cpp");
         exportAllExamples("fis", "java");
+        FuzzyLite.setDecimals(8);
         exportAllExamples("fis", "fld");
 //TODO: Check logs
 //        Console.main(args);
