@@ -72,7 +72,7 @@ public class Trapezoid extends Term {
 
         if (Op.isLt(x, a) || Op.isGt(x, d)) {
             return 0.0;
-        } else if (Op.isLE(x, b)) {
+        } else if (Op.isLt(x, b)) {
             return Math.min(1.0, (x - a) / (b - a));
         } else if (Op.isLE(x, c)) {
             return 1.0;

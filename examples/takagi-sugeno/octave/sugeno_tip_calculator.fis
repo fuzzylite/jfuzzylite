@@ -1,0 +1,75 @@
+[System]
+Name='Sugeno-Tip-Calculator'
+Type='sugeno'
+NumInputs=2
+NumOutputs=3
+NumRules=10
+AndMethod='einstein_product'
+OrMethod='einstein_sum'
+ImpMethod='prod'
+AggMethod='sum'
+DefuzzMethod='wtaver'
+
+[Input1]
+Enabled=1
+Name='FoodQuality'
+Range=[1.00000000 10.00000000]
+NumMFs=2
+MF1='Bad':'trapmf',[0.00000000 1.00000000 3.00000000 7.00000000]
+MF2='Good':'trapmf',[3.00000000 7.00000000 10.00000000 11.00000000]
+
+[Input2]
+Enabled=1
+Name='Service'
+Range=[1.00000000 10.00000000]
+NumMFs=2
+MF1='Bad':'trapmf',[0.00000000 1.00000000 3.00000000 7.00000000]
+MF2='Good':'trapmf',[3.00000000 7.00000000 10.00000000 11.00000000]
+
+[Output1]
+Enabled=1
+Name='CheapTip'
+Range=[5.00000000 25.00000000]
+Default=nan
+LockValid=0
+LockRange=0
+NumMFs=3
+MF1='Low':'constant',[10.00000000]
+MF2='Medium':'constant',[15.00000000]
+MF3='High':'constant',[20.00000000]
+
+[Output2]
+Enabled=1
+Name='AverageTip'
+Range=[5.00000000 25.00000000]
+Default=nan
+LockValid=0
+LockRange=0
+NumMFs=3
+MF1='Low':'constant',[10.00000000]
+MF2='Medium':'constant',[15.00000000]
+MF3='High':'constant',[20.00000000]
+
+[Output3]
+Enabled=1
+Name='GenerousTip'
+Range=[5.00000000 25.00000000]
+Default=nan
+LockValid=0
+LockRange=0
+NumMFs=3
+MF1='Low':'constant',[10.00000000]
+MF2='Medium':'constant',[15.00000000]
+MF3='High':'constant',[20.00000000]
+
+[Rules]
+1.30000000 1.30000000 , 1.30000000 1.20000000 1.00000000 (1.00000000) : 1
+2.00000000 1.30000000 , 1.00000000 1.00000000 2.00000000 (1.00000000) : 1
+2.20000000 1.20000000 , 1.00000000 2.00000000 3.00000000 (1.00000000) : 1
+1.00000000 1.00000000 , 1.00000000 1.00000000 2.00000000 (1.00000000) : 1
+2.00000000 1.00000000 , 1.00000000 2.00000000 3.00000000 (1.00000000) : 1
+2.30000000 1.00000000 , 1.00000000 2.00000000 3.20000000 (1.00000000) : 1
+1.00000000 2.00000000 , 1.00000000 2.00000000 3.00000000 (1.00000000) : 1
+2.00000000 2.00000000 , 2.00000000 2.00000000 3.20000000 (1.00000000) : 1
+1.20000000 2.20000000 , 1.00000000 2.00000000 3.00000000 (1.00000000) : 1
+2.40000000 2.40000000 , 3.00000000 3.20000000 3.30000000 (1.00000000) : 1

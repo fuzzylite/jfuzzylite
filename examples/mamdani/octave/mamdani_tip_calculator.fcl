@@ -1,0 +1,60 @@
+FUNCTION_BLOCK Mamdani-Tip-Calculator
+
+VAR_INPUT
+  FoodQuality: REAL;
+  Service: REAL;
+END_VAR
+
+VAR_OUTPUT
+  Tip: REAL;
+  CheckPlusTip: REAL;
+END_VAR
+
+FUZZIFY FoodQuality
+  ENABLED : TRUE;
+  RANGE := (1.00000000 .. 10.00000000);
+  TERM Bad := Trapezoid 0.00000000 1.00000000 3.00000000 7.00000000;
+  TERM Good := Trapezoid 3.00000000 7.00000000 10.00000000 11.00000000;
+END_FUZZIFY
+
+FUZZIFY Service
+  ENABLED : TRUE;
+  RANGE := (1.00000000 .. 10.00000000);
+  TERM Bad := Trapezoid 0.00000000 1.00000000 3.00000000 7.00000000;
+  TERM Good := Trapezoid 3.00000000 7.00000000 10.00000000 11.00000000;
+END_FUZZIFY
+
+DEFUZZIFY Tip
+  ENABLED : TRUE;
+  RANGE := (0.00000000 .. 30.00000000);
+  TERM AboutTenPercent := Gaussian 10.00000000 2.00000000;
+  TERM AboutFifteenPercent := Gaussian 15.00000000 2.00000000;
+  TERM AboutTwentyPercent := Gaussian 20.00000000 2.00000000;
+  METHOD : COG;
+  ACCU : ASUM;
+  DEFAULT := nan;
+END_DEFUZZIFY
+
+DEFUZZIFY CheckPlusTip
+  ENABLED : TRUE;
+  RANGE := (1.00000000 .. 1.30000000);
+  TERM PlusAboutTenPercent := Gaussian 1.10000000 0.02000000;
+  TERM PlusAboutFifteenPercent := Gaussian 1.15000000 0.02000000;
+  TERM PlusAboutTwentyPercent := Gaussian 1.20000000 0.02000000;
+  METHOD : COG;
+  ACCU : ASUM;
+  DEFAULT := nan;
+END_DEFUZZIFY
+
+RULEBLOCK 
+  ENABLED : TRUE;
+  AND : PROD;
+  OR : MAX;
+  ACT : MIN;
+  RULE 1 : if FoodQuality is Bad and Service is Bad then Tip is AboutTenPercent and CheckPlusTip is PlusAboutTenPercent
+  RULE 2 : if FoodQuality is Bad and Service is Good then Tip is AboutFifteenPercent and CheckPlusTip is PlusAboutFifteenPercent
+  RULE 3 : if FoodQuality is Good and Service is Bad then Tip is AboutFifteenPercent and CheckPlusTip is PlusAboutFifteenPercent
+  RULE 4 : if FoodQuality is Good and Service is Good then Tip is AboutTwentyPercent and CheckPlusTip is PlusAboutTwentyPercent
+END_RULEBLOCK
+
+END_FUNCTION_BLOCK

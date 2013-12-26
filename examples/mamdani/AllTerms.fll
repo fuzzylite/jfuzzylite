@@ -1,0 +1,65 @@
+Engine: qtfuzzylite
+InputVariable: AllInputTerms
+  enabled: true
+  range: 0.00000000 6.50000000
+  Term: A Sigmoid 0.50000000 -20.00000000
+  Term: B ZShape 0.00000000 1.00000000
+  Term: C Ramp 1.00000000 0.00000000
+  Term: D Triangle 0.50000000 1.00000000 1.50000000
+  Term: E Trapezoid 1.00000000 1.25000000 1.75000000 2.00000000
+  Term: F Rectangle 1.75000000 2.25000000
+  Term: G Discrete 2.00000000 0.00000000 2.25000000 1.00000000 2.50000000 0.50000000 2.75000000 1.00000000 3.00000000 0.00000000
+  Term: H Gaussian 3.00000000 0.20000000
+  Term: I GaussianProduct 3.50000000 0.10000000 3.30000000 0.30000000
+  Term: J Bell 4.00000000 0.25000000 3.00000000
+  Term: K PiShape 4.00000000 4.50000000 4.50000000 5.00000000
+  Term: L SigmoidDifference 4.75000000 10.00000000 30.00000000 5.25000000
+  Term: M SigmoidProduct 5.25000000 20.00000000 -10.00000000 5.75000000
+  Term: N Ramp 5.50000000 6.50000000
+  Term: O SShape 5.50000000 6.50000000
+  Term: P Sigmoid 6.00000000 20.00000000
+OutputVariable: AllOutputTerms
+  enabled: true
+  range: 0.00000000 6.50000000
+  default: nan
+  lock-valid: false
+  lock-range: false
+  defuzzifier: Centroid 200
+  accumulation: Maximum
+  Term: A Sigmoid 0.50000000 -20.00000000
+  Term: B ZShape 0.00000000 1.00000000
+  Term: C Ramp 1.00000000 0.00000000
+  Term: D Triangle 0.50000000 1.00000000 1.50000000
+  Term: E Trapezoid 1.00000000 1.25000000 1.75000000 2.00000000
+  Term: F Rectangle 1.75000000 2.25000000
+  Term: G Discrete 2.00000000 0.00000000 2.25000000 1.00000000 2.50000000 0.50000000 2.75000000 1.00000000 3.00000000 0.00000000
+  Term: H Gaussian 3.00000000 0.20000000
+  Term: I GaussianProduct 3.50000000 0.10000000 3.30000000 0.30000000
+  Term: J Bell 4.00000000 0.25000000 3.00000000
+  Term: K PiShape 4.00000000 4.50000000 4.50000000 5.00000000
+  Term: L SigmoidDifference 4.75000000 10.00000000 30.00000000 5.25000000
+  Term: M SigmoidProduct 5.25000000 20.00000000 -10.00000000 5.75000000
+  Term: N Ramp 5.50000000 6.50000000
+  Term: O SShape 5.50000000 6.50000000
+  Term: P Sigmoid 6.00000000 20.00000000
+RuleBlock: 
+  enabled: true
+  conjunction: Minimum
+  disjunction: Maximum
+  activation: Minimum
+  Rule: if AllInputTerms is A then AllOutputTerms is P
+  Rule: if AllInputTerms is B then AllOutputTerms is O
+  Rule: if AllInputTerms is C then AllOutputTerms is N
+  Rule: if AllInputTerms is D then AllOutputTerms is M
+  Rule: if AllInputTerms is E then AllOutputTerms is L
+  Rule: if AllInputTerms is F then AllOutputTerms is K
+  Rule: if AllInputTerms is G then AllOutputTerms is J
+  Rule: if AllInputTerms is H then AllOutputTerms is I
+  Rule: if AllInputTerms is I then AllOutputTerms is H
+  Rule: if AllInputTerms is J then AllOutputTerms is G
+  Rule: if AllInputTerms is K then AllOutputTerms is F
+  Rule: if AllInputTerms is L then AllOutputTerms is E
+  Rule: if AllInputTerms is M then AllOutputTerms is D
+  Rule: if AllInputTerms is N then AllOutputTerms is C
+  Rule: if AllInputTerms is O then AllOutputTerms is B
+  Rule: if AllInputTerms is P then AllOutputTerms is A

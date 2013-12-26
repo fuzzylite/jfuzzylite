@@ -1,0 +1,44 @@
+Engine: juggler
+InputVariable: xHit
+  enabled: true
+  range: -4.00000000 4.00000000
+  Term: in1mf1 Bell -4.00000000 2.00000000 4.00000000
+  Term: in1mf2 Bell 0.00000000 2.00000000 4.00000000
+  Term: in1mf3 Bell 4.00000000 2.00000000 4.00000000
+InputVariable: projectAngle
+  enabled: true
+  range: 0.00000000 3.14200000
+  Term: in2mf1 Bell 0.00000000 0.78500000 4.00000000
+  Term: in2mf2 Bell 1.57100000 0.78500000 4.00000000
+  Term: in2mf3 Bell 3.14200000 0.78500000 4.00000000
+OutputVariable: theta
+  enabled: true
+  range: 0.00000000 0.00000000
+  default: nan
+  lock-valid: false
+  lock-range: false
+  defuzzifier: WeightedAverage
+  accumulation: Maximum
+  Term: out1mf Linear -0.02200000 -0.50000000 0.31500000
+  Term: out1mf Linear -0.02200000 -0.50000000 0.31500000
+  Term: out1mf Linear -0.02200000 -0.50000000 0.31500000
+  Term: out1mf Linear 0.11400000 -0.50000000 0.78500000
+  Term: out1mf Linear 0.11400000 -0.50000000 0.78500000
+  Term: out1mf Linear 0.11400000 -0.50000000 0.78500000
+  Term: out1mf Linear -0.02200000 -0.50000000 1.25600000
+  Term: out1mf Linear -0.02200000 -0.50000000 1.25600000
+  Term: out1mf Linear -0.02200000 -0.50000000 1.25600000
+RuleBlock: 
+  enabled: true
+  conjunction: AlgebraicProduct
+  disjunction: Maximum
+  activation: AlgebraicProduct
+  Rule: if xHit is in1mf1 and projectAngle is in2mf1 then theta is out1mf
+  Rule: if xHit is in1mf1 and projectAngle is in2mf2 then theta is out1mf
+  Rule: if xHit is in1mf1 and projectAngle is in2mf3 then theta is out1mf
+  Rule: if xHit is in1mf2 and projectAngle is in2mf1 then theta is out1mf
+  Rule: if xHit is in1mf2 and projectAngle is in2mf2 then theta is out1mf
+  Rule: if xHit is in1mf2 and projectAngle is in2mf3 then theta is out1mf
+  Rule: if xHit is in1mf3 and projectAngle is in2mf1 then theta is out1mf
+  Rule: if xHit is in1mf3 and projectAngle is in2mf2 then theta is out1mf
+  Rule: if xHit is in1mf3 and projectAngle is in2mf3 then theta is out1mf

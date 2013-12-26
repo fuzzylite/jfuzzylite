@@ -1,0 +1,53 @@
+Engine: shower
+InputVariable: temp
+  enabled: true
+  range: -20.00000000 20.00000000
+  Term: cold Trapezoid -30.00000000 -30.00000000 -15.00000000 0.00000000
+  Term: good Triangle -10.00000000 0.00000000 10.00000000
+  Term: hot Trapezoid 0.00000000 15.00000000 30.00000000 30.00000000
+InputVariable: flow
+  enabled: true
+  range: -1.00000000 1.00000000
+  Term: soft Trapezoid -3.00000000 -3.00000000 -0.80000000 0.00000000
+  Term: good Triangle -0.40000000 0.00000000 0.40000000
+  Term: hard Trapezoid 0.00000000 0.80000000 3.00000000 3.00000000
+OutputVariable: cold
+  enabled: true
+  range: -1.00000000 1.00000000
+  default: nan
+  lock-valid: false
+  lock-range: false
+  defuzzifier: Centroid 200
+  accumulation: Maximum
+  Term: closeFast Triangle -1.00000000 -0.60000000 -0.30000000
+  Term: closeSlow Triangle -0.60000000 -0.30000000 0.00000000
+  Term: steady Triangle -0.30000000 0.00000000 0.30000000
+  Term: openSlow Triangle 0.00000000 0.30000000 0.60000000
+  Term: openFast Triangle 0.30000000 0.60000000 1.00000000
+OutputVariable: hot
+  enabled: true
+  range: -1.00000000 1.00000000
+  default: nan
+  lock-valid: false
+  lock-range: false
+  defuzzifier: Centroid 200
+  accumulation: Maximum
+  Term: closeFast Triangle -1.00000000 -0.60000000 -0.30000000
+  Term: closeSlow Triangle -0.60000000 -0.30000000 0.00000000
+  Term: steady Triangle -0.30000000 0.00000000 0.30000000
+  Term: openSlow Triangle 0.00000000 0.30000000 0.60000000
+  Term: openFast Triangle 0.30000000 0.60000000 1.00000000
+RuleBlock: 
+  enabled: true
+  conjunction: Minimum
+  disjunction: Maximum
+  activation: Minimum
+  Rule: if temp is cold and flow is soft then cold is openSlow and hot is openFast
+  Rule: if temp is cold and flow is good then cold is closeSlow and hot is openSlow
+  Rule: if temp is cold and flow is hard then cold is closeFast and hot is closeSlow
+  Rule: if temp is good and flow is soft then cold is openSlow and hot is openSlow
+  Rule: if temp is good and flow is good then cold is steady and hot is steady
+  Rule: if temp is good and flow is hard then cold is closeSlow and hot is closeSlow
+  Rule: if temp is hot and flow is soft then cold is openFast and hot is openSlow
+  Rule: if temp is hot and flow is good then cold is openSlow and hot is closeSlow
+  Rule: if temp is hot and flow is hard then cold is closeSlow and hot is closeFast

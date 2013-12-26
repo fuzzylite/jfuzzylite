@@ -1,0 +1,48 @@
+FUNCTION_BLOCK tipper
+
+VAR_INPUT
+  service: REAL;
+  food: REAL;
+END_VAR
+
+VAR_OUTPUT
+  tip: REAL;
+END_VAR
+
+FUZZIFY service
+  ENABLED : TRUE;
+  RANGE := (0.00000000 .. 10.00000000);
+  TERM poor := Gaussian 0.00000000 1.50000000;
+  TERM good := Gaussian 5.00000000 1.50000000;
+  TERM excellent := Gaussian 10.00000000 1.50000000;
+END_FUZZIFY
+
+FUZZIFY food
+  ENABLED : TRUE;
+  RANGE := (0.00000000 .. 10.00000000);
+  TERM rancid := Trapezoid 0.00000000 0.00000000 1.00000000 3.00000000;
+  TERM delicious := Trapezoid 7.00000000 9.00000000 10.00000000 10.00000000;
+END_FUZZIFY
+
+DEFUZZIFY tip
+  ENABLED : TRUE;
+  RANGE := (0.00000000 .. 30.00000000);
+  TERM cheap := Triangle 0.00000000 5.00000000 10.00000000;
+  TERM average := Triangle 10.00000000 15.00000000 20.00000000;
+  TERM generous := Triangle 20.00000000 25.00000000 30.00000000;
+  METHOD : COG;
+  ACCU : MAX;
+  DEFAULT := nan;
+END_DEFUZZIFY
+
+RULEBLOCK 
+  ENABLED : TRUE;
+  AND : MIN;
+  OR : MAX;
+  ACT : MIN;
+  RULE 1 : if service is poor or food is rancid then tip is cheap
+  RULE 2 : if service is good then tip is average
+  RULE 3 : if service is excellent or food is delicious then tip is generous
+END_RULEBLOCK
+
+END_FUNCTION_BLOCK

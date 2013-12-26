@@ -48,7 +48,7 @@ public class Op {
      * Math Operations
      */
     public static boolean isEq(double a, double b) {
-        return Math.abs(a - b) < FuzzyLite.MACHEPS;
+        return Math.abs(a - b) < FuzzyLite.getMachEps();
     }
 
     public static boolean isEq(double a, double b, double macheps) {
@@ -56,7 +56,7 @@ public class Op {
     }
 
     public static boolean isLt(double a, double b) {
-        return !isEq(a, b, FuzzyLite.MACHEPS) && a < b;
+        return !isEq(a, b, FuzzyLite.getMachEps()) && a < b;
     }
 
     public static boolean isLt(double a, double b, double macheps) {
@@ -64,7 +64,7 @@ public class Op {
     }
 
     public static boolean isLE(double a, double b) {
-        return isEq(a, b, FuzzyLite.MACHEPS) || a < b;
+        return isEq(a, b, FuzzyLite.getMachEps()) || a < b;
     }
 
     public static boolean isLE(double a, double b, double macheps) {
@@ -72,7 +72,7 @@ public class Op {
     }
 
     public static boolean isGt(double a, double b) {
-        return !isEq(a, b, FuzzyLite.MACHEPS) && a > b;
+        return !isEq(a, b, FuzzyLite.getMachEps()) && a > b;
     }
 
     public static boolean isGt(double a, double b, double macheps) {
@@ -80,7 +80,7 @@ public class Op {
     }
 
     public static boolean isGE(double a, double b) {
-        return isEq(a, b, FuzzyLite.MACHEPS) || a > b;
+        return isEq(a, b, FuzzyLite.getMachEps()) || a > b;
     }
 
     public static boolean isGE(double a, double b, double macheps) {

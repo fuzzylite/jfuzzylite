@@ -1,0 +1,66 @@
+Engine: slbb
+InputVariable: in1
+  enabled: true
+  range: -1.50000000 1.50000000
+  Term: in1mf1 Bell -1.50000000 1.50000000 2.00000000
+  Term: in1mf2 Bell 1.50000000 1.50000000 2.00000000
+InputVariable: in2
+  enabled: true
+  range: -1.50000000 1.50000000
+  Term: in2mf1 Bell -1.50000000 1.50000000 2.00000000
+  Term: in2mf2 Bell 1.50000000 1.50000000 2.00000000
+InputVariable: in3
+  enabled: true
+  range: -0.20000000 0.20000000
+  Term: in3mf1 Bell -0.20000000 0.20000000 2.00000000
+  Term: in3mf2 Bell 0.20000000 0.20000000 2.00000000
+InputVariable: in4
+  enabled: true
+  range: -0.40000000 0.40000000
+  Term: in4mf1 Bell -0.40000000 0.40000000 2.00000000
+  Term: in4mf2 Bell 0.40000000 0.40000000 2.00000000
+OutputVariable: out
+  enabled: true
+  range: -10.00000000 10.00000000
+  default: nan
+  lock-valid: false
+  lock-range: false
+  defuzzifier: WeightedAverage
+  accumulation: Maximum
+  Term: outmf1 Linear 1.01500000 2.23400000 -12.66500000 -4.04600000 0.02600000
+  Term: outmf2 Linear 1.16100000 1.96900000 -9.39600000 -6.16500000 0.47400000
+  Term: outmf3 Linear 1.50600000 2.23400000 -12.99000000 -1.86500000 1.42600000
+  Term: outmf4 Linear 0.73400000 1.96900000 -9.38100000 -4.68800000 -0.88000000
+  Term: outmf5 Linear 0.73400000 2.23400000 -12.85300000 -6.11000000 -1.03400000
+  Term: outmf6 Linear 1.41300000 1.96900000 -9.48500000 -6.59200000 1.15900000
+  Term: outmf7 Linear 1.22500000 2.23400000 -12.80100000 -3.92900000 0.36600000
+  Term: outmf8 Linear 0.98500000 1.96900000 -9.29100000 -5.11500000 -0.19500000
+  Term: outmf9 Linear 0.98500000 1.96900000 -9.29200000 -5.11500000 0.19500000
+  Term: outmf10 Linear 1.22500000 2.23400000 -12.80200000 -3.92900000 -0.36600000
+  Term: outmf11 Linear 1.41300000 1.96900000 -9.48500000 -6.59200000 -1.15900000
+  Term: outmf12 Linear 0.73400000 2.23400000 -12.85300000 -6.11000000 1.03400000
+  Term: outmf13 Linear 0.73400000 1.96900000 -9.38100000 -4.68800000 0.88000000
+  Term: outmf14 Linear 1.50600000 2.23400000 -12.99000000 -1.86500000 -1.42600000
+  Term: outmf15 Linear 1.16100000 1.96900000 -9.39600000 -6.16500000 -0.47400000
+  Term: outmf16 Linear 1.01500000 2.23400000 -12.66500000 -4.04600000 -0.02600000
+RuleBlock: 
+  enabled: true
+  conjunction: AlgebraicProduct
+  disjunction: Maximum
+  activation: AlgebraicProduct
+  Rule: if in1 is in1mf1 and in2 is in2mf1 and in3 is in3mf1 and in4 is in4mf1 then out is outmf1
+  Rule: if in1 is in1mf1 and in2 is in2mf1 and in3 is in3mf1 and in4 is in4mf2 then out is outmf2
+  Rule: if in1 is in1mf1 and in2 is in2mf1 and in3 is in3mf2 and in4 is in4mf1 then out is outmf3
+  Rule: if in1 is in1mf1 and in2 is in2mf1 and in3 is in3mf2 and in4 is in4mf2 then out is outmf4
+  Rule: if in1 is in1mf1 and in2 is in2mf2 and in3 is in3mf1 and in4 is in4mf1 then out is outmf5
+  Rule: if in1 is in1mf1 and in2 is in2mf2 and in3 is in3mf1 and in4 is in4mf2 then out is outmf6
+  Rule: if in1 is in1mf1 and in2 is in2mf2 and in3 is in3mf2 and in4 is in4mf1 then out is outmf7
+  Rule: if in1 is in1mf1 and in2 is in2mf2 and in3 is in3mf2 and in4 is in4mf2 then out is outmf8
+  Rule: if in1 is in1mf2 and in2 is in2mf1 and in3 is in3mf1 and in4 is in4mf1 then out is outmf9
+  Rule: if in1 is in1mf2 and in2 is in2mf1 and in3 is in3mf1 and in4 is in4mf2 then out is outmf10
+  Rule: if in1 is in1mf2 and in2 is in2mf1 and in3 is in3mf2 and in4 is in4mf1 then out is outmf11
+  Rule: if in1 is in1mf2 and in2 is in2mf1 and in3 is in3mf2 and in4 is in4mf2 then out is outmf12
+  Rule: if in1 is in1mf2 and in2 is in2mf2 and in3 is in3mf1 and in4 is in4mf1 then out is outmf13
+  Rule: if in1 is in1mf2 and in2 is in2mf2 and in3 is in3mf1 and in4 is in4mf2 then out is outmf14
+  Rule: if in1 is in1mf2 and in2 is in2mf2 and in3 is in3mf2 and in4 is in4mf1 then out is outmf15
+  Rule: if in1 is in1mf2 and in2 is in2mf2 and in3 is in3mf2 and in4 is in4mf2 then out is outmf16

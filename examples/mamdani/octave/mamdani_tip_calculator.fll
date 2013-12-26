@@ -1,0 +1,42 @@
+Engine: Mamdani-Tip-Calculator
+InputVariable: FoodQuality
+  enabled: true
+  range: 1.00000000 10.00000000
+  Term: Bad Trapezoid 0.00000000 1.00000000 3.00000000 7.00000000
+  Term: Good Trapezoid 3.00000000 7.00000000 10.00000000 11.00000000
+InputVariable: Service
+  enabled: true
+  range: 1.00000000 10.00000000
+  Term: Bad Trapezoid 0.00000000 1.00000000 3.00000000 7.00000000
+  Term: Good Trapezoid 3.00000000 7.00000000 10.00000000 11.00000000
+OutputVariable: Tip
+  enabled: true
+  range: 0.00000000 30.00000000
+  default: nan
+  lock-valid: false
+  lock-range: false
+  defuzzifier: Centroid 200
+  accumulation: AlgebraicSum
+  Term: AboutTenPercent Gaussian 10.00000000 2.00000000
+  Term: AboutFifteenPercent Gaussian 15.00000000 2.00000000
+  Term: AboutTwentyPercent Gaussian 20.00000000 2.00000000
+OutputVariable: CheckPlusTip
+  enabled: true
+  range: 1.00000000 1.30000000
+  default: nan
+  lock-valid: false
+  lock-range: false
+  defuzzifier: Centroid 200
+  accumulation: AlgebraicSum
+  Term: PlusAboutTenPercent Gaussian 1.10000000 0.02000000
+  Term: PlusAboutFifteenPercent Gaussian 1.15000000 0.02000000
+  Term: PlusAboutTwentyPercent Gaussian 1.20000000 0.02000000
+RuleBlock: 
+  enabled: true
+  conjunction: AlgebraicProduct
+  disjunction: Maximum
+  activation: Minimum
+  Rule: if FoodQuality is Bad and Service is Bad then Tip is AboutTenPercent and CheckPlusTip is PlusAboutTenPercent
+  Rule: if FoodQuality is Bad and Service is Good then Tip is AboutFifteenPercent and CheckPlusTip is PlusAboutFifteenPercent
+  Rule: if FoodQuality is Good and Service is Bad then Tip is AboutFifteenPercent and CheckPlusTip is PlusAboutFifteenPercent
+  Rule: if FoodQuality is Good and Service is Good then Tip is AboutTwentyPercent and CheckPlusTip is PlusAboutTwentyPercent

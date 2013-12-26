@@ -1,0 +1,61 @@
+FUNCTION_BLOCK anfis
+
+VAR_INPUT
+  in_n1: REAL;
+  in_n2: REAL;
+END_VAR
+
+VAR_OUTPUT
+  out1: REAL;
+END_VAR
+
+FUZZIFY in_n1
+  ENABLED : TRUE;
+  RANGE := (1.00000000 .. 31.00000000);
+  TERM in1mf1 := Bell 1.15200000 8.20600000 0.87400000;
+  TERM in1mf2 := Bell 15.88200000 7.07800000 0.44400000;
+  TERM in1mf3 := Bell 30.57500000 8.60200000 0.81800000;
+END_FUZZIFY
+
+FUZZIFY in_n2
+  ENABLED : TRUE;
+  RANGE := (1.00000000 .. 31.00000000);
+  TERM in2mf1 := Bell 1.42600000 8.60200000 0.81800000;
+  TERM in2mf2 := Bell 16.11800000 7.07800000 0.44500000;
+  TERM in2mf3 := Bell 30.84700000 8.20600000 0.87500000;
+END_FUZZIFY
+
+DEFUZZIFY out1
+  ENABLED : TRUE;
+  RANGE := (-0.33400000 .. 1.00000000);
+  TERM out1mf1 := Linear -0.03500000 0.00200000 -0.35200000;
+  TERM out1mf2 := Linear 0.04400000 0.07900000 -0.02800000;
+  TERM out1mf3 := Linear -0.02400000 0.02400000 -1.59900000;
+  TERM out1mf4 := Linear -0.06700000 0.38400000 0.00700000;
+  TERM out1mf5 := Linear 0.35100000 -0.35100000 -3.66300000;
+  TERM out1mf6 := Linear -0.07900000 -0.04400000 3.90900000;
+  TERM out1mf7 := Linear 0.01200000 -0.01200000 -0.60000000;
+  TERM out1mf8 := Linear -0.38400000 0.06700000 10.15800000;
+  TERM out1mf9 := Linear -0.00200000 0.03500000 -1.40200000;
+  METHOD : COGS;
+  ACCU : MAX;
+  DEFAULT := nan;
+END_DEFUZZIFY
+
+RULEBLOCK 
+  ENABLED : TRUE;
+  AND : PROD;
+  OR : MAX;
+  ACT : PROD;
+  RULE 1 : if in_n1 is in1mf1 and in_n2 is in2mf1 then out1 is out1mf1
+  RULE 2 : if in_n1 is in1mf1 and in_n2 is in2mf2 then out1 is out1mf2
+  RULE 3 : if in_n1 is in1mf1 and in_n2 is in2mf3 then out1 is out1mf3
+  RULE 4 : if in_n1 is in1mf2 and in_n2 is in2mf1 then out1 is out1mf4
+  RULE 5 : if in_n1 is in1mf2 and in_n2 is in2mf2 then out1 is out1mf5
+  RULE 6 : if in_n1 is in1mf2 and in_n2 is in2mf3 then out1 is out1mf6
+  RULE 7 : if in_n1 is in1mf3 and in_n2 is in2mf1 then out1 is out1mf7
+  RULE 8 : if in_n1 is in1mf3 and in_n2 is in2mf2 then out1 is out1mf8
+  RULE 9 : if in_n1 is in1mf3 and in_n2 is in2mf3 then out1 is out1mf9
+END_RULEBLOCK
+
+END_FUNCTION_BLOCK

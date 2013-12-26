@@ -1,0 +1,48 @@
+[System]
+Name='tank'
+Type='mamdani'
+NumInputs=2
+NumOutputs=1
+NumRules=4
+AndMethod='prod'
+OrMethod='sum'
+ImpMethod='prod'
+AggMethod='max'
+DefuzzMethod='centroid'
+
+[Input1]
+Enabled=1
+Name='level'
+Range=[-1.00000000 1.00000000]
+NumMFs=3
+MF1='high':'trapmf',[-2.00000000 -1.00000000 -0.80000000 -0.00100000]
+MF2='good':'trimf',[-0.15000000 0.00000000 0.50000000]
+MF3='low':'trapmf',[0.00100000 0.80000000 1.00000000 1.50000000]
+
+[Input2]
+Enabled=1
+Name='change'
+Range=[-0.10000000 0.10000000]
+NumMFs=2
+MF1='falling':'trapmf',[-0.14000000 -0.10000000 -0.06000000 0.00000000]
+MF2='rising':'trapmf',[-0.00100000 0.06000000 0.10000000 0.14000000]
+
+[Output1]
+Enabled=1
+Name='valve'
+Range=[-1.00000000 1.00000000]
+Default=nan
+LockValid=0
+LockRange=0
+NumMFs=5
+MF1='close_fast':'trimf',[-1.00000000 -0.90000000 -0.80000000]
+MF2='close_slow':'trimf',[-0.60000000 -0.50000000 -0.40000000]
+MF3='no_change':'trimf',[-0.10000000 0.00000000 0.10000000]
+MF4='open_slow':'trimf',[0.40000000 0.50000000 0.60000000]
+MF5='open_fast':'trimf',[0.80000000 0.90000000 1.00000000]
+
+[Rules]
+3.00000000 0.00000000 , 5.00000000 (1.00000000) : 1
+1.00000000 0.00000000 , 1.00000000 (1.00000000) : 1
+2.00000000 2.00000000 , 2.00000000 (1.00000000) : 1
+2.00000000 1.00000000 , 4.00000000 (1.00000000) : 1

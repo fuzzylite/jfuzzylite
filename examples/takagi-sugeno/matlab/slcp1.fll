@@ -1,0 +1,38 @@
+Engine: slcp1
+InputVariable: in1
+  enabled: true
+  range: -0.30000000 0.30000000
+InputVariable: in2
+  enabled: true
+  range: -1.00000000 1.00000000
+InputVariable: in3
+  enabled: true
+  range: -3.00000000 3.00000000
+InputVariable: in4
+  enabled: true
+  range: -3.00000000 3.00000000
+InputVariable: in5
+  enabled: true
+  range: 0.50000000 1.50000000
+  Term: small Gaussian 0.50000000 0.20000000
+  Term: medium Gaussian 1.00000000 0.20000000
+  Term: large Gaussian 1.50000000 0.20000000
+OutputVariable: out
+  enabled: true
+  range: -10.00000000 10.00000000
+  default: nan
+  lock-valid: false
+  lock-range: false
+  defuzzifier: WeightedAverage
+  accumulation: Maximum
+  Term: outmf1 Linear 32.16600000 5.83500000 3.16200000 3.75700000 0.00000000 0.00000000
+  Term: outmf2 Linear 39.01200000 9.94700000 3.16200000 4.26900000 0.00000000 0.00000000
+  Term: outmf3 Linear 45.00900000 13.98500000 3.16200000 4.66600000 0.00000000 0.00000000
+RuleBlock: 
+  enabled: true
+  conjunction: AlgebraicProduct
+  disjunction: Maximum
+  activation: AlgebraicProduct
+  Rule: if in5 is small then out is outmf1
+  Rule: if in5 is medium then out is outmf2
+  Rule: if in5 is large then out is outmf3

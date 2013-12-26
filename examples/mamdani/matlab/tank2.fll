@@ -1,0 +1,34 @@
+Engine: tank
+InputVariable: level
+  enabled: true
+  range: -1.00000000 1.00000000
+  Term: high Trapezoid -2.00000000 -1.00000000 -0.80000000 -0.00100000
+  Term: good Triangle -0.15000000 0.00000000 0.50000000
+  Term: low Trapezoid 0.00100000 0.80000000 1.00000000 1.50000000
+InputVariable: change
+  enabled: true
+  range: -0.10000000 0.10000000
+  Term: falling Trapezoid -0.14000000 -0.10000000 -0.06000000 0.00000000
+  Term: rising Trapezoid -0.00100000 0.06000000 0.10000000 0.14000000
+OutputVariable: valve
+  enabled: true
+  range: -1.00000000 1.00000000
+  default: nan
+  lock-valid: false
+  lock-range: false
+  defuzzifier: Centroid 200
+  accumulation: Maximum
+  Term: close_fast Triangle -1.00000000 -0.90000000 -0.80000000
+  Term: close_slow Triangle -0.60000000 -0.50000000 -0.40000000
+  Term: no_change Triangle -0.10000000 0.00000000 0.10000000
+  Term: open_slow Triangle 0.40000000 0.50000000 0.60000000
+  Term: open_fast Triangle 0.80000000 0.90000000 1.00000000
+RuleBlock: 
+  enabled: true
+  conjunction: AlgebraicProduct
+  disjunction: AlgebraicSum
+  activation: AlgebraicProduct
+  Rule: if level is low then valve is open_fast
+  Rule: if level is high then valve is close_fast
+  Rule: if level is good and change is rising then valve is close_slow
+  Rule: if level is good and change is falling then valve is open_slow

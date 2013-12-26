@@ -1,0 +1,61 @@
+[System]
+Name='Cubic-Approximator'
+Type='sugeno'
+NumInputs=1
+NumOutputs=1
+NumRules=11
+AndMethod='min'
+OrMethod='max'
+ImpMethod='min'
+AggMethod='max'
+DefuzzMethod='wtaver'
+
+[Input1]
+Enabled=1
+Name='X'
+Range=[-5.00000000 5.00000000]
+NumMFs=11
+MF1='AboutNegFive':'trimf',[-6.00000000 -5.00000000 -4.00000000]
+MF2='AboutNegFour':'trimf',[-5.00000000 -4.00000000 -3.00000000]
+MF3='AboutNegThree':'trimf',[-4.00000000 -3.00000000 -2.00000000]
+MF4='AboutNegTwo':'trimf',[-3.00000000 -2.00000000 -1.00000000]
+MF5='AboutNegOne':'trimf',[-2.00000000 -1.00000000 0.00000000]
+MF6='AboutZero':'trimf',[-1.00000000 0.00000000 1.00000000]
+MF7='AboutOne':'trimf',[0.00000000 1.00000000 2.00000000]
+MF8='AboutTwo':'trimf',[1.00000000 2.00000000 3.00000000]
+MF9='AboutThree':'trimf',[2.00000000 3.00000000 4.00000000]
+MF10='AboutFour':'trimf',[3.00000000 4.00000000 5.00000000]
+MF11='AboutFive':'trimf',[4.00000000 5.00000000 6.00000000]
+
+[Output1]
+Enabled=1
+Name='ApproxXCubed'
+Range=[-5.00000000 5.00000000]
+Default=nan
+LockValid=0
+LockRange=0
+NumMFs=11
+MF1='TangentatNegFive':'linear',[75.00000000 250.00000000]
+MF2='TangentatNegFour':'linear',[48.00000000 128.00000000]
+MF3='TangentatNegThree':'linear',[27.00000000 54.00000000]
+MF4='TangentatNegTwo':'linear',[12.00000000 16.00000000]
+MF5='TangentatNegOne':'linear',[3.00000000 2.00000000]
+MF6='TangentatZero':'linear',[0.00000000 0.00000000]
+MF7='TangentatOne':'linear',[3.00000000 -2.00000000]
+MF8='TangentatTwo':'linear',[12.00000000 -16.00000000]
+MF9='TangentatThree':'linear',[27.00000000 -54.00000000]
+MF10='TangentatFour':'linear',[48.00000000 -128.00000000]
+MF11='TangentatFive':'linear',[75.00000000 -250.00000000]
+
+[Rules]
+1.00000000 , 1.00000000 (1.00000000) : 1
+2.00000000 , 2.00000000 (1.00000000) : 1
+3.00000000 , 3.00000000 (1.00000000) : 1
+4.00000000 , 4.00000000 (1.00000000) : 1
+5.00000000 , 5.00000000 (1.00000000) : 1
+6.00000000 , 6.00000000 (1.00000000) : 1
+7.00000000 , 7.00000000 (1.00000000) : 1
+8.00000000 , 8.00000000 (1.00000000) : 1
+9.00000000 , 9.00000000 (1.00000000) : 1
+10.00000000 , 10.00000000 (1.00000000) : 1
+11.00000000 , 11.00000000 (1.00000000) : 1
