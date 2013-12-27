@@ -147,17 +147,6 @@ public class Op {
         }
     }
 
-    //TODO: Make custom increments by x
-    public static boolean increment(int[] array, int min, int max) {
-        int[] minArray = new int[array.length];
-        int[] maxArray = new int[array.length];
-        for (int i = 0; i < array.length; ++i) {
-            minArray[i] = min;
-            maxArray[i] = max;
-        }
-        return increment(array, minArray, maxArray);
-    }
-
     public static boolean increment(int[] array, int[] min, int[] max) {
         return increment(array, array.length - 1, min, max);
     }

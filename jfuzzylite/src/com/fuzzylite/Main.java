@@ -175,7 +175,7 @@ public class Main {
             } catch (Exception ex) {
                 errors.append("error at " + examples.get(i) + ":\n" + ex.toString() + "\n");
                 ex.printStackTrace();
-                return ;
+                return;
             }
         }
         if (errors.toString().isEmpty()) {
@@ -187,15 +187,14 @@ public class Main {
     }
 
     public static void main(String[] args) throws Exception {
-        FuzzyLite.setDecimals(3);
-        exportAllExamples("fis", "fll");
-        exportAllExamples("fis", "fcl");
-        exportAllExamples("fis", "fis");
-        exportAllExamples("fis", "cpp");
-        exportAllExamples("fis", "java");
-        FuzzyLite.setDecimals(8);
-        exportAllExamples("fis", "fld");
-//TODO: Check logs
-//        Console.main(args);
+//        FuzzyLite.setDecimals(3);
+//        exportAllExamples("fis", "fll");
+//        exportAllExamples("fis", "fcl");
+//        exportAllExamples("fis", "fis");
+//        exportAllExamples("fis", "cpp");
+//        exportAllExamples("fis", "java");
+//        FuzzyLite.setDecimals(8);
+//        exportAllExamples("fis", "fld");
+        Console.main(args);
     }
 }
