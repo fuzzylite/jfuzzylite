@@ -33,7 +33,7 @@ public class FuzzyLite {
     protected static double MACHEPS = 1e-5; //Machine epsilon to differentiate numbers
 
     public static Logger logger() {
-        return Logger.getGlobal();
+        return Logger.getLogger("fuzzylite");
     }
 
     public static DecimalFormat getFormatter() {
