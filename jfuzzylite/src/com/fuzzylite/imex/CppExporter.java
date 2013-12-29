@@ -173,7 +173,7 @@ public class CppExporter extends Exporter {
             Function t = (Function) term;
             String result = String.format("fl::%s::create(\"%s\", \"%s\", engine)",
                     Function.class.getSimpleName(), term.getName(),
-                    t.getText());
+                    t.getFormula());
             return result;
         }
         if (term instanceof Linear) {

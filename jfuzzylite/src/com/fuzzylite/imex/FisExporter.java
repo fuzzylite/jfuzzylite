@@ -368,7 +368,7 @@ public class FisExporter extends Exporter {
         if (term instanceof Function) {
             Function t = (Function) term;
             return String.format("'%s':'function',[%s]", term.getName(),
-                    t.getText());
+                    t.getFormula());
         }
         if (term instanceof Gaussian) {
             Gaussian t = (Gaussian) term;

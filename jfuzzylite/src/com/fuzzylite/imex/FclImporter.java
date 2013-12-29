@@ -430,7 +430,7 @@ public class FclImporter extends Importer {
             Term result = FactoryManager.instance().term().createInstance(termClass);
             result.setName(Op.makeValidId(name));
             if (result instanceof Function) {
-                result.configure(Op.join(parameters, ""));//remove spaces for text of function
+                result.configure(Op.join(parameters, ""));//remove spaces for formula of function
             } else {
                 result.configure(Op.join(parameters, " "));
             }

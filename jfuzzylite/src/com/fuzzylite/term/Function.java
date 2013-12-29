@@ -251,7 +251,7 @@ public class Function extends Term {
     /**
      * Function term
      */
-    protected String text;
+    protected String formula;
     protected Engine engine;
     protected Node root;
     protected Map<String, Double> variables;
@@ -266,9 +266,9 @@ public class Function extends Term {
         this(name, "", null);
     }
 
-    public Function(String name, String text, Engine engine) {
+    public Function(String name, String formula, Engine engine) {
         this.name = name;
-        this.text = text;
+        this.formula = formula;
         this.engine = engine;
         this.root = null;
         this.variables = new HashMap<>();
@@ -279,7 +279,7 @@ public class Function extends Term {
 
     @Override
     public String parameters() {
-        return text;
+        return formula;
     }
 
     @Override
@@ -287,20 +287,20 @@ public class Function extends Term {
         if (parameters.isEmpty()) {
             return;
         }
-        setText(parameters);
+        setFormula(parameters);
     }
 
     public void load() {
-        load(this.text, this.engine);
+        load(this.formula, this.engine);
     }
 
-    public void load(String text) {
-        load(text, null);
+    public void load(String formula) {
+        load(formula, null);
     }
 
-    public void load(String text, Engine engine) {
-        this.root = parse(text);
-        this.text = text;
+    public void load(String formula, Engine engine) {
+        this.root = parse(formula);
+        this.formula = formula;
         this.engine = engine;
     }
 
@@ -328,18 +328,18 @@ public class Function extends Term {
         return this.root.evaluate(this.variables);
     }
 
-    public static Function create(String name, String text, Engine engine) {
-        return create(name, text, engine, true);
+    public static Function create(String name, String formula, Engine engine) {
+        return create(name, formula, engine, true);
     }
 
-    public static Function create(String name, String text,
+    public static Function create(String name, String formula,
             Engine engine, boolean requiresFunctions) {
         Function result = new Function(name);
         if (requiresFunctions) {
             result.loadBuiltInFunctions();
         }
         try {
-            result.load(text, engine);
+            result.load(formula, engine);
         } catch (Exception ex) {
             throw new RuntimeException(ex);
         }
@@ -444,11 +444,11 @@ public class Function extends Term {
         return true;
     }
 
-    public String toPostfix(String text) {
-        return toPostfix(text, false);
+    public String toPostfix(String formula) {
+        return toPostfix(formula, false);
     }
 
-    public String toPostfix(final String text, boolean loadFunctions) {
+    public String toPostfix(final String formula, boolean loadFunctions) {
         if (loadFunctions) {
             loadBuiltInFunctions();
         }
@@ -459,16 +459,16 @@ public class Function extends Term {
         toSpace.add("(");
         toSpace.add(")");
         toSpace.add(",");
-        String spacedText = text;
+        String spacedFormula = formula;
         for (String operator : toSpace) {
-            spacedText = spacedText.replace(operator, " " + operator + " ");
+            spacedFormula = spacedFormula.replace(operator, " " + operator + " ");
         }
 
         //Tokenizer
         Deque<String> queue = new ArrayDeque<>();
         Deque<String> stack = new ArrayDeque<>();
 
-        StringTokenizer tokenizer = new StringTokenizer(spacedText);
+        StringTokenizer tokenizer = new StringTokenizer(spacedFormula);
         String token;
         while (tokenizer.hasMoreTokens()) {
             token = tokenizer.nextToken();
@@ -485,7 +485,7 @@ public class Function extends Term {
                 }
                 if (stack.isEmpty() || !"(".equals(stack.peek())) {
                     throw new RuntimeException(String.format(
-                            "[parsing error] mismatching parentheses in: %s", text));
+                            "[parsing error] mismatching parentheses in: %s", formula));
                 }
 
             } else if (isOperator(token)) {
@@ -516,7 +516,7 @@ public class Function extends Term {
                 }
                 if (stack.isEmpty() || !"(".equals(stack.peek())) {
                     throw new RuntimeException(String.format(
-                            "[parsing error] mismatching parentheses in: %s", text));
+                            "[parsing error] mismatching parentheses in: %s", formula));
                 }
                 stack.pop();
 
@@ -534,7 +534,7 @@ public class Function extends Term {
             String pop = stack.pop();
             if ("(".equals(pop) || ")".equals(pop)) {
                 throw new RuntimeException(String.format(
-                        "[parsing error] mismatching parentheses in: %s", text));
+                        "[parsing error] mismatching parentheses in: %s", formula));
             }
             queue.offer(pop);
         }
@@ -613,12 +613,12 @@ public class Function extends Term {
         return stack.pop();
     }
 
-    public String getText() {
-        return text;
+    public String getFormula() {
+        return formula;
     }
 
-    public void setText(String text) {
-        this.text = text;
+    public void setFormula(String formula) {
+        this.formula = formula;
     }
 
     public Engine getEngine() {
@@ -649,7 +649,7 @@ public class Function extends Term {
         Logger log = FuzzyLite.logger();
         Function f = new Function();
         String text = "3+4*2/(1-5)^2^3";
-//        String text = "3+4*2/2";
+//        String formula = "3+4*2/2";
         log.info(f.toPostfix(text));
         log.info(f.parse(text).toInfix());
         log.info(Op.str(f.parse(text).evaluate(f.getVariables())));

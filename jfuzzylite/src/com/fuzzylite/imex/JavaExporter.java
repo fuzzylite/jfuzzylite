@@ -173,7 +173,7 @@ public class JavaExporter extends Exporter {
             Function t = (Function) term;
             String result = String.format("%s.create(\"%s\", \"%s\", engine, true)",
                     Function.class.getSimpleName(), term.getName(),
-                    t.getText());
+                    t.getFormula());
             return result;
         }
         if (term instanceof Linear) {
