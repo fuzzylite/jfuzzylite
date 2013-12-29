@@ -187,14 +187,14 @@ public class Main {
     }
 
     public static void main(String[] args) throws Exception {
-        FuzzyLite.setDecimals(3);
-        exportAllExamples("fis", "fll");
-        exportAllExamples("fis", "fcl");
-        exportAllExamples("fis", "fis");
-        exportAllExamples("fis", "cpp");
-        exportAllExamples("fis", "java");
-        FuzzyLite.setDecimals(8);
-        exportAllExamples("fis", "fld");
+//        FuzzyLite.setDecimals(3);
+//        exportAllExamples("fis", "fll");
+//        exportAllExamples("fis", "fcl");
+//        exportAllExamples("fis", "fis");
+//        exportAllExamples("fis", "cpp");
+//        exportAllExamples("fis", "java");
+//        FuzzyLite.setDecimals(8);
+//        exportAllExamples("fis", "fld");
         Console.main(args);
     }
 }
