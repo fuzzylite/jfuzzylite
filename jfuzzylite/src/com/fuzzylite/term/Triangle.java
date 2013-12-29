@@ -72,7 +72,7 @@ public class Triangle extends Term {
             return Double.NaN;
         }
 
-        if (Op.isLt(x, a) || Op.isGt(x, c)) {
+        if (Op.isLE(x, a) || Op.isGE(x, c)) {
             return 0.0;
         } else if (Op.isEq(x, b)) {
             return 1.0;

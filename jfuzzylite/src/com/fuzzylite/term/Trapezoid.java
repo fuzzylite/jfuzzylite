@@ -70,13 +70,13 @@ public class Trapezoid extends Term {
             return Double.NaN;
         }
 
-        if (Op.isLt(x, a) || Op.isGt(x, d)) {
+        if (Op.isLE(x, a) || Op.isGE(x, d)) {
             return 0.0;
         } else if (Op.isLt(x, b)) {
             return Math.min(1.0, (x - a) / (b - a));
         } else if (Op.isLE(x, c)) {
             return 1.0;
-        } else if (Op.isLE(x, d)) {
+        } else if (Op.isLt(x, d)) {
             return (d - x) / (d - c);
         }
         return 0.0;
