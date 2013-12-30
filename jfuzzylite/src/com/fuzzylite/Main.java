@@ -38,7 +38,7 @@ import java.util.List;
  */
 public class Main {
 
-    private static void exportAllExamples(String from, String to) throws Exception {
+    public static void exportAllExamples(String from, String to, String sourceBase, String targetBase) throws Exception {
         List<String> examples = new ArrayList<>();
         examples.add("/mamdani/AllTerms");
         examples.add("/mamdani/SimpleDimmer");
@@ -72,9 +72,6 @@ public class Main {
         examples.add("/takagi-sugeno/octave/linear_tip_calculator");
         examples.add("/takagi-sugeno/octave/sugeno_tip_calculator");
         examples.add("/tsukamoto/tsukamoto");
-
-        String sourceBase = "/home/jcrada/Development/fl/fuzzylite/examples";
-        String targetBase = "/tmp/fl/";
 
         Importer importer;
         if ("fll".equals(from)) {
@@ -187,14 +184,16 @@ public class Main {
     }
 
     public static void main(String[] args) throws Exception {
+//        String sourceBase = "/home/jcrada/Development/fl/fuzzylite/examples";
+//        String targetBase = "/tmp/fl";
 //        FuzzyLite.setDecimals(3);
-//        exportAllExamples("fis", "fll");
-//        exportAllExamples("fis", "fcl");
-//        exportAllExamples("fis", "fis");
-//        exportAllExamples("fis", "cpp");
-//        exportAllExamples("fis", "java");
+//        exportAllExamples("fis", "fll", sourceBase, targetBase);
+//        exportAllExamples("fis", "fcl", sourceBase, targetBase);
+//        exportAllExamples("fis", "fis", sourceBase, targetBase);
+//        exportAllExamples("fis", "cpp", sourceBase, targetBase);
+//        exportAllExamples("fis", "java", sourceBase, targetBase);
 //        FuzzyLite.setDecimals(8);
-//        exportAllExamples("fis", "fld");
+//        exportAllExamples("fis", "fld", sourceBase, targetBase);
         Console.main(args);
     }
 }

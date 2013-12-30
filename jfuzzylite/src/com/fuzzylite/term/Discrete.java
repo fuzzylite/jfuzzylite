@@ -16,9 +16,9 @@ package com.fuzzylite.term;
 
 import java.util.ArrayList;
 import java.util.List;
-import com.fuzzylite.Op;
-import static com.fuzzylite.Op.str;
 import java.util.regex.Pattern;
+
+import com.fuzzylite.Op;
 
 /**
  *

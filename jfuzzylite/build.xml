@@ -17,7 +17,10 @@
    <target name="dist" depends="compile" description="generate the distribution">
       <!-- Create the distribution directory -->
       <mkdir dir="${dist}" />
-      <jar jarfile="${dist}/${ant.project.name}.jar" basedir="${build}">
+      <jar jarfile="${dist}/${ant.project.name}.jar" basedir="${build}" compress="false">
+<!--
+        <fileset dir="${src}" includes="**/*.java"/>
+-->
          <manifest>
             <attribute name="Created-By" value="${user.name}" />
             <attribute name="Vendor" value="fuzzylite" />
@@ -28,6 +31,18 @@
             <attribute name="Author" value="Juan Rada-Vilela" />
             <attribute name="Class-Path" value="" />
             <attribute name="Main-Class" value="com.fuzzylite.Main" />
+         </manifest>
+      </jar>
+        <jar jarfile="${dist}/${ant.project.name}-src.jar" compress="true">
+        <fileset dir="${src}" includes="**/*.java"/>
+         <manifest>
+            <attribute name="Created-By" value="${user.name}" />
+            <attribute name="Vendor" value="fuzzylite" />
+            <attribute name="Title" value="jfuzzylite" />
+            <attribute name="Version" value="1.0" />
+            <attribute name="Description" value="a fuzzy logic control library in Java" />
+            <attribute name="URL" value="http://www.fuzzylite.com" />
+            <attribute name="Author" value="Juan Rada-Vilela" />
          </manifest>
       </jar>
    </target>

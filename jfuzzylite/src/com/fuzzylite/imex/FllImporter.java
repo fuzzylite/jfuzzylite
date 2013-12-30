@@ -147,7 +147,7 @@ public class FllImporter extends Importer {
             } else if ("range".equals(keyValue.first)) {
                 Op.Pair<Double, Double> range = parseRange(keyValue.second);
                 inputVariable.setRange(range.first, range.second);
-            } else if ("Term".equals(keyValue.first)) {
+            } else if ("term".equals(keyValue.first)) {
                 inputVariable.addTerm(parseTerm(keyValue.second, engine));
             } else {
                 throw new RuntimeException("[import error] "
@@ -182,7 +182,7 @@ public class FllImporter extends Importer {
                 outputVariable.setDefuzzifier(parseDefuzzifier(keyValue.second));
             } else if ("accumulation".equals(keyValue.first)) {
                 outputVariable.fuzzyOutput().setAccumulation(parseSNorm(keyValue.second));
-            } else if ("Term".equals(keyValue.first)) {
+            } else if ("term".equals(keyValue.first)) {
                 outputVariable.addTerm(parseTerm(keyValue.second, engine));
             } else {
                 throw new RuntimeException("[import error] "
@@ -210,7 +210,7 @@ public class FllImporter extends Importer {
                 ruleBlock.setDisjunction(parseSNorm(keyValue.second));
             } else if ("activation".equals(keyValue.first)) {
                 ruleBlock.setActivation(parseTNorm(keyValue.second));
-            } else if ("Rule".equals(keyValue.first)) {
+            } else if ("rule".equals(keyValue.first)) {
                 ruleBlock.addRule(Rule.parse(keyValue.second, engine));
             } else {
                 throw new RuntimeException("[import error] "
@@ -222,9 +222,6 @@ public class FllImporter extends Importer {
     }
 
     protected Term parseTerm(String text, Engine engine) {
-        if ("none".equals(text)) {
-            return null;
-        }
         String[] tokens = text.split(Pattern.quote(" "));
         if (tokens.length < 2) {
             throw new RuntimeException("[syntax error] "

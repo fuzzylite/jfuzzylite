@@ -143,17 +143,11 @@ public class FllExporter extends Exporter {
     }
 
     public String toString(Rule rule) {
-        if (rule == null) {
-            return "Rule: none";
-        }
-        return "Rule: " + rule.getText();
+        return "rule: " + rule.getText();
     }
 
     public String toString(Term term) {
-        if (term == null) {
-            return "Term: none";
-        }
-        return "Term: " + term.getName()
+        return "term: " + term.getName()
                 + " " + term.getClass().getSimpleName()
                 + " " + term.parameters();
     }
