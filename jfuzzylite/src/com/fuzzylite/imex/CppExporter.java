@@ -103,8 +103,11 @@ public class CppExporter extends Exporter {
                 "%s->setRange(%s, %s);\n", name,
                 toString(outputVariable.getMinimum()), toString(outputVariable.getMaximum())));
         result.append(String.format(
-                "%s->setLockOutputRange(%s);\n", name,
-                outputVariable.isLockingOutputRange()));
+                "%s->fuzzyOutput()->setAccumulation(%s);\n",
+                name, toString(outputVariable.fuzzyOutput().getAccumulation())));
+        result.append(String.format(
+                "%s->setDefuzzifier(%s);\n", name,
+                toString(outputVariable.getDefuzzifier())));
         result.append(String.format(
                 "%s->setDefaultValue(%s);\n", name,
                 toString(outputVariable.getDefaultValue())));
@@ -112,11 +115,8 @@ public class CppExporter extends Exporter {
                 "%s->setLockValidOutput(%s);\n", name,
                 outputVariable.isLockingValidOutput()));
         result.append(String.format(
-                "%s->setDefuzzifier(%s);\n", name,
-                toString(outputVariable.getDefuzzifier())));
-        result.append(String.format(
-                "%s->fuzzyOutput()->setAccumulation(%s);\n",
-                name, toString(outputVariable.fuzzyOutput().getAccumulation())));
+                "%s->setLockOutputRange(%s);\n", name,
+                outputVariable.isLockingOutputRange()));
         for (Term term : outputVariable.getTerms()) {
             result.append(String.format("%s->addTerm(%s);\n",
                     name, toString(term)));

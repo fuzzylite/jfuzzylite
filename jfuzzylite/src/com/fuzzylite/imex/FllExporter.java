@@ -109,16 +109,16 @@ public class FllExporter extends Exporter {
                 String.valueOf(outputVariable.isEnabled()), separator));
         result.append(String.format("%srange: %s%s", indent,
                 Op.join(" ", outputVariable.getMinimum(), outputVariable.getMaximum()), separator));
+        result.append(String.format("%saccumulation: %s%s", indent,
+                toString(outputVariable.fuzzyOutput().getAccumulation()), separator));
+        result.append(String.format("%sdefuzzifier: %s%s", indent,
+                toString(outputVariable.getDefuzzifier()), separator));
         result.append(String.format("%sdefault: %s%s", indent,
                 Op.str(outputVariable.getDefaultValue()), separator));
         result.append(String.format("%slock-valid: %s%s", indent,
                 String.valueOf(outputVariable.isLockingValidOutput()), separator));
         result.append(String.format("%slock-range: %s%s", indent,
                 String.valueOf(outputVariable.isLockingOutputRange()), separator));
-        result.append(String.format("%sdefuzzifier: %s%s", indent,
-                toString(outputVariable.getDefuzzifier()), separator));
-        result.append(String.format("%saccumulation: %s%s", indent,
-                toString(outputVariable.fuzzyOutput().getAccumulation()), separator));
         for (Term term : outputVariable.getTerms()) {
             result.append(String.format("%s%s%s", indent, toString(term), separator));
         }

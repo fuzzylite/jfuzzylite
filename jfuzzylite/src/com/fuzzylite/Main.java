@@ -184,16 +184,16 @@ public class Main {
     }
 
     public static void main(String[] args) throws Exception {
-//        String sourceBase = "/home/jcrada/Development/fl/fuzzylite/examples";
-//        String targetBase = "/tmp/fl";
-//        FuzzyLite.setDecimals(3);
-//        exportAllExamples("fis", "fll", sourceBase, targetBase);
-//        exportAllExamples("fis", "fcl", sourceBase, targetBase);
-//        exportAllExamples("fis", "fis", sourceBase, targetBase);
-//        exportAllExamples("fis", "cpp", sourceBase, targetBase);
-//        exportAllExamples("fis", "java", sourceBase, targetBase);
-//        FuzzyLite.setDecimals(8);
-//        exportAllExamples("fis", "fld", sourceBase, targetBase);
+        String sourceBase = "/home/jcrada/Development/fl/fuzzylite/examples";
+        String targetBase = "/tmp/fl";
+        FuzzyLite.setDecimals(3);
+        exportAllExamples("fis", "fll", sourceBase, targetBase);
+        exportAllExamples("fis", "fcl", sourceBase, targetBase);
+        exportAllExamples("fis", "fis", sourceBase, targetBase);
+        exportAllExamples("fis", "cpp", sourceBase, targetBase);
+        exportAllExamples("fis", "java", sourceBase, targetBase);
+        FuzzyLite.setDecimals(8);
+        exportAllExamples("fis", "fld", sourceBase, targetBase);
         Console.main(args);
     }
 }
