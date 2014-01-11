@@ -25,8 +25,17 @@ import com.fuzzylite.hedge.Hedge;
 import com.fuzzylite.imex.FllExporter;
 import com.fuzzylite.norm.SNorm;
 import com.fuzzylite.norm.TNorm;
+import com.fuzzylite.norm.t.AlgebraicProduct;
 import com.fuzzylite.rule.Rule;
 import com.fuzzylite.rule.RuleBlock;
+import com.fuzzylite.term.Constant;
+import com.fuzzylite.term.Function;
+import com.fuzzylite.term.Linear;
+import com.fuzzylite.term.Ramp;
+import com.fuzzylite.term.SShape;
+import com.fuzzylite.term.Sigmoid;
+import com.fuzzylite.term.Term;
+import com.fuzzylite.term.ZShape;
 import com.fuzzylite.variable.InputVariable;
 import com.fuzzylite.variable.OutputVariable;
 
@@ -281,6 +290,93 @@ public class Engine {
     @Override
     public String toString() {
         return new FllExporter().toString(this);
+    }
+
+    public enum Type {
+
+        MAMDANI, LARSEN, TAKAGI_SUGENO, TSUKAMOTO, INVERSE_TSUKAMOTO, UNKNOWN, NONE;
+    };
+
+    public Type type() {
+        if (outputVariables.isEmpty()) {
+            return Type.NONE;
+        }
+        //mamdani
+        boolean mamdani = true;
+        for (OutputVariable outputVariable : outputVariables) {
+            //Terms cannot be Constant or Linear
+            for (Term term : outputVariable.getTerms()) {
+                mamdani &= term != null
+                        && !(term instanceof Constant || term instanceof Linear);
+            }
+            //Defuzzifier must be integral
+            mamdani &= outputVariable.getDefuzzifier() instanceof IntegralDefuzzifier;
+        }
+
+        boolean larsen = mamdani;
+        //Larsen is Mamdani with AlgebraicProduct as Activation
+        if (mamdani) {
+            for (RuleBlock ruleBlock : ruleBlocks) {
+                larsen &= ruleBlock.getActivation() instanceof AlgebraicProduct;
+            }
+        }
+        if (larsen) {
+            return Type.LARSEN;
+        }
+        if (mamdani) {
+            return Type.MAMDANI;
+        }
+        //else keep checking
+
+        boolean takagiSugeno = true;
+        for (OutputVariable outputVariable : outputVariables) {
+            //Takagi-Sugeno has only Constant, Linear or Function terms
+            for (Term term : outputVariable.getTerms()) {
+                takagiSugeno &= term instanceof Constant
+                        || term instanceof Linear
+                        || term instanceof Function;
+            }
+            //and the defuzzifier cannot be integral
+            Defuzzifier defuzzifier = outputVariable.getDefuzzifier();
+            takagiSugeno &= defuzzifier != null && !(defuzzifier instanceof IntegralDefuzzifier);
+        }
+        if (takagiSugeno) {
+            return Type.TAKAGI_SUGENO;
+        }
+
+        boolean tsukamoto = true;
+        for (OutputVariable outputVariable : outputVariables) {
+            //Tsukamoto has only monotonic terms: Ramp, Sigmoid, SShape, or ZShape
+            for (Term term : outputVariable.getTerms()) {
+                tsukamoto &= term instanceof Ramp
+                        || term instanceof Sigmoid
+                        || term instanceof SShape
+                        || term instanceof ZShape;
+            }
+            //and the defuzzifier cannot be integral
+            Defuzzifier defuzzifier = outputVariable.getDefuzzifier();
+            tsukamoto &= defuzzifier != null && !(defuzzifier instanceof IntegralDefuzzifier);
+        }
+        if (tsukamoto) {
+            return Type.TSUKAMOTO;
+        }
+
+        boolean inverseTsukamoto = true;
+        for (OutputVariable outputVariable : outputVariables) {
+            //Terms cannot be Constant or Linear, like Mamdani
+            for (Term term : outputVariable.getTerms()) {
+                inverseTsukamoto &= term != null
+                        && !(term instanceof Constant || term instanceof Linear);
+            }
+            //Defuzzifier cannot be integral
+            Defuzzifier defuzzifier = outputVariable.getDefuzzifier();
+            inverseTsukamoto &= defuzzifier != null && !(defuzzifier instanceof IntegralDefuzzifier);
+        }
+        if (inverseTsukamoto) {
+            return Type.INVERSE_TSUKAMOTO;
+        }
+
+        return Type.UNKNOWN;
     }
 
 
