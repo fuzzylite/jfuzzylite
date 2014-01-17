@@ -83,13 +83,13 @@ public class FclImporter extends Importer {
         try {
             while ((line = fclReader.readLine()) != null) {
                 ++lineNumber;
-                String[] comments = line.split(Pattern.quote("//"));
-                if (comments.length > 1) {
-                    line = comments[0];
+                List<String> comments = Op.split(line, "//");
+                if (comments.size() > 1) {
+                    line = comments.get(0);
                 }
-                comments = line.split(Pattern.quote("#"));
-                if (comments.length > 1) {
-                    line = comments[0];
+                comments = Op.split(line, "#");
+                if (comments.size() > 1) {
+                    line = comments.get(0);
                 }
                 line = line.trim();
                 // (%) indicates a comment only when used at the start of line
@@ -185,13 +185,13 @@ public class FclImporter extends Importer {
         reader.readLine();//discard first line (VAR_INPUT)
         String line;
         while ((line = reader.readLine()) != null) {
-            String[] token = line.split(Pattern.quote(":"));
-            if (token.length != 2) {
+            List<String> token = Op.split(line, ":");
+            if (token.size() != 2) {
                 throw new RuntimeException(String.format(
                         "[syntax error] expected property of type "
                         + "(key : value) in line: %s", line));
             }
-            String name = Op.makeValidId(token[0]);
+            String name = Op.makeValidId(token.get(0));
             if ("VAR_INPUT".equals(tag)) {
                 engine.addInputVariable(new InputVariable(name));
             } else if ("VAR_OUTPUT".equals(tag)) {
@@ -322,12 +322,12 @@ public class FclImporter extends Importer {
     }
 
     protected TNorm extractTNorm(String line) {
-        String[] token = line.split(Pattern.quote(":"));
-        if (token.length != 2) {
+        List<String> token = Op.split(line, ":");
+        if (token.size() != 2) {
             throw new RuntimeException("[syntax error] "
                     + "expected property of type (key : value) in line: " + line);
         }
-        String name = token[1].trim();
+        String name = token.get(1).trim();
         String className = null;
         if ("MIN".equals(name)) {
             className = Minimum.class.getSimpleName();
@@ -346,12 +346,12 @@ public class FclImporter extends Importer {
     }
 
     protected SNorm extractSNorm(String line) {
-        String[] token = line.split(Pattern.quote(":"));
-        if (token.length != 2) {
+        List<String> token = Op.split(line, ":");
+        if (token.size() != 2) {
             throw new RuntimeException("[syntax error] "
                     + "expected property of type (key : value) in line: " + line);
         }
-        String name = token[1].trim();
+        String name = token.get(1).trim();
         String className = name;
         if ("MAX".equals(name)) {
             className = Maximum.class.getSimpleName();
@@ -463,12 +463,12 @@ public class FclImporter extends Importer {
     }
 
     protected Defuzzifier extractDefuzzifier(String line) {
-        String[] token = line.split(Pattern.quote(":"));
-        if (token.length != 2) {
+        List<String> token = Op.split(line, ":");
+        if (token.size() != 2) {
             throw new RuntimeException("[syntax error] "
                     + "expected property of type (key : value) in line: " + line);
         }
-        String name = token[1].trim();
+        String name = token.get(1).trim();
         String className = name;
         if ("COG".equals(className)) {
             className = Centroid.class.getSimpleName();
@@ -489,16 +489,16 @@ public class FclImporter extends Importer {
     }
 
     protected Op.Pair<Double, Boolean> extractDefaultValue(String line) {
-        String[] token = line.split(Pattern.quote(":="));
-        if (token.length != 2) {
+        List<String> token = Op.split(line, ":=");
+        if (token.size() != 2) {
             throw new RuntimeException("[syntax error] "
                     + "expected property of type (key := value) in line: " + line);
         }
-        String[] values = token[1].split(Pattern.quote("|"));
-        String defaultValue = values[0].trim();
+        List<String> values = Op.split(token.get(1), "|");
+        String defaultValue = values.get(0).trim();
         String nc = "";
-        if (values.length == 2) {
-            nc = values[1].trim();
+        if (values.size() == 2) {
+            nc = values.get(1).trim();
         }
         double value;
         try {
@@ -519,13 +519,13 @@ public class FclImporter extends Importer {
     }
 
     protected Op.Pair<Double, Double> extractRange(String line) {
-        String[] token = line.split(Pattern.quote(":="));
-        if (token.length != 2) {
+        List<String> token = Op.split(line, ":=");
+        if (token.size() != 2) {
             throw new RuntimeException("[syntax error] "
                     + "expected property of type (key := value) in line: " + line);
         }
 
-        String rangeToken = token[1];
+        String rangeToken = token.get(1);
 
         String range = "";
         for (char c : rangeToken.toCharArray()) {
@@ -535,8 +535,8 @@ public class FclImporter extends Importer {
             range += c;
         }
 
-        token = range.split(Pattern.quote(".."));
-        if (token.length != 2) {
+        token = Op.split(range, "..");
+        if (token.size() != 2) {
             throw new RuntimeException(String.format("[syntax error] expected property of type"
                     + " 'start .. end', but found <%s> in line: %s", range, line));
         }
@@ -544,12 +544,12 @@ public class FclImporter extends Importer {
         double minimum, maximum;
         int index = -1;
         try {
-            minimum = Op.toDouble(token[index = 0]);
-            maximum = Op.toDouble(token[index = 1]);
+            minimum = Op.toDouble(token.get(index = 0));
+            maximum = Op.toDouble(token.get(index = 1));
         } catch (Exception ex) {
             throw new RuntimeException(String.format(
                     "[syntax error] expected numeric value, but found <%s> in line %s",
-                    token[index], line));
+                    token.get(index), line));
         }
 
         return new Op.Pair<>(minimum, maximum);
@@ -563,9 +563,9 @@ public class FclImporter extends Importer {
         }
         boolean output, range;
         String value = line.substring(index + 1);
-        String[] flags = value.split(Pattern.quote("|"));
-        if (flags.length == 1) {
-            String flag = flags[0].trim();
+        List<String> flags = Op.split(value, "|");
+        if (flags.size() == 1) {
+            String flag = flags.get(0).trim();
             output = "VALID".equals(flag);
             range = ("RANGE".equals(flag));
             if (!(output || range)) {
@@ -573,15 +573,15 @@ public class FclImporter extends Importer {
                         "[syntax error] expected locking flags "
                         + "<VALID|RANGE>, but found <%s> in line: %s", flag, line));
             }
-        } else if (flags.length == 2) {
-            String flagA = flags[0].trim();
-            String flagB = flags[1].trim();
+        } else if (flags.size() == 2) {
+            String flagA = flags.get(0).trim();
+            String flagB = flags.get(1).trim();
             output = ("VALID".equals(flagA) || "VALID".equals(flagB));
             range = ("RANGE".equals(flagA) || "RANGE".equals(flagB));
             if (!(output && range)) {
                 throw new RuntimeException(String.format(
                         "[syntax error] expected locking flags <VALID|RANGE>, "
-                        + "but found <%s|%s> in line %s", flags[0], flags[1], line));
+                        + "but found <%s|%s> in line %s", flags.get(0), flags.get(1), line));
             }
         } else {
             throw new RuntimeException(String.format(
@@ -593,13 +593,13 @@ public class FclImporter extends Importer {
     }
 
     protected boolean extractEnabled(String line) {
-        String[] tokens = line.split(Pattern.quote(":"));
-        if (tokens.length != 2) {
+        List<String> tokens = Op.split(line, ":");
+        if (tokens.size() != 2) {
             throw new RuntimeException("[syntax error] expected property of type "
                     + "(key : value) in line: " + line);
         }
 
-        String bool = tokens[1].trim();
+        String bool = tokens.get(1).trim();
         if ("TRUE".equals(bool)) {
             return true;
         }

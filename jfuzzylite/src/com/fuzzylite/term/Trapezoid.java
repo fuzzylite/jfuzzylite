@@ -15,7 +15,7 @@
 package com.fuzzylite.term;
 
 import com.fuzzylite.Op;
-import java.util.regex.Pattern;
+import java.util.List;
 
 /**
  *
@@ -51,17 +51,17 @@ public class Trapezoid extends Term {
         if (parameters.isEmpty()) {
             return;
         }
-        String[] values = parameters.split(Pattern.quote(" "));
+        List<String> values = Op.split(parameters, " ");
         int required = 4;
-        if (values.length < required) {
+        if (values.size() < required) {
             throw new RuntimeException(String.format(
                     "[configuration error] term <%s> requires <%d> parameters",
                     this.getClass().getSimpleName(), required));
         }
-        setA(Op.toDouble(values[0]));
-        setB(Op.toDouble(values[1]));
-        setC(Op.toDouble(values[2]));
-        setD(Op.toDouble(values[3]));
+        setA(Op.toDouble(values.get(0)));
+        setB(Op.toDouble(values.get(1)));
+        setC(Op.toDouble(values.get(2)));
+        setD(Op.toDouble(values.get(3)));
     }
 
     @Override

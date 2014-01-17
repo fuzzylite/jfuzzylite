@@ -25,7 +25,7 @@ public class Seldom extends Hedge {
     @Override
     public double hedge(double x) {
         return Op.isLE(x, 0.5)
-                ? Math.sqrt(x / 2)
-                : 1 - Math.sqrt((1 - x) / 2);
+                ? Math.sqrt(x / 2.0)
+                : 1.0 - Math.sqrt((1.0 - x) / 2.0);
     }
 }

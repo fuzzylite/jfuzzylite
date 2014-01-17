@@ -18,7 +18,6 @@ import com.fuzzylite.Op;
 import com.fuzzylite.variable.InputVariable;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.regex.Pattern;
 
 /**
  *
@@ -44,8 +43,8 @@ public class Linear extends Term {
         //Copy elements to prevent changing the Engine's input variables
         this.inputVariables = new ArrayList<>(inputVariables);
     }
-    
-        @Override
+
+    @Override
     public String parameters() {
         return Op.join(coefficients, " ");
     }
@@ -56,8 +55,8 @@ public class Linear extends Term {
             return;
         }
         coefficients.clear();
-        String[] values = parameters.split(Pattern.quote(" "));
-        for (String x : values){
+        List<String> values = Op.split(parameters, " ");
+        for (String x : values) {
             coefficients.add(Op.toDouble(x));
         }
     }

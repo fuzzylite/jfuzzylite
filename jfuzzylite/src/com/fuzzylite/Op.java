@@ -131,18 +131,28 @@ public class Op {
     }
 
     public static List<String> split(String str, String delimiter, boolean ignoreEmpty) {
-        throw new RuntimeException("Not implemented");
-//        List<String> result = new ArrayList<>();
-//        if (str.isEmpty() || delimiter.isEmpty()) {
-//            return result;
-//        }
-//        int next = 0;
-//        int position = 0;
-//        while (next >= 0){
-//            next = str.indexOf(delimiter, position);
-//            
-//        }
-//        return result;
+        List<String> result = new ArrayList<>();
+        if (str.isEmpty() || delimiter.isEmpty()) {
+            result.add(str);
+            return result;
+        }
+        int position = 0, next = 0;
+        while (next >= 0) {
+            next = str.indexOf(delimiter, position);
+            String token;
+            if (next < 0) {
+                token = str.substring(position);
+            } else {
+                token = str.substring(position, next);
+            }
+            if (!(token.isEmpty() && ignoreEmpty)) {
+                result.add(token);
+            }
+            if (next >= 0) {
+                position = next + delimiter.length();
+            }
+        }
+        return result;
     }
 
     public static double toDouble(String x) throws NumberFormatException {

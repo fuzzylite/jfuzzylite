@@ -160,10 +160,10 @@ public class FisExporter extends Exporter {
             if (!Double.isNaN(outputVariable.getDefaultValue())) {
                 result.append(String.format("Default=%s\n", str(outputVariable.getDefaultValue())));
             }
-            if (!outputVariable.isLockingValidOutput()) {
+            if (outputVariable.isLockingValidOutput()) {
                 result.append(String.format("LockValid=%d\n", outputVariable.isLockingValidOutput() ? 1 : 0));
             }
-            if (!outputVariable.isLockingOutputRange()) {
+            if (outputVariable.isLockingOutputRange()) {
                 result.append(String.format("LockRange=%d\n", outputVariable.isLockingOutputRange() ? 1 : 0));
             }
             result.append(String.format("NumMFs=%d\n", outputVariable.numberOfTerms()));

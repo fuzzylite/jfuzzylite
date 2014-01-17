@@ -15,7 +15,7 @@
 package com.fuzzylite.term;
 
 import com.fuzzylite.Op;
-import java.util.regex.Pattern;
+import java.util.List;
 
 /**
  *
@@ -39,7 +39,7 @@ public class Ramp extends Term {
         this.end = end;
     }
 
-        @Override
+    @Override
     public String parameters() {
         return Op.join(" ", start, end);
     }
@@ -49,17 +49,17 @@ public class Ramp extends Term {
         if (parameters.isEmpty()) {
             return;
         }
-        String[] values = parameters.split(Pattern.quote(" "));
+        List<String> values = Op.split(parameters, " ");
         int required = 2;
-        if (values.length < required) {
+        if (values.size() < required) {
             throw new RuntimeException(String.format(
                     "[configuration error] term <%s> requires <%d> parameters",
                     this.getClass().getSimpleName(), required));
         }
-        setStart(Op.toDouble(values[0]));
-        setEnd(Op.toDouble(values[1]));
+        setStart(Op.toDouble(values.get(0)));
+        setEnd(Op.toDouble(values.get(1)));
     }
-    
+
     @Override
     public double membership(double x) {
         if (Double.isNaN(x)) {

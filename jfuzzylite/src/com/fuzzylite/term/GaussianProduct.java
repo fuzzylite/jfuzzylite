@@ -15,7 +15,7 @@
 package com.fuzzylite.term;
 
 import com.fuzzylite.Op;
-import java.util.regex.Pattern;
+import java.util.List;
 
 /**
  *
@@ -53,17 +53,17 @@ public class GaussianProduct extends Term {
         if (parameters.isEmpty()) {
             return;
         }
-        String[] values = parameters.split(Pattern.quote(" "));
+        List<String> values = Op.split(parameters, " ");
         int required = 4;
-        if (values.length < required) {
+        if (values.size() < required) {
             throw new RuntimeException(String.format(
                     "[configuration error] term <%s> requires <%d> parameters",
                     this.getClass().getSimpleName(), required));
         }
-        setMeanA(Op.toDouble(values[0]));
-        setStandardDeviationA(Op.toDouble(values[1]));
-        setMeanB(Op.toDouble(values[2]));
-        setStandardDeviationB(Op.toDouble(values[3]));
+        setMeanA(Op.toDouble(values.get(0)));
+        setStandardDeviationA(Op.toDouble(values.get(1)));
+        setMeanB(Op.toDouble(values.get(2)));
+        setStandardDeviationB(Op.toDouble(values.get(3)));
     }
 
     @Override

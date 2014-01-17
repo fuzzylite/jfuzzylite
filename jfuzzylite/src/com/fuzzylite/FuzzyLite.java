@@ -14,6 +14,7 @@
  */
 package com.fuzzylite;
 
+import java.math.RoundingMode;
 import java.text.DecimalFormat;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -24,11 +25,25 @@ import java.util.logging.Logger;
  */
 public class FuzzyLite {
 
+    //Extended DecimalFormat to provide atomic setting of RoundingMode
+    //Rounding HALF_UP to match most results from fuzzylite C++ rounding mode
+    protected static class FLDecimalFormat extends DecimalFormat {
+
+        public FLDecimalFormat(String pattern) {
+            this(pattern, RoundingMode.HALF_UP);
+        }
+
+        public FLDecimalFormat(String pattern, RoundingMode roundingMode) {
+            super(pattern);
+            setRoundingMode(roundingMode);
+        }
+
+    }
     public static final String NAME = "jfuzzylite";
     public static final String VERSION = "1.0";
     public static final String LONG_VERSION = "1.0b1401";
     public static final String AUTHOR = "Juan Rada-Vilela";
-    protected static DecimalFormat DF = new DecimalFormat("0.000");
+    protected static DecimalFormat DF = new FLDecimalFormat("0.000");
     protected static int DECIMALS = 3;
     protected static double MACHEPS = 1e-5; //Machine epsilon to differentiate numbers
 
@@ -36,7 +51,7 @@ public class FuzzyLite {
         return Logger.getLogger("fuzzylite");
     }
 
-    public static DecimalFormat getFormatter() {
+    public static java.text.DecimalFormat getFormatter() {
         return DF;
     }
 
@@ -50,7 +65,7 @@ public class FuzzyLite {
         for (int i = 0; i < decimals; ++i) {
             pattern += "0";
         }
-        DF = new DecimalFormat(pattern);
+        DF = new FLDecimalFormat(pattern);
     }
 
     public static double getMachEps() {

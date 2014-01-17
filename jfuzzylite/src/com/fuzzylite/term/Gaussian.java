@@ -15,7 +15,7 @@
 package com.fuzzylite.term;
 
 import com.fuzzylite.Op;
-import java.util.regex.Pattern;
+import java.util.List;
 
 /**
  *
@@ -49,15 +49,15 @@ public class Gaussian extends Term {
         if (parameters.isEmpty()) {
             return;
         }
-        String[] values = parameters.split(Pattern.quote(" "));
+        List<String> values = Op.split(parameters, " ");
         int required = 2;
-        if (values.length < required) {
+        if (values.size() < required) {
             throw new RuntimeException(String.format(
                     "[configuration error] term <%s> requires <%d> parameters",
                     this.getClass().getSimpleName(), required));
         }
-        setMean(Op.toDouble(values[0]));
-        setStandardDeviation(Op.toDouble(values[1]));
+        setMean(Op.toDouble(values.get(0)));
+        setStandardDeviation(Op.toDouble(values.get(1)));
     }
 
     @Override

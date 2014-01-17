@@ -22,6 +22,6 @@ public class Not extends Hedge {
 
     @Override
     public double hedge(double x) {
-        return 1 - x;
+        return 1.0 - x;
     }
 }

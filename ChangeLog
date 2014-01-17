@@ -12,3 +12,5 @@ Version 1.1
 * Changed the signature of methods FldExporter::toWriter
 * Removed variable and methods for FldExporter::maximum
 * Removed file Main.java and fixed build.xml to create binaries using Console.java
+* Accuracy improvements importing fis files with large number of decimals
+* Updated FLD examples to reflect accuracy

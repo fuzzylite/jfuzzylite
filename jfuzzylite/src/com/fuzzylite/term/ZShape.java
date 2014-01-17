@@ -14,9 +14,8 @@
  */
 package com.fuzzylite.term;
 
-import java.util.regex.Pattern;
-
 import com.fuzzylite.Op;
+import java.util.List;
 
 /**
  *
@@ -50,15 +49,15 @@ public class ZShape extends Term {
         if (parameters.isEmpty()) {
             return;
         }
-        String[] values = parameters.split(Pattern.quote(" "));
+        List<String> values = Op.split(parameters, " ");
         int required = 2;
-        if (values.length < required) {
+        if (values.size() < required) {
             throw new RuntimeException(String.format(
                     "[configuration error] term <%s> requires <%d> parameters",
                     this.getClass().getSimpleName(), required));
         }
-        setStart(Op.toDouble(values[0]));
-        setEnd(Op.toDouble(values[1]));
+        setStart(Op.toDouble(values.get(0)));
+        setEnd(Op.toDouble(values.get(1)));
     }
 
     @Override

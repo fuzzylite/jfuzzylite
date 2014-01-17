@@ -15,7 +15,7 @@
 package com.fuzzylite.term;
 
 import com.fuzzylite.Op;
-import java.util.regex.Pattern;
+import java.util.List;
 
 /**
  *
@@ -53,17 +53,17 @@ public class PiShape extends Term {
         if (parameters.isEmpty()) {
             return;
         }
-        String[] values = parameters.split(Pattern.quote(" "));
+        List<String> values = Op.split(parameters, " ");
         int required = 4;
-        if (values.length < required) {
+        if (values.size() < required) {
             throw new RuntimeException(String.format(
                     "[configuration error] term <%s> requires <%d> parameters",
                     this.getClass().getSimpleName(), required));
         }
-        setBottomLeft(Op.toDouble(values[0]));
-        setTopLeft(Op.toDouble(values[1]));
-        setTopRight(Op.toDouble(values[2]));
-        setBottomRight(Op.toDouble(values[3]));
+        setBottomLeft(Op.toDouble(values.get(0)));
+        setTopLeft(Op.toDouble(values.get(1)));
+        setTopRight(Op.toDouble(values.get(2)));
+        setBottomRight(Op.toDouble(values.get(3)));
     }
 
     @Override

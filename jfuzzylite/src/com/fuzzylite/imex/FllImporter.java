@@ -33,6 +33,7 @@ import java.io.StringReader;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Deque;
+import java.util.List;
 import java.util.regex.Pattern;
 
 /**
@@ -79,10 +80,10 @@ public class FllImporter extends Importer {
                     if (line.isEmpty()) {
                         continue;
                     }
-                    String[] split = line.split(Pattern.quote(separator));
-                    line = clean(split[0]);
-                    for (int i = 1; i < split.length; ++i) {
-                        queue.offer(clean(split[i]));
+                    List<String> split = Op.split(line, separator);
+                    line = clean(split.get(0));
+                    for (int i = 1; i < split.size(); ++i) {
+                        queue.offer(clean(split.get(i)));
                     }
                     ++lineNumber;
                 }
@@ -226,18 +227,18 @@ public class FllImporter extends Importer {
     }
 
     protected Term parseTerm(String text, Engine engine) {
-        String[] tokens = text.split(Pattern.quote(" "));
-        if (tokens.length < 2) {
+        List<String> tokens = Op.split(text, " ");
+        if (tokens.size() < 2) {
             throw new RuntimeException("[syntax error] "
                     + "expected a term in format <name class parameters>, "
                     + "but found <" + text + ">");
         }
-        Term term = FactoryManager.instance().term().createInstance(tokens[1]);
-        term.setName(tokens[0]);
+        Term term = FactoryManager.instance().term().createInstance(tokens.get(1));
+        term.setName(tokens.get(0));
         StringBuilder parameters = new StringBuilder();
-        for (int i = 2; i < tokens.length; ++i) {
-            parameters.append(tokens[i]);
-            if (i + 1 < tokens.length) {
+        for (int i = 2; i < tokens.size(); ++i) {
+            parameters.append(tokens.get(i));
+            if (i + 1 < tokens.size()) {
                 parameters.append(" ");
             }
         }
@@ -271,10 +272,12 @@ public class FllImporter extends Importer {
         if (text.isEmpty() || "none".equals(text)) {
             return null;
         }
-        String[] parameters = text.split(Pattern.quote(" "));
-        Defuzzifier defuzzifier = FactoryManager.instance().defuzzifier().createInstance(parameters[0]);
-        if (defuzzifier instanceof IntegralDefuzzifier && parameters.length > 1) {
-            ((IntegralDefuzzifier) defuzzifier).setResolution(Integer.parseInt(parameters[1]));
+        List<String> parameters = Op.split(text, " ");
+        Defuzzifier defuzzifier = FactoryManager.instance().
+                defuzzifier().createInstance(parameters.get(0));
+        if (defuzzifier instanceof IntegralDefuzzifier && parameters.size() > 1) {
+            ((IntegralDefuzzifier) defuzzifier).setResolution(
+                    Integer.parseInt(parameters.get(1)));
         }
         return defuzzifier;
     }

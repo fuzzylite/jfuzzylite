@@ -16,7 +16,6 @@ package com.fuzzylite.term;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.regex.Pattern;
 
 import com.fuzzylite.Op;
 
@@ -47,7 +46,7 @@ public class Discrete extends Term {
         StringBuilder result = new StringBuilder();
         for (int i = 0; i < x.size(); ++i) {
             result.append(Op.join(" ", x.get(i), y.get(i)));
-            if (i + 1 < x.size()){
+            if (i + 1 < x.size()) {
                 result.append(" ");
             }
         }
@@ -59,20 +58,20 @@ public class Discrete extends Term {
         if (parameters.isEmpty()) {
             return;
         }
-        String[] values = parameters.split(Pattern.quote(" "));
+        List<String> values = Op.split(parameters, " ");
 
-        if (values.length % 2 != 0) {
+        if (values.size() % 2 != 0) {
             throw new RuntimeException(String.format(
                     "[configuration error] term <%s> requires an even set of parameters values (x,y), "
                     + "but found <%d> values ",
-                    this.getClass().getSimpleName(), values.length));
+                    this.getClass().getSimpleName(), values.size()));
         }
 
         x.clear();
         y.clear();
-        for (int i = 0; i + 1 < values.length; i += 2) {
-            x.add(Op.toDouble(values[i]));
-            y.add(Op.toDouble(values[i + 1]));
+        for (int i = 0; i + 1 < values.size(); i += 2) {
+            x.add(Op.toDouble(values.get(i)));
+            y.add(Op.toDouble(values.get(i + 1)));
         }
     }
 

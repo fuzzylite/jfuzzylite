@@ -93,13 +93,13 @@ public class FisImporter extends Importer {
         List<String> sections = new ArrayList<>();
         try {
             while ((line = fisReader.readLine()) != null) {
-                String[] comments = line.split(Pattern.quote("//"));
-                if (comments.length > 1) {
-                    line = comments[0];
+                List<String> comments = Op.split(line, "//");
+                if (comments.size() > 1) {
+                    line = comments.get(0);
                 }
-                comments = line.split(Pattern.quote("#"));
-                if (comments.length > 1) {
-                    line = comments[0];
+                comments = Op.split(line, "#");
+                if (comments.size() > 1) {
+                    line = comments.get(0);
                 }
                 line = line.trim();
                 // (%) indicates a comment only when used at the start of line
@@ -159,11 +159,11 @@ public class FisImporter extends Importer {
         reader.readLine(); //ignore first line [System]
         String line;
         while ((line = reader.readLine()) != null) {
-            String[] keyValue = line.split(Pattern.quote("="));
-            String key = keyValue[0].trim();
+            List<String> keyValue = Op.split(line, "=");
+            String key = keyValue.get(0).trim();
             String value = "";
-            for (int i = 1; i < keyValue.length; ++i) {
-                value += keyValue[i];
+            for (int i = 1; i < keyValue.size(); ++i) {
+                value += keyValue.get(i);
             }
             value = value.trim();
             if ("Name".equals(key)) {
@@ -198,14 +198,14 @@ public class FisImporter extends Importer {
 
         String line;
         while ((line = reader.readLine()) != null) {
-            String[] keyValue = line.split(Pattern.quote("="));
-            if (keyValue.length != 2) {
+            List<String> keyValue = Op.split(line, "=");
+            if (keyValue.size() != 2) {
                 throw new RuntimeException(String.format(
                         "[syntax error] expected a property of type "
                         + "'key=value', but found <%s>", line));
             }
-            String key = keyValue[0].trim();
-            String value = keyValue[1].trim();
+            String key = keyValue.get(0).trim();
+            String value = keyValue.get(1).trim();
 
             if ("Name".equals(key)) {
                 inputVariable.setName(Op.makeValidId(value));
@@ -235,14 +235,14 @@ public class FisImporter extends Importer {
 
         String line;
         while ((line = reader.readLine()) != null) {
-            String[] keyValue = line.split(Pattern.quote("="));
-            if (keyValue.length != 2) {
+            List<String> keyValue = Op.split(line, "=");
+            if (keyValue.size() != 2) {
                 throw new RuntimeException(String.format(
                         "[syntax error] expected a property of type "
                         + "'key=value', but found <%s>", line));
             }
-            String key = keyValue[0].trim();
-            String value = keyValue[1].trim();
+            String key = keyValue.get(0).trim();
+            String value = keyValue.get(1).trim();
 
             if ("Name".equals(key)) {
                 outputVariable.setName(Op.makeValidId(value));
@@ -278,45 +278,45 @@ public class FisImporter extends Importer {
 
         String line;
         while ((line = reader.readLine()) != null) {
-            String[] inputsAndRest = line.split(Pattern.quote(","));
-            if (inputsAndRest.length != 2) {
+            List<String> inputsAndRest = Op.split(line, ",");
+            if (inputsAndRest.size() != 2) {
                 throw new RuntimeException(String.format(
                         "[syntax error] expected rule to match pattern "
                         + "<'i '+, 'o '+ (w) : '1|2'>, but found instead <%s>", line));
             }
 
-            String[] outputsAndRest = inputsAndRest[1].split(Pattern.quote(":"));
-            if (outputsAndRest.length != 2) {
+            List<String> outputsAndRest = Op.split(inputsAndRest.get(1), ":");
+            if (outputsAndRest.size() != 2) {
                 throw new RuntimeException(String.format(
                         "[syntax error] expected rule to match pattern "
                         + "<'i '+, 'o '+ (w) : '1|2'>, but found instead <%s>", line));
             }
-            String[] inputs = inputsAndRest[0].trim().split(Pattern.quote(" "));
-            String[] outputs = outputsAndRest[0].trim().split(Pattern.quote(" "));
-            String weightInParenthesis = outputs[outputs.length - 1];
-            outputs = Arrays.copyOf(outputs, outputs.length - 1);
-            String connector = outputsAndRest[1].trim();
+            List<String> inputs = Op.split(inputsAndRest.get(0).trim(), " ");
+            List<String> outputs = Op.split(outputsAndRest.get(0).trim(), " ");
+            String weightInParenthesis = outputs.get(outputs.size() - 1);
+            outputs.remove(outputs.size() - 1);
+            String connector = outputsAndRest.get(1).trim();
 
-            if (inputs.length != engine.numberOfInputVariables()) {
+            if (inputs.size() != engine.numberOfInputVariables()) {
                 throw new RuntimeException(String.format(
                         "[syntax error] expected <%d> input variables, "
                         + "but found <%d> input variables in rule <%s>",
                         engine.numberOfInputVariables(),
-                        inputs.length, line));
+                        inputs.size(), line));
             }
-            if (outputs.length != engine.numberOfOutputVariables()) {
+            if (outputs.size() != engine.numberOfOutputVariables()) {
                 throw new RuntimeException(String.format(
                         "[syntax error] expected <%d> output variables, "
                         + "but found <%d> output variables in rule <%s>",
                         engine.numberOfOutputVariables(),
-                        outputs.length, line));
+                        outputs.size(), line));
             }
 
             List<String> antecedent = new ArrayList<>();
             List<String> consequent = new ArrayList<>();
 
-            for (int i = 0; i < inputs.length; ++i) {
-                double inputCode = Op.toDouble(inputs[i]);
+            for (int i = 0; i < inputs.size(); ++i) {
+                double inputCode = Op.toDouble(inputs.get(i));
                 if (Op.isEq(inputCode, 0.0)) {
                     continue;
                 }
@@ -327,8 +327,8 @@ public class FisImporter extends Importer {
                 antecedent.add(proposition);
             }
 
-            for (int i = 0; i < outputs.length; ++i) {
-                double outputCode = Op.toDouble(outputs[i]);
+            for (int i = 0; i < outputs.size(); ++i) {
+                double outputCode = Op.toDouble(outputs.get(i));
                 if (Op.isEq(outputCode, 0.0)) {
                     continue;
                 }
@@ -495,14 +495,14 @@ public class FisImporter extends Importer {
     }
 
     protected Op.Pair<Double, Double> extractRange(String range) {
-        String[] minmax = range.split(Pattern.quote(" "));
-        if (minmax.length != 2) {
+        List<String> minmax = Op.split(range, " ");
+        if (minmax.size() != 2) {
             throw new RuntimeException(String.format(
                     "[syntax error] expected range in format '[begin end]', "
                     + "but found <%s>", range));
         }
-        String begin = minmax[0];
-        String end = minmax[1];
+        String begin = minmax.get(0);
+        String end = minmax.get(1);
         if (begin.charAt(0) != '[' || end.charAt(end.length() - 1) != ']') {
             throw new RuntimeException(String.format(
                     "[syntax error] expected range in format '[begin end]', "
@@ -522,28 +522,28 @@ public class FisImporter extends Importer {
             }
         }
 
-        String[] nameTerm = line.split(Pattern.quote(":"));
-        if (nameTerm.length != 2) {
+        List<String> nameTerm = Op.split(line, ":");
+        if (nameTerm.size() != 2) {
             throw new RuntimeException(String.format(
                     "[syntax error] expected term in format 'name':'class',[params], "
                     + "but found <%s>", line));
         }
 
-        String[] termParams = nameTerm[1].split(Pattern.quote(","));
-        if (termParams.length != 2) {
+        List<String> termParams = Op.split(nameTerm.get(1), ",");
+        if (termParams.size() != 2) {
             throw new RuntimeException(String.format(
                     "[syntax error] expected term in format 'name':'class',[params], "
                     + "but found <%s>", line));
         }
 
-        String[] parameters = termParams[1].split(Pattern.quote(" "));
-        for (int i = 0; i < parameters.length; ++i) {
-            parameters[i] = parameters[i].trim();
+        List<String> parameters = Op.split(termParams.get(1), " ");
+        for (int i = 0; i < parameters.size(); ++i) {
+            parameters.set(i, parameters.get(i).trim());
         }
 
         return createInstance(
-                termParams[0].trim(),
-                nameTerm[0].trim(),
+                termParams.get(0).trim(),
+                nameTerm.get(0).trim(),
                 parameters);
     }
 
@@ -560,7 +560,7 @@ public class FisImporter extends Importer {
         return term;
     }
 
-    protected Term createInstance(String mClass, String name, String[] parameters) {
+    protected Term createInstance(String mClass, String name, List<String> parameters) {
         Map<String, String> mapping = new HashMap<>();
         mapping.put("discretemf", Discrete.class.getSimpleName());
         mapping.put("constant", Constant.class.getSimpleName());
@@ -580,38 +580,33 @@ public class FisImporter extends Importer {
         mapping.put("trimf", Triangle.class.getSimpleName());
         mapping.put("zmf", ZShape.class.getSimpleName());
 
-        double[] sortedParameters = new double[parameters.length];
-        if (!"function".equals(mClass)) {
-            for (int i = 0; i < parameters.length; ++i) {
-                sortedParameters[i] = Op.toDouble(parameters[i]);
-            }
-        }
+        List<String> sortedParameters = new ArrayList<String>(parameters);
 
-        if ("gbellmf".equals(mClass) && parameters.length >= 3) {
-            sortedParameters[0] = Op.toDouble(parameters[2]);
-            sortedParameters[1] = Op.toDouble(parameters[0]);
-            sortedParameters[2] = Op.toDouble(parameters[1]);
-        } else if ("gaussmf".equals(mClass) && parameters.length >= 2) {
-            sortedParameters[0] = Op.toDouble(parameters[1]);
-            sortedParameters[1] = Op.toDouble(parameters[0]);
-        } else if ("gauss2mf".equals(mClass) && parameters.length >= 4) {
-            sortedParameters[0] = Op.toDouble(parameters[1]);
-            sortedParameters[1] = Op.toDouble(parameters[0]);
-            sortedParameters[2] = Op.toDouble(parameters[3]);
-            sortedParameters[3] = Op.toDouble(parameters[2]);
-        } else if ("sigmf".equals(mClass) && parameters.length >= 2) {
-            sortedParameters[0] = Op.toDouble(parameters[1]);
-            sortedParameters[1] = Op.toDouble(parameters[0]);
-        } else if ("dsigmf".equals(mClass) && parameters.length >= 4) {
-            sortedParameters[0] = Op.toDouble(parameters[1]);
-            sortedParameters[1] = Op.toDouble(parameters[0]);
-            sortedParameters[2] = Op.toDouble(parameters[2]);
-            sortedParameters[3] = Op.toDouble(parameters[3]);
-        } else if ("psigmf".equals(mClass) && parameters.length >= 4) {
-            sortedParameters[0] = Op.toDouble(parameters[1]);
-            sortedParameters[1] = Op.toDouble(parameters[0]);
-            sortedParameters[2] = Op.toDouble(parameters[2]);
-            sortedParameters[3] = Op.toDouble(parameters[3]);
+        if ("gbellmf".equals(mClass) && parameters.size() >= 3) {
+            sortedParameters.set(0, parameters.get(2));
+            sortedParameters.set(1, parameters.get(0));
+            sortedParameters.set(2, parameters.get(1));
+        } else if ("gaussmf".equals(mClass) && parameters.size() >= 2) {
+            sortedParameters.set(0, parameters.get(1));
+            sortedParameters.set(1, parameters.get(0));
+        } else if ("gauss2mf".equals(mClass) && parameters.size() >= 4) {
+            sortedParameters.set(0, parameters.get(1));
+            sortedParameters.set(1, parameters.get(0));
+            sortedParameters.set(2, parameters.get(3));
+            sortedParameters.set(3, parameters.get(2));
+        } else if ("sigmf".equals(mClass) && parameters.size() >= 2) {
+            sortedParameters.set(0, parameters.get(1));
+            sortedParameters.set(1, parameters.get(0));
+        } else if ("dsigmf".equals(mClass) && parameters.size() >= 4) {
+            sortedParameters.set(0, parameters.get(1));
+            sortedParameters.set(1, parameters.get(0));
+            sortedParameters.set(2, parameters.get(2));
+            sortedParameters.set(3, parameters.get(3));
+        } else if ("psigmf".equals(mClass) && parameters.size() >= 4) {
+            sortedParameters.set(0, parameters.get(1));
+            sortedParameters.set(1, parameters.get(0));
+            sortedParameters.set(2, parameters.get(2));
+            sortedParameters.set(3, parameters.get(3));
         }
 
         String flClass = mapping.get(mClass);
@@ -621,11 +616,11 @@ public class FisImporter extends Importer {
 
         Term result = FactoryManager.instance().term().createInstance(flClass);
         result.setName(Op.makeValidId(name));
+        String separator = " ";
         if (result instanceof Function) {
-            result.configure(Op.join(parameters, ""));
-        } else {
-            result.configure(Op.join(sortedParameters, " "));
-        }
+            separator = "";
+        } 
+        result.configure(Op.join(sortedParameters, separator));
         return result;
     }
 }
