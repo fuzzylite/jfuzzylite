@@ -294,7 +294,7 @@ public class Engine {
 
     public enum Type {
 
-        MAMDANI, LARSEN, TAKAGI_SUGENO, TSUKAMOTO, INVERSE_TSUKAMOTO, UNKNOWN, NONE;
+        NONE, MAMDANI, LARSEN, TAKAGI_SUGENO, TSUKAMOTO, INVERSE_TSUKAMOTO, UNKNOWN;
     };
 
     public Type type() {

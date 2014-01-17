@@ -127,7 +127,9 @@ public class FisExporter extends Exporter {
         for (int i = 0; i < engine.numberOfInputVariables(); ++i) {
             InputVariable inputVariable = engine.getInputVariable(i);
             result.append(String.format("[Input%d]\n", (i + 1)));
-            result.append(String.format("Enabled=%d\n", inputVariable.isEnabled() ? 1 : 0));
+            if (!inputVariable.isEnabled()) {
+                result.append(String.format("Enabled=%d\n", inputVariable.isEnabled() ? 1 : 0));
+            }
             result.append(String.format("Name='%s'\n", inputVariable.getName()));
             result.append(String.format("Range=[%s %s]\n",
                     str(inputVariable.getMinimum()), str(inputVariable.getMaximum())));
@@ -149,13 +151,21 @@ public class FisExporter extends Exporter {
         for (int i = 0; i < engine.numberOfOutputVariables(); ++i) {
             OutputVariable outputVariable = engine.getOutputVariable(i);
             result.append(String.format("[Output%d]\n", (i + 1)));
-            result.append(String.format("Enabled=%d\n", outputVariable.isEnabled() ? 1 : 0));
+            if (!outputVariable.isEnabled()) {
+                result.append(String.format("Enabled=%d\n", outputVariable.isEnabled() ? 1 : 0));
+            }
             result.append(String.format("Name='%s'\n", outputVariable.getName()));
             result.append(String.format("Range=[%s %s]\n",
                     str(outputVariable.getMinimum()), str(outputVariable.getMaximum())));
-            result.append(String.format("Default=%s\n", str(outputVariable.getDefaultValue())));
-            result.append(String.format("LockValid=%d\n", outputVariable.isLockingValidOutput() ? 1 : 0));
-            result.append(String.format("LockRange=%d\n", outputVariable.isLockingOutputRange() ? 1 : 0));
+            if (!Double.isNaN(outputVariable.getDefaultValue())) {
+                result.append(String.format("Default=%s\n", str(outputVariable.getDefaultValue())));
+            }
+            if (!outputVariable.isLockingValidOutput()) {
+                result.append(String.format("LockValid=%d\n", outputVariable.isLockingValidOutput() ? 1 : 0));
+            }
+            if (!outputVariable.isLockingOutputRange()) {
+                result.append(String.format("LockRange=%d\n", outputVariable.isLockingOutputRange() ? 1 : 0));
+            }
             result.append(String.format("NumMFs=%d\n", outputVariable.numberOfTerms()));
             for (int t = 0; t < outputVariable.numberOfTerms(); ++t) {
                 Term term = outputVariable.getTerm(t);
@@ -239,22 +249,16 @@ public class FisExporter extends Exporter {
     }
 
     protected String extractType(Engine engine) {
-        if (engine.numberOfOutputVariables() > 0) {
-            int sugeno = 0, mamdani = 0;
-            for (OutputVariable outputVariable : engine.getOutputVariables()) {
-                Defuzzifier defuzzifier = outputVariable.getDefuzzifier();
-                if (defuzzifier instanceof IntegralDefuzzifier) {
-                    ++mamdani;
-                } else {
-                    ++sugeno;
-                }
-            }
-            if (mamdani > 0 && sugeno == 0) {
-                return "mamdani";
-            }
-            if (mamdani == 0 && sugeno > 0) {
-                return "sugeno";
-            }
+        if (engine.type() == Engine.Type.NONE) {
+            return "none";
+        } else if (engine.type() == Engine.Type.MAMDANI || engine.type() == Engine.Type.LARSEN) {
+            return "mamdani";
+        } else if (engine.type() == Engine.Type.TAKAGI_SUGENO) {
+            return "sugeno";
+        } else if (engine.type() == Engine.Type.TSUKAMOTO) {
+            return "tsukamoto";
+        } else if (engine.type() == Engine.Type.INVERSE_TSUKAMOTO) {
+            return "inverse tsukamoto";
         }
         return "unknown";
     }

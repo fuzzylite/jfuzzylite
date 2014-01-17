@@ -84,9 +84,17 @@ public class FclImporter extends Importer {
             while ((line = fclReader.readLine()) != null) {
                 ++lineNumber;
                 String[] comments = line.split(Pattern.quote("//"));
-                line = comments[0].trim();
-
-                if (line.isEmpty() || line.charAt(0) == '#') {
+                if (comments.length > 1) {
+                    line = comments[0];
+                }
+                comments = line.split(Pattern.quote("#"));
+                if (comments.length > 1) {
+                    line = comments[0];
+                }
+                line = line.trim();
+                // (%) indicates a comment only when used at the start of line
+                if (line.isEmpty() || line.charAt(0) == '%' || line.charAt(0) == '#'
+                        || "//".equals(line.substring(0, 2))) {
                     continue;
                 }
 

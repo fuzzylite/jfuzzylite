@@ -116,8 +116,10 @@ public class FclExporter extends Exporter {
     public String toString(InputVariable inputVariable) {
         StringBuilder result = new StringBuilder();
         result.append(String.format("FUZZIFY %s\n", inputVariable.getName()));
-        result.append(String.format(indent + "ENABLED : %s;\n",
-                String.valueOf(inputVariable.isEnabled()).toUpperCase()));
+        if (!inputVariable.isEnabled()) {
+            result.append(String.format(indent + "ENABLED : %s;\n",
+                    String.valueOf(inputVariable.isEnabled()).toUpperCase()));
+        }
         result.append(String.format(indent + "RANGE := (%s .. %s);\n",
                 Op.str(inputVariable.getMinimum()), Op.str(inputVariable.getMaximum())));
 
@@ -133,8 +135,10 @@ public class FclExporter extends Exporter {
         StringBuilder result = new StringBuilder();
 
         result.append(String.format("DEFUZZIFY %s\n", outputVariable.getName()));
-        result.append(String.format(indent + "ENABLED : %s;\n",
-                String.valueOf(outputVariable.isEnabled()).toUpperCase()));
+        if (!outputVariable.isEnabled()) {
+            result.append(String.format(indent + "ENABLED : %s;\n",
+                    String.valueOf(outputVariable.isEnabled()).toUpperCase()));
+        }
         result.append(String.format(indent + "RANGE := (%s .. %s);\n",
                 Op.str(outputVariable.getMinimum()), Op.str(outputVariable.getMaximum())));
         for (Term term : outputVariable.getTerms()) {
@@ -154,18 +158,8 @@ public class FclExporter extends Exporter {
             result.append(" | NC");
         }
         result.append(";\n");
-        if (outputVariable.isLockingOutputRange() || outputVariable.isLockingValidOutput()) {
-            String lock = "";
-            if (outputVariable.isLockingOutputRange()) {
-                lock += "RANGE";
-            }
-            if (outputVariable.isLockingValidOutput()) {
-                if (!lock.isEmpty()) {
-                    lock += " | ";
-                }
-                lock += "VALID";
-            }
-            result.append(String.format(indent + "LOCK : %s;\n", lock));
+        if (outputVariable.isLockingOutputRange()) {
+            result.append(indent).append("LOCK : RANGE;\n");
         }
         result.append("END_DEFUZZIFY\n");
         return result.toString();
@@ -174,8 +168,10 @@ public class FclExporter extends Exporter {
     public String toString(RuleBlock ruleBlock) {
         StringBuilder result = new StringBuilder();
         result.append(String.format("RULEBLOCK %s\n", ruleBlock.getName()));
-        result.append(String.format(indent + "ENABLED : %s;\n",
-                String.valueOf(ruleBlock.isEnabled()).toUpperCase()));
+        if (!ruleBlock.isEnabled()) {
+            result.append(String.format(indent + "ENABLED : %s;\n",
+                    String.valueOf(ruleBlock.isEnabled()).toUpperCase()));
+        }
         if (ruleBlock.getConjunction() != null) {
             result.append(String.format(indent + "AND : %s;\n", toString(ruleBlock.getConjunction())));
         }

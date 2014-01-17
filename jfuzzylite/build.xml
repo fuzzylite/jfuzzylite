@@ -30,7 +30,7 @@
             <attribute name="URL" value="http://www.fuzzylite.com" />
             <attribute name="Author" value="Juan Rada-Vilela" />
             <attribute name="Class-Path" value="" />
-            <attribute name="Main-Class" value="com.fuzzylite.Main" />
+            <attribute name="Main-Class" value="com.fuzzylite.Console" />
          </manifest>
       </jar>
         <jar jarfile="${dist}/${ant.project.name}-src.jar" compress="true">

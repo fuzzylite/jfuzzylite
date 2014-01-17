@@ -14,8 +14,10 @@
  */
 package com.fuzzylite;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.List;
 
 /**
  *
@@ -122,6 +124,25 @@ public class Op {
     public static double scale(double x,
             double fromMin, double fromMax, double toMin, double toMax) {
         return (toMax - toMin) / (fromMax - fromMin) * (x - fromMin) + toMin;
+    }
+
+    public static List<String> split(String string, String delimiter) {
+        return split(string, delimiter, true);
+    }
+
+    public static List<String> split(String str, String delimiter, boolean ignoreEmpty) {
+        throw new RuntimeException("Not implemented");
+//        List<String> result = new ArrayList<>();
+//        if (str.isEmpty() || delimiter.isEmpty()) {
+//            return result;
+//        }
+//        int next = 0;
+//        int position = 0;
+//        while (next >= 0){
+//            next = str.indexOf(delimiter, position);
+//            
+//        }
+//        return result;
     }
 
     public static double toDouble(String x) throws NumberFormatException {

@@ -75,14 +75,18 @@ public class FllImporter extends Importer {
                 if (!queue.isEmpty()) {
                     line = queue.poll();
                 } else {
+                    line = clean(line);
+                    if (line.isEmpty()) {
+                        continue;
+                    }
                     String[] split = line.split(Pattern.quote(separator));
-                    line = split[0];
+                    line = clean(split[0]);
                     for (int i = 1; i < split.length; ++i) {
-                        queue.offer(split[i]);
+                        queue.offer(clean(split[i]));
                     }
                     ++lineNumber;
                 }
-                line = clean(line);
+
                 if (line.isEmpty()) {
                     continue;
                 }

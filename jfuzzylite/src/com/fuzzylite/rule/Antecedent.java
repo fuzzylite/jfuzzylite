@@ -162,13 +162,11 @@ public class Antecedent {
     public double activationDegree(TNorm conjunction, SNorm disjunction, Expression node) {
         if (node instanceof Proposition) {
             Proposition proposition = (Proposition) node;
-            if (!proposition.variable.isEnabled()){
+            if (!proposition.variable.isEnabled()) {
                 return 0.0;
             }
-            boolean isAny = false;
             for (Hedge hedge : proposition.getHedges()) {
-                isAny |= (hedge instanceof Any);
-                if (isAny) {
+                if (hedge instanceof Any) {
                     return 1.0;
                 }
             }

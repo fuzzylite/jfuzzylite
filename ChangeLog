@@ -1,0 +1,14 @@
+Version 1.1
+* Added deductive type of Engine with Engine::type()
+* Modified FclExporter and FisExporter to provide backward compatibility with FCL and FIS formats
+* Updated the FIS and FCL examples for backward compatibility
+* Included the original example files
+* Updated FLD examples produced from the engines of the original examples
+* Fixed some original examples of takagi-sugeno to use AlgebraicProduct activation
+* FldExporter no longer restarts the engine
+* FldExporter exports from a custom input dataset
+* Console includes option to read custom input dataset from file
+* Console provides more information about its usage
+* Changed the signature of methods FldExporter::toWriter
+* Removed variable and methods for FldExporter::maximum
+* Removed file Main.java and fixed build.xml to create binaries using Console.java

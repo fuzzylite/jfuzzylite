@@ -81,13 +81,13 @@ import java.util.regex.Pattern;
  * @author jcrada
  */
 public class FisImporter extends Importer {
-    
+
     protected static int and = 0, or = 1, imp = 2, agg = 3, defuzz = 4;
-    
+
     @Override
     public Engine fromString(String fis) {
         Engine engine = new Engine();
-        
+
         BufferedReader fisReader = new BufferedReader(new StringReader(fis));
         String line;
         List<String> sections = new ArrayList<>();
@@ -101,12 +101,15 @@ public class FisImporter extends Importer {
                 if (comments.length > 1) {
                     line = comments[0];
                 }
-                line = line.trim().replaceAll(Pattern.quote("'"), "");
+                line = line.trim();
                 // (%) indicates a comment only when used at the start of line
-                if (line.isEmpty() || line.charAt(0) == '%') {
+                if (line.isEmpty() || line.charAt(0) == '%' || line.charAt(0) == '#'
+                        || "//".equals(line.substring(0, 2))) {
                     continue;
                 }
-                
+
+                line = line.replaceAll(Pattern.quote("'"), "");
+
                 if (line.startsWith("[System]")
                         || line.startsWith("[Input")
                         || line.startsWith("[Output")
@@ -125,7 +128,7 @@ public class FisImporter extends Importer {
                     }
                 }
             }
-            
+
             String[] methods = new String[5];
             for (String section : sections) {
                 if (section.startsWith("[System]")) {
@@ -147,10 +150,10 @@ public class FisImporter extends Importer {
         } catch (Exception ex) {
             throw new RuntimeException(ex);
         }
-        
+
         return engine;
     }
-    
+
     protected void importSystem(String section, Engine engine, String[] methods) throws Exception {
         BufferedReader reader = new BufferedReader(new StringReader(section));
         reader.readLine(); //ignore first line [System]
@@ -185,14 +188,14 @@ public class FisImporter extends Importer {
             }
         }
     }
-    
+
     protected void importInput(String section, Engine engine) throws Exception {
         BufferedReader reader = new BufferedReader(new StringReader(section));
         reader.readLine(); //ignore first line [InputX]
 
         InputVariable inputVariable = new InputVariable();
         engine.addInputVariable(inputVariable);
-        
+
         String line;
         while ((line = reader.readLine()) != null) {
             String[] keyValue = line.split(Pattern.quote("="));
@@ -203,7 +206,7 @@ public class FisImporter extends Importer {
             }
             String key = keyValue[0].trim();
             String value = keyValue[1].trim();
-            
+
             if ("Name".equals(key)) {
                 inputVariable.setName(Op.makeValidId(value));
             } else if ("Enabled".equals(key)) {
@@ -222,14 +225,14 @@ public class FisImporter extends Importer {
             }
         }
     }
-    
+
     protected void importOutput(String section, Engine engine) throws Exception {
         BufferedReader reader = new BufferedReader(new StringReader(section));
         reader.readLine(); //ignore first line [InputX]
 
         OutputVariable outputVariable = new OutputVariable();
         engine.addOutputVariable(outputVariable);
-        
+
         String line;
         while ((line = reader.readLine()) != null) {
             String[] keyValue = line.split(Pattern.quote("="));
@@ -240,7 +243,7 @@ public class FisImporter extends Importer {
             }
             String key = keyValue[0].trim();
             String value = keyValue[1].trim();
-            
+
             if ("Name".equals(key)) {
                 outputVariable.setName(Op.makeValidId(value));
             } else if ("Enabled".equals(key)) {
@@ -265,14 +268,14 @@ public class FisImporter extends Importer {
             }
         }
     }
-    
+
     protected void importRules(String section, Engine engine) throws Exception {
         BufferedReader reader = new BufferedReader(new StringReader(section));
         reader.readLine(); //ignore first line [Rules]
 
         RuleBlock ruleBlock = new RuleBlock();
         engine.addRuleBlock(ruleBlock);
-        
+
         String line;
         while ((line = reader.readLine()) != null) {
             String[] inputsAndRest = line.split(Pattern.quote(","));
@@ -281,7 +284,7 @@ public class FisImporter extends Importer {
                         "[syntax error] expected rule to match pattern "
                         + "<'i '+, 'o '+ (w) : '1|2'>, but found instead <%s>", line));
             }
-            
+
             String[] outputsAndRest = inputsAndRest[1].split(Pattern.quote(":"));
             if (outputsAndRest.length != 2) {
                 throw new RuntimeException(String.format(
@@ -293,7 +296,7 @@ public class FisImporter extends Importer {
             String weightInParenthesis = outputs[outputs.length - 1];
             outputs = Arrays.copyOf(outputs, outputs.length - 1);
             String connector = outputsAndRest[1].trim();
-            
+
             if (inputs.length != engine.numberOfInputVariables()) {
                 throw new RuntimeException(String.format(
                         "[syntax error] expected <%d> input variables, "
@@ -308,10 +311,10 @@ public class FisImporter extends Importer {
                         engine.numberOfOutputVariables(),
                         outputs.length, line));
             }
-            
+
             List<String> antecedent = new ArrayList<>();
             List<String> consequent = new ArrayList<>();
-            
+
             for (int i = 0; i < inputs.length; ++i) {
                 double inputCode = Op.toDouble(inputs[i]);
                 if (Op.isEq(inputCode, 0.0)) {
@@ -323,7 +326,7 @@ public class FisImporter extends Importer {
                         translateProposition(inputCode, inputVariable));
                 antecedent.add(proposition);
             }
-            
+
             for (int i = 0; i < outputs.length; ++i) {
                 double outputCode = Op.toDouble(outputs[i]);
                 if (Op.isEq(outputCode, 0.0)) {
@@ -335,7 +338,7 @@ public class FisImporter extends Importer {
                         translateProposition(outputCode, outputVariable));
                 consequent.add(proposition);
             }
-            
+
             StringBuilder rule = new StringBuilder();
             rule.append(Rule.FL_IF).append(" ");
             for (Iterator<String> it = antecedent.iterator(); it.hasNext();) {
@@ -353,7 +356,7 @@ public class FisImporter extends Importer {
                     }
                 }
             }
-            
+
             rule.append(String.format(" %s ", Rule.FL_THEN));
             for (Iterator<String> it = consequent.iterator(); it.hasNext();) {
                 rule.append(it.next());
@@ -361,7 +364,7 @@ public class FisImporter extends Importer {
                     rule.append(String.format(" %s ", Rule.FL_AND));
                 }
             }
-            
+
             String weightString = "";
             for (char c : weightInParenthesis.toCharArray()) {
                 if (c == '(' || c == ')' || c == ' ') {
@@ -374,22 +377,22 @@ public class FisImporter extends Importer {
                 rule.append(String.format(" %s %s",
                         Rule.FL_WITH, Op.str(weight)));
             }
-            
+
             ruleBlock.addRule(Rule.parse(rule.toString(), engine));
         }
-        
+
     }
-    
+
     protected String translateProposition(double code, Variable variable) {
         int intPart = (int) Math.floor(Math.abs(code)) - 1;
         double fracPart = Math.abs(code) % 1;
-        
+
         if (intPart > variable.numberOfTerms()) {
             throw new RuntimeException(String.format(
                     "[syntax error] the code <%s> refers to a term out of range "
                     + "from variable <%s>", Op.str(code), variable.getName()));
         }
-        
+
         boolean isAny = intPart < 0;
         StringBuilder result = new StringBuilder();
         if (code < 0) {
@@ -418,7 +421,7 @@ public class FisImporter extends Importer {
         }
         return result.toString();
     }
-    
+
     protected String tnorm(String name) {
         if ("min".equals(name)) {
             return Minimum.class.getSimpleName();
@@ -440,7 +443,7 @@ public class FisImporter extends Importer {
         }
         return name;
     }
-    
+
     protected String snorm(String name) {
         if ("max".equals(name)) {
             return Maximum.class.getSimpleName();
@@ -465,7 +468,7 @@ public class FisImporter extends Importer {
         }
         return name;
     }
-    
+
     protected String defuzzifier(String name) {
         if ("centroid".equals(name)) {
             return Centroid.class.getSimpleName();
@@ -490,7 +493,7 @@ public class FisImporter extends Importer {
         }
         return name;
     }
-    
+
     protected Op.Pair<Double, Double> extractRange(String range) {
         String[] minmax = range.split(Pattern.quote(" "));
         if (minmax.length != 2) {
@@ -510,7 +513,7 @@ public class FisImporter extends Importer {
         result.second = Op.toDouble(end.substring(0, end.length() - 1));
         return result;
     }
-    
+
     protected Term extractTerm(String fis) {
         String line = "";
         for (char c : fis.toCharArray()) {
@@ -518,32 +521,32 @@ public class FisImporter extends Importer {
                 line += c;
             }
         }
-        
+
         String[] nameTerm = line.split(Pattern.quote(":"));
         if (nameTerm.length != 2) {
             throw new RuntimeException(String.format(
                     "[syntax error] expected term in format 'name':'class',[params], "
                     + "but found <%s>", line));
         }
-        
+
         String[] termParams = nameTerm[1].split(Pattern.quote(","));
         if (termParams.length != 2) {
             throw new RuntimeException(String.format(
                     "[syntax error] expected term in format 'name':'class',[params], "
                     + "but found <%s>", line));
         }
-        
+
         String[] parameters = termParams[1].split(Pattern.quote(" "));
         for (int i = 0; i < parameters.length; ++i) {
             parameters[i] = parameters[i].trim();
         }
-        
+
         return createInstance(
                 termParams[0].trim(),
                 nameTerm[0].trim(),
                 parameters);
     }
-    
+
     protected Term prepareTerm(Term term, Engine engine) {
         if (term instanceof Linear) {
             Linear linear = (Linear) term;
@@ -556,7 +559,7 @@ public class FisImporter extends Importer {
         }
         return term;
     }
-    
+
     protected Term createInstance(String mClass, String name, String[] parameters) {
         Map<String, String> mapping = new HashMap<>();
         mapping.put("discretemf", Discrete.class.getSimpleName());
@@ -576,14 +579,14 @@ public class FisImporter extends Importer {
         mapping.put("trapmf", Trapezoid.class.getSimpleName());
         mapping.put("trimf", Triangle.class.getSimpleName());
         mapping.put("zmf", ZShape.class.getSimpleName());
-        
+
         double[] sortedParameters = new double[parameters.length];
         if (!"function".equals(mClass)) {
             for (int i = 0; i < parameters.length; ++i) {
                 sortedParameters[i] = Op.toDouble(parameters[i]);
             }
         }
-        
+
         if ("gbellmf".equals(mClass) && parameters.length >= 3) {
             sortedParameters[0] = Op.toDouble(parameters[2]);
             sortedParameters[1] = Op.toDouble(parameters[0]);
@@ -610,12 +613,12 @@ public class FisImporter extends Importer {
             sortedParameters[2] = Op.toDouble(parameters[2]);
             sortedParameters[3] = Op.toDouble(parameters[3]);
         }
-        
+
         String flClass = mapping.get(mClass);
         if (flClass == null) {
             flClass = mClass;
         }
-        
+
         Term result = FactoryManager.instance().term().createInstance(flClass);
         result.setName(Op.makeValidId(name));
         if (result instanceof Function) {

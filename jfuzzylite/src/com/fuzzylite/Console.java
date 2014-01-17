@@ -45,34 +45,46 @@ import java.io.StringWriter;
 import java.io.Writer;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  *
  * @author jcrada
  */
 public class Console {
-
+    
     public static final String KW_INPUT_FILE = "-i";
     public static final String KW_INPUT_FORMAT = "-if";
     public static final String KW_OUTPUT_FILE = "-o";
     public static final String KW_OUTPUT_FORMAT = "-of";
     public static final String KW_EXAMPLE = "-ex";
+    public static final String KW_DATA_INPUT = "-d";
     public static final String KW_DATA_MAXIMUM = "-max";
-    public static final String KW_DATA_SEPARATOR = "-sep";
-
+    
+    static class Option {
+        
+        public String key, value, description;
+        
+        public Option(String key, String value, String description) {
+            this.key = key;
+            this.value = value;
+            this.description = description;
+        }
+    }
+    
     public static String usage() {
-        Map<String, String> options = new LinkedHashMap<>();
-        options.put(KW_INPUT_FILE, "inputfile");
-        options.put(KW_INPUT_FORMAT, "fll,fis,fcl");
-        options.put(KW_OUTPUT_FILE, "outputfile");
-        options.put(KW_OUTPUT_FORMAT, "fll,fis,fcl,cpp,java,fld");
-        options.put(KW_EXAMPLE, "(m)amdani,(t)akagi-sugeno");
-        options.put(KW_DATA_MAXIMUM, "maximum");
-        options.put(KW_DATA_SEPARATOR, "separator");
-
+        List<Option> options = new ArrayList<>();
+        options.add(new Option(KW_INPUT_FILE, "inputfile", "file to import your engine from"));
+        options.add(new Option(KW_INPUT_FORMAT, "format", "format of the file to import (fll | fis | fcl)"));
+        options.add(new Option(KW_OUTPUT_FILE, "outputfile", "file to export your engine to"));
+        options.add(new Option(KW_OUTPUT_FORMAT, "format", "format of the file to export (fll | fld | cpp | java | fis | fcl)"));
+        options.add(new Option(KW_EXAMPLE, "example", "if not inputfile, built-in example to use as engine: (m)amdani or (t)akagi-sugeno"));
+        options.add(new Option(KW_DATA_INPUT, "datafile", "if exporting to fld, file of input values to evaluate your engine on"));
+        options.add(new Option(KW_DATA_MAXIMUM, "number", "if exporting to fld without datafile, maximum number of results to export"));
+        
         StringBuilder result = new StringBuilder();
         result.append("========================================\n");
         result.append("fuzzylite: a fuzzy logic control library\n");
@@ -81,20 +93,20 @@ public class Console {
         result.append("========================================\n");
         result.append("usage: java -jar jfuzzylite.jar inputfile outputfile\n");
         result.append("   or: java -jar jfuzzylite.jar ");
-        for (String option : options.keySet()) {
-            result.append(String.format("[%s] ", option));
+        for (Option option : options) {
+            result.append(String.format("[%s %s] ", option.key, option.value));
         }
-        result.append("\n");
-        result.append("where: ");
-
-        for (Map.Entry<String, String> option : options.entrySet()) {
-            result.append(String.format("[%s %s] \n       ", option.getKey(), option.getValue()));
+        result.append("\n\nwhere:\n");
+        
+        for (Option option : options) {
+            result.append(String.format("%s %s \t%s.\n",
+                    option.key, option.value, option.description));
         }
         result.append("\n");
         result.append("Visit http://www.fuzzylite.com for more information.");
         return result.toString();
     }
-
+    
     protected static Map<String, String> parse(String[] args) {
         if (args.length % 2 != 0) {
             throw new RuntimeException("[option error] incomplete number of parameters [key value]");
@@ -113,16 +125,16 @@ public class Console {
                 options.put(KW_OUTPUT_FILE, in_out.getValue());
             }
         } else {
-            Map<String, String> valid = new HashMap<>();
-            valid.put(KW_INPUT_FILE, "inputfile");
-            valid.put(KW_INPUT_FORMAT, "fll,fis,fcl");
-            valid.put(KW_OUTPUT_FILE, "outputfile");
-            valid.put(KW_OUTPUT_FORMAT, "fis,fcl,cpp,java,fld");
-            valid.put(KW_EXAMPLE, "(m)amdani,(t)akagi-sugeno");
-            valid.put(KW_DATA_MAXIMUM, "maximum");
-            valid.put(KW_DATA_SEPARATOR, "separator");
+            Set<String> validOptions = new HashSet<>();
+            validOptions.add(KW_INPUT_FILE);
+            validOptions.add(KW_INPUT_FORMAT);
+            validOptions.add(KW_OUTPUT_FILE);
+            validOptions.add(KW_OUTPUT_FORMAT);
+            validOptions.add(KW_EXAMPLE);
+            validOptions.add(KW_DATA_INPUT);
+            validOptions.add(KW_DATA_MAXIMUM);
             for (String option : options.keySet()) {
-                if (!valid.containsKey(option)) {
+                if (!validOptions.contains(option)) {
                     throw new RuntimeException(String.format(
                             "[option error] option <%s> not supported", option));
                 }
@@ -130,15 +142,15 @@ public class Console {
         }
         return options;
     }
-
+    
     protected static void process(Map<String, String> options) throws Exception {
         String inputFormat = "";
         StringBuilder textEngine = new StringBuilder();
-
+        
         String example = options.get(KW_EXAMPLE);
-
+        
         boolean isExample = !(example == null || example.isEmpty());
-
+        
         if (isExample) {
             Engine engine;
             if (example.equals("m") || example.equals("mamdani")) {
@@ -153,7 +165,7 @@ public class Console {
             inputFormat = "fll";
             textEngine.append(new FllExporter().toString(engine));
         } else {
-
+            
             String inputFilename = options.get(KW_INPUT_FILE);
             if (inputFilename == null) {
                 throw new RuntimeException("[option error] no input file specified");
@@ -162,7 +174,7 @@ public class Console {
             if (!inputFile.exists()) {
                 inputFile.createNewFile();
             }
-
+            
             BufferedReader reader = new BufferedReader(new FileReader(inputFile));
             try {
                 String line = reader.readLine();
@@ -175,7 +187,7 @@ public class Console {
             } finally {
                 reader.close();
             }
-
+            
             inputFormat = options.get(KW_INPUT_FORMAT);
             if (inputFormat == null || inputFormat.isEmpty()) {
                 int extensionIndex = inputFilename.lastIndexOf(".");
@@ -186,7 +198,7 @@ public class Console {
                 }
             }
         }
-
+        
         String outputFilename = options.get(KW_OUTPUT_FILE);
         String outputFormat = options.get(KW_OUTPUT_FORMAT);
         if (outputFormat == null || outputFormat.isEmpty()) {
@@ -201,7 +213,7 @@ public class Console {
                 }
             }
         }
-
+        
         Writer writer;
         if (outputFilename == null || outputFilename.isEmpty()) {
             writer = new StringWriter();
@@ -225,8 +237,8 @@ public class Console {
         }
         writer.close();
     }
-
-    protected static void process(String input, Writer output,
+    
+    protected static void process(String input, Writer writer,
             String inputFormat, String outputFormat, Map<String, String> options)
             throws Exception {
         Importer importer = null;
@@ -241,43 +253,77 @@ public class Console {
                     "[import error] format <%s> not supported", inputFormat));
         }
         Engine engine = importer.fromString(input);
-
-        Exporter exporter = null;
-        if ("fll".equals(outputFormat)) {
-            exporter = new FllExporter();
-        } else if ("fcl".equals(outputFormat)) {
-            exporter = new FclExporter();
-        } else if ("fis".equals(outputFormat)) {
-            exporter = new FisExporter();
-        } else if ("c++".equals(outputFormat)
-                || "cpp".equals(outputFormat)) {
-            exporter = new CppExporter();
-        } else if ("java".equals(outputFormat)) {
-            exporter = new JavaExporter();
-        } else if ("fld".equals(outputFormat)) {
-            String separator = FldExporter.DEFAULT_SEPARATOR;
-            if (options.containsKey(KW_DATA_SEPARATOR)) {
-                separator = options.get(KW_DATA_SEPARATOR);
+        
+        if ("fld".equals(outputFormat)) {
+            FldExporter fldExporter = new FldExporter();
+            String filename = options.get(KW_DATA_INPUT);
+            if (filename != null) {
+                File dataFile = new File(filename);
+                if (!dataFile.exists()) {
+                    throw new RuntimeException("[export error] file <" + filename + "> "
+                            + "does not exist");
+                }
+                writer.write("#" + fldExporter.header(engine) + "\n");
+                BufferedReader reader = new BufferedReader(new FileReader(dataFile));
+                int lineNumber = 0;
+                try {
+                    String line;
+                    while ((line = reader.readLine()) != null) {
+                        ++lineNumber;
+                        List<Double> inputValues = fldExporter.parse(line.trim());
+                        if (inputValues.isEmpty()) {
+                            continue;
+                        }
+                        if (inputValues.size() != engine.numberOfInputVariables()) {
+                            throw new RuntimeException(String.format(
+                                    "[export error] engine has <%i> input variables, "
+                                    + "but input data provides <%i> at line <%i>",
+                                    engine.numberOfInputVariables(),
+                                    inputValues.size(), lineNumber));
+                        }
+                        fldExporter.toWriter(engine, writer, inputValues, fldExporter.getSeparator());
+                        writer.write("\n");
+                        writer.flush();
+                    }
+                } catch (Exception ex) {
+                    reader.close();
+                    throw new RuntimeException("at line <" + lineNumber + ">", ex);
+                }
+                
+            } else {
+                if (options.containsKey(KW_DATA_MAXIMUM)) {
+                    int maximum = Integer.parseInt(options.get(KW_DATA_MAXIMUM));
+                    writer.write(fldExporter.toString(engine, maximum));
+                } else {
+                    writer.write(fldExporter.toString(engine));
+                }
             }
-
-            int maximum = FldExporter.DEFAULT_MAXIMUM;
-            if (options.containsKey(KW_DATA_MAXIMUM)) {
-                maximum = Integer.parseInt(options.get(KW_DATA_MAXIMUM));
-
-            }
-            exporter = new FldExporter(separator, maximum);
+            
         } else {
-            throw new RuntimeException(String.format(
-                    "[export error] format <%s> not supported", outputFormat));
+            Exporter exporter = null;
+            if ("fll".equals(outputFormat)) {
+                exporter = new FllExporter();
+            } else if ("fcl".equals(outputFormat)) {
+                exporter = new FclExporter();
+            } else if ("fis".equals(outputFormat)) {
+                exporter = new FisExporter();
+            } else if ("c++".equals(outputFormat)
+                    || "cpp".equals(outputFormat)) {
+                exporter = new CppExporter();
+            } else if ("java".equals(outputFormat)) {
+                exporter = new JavaExporter();
+            } else {
+                throw new RuntimeException(String.format(
+                        "[export error] format <%s> not supported", outputFormat));
+            }
+            writer.write(exporter.toString(engine));
         }
-
-        output.write(exporter.toString(engine));
     }
-
+    
     public static Engine mamdani() {
         Engine engine = new Engine();
         engine.setName("simple-dimmer");
-
+        
         InputVariable inputVariable1 = new InputVariable();
         inputVariable1.setName("Ambient");
         inputVariable1.setRange(0.000, 1.000);
@@ -285,7 +331,7 @@ public class Console {
         inputVariable1.addTerm(new Triangle("MEDIUM", 0.250, 0.500, 0.750));
         inputVariable1.addTerm(new Triangle("BRIGHT", 0.500, 0.750, 1.000));
         engine.addInputVariable(inputVariable1);
-
+        
         OutputVariable outputVariable1 = new OutputVariable();
         outputVariable1.setName("Power");
         outputVariable1.setRange(0.000, 2.000);
@@ -298,7 +344,7 @@ public class Console {
         outputVariable1.addTerm(new Triangle("MEDIUM", 0.500, 1.000, 1.500));
         outputVariable1.addTerm(new Triangle("HIGH", 1.000, 1.500, 2.000));
         engine.addOutputVariable(outputVariable1);
-
+        
         RuleBlock ruleBlock1 = new RuleBlock();
         ruleBlock1.setName("");
         ruleBlock1.setConjunction(null);
@@ -308,14 +354,14 @@ public class Console {
         ruleBlock1.addRule(Rule.parse("if Ambient is MEDIUM then Power is MEDIUM", engine));
         ruleBlock1.addRule(Rule.parse("if Ambient is BRIGHT then Power is LOW", engine));
         engine.addRuleBlock(ruleBlock1);
-
+        
         return engine;
     }
-
+    
     public static Engine takagiSugeno() {
         Engine engine = new Engine();
         engine.setName("approximation of sin(x)/x");
-
+        
         InputVariable inputVariable1 = new InputVariable();
         inputVariable1.setName("inputX");
         inputVariable1.setRange(0.000, 10.000);
@@ -329,7 +375,7 @@ public class Console {
         inputVariable1.addTerm(new Triangle("NEAR_8", 7.000, 8.000, 9.000));
         inputVariable1.addTerm(new Triangle("NEAR_9", 8.000, 9.000, 10.000));
         engine.addInputVariable(inputVariable1);
-
+        
         OutputVariable outputVariable1 = new OutputVariable();
         outputVariable1.setName("outputFx");
         outputVariable1.setRange(-1.000, 1.000);
@@ -348,7 +394,7 @@ public class Console {
         outputVariable1.addTerm(new Constant("f8", 0.120));
         outputVariable1.addTerm(new Constant("f9", 0.040));
         engine.addOutputVariable(outputVariable1);
-
+        
         OutputVariable outputVariable2 = new OutputVariable();
         outputVariable2.setName("trueFx");
         outputVariable2.setRange(-1, 1);
@@ -359,7 +405,7 @@ public class Console {
         outputVariable2.fuzzyOutput().setAccumulation(null);
         outputVariable2.addTerm(Function.create("fx", "sin(inputX)/inputX", engine, true));
         engine.addOutputVariable(outputVariable2);
-
+        
         OutputVariable outputVariable3 = new OutputVariable();
         outputVariable3.setName("diffFx");
         outputVariable3.setRange(-1, 1);
@@ -370,7 +416,7 @@ public class Console {
         outputVariable3.fuzzyOutput().setAccumulation(null);
         outputVariable3.addTerm(Function.create("diff", "fabs(outputFx-trueFx)", engine, true));
         engine.addOutputVariable(outputVariable3);
-
+        
         RuleBlock ruleBlock1 = new RuleBlock();
         ruleBlock1.setName("");
         ruleBlock1.setConjunction(null);
@@ -387,10 +433,10 @@ public class Console {
         ruleBlock1.addRule(Rule.parse("if inputX is NEAR_9 then outputFx = f9", engine));
         ruleBlock1.addRule(Rule.parse("if inputX is any then trueFx = fx and diffFx = diff", engine));
         engine.addRuleBlock(ruleBlock1);
-
+        
         return engine;
     }
-
+    
     public static void exportAllExamples(String from, String to, String sourceBase, String targetBase) throws Exception {
         List<String> examples = new ArrayList<>();
         examples.add("/mamdani/AllTerms");
@@ -425,7 +471,7 @@ public class Console {
         examples.add("/takagi-sugeno/octave/linear_tip_calculator");
         examples.add("/takagi-sugeno/octave/sugeno_tip_calculator");
         examples.add("/tsukamoto/tsukamoto");
-
+        
         Importer importer;
         if ("fll".equals(from)) {
             importer = new FllImporter();
@@ -437,12 +483,12 @@ public class Console {
             throw new RuntimeException("[examples error] unrecognized format "
                     + "<" + from + "> to import");
         }
-
+        
         Exporter exporter;
         if ("fll".equals(to)) {
             exporter = new FllExporter();
         } else if ("fld".equals(to)) {
-            exporter = new FldExporter(" ", 1024);
+            exporter = new FldExporter(" ");
         } else if ("fcl".equals(to)) {
             exporter = new FclExporter();
         } else if ("fis".equals(to)) {
@@ -455,15 +501,15 @@ public class Console {
             throw new RuntimeException("[examples error] unrecognized format "
                     + "<" + from + "> to export");
         }
-
+        
         List<Op.Pair<Exporter, Importer>> tests = new ArrayList<>();
         tests.add(new Op.Pair<Exporter, Importer>(new FllExporter(), new FllImporter()));
         tests.add(new Op.Pair<Exporter, Importer>(new FclExporter(), new FclImporter()));
         tests.add(new Op.Pair<Exporter, Importer>(new FisExporter(), new FisImporter()));
-
+        
         StringBuilder errors = new StringBuilder();
         for (int i = 0; i < examples.size(); ++i) {
-            System.out.println("Processing " + (i + 1) + "/" + examples.size());
+            System.out.println("Processing " + (i + 1) + "/" + examples.size() + ": " + examples.get(i));
             try {
                 StringBuilder text = new StringBuilder();
                 String input = sourceBase + examples.get(i) + "." + from;
@@ -473,14 +519,14 @@ public class Console {
                     text.append(line).append("\n");
                 }
                 source.close();
-
+                
                 Engine engine = importer.fromString(text.toString());
-
+                
                 for (Op.Pair<Exporter, Importer> imex : tests) {
                     String out = imex.first.toString(engine);
                     Engine copy = imex.second.fromString(out);
                     String out_copy = imex.first.toString(copy);
-
+                    
                     if (!out.equals(out_copy)) {
                         errors.append(String.format("[imex error] different results <%s,%s> at %s.%s",
                                 imex.first.getClass().getSimpleName(),
@@ -488,7 +534,7 @@ public class Console {
                                 examples.get(i), from));
                     }
                 }
-
+                
                 String output = targetBase + examples.get(i) + "." + to;
                 File outputFile = new File(output);
                 if (!outputFile.exists()) {
@@ -535,15 +581,21 @@ public class Console {
                     + errors.toString());
         }
     }
-
+    
     public static void main(String[] args) {
+        String[] x = "1   3   5   8 ".split(" ", -1);
+        System.out.println("N=" + x.length);
+        for (String y : x){
+            System.out.println(y);
+        }
+        System.exit(1);
 //        FuzzyLite.logger().setLevel(Level.INFO);
         if (args.length == 0) {
             System.out.println(usage());
             return;
         }
         if (args.length == 1 && "export-examples".equals(args[0])) {
-            String sourceBase = "/home/jcrada/Development/fl/fuzzylite/examples";
+            String sourceBase = "/home/jcrada/Development/fl/jfuzzylite/examples/original";
             String targetBase = "/tmp/fl";
             FuzzyLite.setDecimals(3);
             try {
