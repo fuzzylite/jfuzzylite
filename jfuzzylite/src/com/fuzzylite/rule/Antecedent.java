@@ -39,6 +39,58 @@ public class Antecedent {
         return this.root;
     }
 
+    public double activationDegree(TNorm conjunction, SNorm disjunction) {
+        return this.activationDegree(conjunction, disjunction, root);
+    }
+
+    public double activationDegree(TNorm conjunction, SNorm disjunction, Expression node) {
+        if (node instanceof Proposition) {
+            Proposition proposition = (Proposition) node;
+            if (!proposition.variable.isEnabled()) {
+                return 0.0;
+            }
+            if (!proposition.getHedges().isEmpty()) {
+                int lastIndex = proposition.getHedges().size() - 1;
+                Hedge any = proposition.getHedges().get(lastIndex);
+                if (any instanceof Any) {
+                    double result = any.hedge(Double.NaN);
+                    while (--lastIndex >= 0) {
+                        result = proposition.getHedges().get(lastIndex).hedge(result);
+                    }
+                    return result;
+                }
+
+            }
+
+            InputVariable inputVariable = (InputVariable) proposition.getVariable();
+            double result = proposition.getTerm().membership(inputVariable.getInputValue());
+            for (int i =  proposition.getHedges().size() - 1 ;i >= 0; --i) {
+                result = proposition.getHedges().get(i).hedge(result);
+            }
+            return result;
+        } else if (node instanceof Operator) {
+            Operator operator = (Operator) node;
+            if (operator.getLeft() == null || operator.getRight() == null) {
+                throw new RuntimeException("[syntax error] left and right operators cannot be null");
+            }
+            if (Rule.FL_AND.equals(operator.getName())) {
+                return conjunction.compute(
+                        activationDegree(conjunction, disjunction, operator.getLeft()),
+                        activationDegree(conjunction, disjunction, operator.getRight()));
+            }
+            if (Rule.FL_OR.equals(operator.getName())) {
+                return disjunction.compute(
+                        activationDegree(conjunction, disjunction, operator.getLeft()),
+                        activationDegree(conjunction, disjunction, operator.getRight()));
+            }
+            throw new RuntimeException(String.format(
+                    "[syntax error] operator <%s> not recognized",
+                    operator.getName()));
+        } else {
+            throw new RuntimeException("[expression error] unknown instance of Expression");
+        }
+    }
+
     public void load(String antecedent, Engine engine) {
         Function function = new Function();
         String postfix = function.toPostfix(antecedent);
@@ -153,50 +205,6 @@ public class Antecedent {
                     expressionStack.size()));
         }
         this.root = expressionStack.pop();
-    }
-
-    public double activationDegree(TNorm conjunction, SNorm disjunction) {
-        return this.activationDegree(conjunction, disjunction, root);
-    }
-
-    public double activationDegree(TNorm conjunction, SNorm disjunction, Expression node) {
-        if (node instanceof Proposition) {
-            Proposition proposition = (Proposition) node;
-            if (!proposition.variable.isEnabled()) {
-                return 0.0;
-            }
-            for (Hedge hedge : proposition.getHedges()) {
-                if (hedge instanceof Any) {
-                    return 1.0;
-                }
-            }
-            InputVariable inputVariable = (InputVariable) proposition.getVariable();
-            double result = proposition.getTerm().membership(inputVariable.getInputValue());
-            for (Hedge hedge : proposition.getHedges()) {
-                result = hedge.hedge(result);
-            }
-            return result;
-        } else if (node instanceof Operator) {
-            Operator operator = (Operator) node;
-            if (operator.getLeft() == null || operator.getRight() == null) {
-                throw new RuntimeException("[syntax error] left and right operators cannot be null");
-            }
-            if (Rule.FL_AND.equals(operator.getName())) {
-                return conjunction.compute(
-                        activationDegree(conjunction, disjunction, operator.getLeft()),
-                        activationDegree(conjunction, disjunction, operator.getRight()));
-            }
-            if (Rule.FL_OR.equals(operator.getName())) {
-                return disjunction.compute(
-                        activationDegree(conjunction, disjunction, operator.getLeft()),
-                        activationDegree(conjunction, disjunction, operator.getRight()));
-            }
-            throw new RuntimeException(String.format(
-                    "[syntax error] operator <%s> not recognized",
-                    operator.getName()));
-        } else {
-            throw new RuntimeException("[expression error] unknown instance of Expression");
-        }
     }
 
     @Override

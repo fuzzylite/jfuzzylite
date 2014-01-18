@@ -60,9 +60,10 @@ public class Console {
     public static final String KW_INPUT_FORMAT = "-if";
     public static final String KW_OUTPUT_FILE = "-o";
     public static final String KW_OUTPUT_FORMAT = "-of";
-    public static final String KW_EXAMPLE = "-ex";
+    public static final String KW_EXAMPLE = "-example";
     public static final String KW_DATA_INPUT = "-d";
-    public static final String KW_DATA_MAXIMUM = "-max";
+    public static final String KW_DATA_MAXIMUM = "-maximum";
+    public static final String KW_DECIMALS = "-decimals";
 
     static class Option {
 
@@ -84,6 +85,7 @@ public class Console {
         options.add(new Option(KW_EXAMPLE, "example", "if not inputfile, built-in example to use as engine: (m)amdani or (t)akagi-sugeno"));
         options.add(new Option(KW_DATA_INPUT, "datafile", "if exporting to fld, file of input values to evaluate your engine on"));
         options.add(new Option(KW_DATA_MAXIMUM, "number", "if exporting to fld without datafile, maximum number of results to export"));
+        options.add(new Option(KW_DECIMALS, "number", "number of decimals to utilize"));
 
         StringBuilder result = new StringBuilder();
         result.append("========================================\n");
@@ -133,6 +135,7 @@ public class Console {
             validOptions.add(KW_EXAMPLE);
             validOptions.add(KW_DATA_INPUT);
             validOptions.add(KW_DATA_MAXIMUM);
+            validOptions.add(KW_DECIMALS);
             for (String option : options.keySet()) {
                 if (!validOptions.contains(option)) {
                     throw new RuntimeException(String.format(
@@ -144,6 +147,11 @@ public class Console {
     }
 
     protected static void process(Map<String, String> options) throws Exception {
+        String decimals = options.get(KW_DECIMALS);
+        if (decimals != null){
+            FuzzyLite.setDecimals(Integer.parseInt(decimals));
+        }
+        
         String inputFormat = "";
         StringBuilder textEngine = new StringBuilder();
 

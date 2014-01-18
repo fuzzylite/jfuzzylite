@@ -52,6 +52,27 @@ public class Consequent {
         return sb.toString();
     }
 
+    public void modify(double activationDegree, TNorm activation) {
+        for (Proposition proposition : conclusions) {
+            if (proposition.variable.isEnabled()) {
+                if (!proposition.hedges.isEmpty()) {
+                    for (int i = proposition.hedges.size() - 1; i >= 0; --i) {
+                        Hedge hedge = proposition.hedges.get(i);
+                        activationDegree = hedge.hedge(activationDegree);
+                    }
+                }
+
+                Thresholded term = new Thresholded();
+                term.setTerm(proposition.getTerm());
+                term.setThreshold(activationDegree);
+                term.setActivation(activation);
+                OutputVariable outputVariable = (OutputVariable) proposition.getVariable();
+                outputVariable.fuzzyOutput().getTerms().add(term);
+                FuzzyLite.logger().fine(String.format("Accumulating %s", term.toString()));
+            }
+        }
+    }
+
     public void load(String consequent, Engine engine) {
         /*
          Extracts the list of propositions from the consequent
@@ -147,26 +168,6 @@ public class Consequent {
             }
             throw new RuntimeException(String.format(
                     "[syntax error] unexpected token <%s>", token));
-        }
-    }
-
-    public void modify(double activationDegree, TNorm activation) {
-        for (Proposition proposition : conclusions) {
-            if (!proposition.variable.isEnabled()){
-                continue;
-            }
-            double threshold = activationDegree;
-            for (Hedge hedge : proposition.getHedges()) {
-                threshold = hedge.hedge(threshold);
-            }
-
-            Thresholded term = new Thresholded();
-            term.setTerm(proposition.getTerm());
-            term.setThreshold(threshold);
-            term.setActivation(activation);
-            OutputVariable outputVariable = (OutputVariable) proposition.getVariable();
-            outputVariable.fuzzyOutput().getTerms().add(term);
-            FuzzyLite.logger().fine(String.format("Accumulating %s", term.toString()));
         }
     }
 

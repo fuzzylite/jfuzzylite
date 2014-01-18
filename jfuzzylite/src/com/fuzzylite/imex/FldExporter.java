@@ -70,7 +70,9 @@ public class FldExporter extends Exporter {
     public String headerInputVariables(List<InputVariable> inputVariables) {
         List<String> result = new ArrayList<>();
         for (InputVariable inputVariable : inputVariables) {
-            result.add("@InputVariable: " + inputVariable.getName() + ";");
+            if (inputVariable.isEnabled()) {
+                result.add("@InputVariable: " + inputVariable.getName() + ";");
+            }
         }
         return Op.join(result, separator);
     }
@@ -78,7 +80,9 @@ public class FldExporter extends Exporter {
     public String headerOutputVariables(List<OutputVariable> outputVariables) {
         List<String> result = new ArrayList<>();
         for (OutputVariable outputVariable : outputVariables) {
-            result.add("@OutputVariable: " + outputVariable.getName() + ";");
+            if (outputVariable.isEnabled()) {
+                result.add("@OutputVariable: " + outputVariable.getName() + ";");
+            }
         }
         return Op.join(result, separator);
     }
@@ -120,17 +124,20 @@ public class FldExporter extends Exporter {
 
             for (int i = 0; i < engine.numberOfInputVariables(); ++i) {
                 InputVariable inputVariable = engine.getInputVariable(i);
-                double range = inputVariable.getMaximum() - inputVariable.getMinimum();
-                double inputValue = inputVariable.getMinimum()
-                        + sampleValues[i] * range / resolution;
-                inputVariable.setInputValue(inputValue);
-                values.add(Op.str(inputValue));
+                if (inputVariable.isEnabled()) {
+                    double inputValue = inputVariable.getMinimum()
+                            + sampleValues[i] * inputVariable.range() / resolution;
+                    inputVariable.setInputValue(inputValue);
+                    values.add(Op.str(inputValue));
+                }
             }
 
             engine.process();
 
             for (OutputVariable outputVariable : engine.getOutputVariables()) {
-                values.add(Op.str(outputVariable.defuzzify()));
+                if (outputVariable.isEnabled()) {
+                    values.add(Op.str(outputVariable.defuzzify()));
+                }
             }
 
             writer.write(Op.join(values, separator) + "\n");
@@ -183,27 +190,25 @@ public class FldExporter extends Exporter {
 
     public void toWriter(Engine engine, Writer writer, List<Double> inputValues,
             String separator) throws Exception {
-        for (int i = 0; i < inputValues.size(); ++i) {
-            double inputValue = inputValues.get(i);
-            engine.getInputVariable(i).setInputValue(inputValue);
-            if (i != 0) {
-                writer.write(separator);
+        List<Double> values = new ArrayList<>();
+        for (int i = 0; i < engine.numberOfInputVariables(); ++i) {
+            InputVariable inputVariable = engine.getInputVariable(i);
+            if (inputVariable.isEnabled()) {
+                double inputValue = inputValues.get(i);
+                inputVariable.setInputValue(inputValue);
+                values.add(inputValue);
             }
-            writer.write(Op.str(inputValue));
         }
 
         engine.process();
 
-        if (engine.numberOfOutputVariables() > 0) {
-            writer.write(separator);
-        }
         for (int i = 0; i < engine.numberOfOutputVariables(); ++i) {
-            double outputValue = engine.getOutputVariable(i).defuzzify();
-            if (i != 0) {
-                writer.write(separator);
+            OutputVariable outputVariable = engine.getOutputVariable(i);
+            if (outputVariable.isEnabled()) {
+                values.add(outputVariable.defuzzify());
             }
-            writer.write(Op.str(outputValue));
         }
+        writer.write(Op.join(values, separator));
     }
 
 }
