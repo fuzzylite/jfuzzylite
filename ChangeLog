@@ -16,3 +16,5 @@ Version 1.1
 * Updated FLD examples to reflect accuracy
 * Changed all String.split for Op.split as the desired operation is different
 * Changed operation for multiple hedges to operate from last to first
+* Fixed bug when using multiple hedges in consequents
+* Fixed OutputVariable to store last valid output value regardless of locks

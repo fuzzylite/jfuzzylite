@@ -71,7 +71,7 @@ public class OutputVariable extends Variable {
                 result = maximum;
             }
         }
-        if (this.lockValidOutput && isValid) {
+        if (isValid) {
             this.lastValidOutput = result;
         }
         return result;
