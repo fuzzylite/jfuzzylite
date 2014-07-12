@@ -1,3 +1,9 @@
+Version 5.0
+2014-MM-DD  Juan Rada-Vilela  <jcrada@fuzzylite.com>
+
+*
+
+
 Version 1.1
 * Added deductive type of Engine with Engine::type()
 * Modified FclExporter and FisExporter to provide backward compatibility with FCL and FIS formats

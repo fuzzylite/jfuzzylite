@@ -1,16 +1,21 @@
-/*   Copyright 2013 Juan Rada-Vilela
+/*
+ Copyright (C) 2010-2014 FuzzyLite Limited
+ All rights reserved
 
- Licensed under the Apache License, Version 2.0 (the "License");
- you may not use this file except in compliance with the License.
- You may obtain a copy of the License at
+ This file is part of jfuzzylite.
 
- http://www.apache.org/licenses/LICENSE-2.0
+ jfuzzylite is free software: you can redistribute it and/or modify it under
+ the terms of the GNU Lesser General Public License as published by the Free
+ Software Foundation, either version 3 of the License, or (at your option)
+ any later version.
 
- Unless required by applicable law or agreed to in writing, software
- distributed under the License is distributed on an "AS IS" BASIS,
- WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- See the License for the specific language governing permissions and
- limitations under the License.
+ jfuzzylite is distributed in the hope that it will be useful, but WITHOUT
+ ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License
+ for more details.
+
+ You should have received a copy of the GNU Lesser General Public License
+ along with jfuzzylite.  If not, see <http://www.gnu.org/licenses/>.
  */
 package com.fuzzylite.defuzzifier;
 
@@ -23,10 +28,6 @@ import com.fuzzylite.term.Term;
 import com.fuzzylite.term.Thresholded;
 import com.fuzzylite.term.ZShape;
 
-/**
- *
- * @author jcrada
- */
 public class Tsukamoto {
 
     public static double tsukamoto(Thresholded term, double minimum, double maximum) {
@@ -65,8 +66,8 @@ public class Tsukamoto {
             double difference = sshape.getEnd() - sshape.getStart();
             double a = sshape.getStart() + Math.sqrt(w * difference * difference / 2.0);
             double b = sshape.getEnd() + Math.sqrt(difference * difference * (w - 1.0) / -2.0);
-            if (Math.abs(w - monotonic.membership(a)) <
-                    Math.abs(w - monotonic.membership(b))) {
+            if (Math.abs(w - monotonic.membership(a))
+                    < Math.abs(w - monotonic.membership(b))) {
                 z = a;
             } else {
                 z = b;
@@ -77,8 +78,8 @@ public class Tsukamoto {
             double difference = zshape.getEnd() - zshape.getStart();
             double a = zshape.getStart() + Math.sqrt(difference * difference * (w - 1) / -2.0);
             double b = zshape.getEnd() + Math.sqrt(w * difference * difference / 2.0);
-            if (Math.abs(w - monotonic.membership(a)) < 
-                    Math.abs(w - monotonic.membership(b))){
+            if (Math.abs(w - monotonic.membership(a))
+                    < Math.abs(w - monotonic.membership(b))) {
                 z = a;
             } else {
                 z = b;
@@ -92,7 +93,7 @@ public class Tsukamoto {
                 FuzzyLite.logger().warning(String.format(
                         "[tsukamoto warning] difference <%s> might suggest an inaccurate "
                         + "computation of z because it is expected w=f(z) in %s term <%s>, "
-                        + "but w=%s f(z)=%s and z=%s", Op.str(Math.abs(w-fz)),
+                        + "but w=%s f(z)=%s and z=%s", Op.str(Math.abs(w - fz)),
                         monotonic.getClass().getSimpleName(), monotonic.getName(),
                         Op.str(w), Op.str(fz), Op.str(z)));
             }
