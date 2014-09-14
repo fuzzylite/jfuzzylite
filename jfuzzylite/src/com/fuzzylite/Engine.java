@@ -63,10 +63,10 @@ public class Engine {
 
     public Engine(String name) {
         this.name = name;
-        this.inputVariables = new ArrayList<>();
-        this.outputVariables = new ArrayList<>();
-        this.ruleBlocks = new ArrayList<>();
-        this.hedges = new ArrayList<>();
+        this.inputVariables = new ArrayList<InputVariable>();
+        this.outputVariables = new ArrayList<OutputVariable>();
+        this.ruleBlocks = new ArrayList<RuleBlock>();
+        this.hedges = new ArrayList<Hedge>();
     }
 
     public String getName() {

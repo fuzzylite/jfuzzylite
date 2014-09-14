@@ -78,7 +78,7 @@ public class Console {
     }
 
     public static String usage() {
-        List<Option> options = new ArrayList<>();
+        List<Option> options = new ArrayList<Option>();
         options.add(new Option(KW_INPUT_FILE, "inputfile", "file to import your engine from"));
         options.add(new Option(KW_INPUT_FORMAT, "format", "format of the file to import (fll | fis | fcl)"));
         options.add(new Option(KW_OUTPUT_FILE, "outputfile", "file to export your engine to"));
@@ -114,7 +114,7 @@ public class Console {
         if (args.length % 2 != 0) {
             throw new RuntimeException("[option error] incomplete number of parameters [key value]");
         }
-        Map<String, String> options = new HashMap<>();
+        Map<String, String> options = new HashMap<String, String>();
         String key, value;
         for (int i = 0; i < args.length - 1; i += 2) {
             key = args[i];
@@ -128,7 +128,7 @@ public class Console {
                 options.put(KW_OUTPUT_FILE, in_out.getValue());
             }
         } else {
-            Set<String> validOptions = new HashSet<>();
+            Set<String> validOptions = new HashSet<String>();
             validOptions.add(KW_INPUT_FILE);
             validOptions.add(KW_INPUT_FORMAT);
             validOptions.add(KW_OUTPUT_FILE);
@@ -447,7 +447,7 @@ public class Console {
     }
 
     public static void exportAllExamples(String from, String to, String sourceBase, String targetBase) throws Exception {
-        List<String> examples = new ArrayList<>();
+        List<String> examples = new ArrayList<String>();
         examples.add("/mamdani/AllTerms");
         examples.add("/mamdani/SimpleDimmer");
         examples.add("/mamdani/matlab/mam21");
@@ -511,7 +511,7 @@ public class Console {
                     + "<" + from + "> to export");
         }
 
-        List<Op.Pair<Exporter, Importer>> tests = new ArrayList<>();
+        List<Op.Pair<Exporter, Importer>> tests = new ArrayList<Op.Pair<Exporter, Importer>>();
         tests.add(new Op.Pair<Exporter, Importer>(new FllExporter(), new FllImporter()));
         tests.add(new Op.Pair<Exporter, Importer>(new FclExporter(), new FclImporter()));
         tests.add(new Op.Pair<Exporter, Importer>(new FisExporter(), new FisImporter()));

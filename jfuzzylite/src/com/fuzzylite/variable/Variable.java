@@ -47,7 +47,7 @@ public class Variable {
         this.name = name;
         this.minimum = minimum;
         this.maximum = maximum;
-        this.terms = new ArrayList<>();
+        this.terms = new ArrayList<Term>();
         this.enabled = true;
     }
 
@@ -84,7 +84,7 @@ public class Variable {
                 }
             });
         } else {
-            final Map<Term, Double> map = new HashMap<>();
+            final Map<Term, Double> map = new HashMap<Term, Double>();
             for (Term term : terms) {
                 map.put(term, defuzzifier.defuzzify(term, minimum, maximum));
             }

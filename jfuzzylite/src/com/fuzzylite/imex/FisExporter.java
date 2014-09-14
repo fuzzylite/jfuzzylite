@@ -191,9 +191,9 @@ public class FisExporter extends Exporter {
     }
 
     public String exportRule(Rule rule, Engine engine) {
-        List<Proposition> propositions = new ArrayList<>();
-        List<Operator> operators = new ArrayList<>();
-        Deque<Expression> queue = new ArrayDeque<>();
+        List<Proposition> propositions = new ArrayList<Proposition>();
+        List<Operator> operators = new ArrayList<Operator>();
+        Deque<Expression> queue = new ArrayDeque<Expression>();
 
         queue.offer(rule.getAntecedent().getRoot());
         while (!queue.isEmpty()) {
@@ -222,8 +222,8 @@ public class FisExporter extends Exporter {
                     + "fis files do not support rules with different connectors "
                     + "(i.e. ['and', 'or']). All connectors within a rule must be the same");
         }
-        List<Variable> inputVariables = new ArrayList<>();
-        List<Variable> outputVariables = new ArrayList<>();
+        List<Variable> inputVariables = new ArrayList<Variable>();
+        List<Variable> outputVariables = new ArrayList<Variable>();
         for (InputVariable inputVariable : engine.getInputVariables()) {
             inputVariables.add(inputVariable);
         }
@@ -361,7 +361,7 @@ public class FisExporter extends Exporter {
         }
         if (term instanceof Discrete) {
             Discrete t = (Discrete) term;
-            List<Double> xy = new ArrayList<>();
+            List<Double> xy = new ArrayList<Double>();
             for (int i = 0; i < t.x.size(); ++i) {
                 xy.add(t.x.get(i));
                 xy.add(t.y.get(i));

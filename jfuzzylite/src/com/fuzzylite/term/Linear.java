@@ -42,7 +42,7 @@ public class Linear extends Term {
         this.name = name;
         this.coefficients = coefficients;
         //Copy elements to prevent changing the Engine's input variables
-        this.inputVariables = new ArrayList<>(inputVariables);
+        this.inputVariables = new ArrayList<InputVariable>(inputVariables);
     }
 
     @Override
@@ -71,7 +71,7 @@ public class Linear extends Term {
                     + "but <%d> coefficients were found and <%d> variables are available",
                     coefficients.length, inputVariables.size()));
         }
-        List<Double> coefficientsList = new ArrayList<>();
+        List<Double> coefficientsList = new ArrayList<Double>();
         for (double coefficient : coefficients) {
             coefficientsList.add(coefficient);
         }
@@ -107,7 +107,7 @@ public class Linear extends Term {
     //It is safe to pass the InputVariables from the Engine
     public void set(List<Double> coefficients, List<InputVariable> inputVariables) {
         this.coefficients = coefficients;
-        this.inputVariables = new ArrayList<>(inputVariables);
+        this.inputVariables = new ArrayList<InputVariable>(inputVariables);
     }
 
 }

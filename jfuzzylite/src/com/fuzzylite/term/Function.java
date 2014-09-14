@@ -116,7 +116,7 @@ public class Function extends Term {
         }
 
         public double evaluate(Map<String, Double> localVariables) {
-            double result = Double.NaN;
+            Double result = Double.NaN;
             if (operator != null || function != null) {
                 Element element = function;
                 if (operator != null) {
@@ -126,14 +126,14 @@ public class Function extends Term {
                 try {
                     switch (element.getArity()) {
                         case 0:
-                            result = (double) element.method.invoke(null);
+                            result = (Double) element.method.invoke(null);
                             break;
                         case 1:
-                            result = (double) element.method.invoke(null,
+                            result = (Double) element.method.invoke(null,
                                     left.evaluate(localVariables));
                             break;
                         case 2:
-                            result = (double) element.method.invoke(null,
+                            result = (Double) element.method.invoke(null,
                                     right.evaluate(localVariables),
                                     left.evaluate(localVariables));
                             break;
@@ -272,9 +272,9 @@ public class Function extends Term {
         this.formula = formula;
         this.engine = engine;
         this.root = null;
-        this.variables = new HashMap<>();
-        this.operators = new HashMap<>();
-        this.functions = new HashMap<>();
+        this.variables = new HashMap<String, Double>();
+        this.operators = new HashMap<String, Operator>();
+        this.functions = new HashMap<String, BuiltInFunction>();
         this.loadOperators();
     }
 
@@ -454,7 +454,7 @@ public class Function extends Term {
             loadBuiltInFunctions();
         }
         //Space the operator to tokenize easier
-        Set<String> toSpace = new HashSet<>(this.operators.keySet());
+        Set<String> toSpace = new HashSet<String>(this.operators.keySet());
         toSpace.remove(Rule.FL_AND);
         toSpace.remove(Rule.FL_OR);
         toSpace.add("(");
@@ -466,8 +466,8 @@ public class Function extends Term {
         }
 
         //Tokenizer
-        Deque<String> queue = new ArrayDeque<>();
-        Deque<String> stack = new ArrayDeque<>();
+        Deque<String> queue = new ArrayDeque<String>();
+        Deque<String> stack = new ArrayDeque<String>();
 
         StringTokenizer tokenizer = new StringTokenizer(spacedFormula);
         String token;
@@ -557,7 +557,7 @@ public class Function extends Term {
         }
         String postfix = toPostfix(text);
 
-        Deque<Node> stack = new ArrayDeque<>();
+        Deque<Node> stack = new ArrayDeque<Node>();
 
         StringTokenizer tokenizer = new StringTokenizer(postfix);
         String token;

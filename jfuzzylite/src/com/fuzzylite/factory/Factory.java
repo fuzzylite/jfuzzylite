@@ -28,7 +28,7 @@ public class Factory<T> {
     protected Map<String, Class<? extends T>> map;
 
     public Factory() {
-        this.map = new HashMap<>();
+        this.map = new HashMap<String, Class<? extends T>>();
     }
 
     public void register(Class<? extends T> clazz) {

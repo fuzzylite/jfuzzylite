@@ -106,7 +106,7 @@ public class Antecedent {
 
         final byte S_VARIABLE = 1, S_IS = 2, S_HEDGE = 4, S_TERM = 8, S_AND_OR = 16;
         byte state = S_VARIABLE;
-        Deque<Expression> expressionStack = new ArrayDeque<>();
+        Deque<Expression> expressionStack = new ArrayDeque<Expression>();
         Proposition proposition = null;
 
         StringTokenizer tokenizer = new StringTokenizer(postfix);

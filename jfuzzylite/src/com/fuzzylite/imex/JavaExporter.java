@@ -160,7 +160,7 @@ public class JavaExporter extends Exporter {
         }
         if (term instanceof Discrete) {
             Discrete t = (Discrete) term;
-            List<Double> xy = new ArrayList<>();
+            List<Double> xy = new ArrayList<Double>();
             for (int i = 0; i < t.x.size(); ++i) {
                 xy.add(t.x.get(i));
                 xy.add(t.y.get(i));

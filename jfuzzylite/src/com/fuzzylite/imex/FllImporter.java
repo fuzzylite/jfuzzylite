@@ -69,7 +69,7 @@ public class FllImporter extends Importer {
         boolean processPending;
         BufferedReader reader = new BufferedReader(new StringReader(fll));
         String line = "";
-        Deque<String> queue = new ArrayDeque<>();
+        Deque<String> queue = new ArrayDeque<String>();
         int lineNumber = 0;
         try {
             while (!queue.isEmpty() || (line = reader.readLine()) != null) {
@@ -245,7 +245,7 @@ public class FllImporter extends Importer {
         term.configure(parameters.toString());
         //special cases
         if (term instanceof Linear) {
-            ((Linear) term).inputVariables = new ArrayList<>(engine.getInputVariables());
+            ((Linear) term).inputVariables = new ArrayList<InputVariable>(engine.getInputVariables());
         } else if (term instanceof Function) {
             Function function = (Function) term;
             function.setEngine(engine);
@@ -284,7 +284,7 @@ public class FllImporter extends Importer {
 
     protected Op.Pair<Double, Double> parseRange(String text) {
         Op.Pair<String, String> range = parseKeyValue(text, ' ');
-        return new Op.Pair<>(Op.toDouble(range.first), Op.toDouble(range.second));
+        return new Op.Pair<Double, Double>(Op.toDouble(range.first), Op.toDouble(range.second));
     }
 
     protected boolean parseBoolean(String bool) {
@@ -304,7 +304,7 @@ public class FllImporter extends Importer {
             throw new RuntimeException("[syntax error] expected pair in the form "
                     + "<key" + separator + "value>, but found <" + text + ">");
         }
-        Op.Pair<String, String> result = new Op.Pair<>();
+        Op.Pair<String, String> result = new Op.Pair<String, String>();
         result.first = text.substring(0, half);
         result.second = text.substring(half + 1);
         return result;

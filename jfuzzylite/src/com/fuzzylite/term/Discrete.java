@@ -81,8 +81,8 @@ public class Discrete extends Term {
             throw new RuntimeException("[discrete term] expected an even number of parameters "
                     + "matching (x,y)+, but passed <" + xy.length + ">");
         }
-        List<Double> x = new ArrayList<>(xy.length / 2);
-        List<Double> y = new ArrayList<>(xy.length / 2);
+        List<Double> x = new ArrayList<Double>(xy.length / 2);
+        List<Double> y = new ArrayList<Double>(xy.length / 2);
         for (int i = 0; i < xy.length; i += 2) {
             x.add(xy[i]);
             y.add(xy[i + 1]);
@@ -143,8 +143,8 @@ public class Discrete extends Term {
     @Override
     public Discrete clone() {
         return new Discrete(this.name,
-                new ArrayList<>(this.x),
-                new ArrayList<>(this.y));
+                new ArrayList<Double>(this.x),
+                new ArrayList<Double>(this.y));
     }
 
 }

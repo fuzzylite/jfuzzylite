@@ -37,7 +37,7 @@ public class Consequent {
     protected List<Proposition> conclusions;
 
     public Consequent() {
-        this.conclusions = new ArrayList<>();
+        this.conclusions = new ArrayList<Proposition>();
     }
 
     @Override

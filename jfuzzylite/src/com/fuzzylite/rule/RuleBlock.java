@@ -54,7 +54,7 @@ public class RuleBlock {
         this.conjunction = conjunction;
         this.disjunction = disjunction;
         this.activation = activation;
-        this.rules = new ArrayList<>();
+        this.rules = new ArrayList<Rule>();
         this.enabled = true;
     }
 

@@ -69,7 +69,7 @@ public class FclImporter extends Importer {
     public Engine fromString(String fcl) {
         Engine engine = new Engine();
 
-        Map<String, String> tags = new HashMap<>();
+        Map<String, String> tags = new HashMap<String, String>();
         tags.put("VAR_INPUT", "END_VAR");
         tags.put("VAR_OUTPUT", "END_VAR");
         tags.put("FUZZIFY", "END_FUZZIFY");
@@ -391,7 +391,7 @@ public class FclImporter extends Importer {
         int state = S_KWTERM;
         StringTokenizer tokenizer = new StringTokenizer(spacedLine);
         String token, name = "", termClass = "";
-        List<String> parameters = new ArrayList<>();
+        List<String> parameters = new ArrayList<String>();
         while (tokenizer.hasMoreTokens()) {
             token = tokenizer.nextToken();
             if (state == S_KWTERM && "TERM".equals(token)) {
@@ -446,7 +446,7 @@ public class FclImporter extends Importer {
 
             return result;
         } catch (Exception ex) {
-            throw ex;
+            throw new RuntimeException(ex);
         }
     }
 
@@ -516,7 +516,7 @@ public class FclImporter extends Importer {
                     "[syntax error] expected keyword <NC>, but found <%s> in line: %s",
                     nc, line));
         }
-        return new Op.Pair<>(value, lockValidOutput);
+        return new Op.Pair<Double, Boolean>(value, lockValidOutput);
     }
 
     protected Op.Pair<Double, Double> extractRange(String line) {
@@ -553,7 +553,7 @@ public class FclImporter extends Importer {
                     token.get(index), line));
         }
 
-        return new Op.Pair<>(minimum, maximum);
+        return new Op.Pair<Double, Double>(minimum, maximum);
     }
 
     protected Op.Pair<Boolean, Boolean> extractLocksOutputAndRange(String line) {
@@ -590,7 +590,7 @@ public class FclImporter extends Importer {
                     + "but found <%s> in line: ", value, line));
         }
 
-        return new Op.Pair<>(output, range);
+        return new Op.Pair<Boolean, Boolean>(output, range);
     }
 
     protected boolean extractEnabled(String line) {

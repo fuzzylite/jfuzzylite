@@ -69,7 +69,7 @@ public class FldExporter extends Exporter {
     }
 
     public String headerInputVariables(List<InputVariable> inputVariables) {
-        List<String> result = new ArrayList<>();
+        List<String> result = new ArrayList<String>();
         for (InputVariable inputVariable : inputVariables) {
             if (inputVariable.isEnabled()) {
                 result.add("@InputVariable: " + inputVariable.getName() + ";");
@@ -79,7 +79,7 @@ public class FldExporter extends Exporter {
     }
 
     public String headerOutputVariables(List<OutputVariable> outputVariables) {
-        List<String> result = new ArrayList<>();
+        List<String> result = new ArrayList<String>();
         for (OutputVariable outputVariable : outputVariables) {
             if (outputVariable.isEnabled()) {
                 result.add("@OutputVariable: " + outputVariable.getName() + ";");
@@ -121,7 +121,7 @@ public class FldExporter extends Exporter {
 
         boolean overflow = false;
         while (!overflow) {
-            List<String> values = new ArrayList<>();
+            List<String> values = new ArrayList<String>();
 
             for (int i = 0; i < engine.numberOfInputVariables(); ++i) {
                 InputVariable inputVariable = engine.getInputVariable(i);
@@ -178,7 +178,7 @@ public class FldExporter extends Exporter {
     }
 
     public List<Double> parse(String values) {
-        List<Double> result = new ArrayList<>();
+        List<Double> result = new ArrayList<Double>();
         if (values.isEmpty() || values.charAt(0) == '#') {
             return result;
         }
@@ -191,7 +191,7 @@ public class FldExporter extends Exporter {
 
     public void toWriter(Engine engine, Writer writer, List<Double> inputValues,
             String separator) throws Exception {
-        List<Double> values = new ArrayList<>();
+        List<Double> values = new ArrayList<Double>();
         for (int i = 0; i < engine.numberOfInputVariables(); ++i) {
             InputVariable inputVariable = engine.getInputVariable(i);
             if (inputVariable.isEnabled()) {

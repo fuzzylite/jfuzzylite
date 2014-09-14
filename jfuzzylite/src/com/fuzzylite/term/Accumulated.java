@@ -38,16 +38,14 @@ public class Accumulated extends Term {
 
     public Accumulated(String name) {
         this(name, Double.NaN, Double.NaN, null);
-        this.terms = new ArrayList<>();
     }
 
     public Accumulated(String name, double minimum, double maximum) {
         this(name, minimum, maximum, null);
-        this.terms = new ArrayList<>();
     }
 
     public Accumulated(String name, double minimum, double maximum, SNorm accumulation) {
-        this.terms = new ArrayList<>();
+        this.terms = new ArrayList<Term>();
         this.name = name;
         this.minimum = minimum;
         this.maximum = maximum;

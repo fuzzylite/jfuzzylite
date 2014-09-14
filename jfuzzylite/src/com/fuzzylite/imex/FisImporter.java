@@ -90,7 +90,7 @@ public class FisImporter extends Importer {
 
         BufferedReader fisReader = new BufferedReader(new StringReader(fis));
         String line;
-        List<String> sections = new ArrayList<>();
+        List<String> sections = new ArrayList<String>();
         try {
             while ((line = fisReader.readLine()) != null) {
                 List<String> comments = Op.split(line, "//");
@@ -312,8 +312,8 @@ public class FisImporter extends Importer {
                         outputs.size(), line));
             }
 
-            List<String> antecedent = new ArrayList<>();
-            List<String> consequent = new ArrayList<>();
+            List<String> antecedent = new ArrayList<String>();
+            List<String> consequent = new ArrayList<String>();
 
             for (int i = 0; i < inputs.size(); ++i) {
                 double inputCode = Op.toDouble(inputs.get(i));
@@ -508,7 +508,7 @@ public class FisImporter extends Importer {
                     "[syntax error] expected range in format '[begin end]', "
                     + "but found <%s>", range));
         }
-        Op.Pair<Double, Double> result = new Op.Pair<>();
+        Op.Pair<Double, Double> result = new Op.Pair<Double, Double>();
         result.first = Op.toDouble(begin.substring(1));
         result.second = Op.toDouble(end.substring(0, end.length() - 1));
         return result;
@@ -561,7 +561,7 @@ public class FisImporter extends Importer {
     }
 
     protected Term createInstance(String mClass, String name, List<String> parameters) {
-        Map<String, String> mapping = new HashMap<>();
+        Map<String, String> mapping = new HashMap<String, String>();
         mapping.put("discretemf", Discrete.class.getSimpleName());
         mapping.put("constant", Constant.class.getSimpleName());
         mapping.put("function", Function.class.getSimpleName());

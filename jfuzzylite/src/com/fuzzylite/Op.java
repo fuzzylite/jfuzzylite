@@ -132,7 +132,7 @@ public class Op {
     }
 
     public static List<String> split(String str, String delimiter, boolean ignoreEmpty) {
-        List<String> result = new ArrayList<>();
+        List<String> result = new ArrayList<String>();
         if (str.isEmpty() || delimiter.isEmpty()) {
             result.add(str);
             return result;
@@ -293,7 +293,7 @@ public class Op {
         return result;
     }
 
-    @SafeVarargs
+    //@SafeVarargs
     public static <T> String join(String separator, T... x) {
         String result = "";
         for (int i = 0; i < x.length; ++i) {
