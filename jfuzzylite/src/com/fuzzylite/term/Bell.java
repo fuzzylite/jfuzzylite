@@ -43,7 +43,8 @@ public class Bell extends Term {
 
     @Override
     public String parameters() {
-        return Op.join(" ", center, width, slope);
+        return Op.join(" ", center, width, slope)
+                + (!Op.isEq(height, 1.0) ? " " + Op.str(height) : "");
     }
 
     @Override
@@ -61,6 +62,9 @@ public class Bell extends Term {
         setCenter(Op.toDouble(values.get(0)));
         setWidth(Op.toDouble(values.get(1)));
         setSlope(Op.toDouble(values.get(2)));
+        if (values.size() > required) {
+            setHeight(Op.toDouble(values.get(required)));
+        }
     }
 
     @Override
@@ -69,7 +73,7 @@ public class Bell extends Term {
             return Double.NaN;
         }
         //from octave: gbellmf.m
-        return 1.0 / (1.0 + Math.pow(Math.abs((x - center) / width), 2 * slope));
+        return height * (1.0 / (1.0 + Math.pow(Math.abs((x - center) / width), 2 * slope)));
     }
 
     public double getCenter() {

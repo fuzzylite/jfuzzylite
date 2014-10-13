@@ -32,8 +32,7 @@ public class Op {
         public Z second;
 
         public Pair() {
-            this.first = null;
-            this.second = null;
+            this(null, null);
         }
 
         public Pair(Y first, Z second) {
@@ -154,6 +153,14 @@ public class Op {
             }
         }
         return result;
+    }
+
+    public static double toDouble(String x, double alternative) {
+        try {
+            return toDouble(x);
+        } catch (Exception ex) {
+            return alternative;
+        }
     }
 
     public static double toDouble(String x) throws NumberFormatException {

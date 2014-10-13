@@ -34,6 +34,7 @@ import com.fuzzylite.term.Term;
 import com.fuzzylite.variable.InputVariable;
 import com.fuzzylite.variable.OutputVariable;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.regex.Pattern;
 
@@ -159,11 +160,13 @@ public class CppExporter extends Exporter {
             return "NULL";
         }
         if (term instanceof Discrete) {
-            Discrete t = (Discrete) term;
             List<Double> xy = new ArrayList<Double>();
-            for (int i = 0; i < t.x.size(); ++i) {
-                xy.add(t.x.get(i));
-                xy.add(t.y.get(i));
+            Discrete t = (Discrete) term;
+            Iterator<Discrete.Pair> it = t.iterator();
+            while(it.hasNext()){
+                Discrete.Pair pair = it.next();
+                xy.add(pair.getX());
+                xy.add(pair.getY());
             }
             String result = String.format("fl::%s::create(\"%s\", %d, %s)",
                     Discrete.class.getSimpleName(), term.getName(),

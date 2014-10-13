@@ -42,7 +42,8 @@ public class Ramp extends Term {
 
     @Override
     public String parameters() {
-        return Op.join(" ", start, end);
+        return Op.join(" ", start, end) 
+                + (!Op.isEq(height, 1.0) ? " " + Op.str(height) : "");
     }
 
     @Override

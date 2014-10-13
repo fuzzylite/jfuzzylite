@@ -46,7 +46,8 @@ public class PiShape extends Term {
 
     @Override
     public String parameters() {
-        return Op.join(" ", bottomLeft, topLeft, topRight, bottomRight);
+        return Op.join(" ", bottomLeft, topLeft, topRight, bottomRight)
+                + (!Op.isEq(height, 1.0) ? " " + Op.str(height) : "");
     }
 
     @Override

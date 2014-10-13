@@ -44,7 +44,8 @@ public class Trapezoid extends Term {
 
     @Override
     public String parameters() {
-        return Op.join(" ", a, b, c, d);
+        return Op.join(" ", a, b, c, d)
+                + (!Op.isEq(height, 1.0) ? " " + Op.str(height) : "");
     }
 
     @Override

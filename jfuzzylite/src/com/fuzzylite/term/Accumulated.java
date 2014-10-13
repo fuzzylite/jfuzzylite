@@ -27,7 +27,7 @@ import java.util.List;
 
 public class Accumulated extends Term {
 
-    protected List<Term> terms;
+    protected List<Activated> terms;
     protected double minimum;
     protected double maximum;
     protected SNorm accumulation;
@@ -45,7 +45,7 @@ public class Accumulated extends Term {
     }
 
     public Accumulated(String name, double minimum, double maximum, SNorm accumulation) {
-        this.terms = new ArrayList<Term>();
+        this.terms = new ArrayList<Activated>();
         this.name = name;
         this.minimum = minimum;
         this.maximum = maximum;
@@ -54,7 +54,7 @@ public class Accumulated extends Term {
 
     @Override
     public String parameters() {
-        FllExporter exporter = new FllExporter("", "; ");
+        FllExporter exporter = new FllExporter();
         StringBuilder result = new StringBuilder();
         result.append(String.format("%s %s %s",
                 Op.str(minimum), Op.str(maximum),
@@ -76,21 +76,43 @@ public class Accumulated extends Term {
             return Double.NaN;
         }
         double mu = 0.0;
-        for (Term term : this.terms) {
+        for (Activated term : this.terms) {
             mu = this.accumulation.compute(mu, term.membership(x));
         }
         return mu;
+    }
+
+    public double activationDegree(Term term) {
+        double result = 0.0;
+        for (Activated activatedTerm : this.terms) {
+            if (activatedTerm == term) {
+                if (this.accumulation != null) {
+                    result = this.accumulation.compute(result, activatedTerm.getDegree());
+                } else {
+                    result += activatedTerm.getDegree(); //Default for WeightDefuzzifier
+                }
+            }
+        }
+        return result;
+    }
+
+    @Override
+    public String toString() {
+        return String.format("%s: %s %s[%s]",
+                this.name, getClass().getSimpleName(),
+                new FllExporter().toString(this.accumulation),
+                Op.join(terms, ","));
     }
 
     public void clear() {
         this.terms.clear();
     }
 
-    public List<Term> getTerms() {
+    public List<Activated> getTerms() {
         return terms;
     }
 
-    public void setTerms(List<Term> terms) {
+    public void setTerms(List<Activated> terms) {
         this.terms = terms;
     }
 
@@ -108,6 +130,11 @@ public class Accumulated extends Term {
 
     public void setMaximum(double maximum) {
         this.maximum = maximum;
+    }
+
+    public void setRange(double minimum, double maximum) {
+        setMinimum(minimum);
+        setMaximum(maximum);
     }
 
     public SNorm getAccumulation() {

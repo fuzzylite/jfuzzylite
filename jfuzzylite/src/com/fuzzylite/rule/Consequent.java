@@ -25,7 +25,7 @@ import com.fuzzylite.factory.FactoryManager;
 import com.fuzzylite.factory.HedgeFactory;
 import com.fuzzylite.hedge.Hedge;
 import com.fuzzylite.norm.TNorm;
-import com.fuzzylite.term.Thresholded;
+import com.fuzzylite.term.Activated;
 import com.fuzzylite.variable.OutputVariable;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -63,9 +63,9 @@ public class Consequent {
                     }
                 }
 
-                Thresholded term = new Thresholded();
+                Activated term = new Activated();
                 term.setTerm(proposition.getTerm());
-                term.setThreshold(activationDegree);
+                term.setDegree(activationDegree);
                 term.setActivation(activation);
                 OutputVariable outputVariable = (OutputVariable) proposition.getVariable();
                 outputVariable.fuzzyOutput().getTerms().add(term);

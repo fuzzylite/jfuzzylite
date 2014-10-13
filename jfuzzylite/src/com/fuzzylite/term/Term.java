@@ -24,13 +24,19 @@ import com.fuzzylite.imex.FllExporter;
 public abstract class Term implements Cloneable {
 
     protected String name;
+    protected double height;
 
     public Term() {
         this("");
     }
 
     public Term(String name) {
+        this(name, 1.0);
+    }
+
+    public Term(String name, double height) {
         this.name = name;
+        this.height = height;
     }
 
     public String getName() {
@@ -41,8 +47,16 @@ public abstract class Term implements Cloneable {
         this.name = name;
     }
 
+    public double getHeight() {
+        return height;
+    }
+
+    public void setHeight(double height) {
+        this.height = height;
+    }
+
     @Override
-    public final String toString() {
+    public String toString() {
         return new FllExporter("", "; ").toString(this);
     }
 

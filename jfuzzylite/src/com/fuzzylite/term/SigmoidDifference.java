@@ -46,7 +46,8 @@ public class SigmoidDifference extends Term {
 
     @Override
     public String parameters() {
-        return Op.join(" ", left, rising, falling, right);
+        return Op.join(" ", left, rising, falling, right)
+                + (!Op.isEq(height, 1.0) ? " " + Op.str(height) : "");
     }
 
     @Override

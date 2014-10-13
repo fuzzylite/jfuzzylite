@@ -42,7 +42,8 @@ public class Gaussian extends Term {
 
     @Override
     public String parameters() {
-        return Op.join(" ", mean, standardDeviation);
+        return Op.join(" ", mean, standardDeviation)
+                + (!Op.isEq(height, 1.0) ? " " + Op.str(height) : "");
     }
 
     @Override
@@ -59,6 +60,9 @@ public class Gaussian extends Term {
         }
         setMean(Op.toDouble(values.get(0)));
         setStandardDeviation(Op.toDouble(values.get(1)));
+        if (values.size() > required) {
+            setHeight(Op.toDouble(values.get(required)));
+        }
     }
 
     @Override

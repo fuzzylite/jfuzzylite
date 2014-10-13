@@ -46,7 +46,8 @@ public class GaussianProduct extends Term {
 
     @Override
     public String parameters() {
-        return Op.join(" ", meanA, standardDeviationA, meanB, standardDeviationB);
+        return Op.join(" ", meanA, standardDeviationA, meanB, standardDeviationB)
+                + (!Op.isEq(height, 1.0) ? " " + Op.str(height) : "");
     }
 
     @Override

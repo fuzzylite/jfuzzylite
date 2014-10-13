@@ -51,6 +51,7 @@ import com.fuzzylite.term.Discrete;
 import com.fuzzylite.term.Term;
 import com.fuzzylite.variable.InputVariable;
 import com.fuzzylite.variable.OutputVariable;
+import java.util.Iterator;
 
 public class FclExporter extends Exporter {
 
@@ -199,10 +200,12 @@ public class FclExporter extends Exporter {
         if (term instanceof Discrete) {
             StringBuilder result = new StringBuilder();
             Discrete discrete = (Discrete) term;
-            for (int i = 0; i < discrete.x.size(); ++i) {
+            Iterator<Discrete.Pair> it = discrete.iterator();
+            while (it.hasNext()) {
+                Discrete.Pair xy = it.next();
                 result.append(String.format("(%s, %s)",
-                        Op.str(discrete.x.get(i)), Op.str(discrete.y.get(i))));
-                if (i + 1 < discrete.x.size()) {
+                        Op.str(xy.getX()), Op.str(xy.getY())));
+                if (it.hasNext()) {
                     result.append(" ");
                 }
             }

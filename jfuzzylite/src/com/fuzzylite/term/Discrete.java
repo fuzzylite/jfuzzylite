@@ -23,33 +23,84 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.fuzzylite.Op;
+import com.fuzzylite.term.Discrete.Pair;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.ListIterator;
 
-public class Discrete extends Term {
+public class Discrete extends Term implements List<Pair> {
 
-    public List<Double> x, y;
+    public static class Pair implements Cloneable {
+
+        public double x;
+        public double y;
+
+        public Pair() {
+            this(Double.NaN, Double.NaN);
+        }
+
+        public Pair(double x, double y) {
+            this.x = x;
+            this.y = y;
+        }
+
+        public double getX() {
+            return x;
+        }
+
+        public void setX(double x) {
+            this.x = x;
+        }
+
+        public double getY() {
+            return y;
+        }
+
+        public void setY(double y) {
+            this.y = y;
+        }
+
+        @Override
+        protected Pair clone() throws CloneNotSupportedException {
+            return new Pair(x, y);
+        }
+
+    }
+
+    protected List<Pair> xy;
 
     public Discrete() {
         this("");
     }
 
     public Discrete(String name) {
-        this(name, new ArrayList<Double>(), new ArrayList<Double>());
+        this(name, new ArrayList<Pair>());
     }
 
-    public Discrete(String name, List<Double> x, List<Double> y) {
-        this.name = name;
-        this.x = x;
-        this.y = y;
+    public Discrete(String name, List<Pair> xy) {
+        this(name, xy, 1.0);
+    }
+
+    public Discrete(String name, List<Pair> xy, double height) {
+        super(name, height);
+        this.xy = xy;
     }
 
     @Override
     public String parameters() {
         StringBuilder result = new StringBuilder();
-        for (int i = 0; i < x.size(); ++i) {
-            result.append(Op.join(" ", x.get(i), y.get(i)));
-            if (i + 1 < x.size()) {
+        Iterator<Pair> it = xy.iterator();
+        while (it.hasNext()) {
+            Pair pair = it.next();
+            result.append(String.format("%s %s",
+                    Op.str(pair.getX()), Op.str(pair.getY())));
+            if (it.hasNext()) {
                 result.append(" ");
             }
+        }
+        if (!Op.isEq(height, 1.0)) {
+            result.append(String.format(" %s", Op.str(height)));
         }
         return result.toString();
     }
@@ -59,35 +110,33 @@ public class Discrete extends Term {
         if (parameters.isEmpty()) {
             return;
         }
-        List<String> values = Op.split(parameters, " ");
+        LinkedList<Double> values = new LinkedList<Double>();
 
-        if (values.size() % 2 != 0) {
-            throw new RuntimeException(String.format(
-                    "[configuration error] term <%s> requires an even set of parameters values (x,y), "
-                    + "but found <%d> values ",
-                    this.getClass().getSimpleName(), values.size()));
+        List<String> strValues = Op.split(parameters, " ");
+        Iterator<String> it = strValues.iterator();
+        while (it.hasNext()) {
+            values.add(Op.toDouble(it.next()));
         }
 
-        x.clear();
-        y.clear();
-        for (int i = 0; i + 1 < values.size(); i += 2) {
-            x.add(Op.toDouble(values.get(i)));
-            y.add(Op.toDouble(values.get(i + 1)));
+        if (values.size() % 2 == 0) {
+            setHeight(1.0);
+        } else {
+            setHeight(values.removeLast());
         }
+        setXY(toPairs(values));
     }
 
     public static Discrete create(String name, double... xy) {
         if (xy.length < 2 || xy.length % 2 != 0) {
-            throw new RuntimeException("[discrete term] expected an even number of parameters "
-                    + "matching (x,y)+, but passed <" + xy.length + ">");
+            throw new RuntimeException(String.format("[discrete term] "
+                    + "expected an even number of parameters "
+                    + "matching (x,y)+, but passed <%d>", xy.length));
         }
-        List<Double> x = new ArrayList<Double>(xy.length / 2);
-        List<Double> y = new ArrayList<Double>(xy.length / 2);
+        List<Pair> xyValues = new ArrayList<Pair>(xy.length / 2);
         for (int i = 0; i < xy.length; i += 2) {
-            x.add(xy[i]);
-            y.add(xy[i + 1]);
+            xyValues.add(new Pair(xy[i], xy[i + 1]));
         }
-        return new Discrete(name, x, y);
+        return new Discrete(name, xyValues);
     }
 
     @Override
@@ -95,12 +144,8 @@ public class Discrete extends Term {
         if (Double.isNaN(_x_)) {
             return Double.NaN;
         }
-        if (x.isEmpty() || y.isEmpty()) {
-            return 0.0;
-        }
-        if (x.size() != y.size()) {
-            throw new RuntimeException("[discrete term] vectors x[" + x.size() + "] "
-                    + "and y[" + y.size() + "] have different sizes");
+        if (xy.isEmpty()) {
+            return height * 0.0;
         }
 
         /*                ______________________
@@ -109,42 +154,231 @@ public class Discrete extends Term {
          * ____________/                          \____________
          *            x[0]                      x[n-1]
          */
-        if (Op.isLE(_x_, x.get(0))) {
-            return y.get(0);
+        Pair first = xy.get(0);
+        Pair last = xy.get(xy.size() - 1);
+        if (Op.isLE(_x_, first.getX())) {
+            return height * first.getY();
         }
-        if (Op.isGE(_x_, x.get(x.size() - 1))) {
-            return y.get(x.size() - 1);
+        if (Op.isGE(_x_, last.getX())) {
+            return height * last.getY();
         }
 
         int lower = -1, upper = -1;
-        for (int i = 0; i < x.size(); ++i) {
-            if (Op.isEq(x.get(i), _x_)) {
-                return y.get(i);
+        for (int i = 0; i < xy.size(); ++i) {
+            if (Op.isEq(xy.get(i).getX(), _x_)) {
+                return height * xy.get(i).getY();
             }
             //approximate on the left
-            if (Op.isLt(x.get(i), _x_)) {
+            if (Op.isLt(xy.get(i).getX(), _x_)) {
                 lower = i;
             }
-            if (Op.isGt(x.get(i), _x_)) {
+            if (Op.isGt(xy.get(i).getX(), _x_)) {
                 upper = i;
                 break;
             }
         }
 
         if (upper < 0) {
-            upper = x.size() - 1;
+            upper = xy.size() - 1;
         }
         if (lower < 0) {
             lower = 0;
         }
-        return Op.scale(_x_, x.get(lower), x.get(upper), y.get(lower), y.get(upper));
+        return height * Op.scale(_x_, xy.get(lower).getX(), xy.get(upper).getX(),
+                xy.get(lower).getY(), xy.get(upper).getY());
+    }
+
+    public List<Pair> getXY() {
+        return xy;
+    }
+
+    public void setXY(List<Pair> xy) {
+        this.xy = xy;
     }
 
     @Override
-    public Discrete clone() {
-        return new Discrete(this.name,
-                new ArrayList<Double>(this.x),
-                new ArrayList<Double>(this.y));
+    protected Discrete clone() throws CloneNotSupportedException {
+        List<Pair> xyClone = new ArrayList<Pair>(this.xy.size());
+        for (Pair p : this.xy) {
+            xyClone.add(p.clone());
+        }
+        return new Discrete(this.name, xyClone);
+    }
+
+    public static List<Double> toList(List<Pair> xyValues) {
+        if (xyValues.size() % 2 != 0) {
+            throw new RuntimeException(String.format("[discrete error] "
+                    + "missing value in set of pairs (|xy|=%d)", xyValues.size()));
+        }
+        List<Double> result = new ArrayList<Double>(xyValues.size() * 2);
+        Iterator<Pair> it = xyValues.iterator();
+        while (it.hasNext()) {
+            Pair pair = it.next();
+            result.add(pair.getX());
+            result.add(pair.getY());
+        }
+        return result;
+    }
+
+    public static List<Pair> toPairs(List<Double> xyValues) {
+        if (xyValues.size() % 2 != 0) {
+            throw new RuntimeException(String.format("[discrete error] "
+                    + "missing value in set of pairs (|xy|=%d)", xyValues.size()));
+        }
+        List<Pair> result = new ArrayList<Pair>((xyValues.size() + 1) / 2);
+        Iterator<Double> it = xyValues.iterator();
+        while (it.hasNext()) {
+            result.add(new Pair(it.next(), it.next()));
+        }
+        return result;
+    }
+
+    public static List<Pair> toPairs(List<Double> xyValues, double missingValue) {
+        List<Pair> result = new ArrayList<Pair>((xyValues.size() + 1) / 2);
+        Iterator<Double> it = xyValues.iterator();
+        while (it.hasNext()) {
+            result.add(new Pair(it.next(), it.hasNext() ? it.next() : missingValue));
+        }
+        return result;
+    }
+
+    public static String formatXY(List<Discrete.Pair> xy) {
+        return formatXY(xy, "(", ",", ")", " ");
+    }
+
+    public static String formatXY(List<Discrete.Pair> xy,
+            String prefix, String innerSeparator,
+            String postfix, String outerSeparator) {
+        StringBuilder result = new StringBuilder();
+        Iterator<Pair> it = xy.iterator();
+        while (it.hasNext()) {
+            Pair pair = it.next();
+            result.append(prefix).append(Op.str(pair.getX()))
+                    .append(innerSeparator).append(Op.str(pair.getY()))
+                    .append(postfix);
+            if (it.hasNext()) {
+                result.append(outerSeparator);
+            }
+        }
+        return result.toString();
+    }
+
+    /**
+     * List implementation
+     */
+    @Override
+    public int size() {
+        return this.xy.size();
+    }
+
+    @Override
+    public boolean isEmpty() {
+        return this.xy.isEmpty();
+    }
+
+    @Override
+    public boolean contains(Object o) {
+        return this.xy.contains(o);
+    }
+
+    @Override
+    public Iterator<Pair> iterator() {
+        return this.xy.iterator();
+    }
+
+    @Override
+    public Object[] toArray() {
+        return this.xy.toArray();
+    }
+
+    @Override
+    public <T> T[] toArray(T[] a) {
+        return this.xy.toArray(a);
+    }
+
+    @Override
+    public boolean add(Pair e) {
+        return this.xy.add(e);
+    }
+
+    @Override
+    public boolean remove(Object o) {
+        return this.xy.remove(o);
+    }
+
+    @Override
+    public boolean containsAll(Collection<?> c) {
+        return this.xy.containsAll(c);
+    }
+
+    @Override
+    public boolean addAll(Collection<? extends Pair> c) {
+        return this.xy.addAll(c);
+    }
+
+    @Override
+    public boolean addAll(int index, Collection<? extends Pair> c) {
+        return this.xy.addAll(index, c);
+    }
+
+    @Override
+    public boolean removeAll(Collection<?> c) {
+        return this.xy.removeAll(c);
+    }
+
+    @Override
+    public boolean retainAll(Collection<?> c) {
+        return this.xy.removeAll(c);
+    }
+
+    @Override
+    public void clear() {
+        this.xy.clear();
+    }
+
+    @Override
+    public Pair get(int index) {
+        return this.xy.get(index);
+    }
+
+    @Override
+    public Pair set(int index, Pair element) {
+        return this.xy.set(index, element);
+    }
+
+    @Override
+    public void add(int index, Pair element) {
+        this.xy.add(index, element);
+    }
+
+    @Override
+    public Pair remove(int index) {
+        return this.xy.remove(index);
+    }
+
+    @Override
+    public int indexOf(Object o) {
+        return this.xy.indexOf(o);
+    }
+
+    @Override
+    public int lastIndexOf(Object o) {
+        return this.xy.lastIndexOf(o);
+    }
+
+    @Override
+    public ListIterator<Pair> listIterator() {
+        return this.xy.listIterator();
+    }
+
+    @Override
+    public ListIterator<Pair> listIterator(int index) {
+        return this.xy.listIterator(index);
+    }
+
+    @Override
+    public List<Pair> subList(int fromIndex, int toIndex) {
+        return this.xy.subList(fromIndex, toIndex);
     }
 
 }

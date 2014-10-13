@@ -21,7 +21,7 @@ package com.fuzzylite.defuzzifier;
 
 import com.fuzzylite.term.Accumulated;
 import com.fuzzylite.term.Term;
-import com.fuzzylite.term.Thresholded;
+import com.fuzzylite.term.Activated;
 
 public class WeightedAverage extends Defuzzifier {
 
@@ -31,9 +31,9 @@ public class WeightedAverage extends Defuzzifier {
         double sum = 0.0;
         double weights = 0.0;
         for (Term t : takagiSugeno.getTerms()) {
-            Thresholded thresholded = (Thresholded) t;
+            Activated thresholded = (Activated) t;
 
-            double w = thresholded.getThreshold();
+            double w = thresholded.getDegree();
             double z = Tsukamoto.tsukamoto(thresholded,
                     takagiSugeno.getMinimum(), takagiSugeno.getMaximum());
             //Traditionally, activation is the AlgebraicProduct

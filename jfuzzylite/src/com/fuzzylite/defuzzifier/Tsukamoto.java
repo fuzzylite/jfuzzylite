@@ -25,14 +25,14 @@ import com.fuzzylite.term.Ramp;
 import com.fuzzylite.term.SShape;
 import com.fuzzylite.term.Sigmoid;
 import com.fuzzylite.term.Term;
-import com.fuzzylite.term.Thresholded;
+import com.fuzzylite.term.Activated;
 import com.fuzzylite.term.ZShape;
 
 public class Tsukamoto {
 
-    public static double tsukamoto(Thresholded term, double minimum, double maximum) {
+    public static double tsukamoto(Activated term, double minimum, double maximum) {
         Term monotonic = term.getTerm();
-        double w = term.getThreshold();
+        double w = term.getDegree();
         double z = Double.NaN;
 
         if (monotonic instanceof Ramp) {
@@ -99,7 +99,7 @@ public class Tsukamoto {
             }
         } else {
             // else if it is not a Tsukamoto controller, then fallback to the inverse Tsukamoto
-            z = monotonic.membership(term.getThreshold());
+            z = monotonic.membership(term.getDegree());
         }
 
         return z;

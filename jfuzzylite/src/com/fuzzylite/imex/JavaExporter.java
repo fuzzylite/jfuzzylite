@@ -160,14 +160,9 @@ public class JavaExporter extends Exporter {
         }
         if (term instanceof Discrete) {
             Discrete t = (Discrete) term;
-            List<Double> xy = new ArrayList<Double>();
-            for (int i = 0; i < t.x.size(); ++i) {
-                xy.add(t.x.get(i));
-                xy.add(t.y.get(i));
-            }
             String result = String.format("%s.create(\"%s\", %s)",
                     Discrete.class.getSimpleName(), term.getName(),
-                    Op.join(xy, ", "));
+                    Op.join(Discrete.toList(t.getXY()), ", "));
             return result;
         }
         if (term instanceof Function) {

@@ -23,19 +23,19 @@ import com.fuzzylite.Op;
 import com.fuzzylite.norm.TNorm;
 import com.fuzzylite.imex.FllExporter;
 
-public class Thresholded extends Term {
+public class Activated extends Term {
 
     protected Term term;
-    protected double threshold;
+    protected double degree;
     protected TNorm activation;
 
-    public Thresholded() {
+    public Activated() {
         this(null, 1.0, null);
     }
 
-    public Thresholded(Term term, double threshold, TNorm activation) {
+    public Activated(Term term, double degree, TNorm activation) {
         this.term = term;
-        this.threshold = threshold;
+        this.degree = degree;
         this.activation = activation;
     }
 
@@ -44,15 +44,27 @@ public class Thresholded extends Term {
         if (Double.isNaN(x)) {
             return Double.NaN;
         }
-        return this.activation.compute(this.term.membership(x), this.threshold);
+        if (activation == null) {
+            throw new RuntimeException(String.format("[activation error] "
+                    + "activation operator needed to activate %s",
+                    term.toString()));
+        }
+        return this.activation.compute(this.term.membership(x), this.degree);
     }
 
     @Override
     public String parameters() {
         FllExporter exporter = new FllExporter();
-        String result = String.format("%s %s %s", Op.str(threshold),
+        String result = String.format("%s %s %s", Op.str(degree),
                 exporter.toString(activation), exporter.toString(term));
         return result;
+    }
+
+    @Override
+    public String toString() {
+        return String.format("%s(%s,%s)",
+                new FllExporter().toString(activation),
+                Op.str(degree), term.getName());
     }
 
     @Override
@@ -68,12 +80,12 @@ public class Thresholded extends Term {
         this.term = term;
     }
 
-    public double getThreshold() {
-        return threshold;
+    public double getDegree() {
+        return degree;
     }
 
-    public void setThreshold(double threshold) {
-        this.threshold = threshold;
+    public void setDegree(double degree) {
+        this.degree = degree;
     }
 
     public TNorm getActivation() {

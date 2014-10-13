@@ -26,7 +26,6 @@ import static com.fuzzylite.Op.str;
 import com.fuzzylite.defuzzifier.Bisector;
 import com.fuzzylite.defuzzifier.Centroid;
 import com.fuzzylite.defuzzifier.Defuzzifier;
-import com.fuzzylite.defuzzifier.IntegralDefuzzifier;
 import com.fuzzylite.defuzzifier.LargestOfMaximum;
 import com.fuzzylite.defuzzifier.MeanOfMaximum;
 import com.fuzzylite.defuzzifier.SmallestOfMaximum;
@@ -83,6 +82,7 @@ import com.fuzzylite.variable.Variable;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Deque;
+import java.util.Iterator;
 import java.util.List;
 
 public class FisExporter extends Exporter {
@@ -361,13 +361,8 @@ public class FisExporter extends Exporter {
         }
         if (term instanceof Discrete) {
             Discrete t = (Discrete) term;
-            List<Double> xy = new ArrayList<Double>();
-            for (int i = 0; i < t.x.size(); ++i) {
-                xy.add(t.x.get(i));
-                xy.add(t.y.get(i));
-            }
             return String.format("'%s':'discretemf',[%s]", term.getName(),
-                    Op.join(xy, " "));
+                    Op.join(Discrete.toList(t.getXY()), " "));
         }
 
         if (term instanceof Function) {

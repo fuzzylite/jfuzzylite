@@ -42,7 +42,8 @@ public class Sigmoid extends Term {
 
     @Override
     public String parameters() {
-        return Op.join(" ", inflection, slope);
+        return Op.join(" ", inflection, slope)
+                + (!Op.isEq(height, 1.0) ? " " + Op.str(height) : "");
     }
 
     @Override
