@@ -195,7 +195,7 @@ public class FisExporter extends Exporter {
         List<Operator> operators = new ArrayList<Operator>();
         Deque<Expression> queue = new ArrayDeque<Expression>();
 
-        queue.offer(rule.getAntecedent().getRoot());
+        queue.offer(rule.getAntecedent().getExpression());
         while (!queue.isEmpty()) {
             Expression front = queue.poll();
             if (front instanceof Operator) {

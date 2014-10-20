@@ -21,123 +21,47 @@ package com.fuzzylite.rule;
 
 import com.fuzzylite.Engine;
 import com.fuzzylite.Op;
-import static com.fuzzylite.Op.str;
+import com.fuzzylite.hedge.Hedge;
+import com.fuzzylite.imex.FllExporter;
 import com.fuzzylite.norm.SNorm;
 import com.fuzzylite.norm.TNorm;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.StringTokenizer;
 
 public class Rule {
 
     public static final String FL_IF = "if";
     public static final String FL_IS = "is";
-    public static final String FL_EQUALS = "=";
     public static final String FL_THEN = "then";
     public static final String FL_AND = "and";
     public static final String FL_OR = "or";
     public static final String FL_WITH = "with";
+
+    protected String text;
+    protected double weight = 1.0;
     protected Antecedent antecedent;
     protected Consequent consequent;
-    protected double weight = 1.0;
-    protected String text;
+    protected Map<String, Hedge> hedges;
 
     public Rule() {
+        hedges = new HashMap<String, Hedge>();
     }
 
-    public double activationDegree(TNorm conjunction, SNorm disjunction) {
-        return weight * this.antecedent.activationDegree(conjunction, disjunction);
+    public String getText() {
+        return text;
     }
 
-    public void activate(double activationDegree, TNorm activation) {
-        this.consequent.modify(activationDegree, activation);
+    public void setText(String text) {
+        this.text = text;
     }
 
-    public static Rule parse(String rule, Engine engine) {
-        Rule result = new Rule();
-        result.setText(rule);
-        StringTokenizer tokenizer = new StringTokenizer(rule);
-        String token;
-        String strAntecedent = "";
-        String strConsequent = "";
-
-        final byte S_NONE = 0, S_IF = 1, S_THEN = 2, S_WITH = 3, S_END = 4;
-        byte state = S_NONE;
-
-        while (tokenizer.hasMoreTokens()) {
-            token = tokenizer.nextToken();
-
-            switch (state) {
-                case S_NONE:
-                    if (Rule.FL_IF.equals(token)) {
-                        state = S_IF;
-                    } else {
-                        throw new RuntimeException(String.format(
-                                "[syntax error] expected keyword <%s>, but found <%d> "
-                                + "in rule: %s", Rule.FL_IF, token, rule));
-                    }
-                    break;
-
-                case S_IF:
-                    if (Rule.FL_THEN.equals(token)) {
-                        state = S_THEN;
-                    } else {
-                        strAntecedent += token + " ";
-                    }
-                    break;
-                case S_THEN:
-                    if (Rule.FL_WITH.equals(token)) {
-                        state = S_WITH;
-                    } else {
-                        strConsequent += token + " ";
-                    }
-                    break;
-                case S_WITH:
-                    try {
-                        result.setWeight(Op.toDouble(token));
-                        state = S_END;
-                    } catch (NumberFormatException ex) {
-                        throw ex;
-                    }
-                    break;
-
-                case S_END:
-                    throw new RuntimeException(String.format(
-                            "[syntax error] unexpected token <%s> at the end of rule",
-                            token));
-            }
-        }
-
-        if (state == S_NONE) {
-            throw new RuntimeException(String.format(
-                    "[syntax error] keyword <%s> not found in rule: %s",
-                    Rule.FL_IF, rule));
-        } else if (state == S_IF) {
-            throw new RuntimeException(String.format(
-                    "[syntax error] keyword <%s> not found in rule: %s",
-                    Rule.FL_THEN, rule));
-        } else if (state == S_WITH) {
-            throw new RuntimeException(String.format(
-                    "[syntax error] expected a numeric value as the weight of the rule: %s",
-                    rule));
-        }
-        result.antecedent = new Antecedent();
-        result.antecedent.load(strAntecedent, engine);
-
-        result.consequent = new Consequent();
-        result.consequent.load(strConsequent, engine);
-
-        return result;
+    public double getWeight() {
+        return weight;
     }
 
-    @Override
-    public String toString() {
-        String result = String.format("%s %s %s %s",
-                Rule.FL_IF, getAntecedent().toString(),
-                Rule.FL_THEN, getConsequent().toString());
-        if (!Op.isEq(this.weight, 1.0)) {
-            result += String.format(" %s %s",
-                    Rule.FL_WITH, str(this.weight));
-        }
-        return result;
+    public void setWeight(double weight) {
+        this.weight = weight;
     }
 
     public Antecedent getAntecedent() {
@@ -156,19 +80,126 @@ public class Rule {
         this.consequent = consequent;
     }
 
-    public double getWeight() {
-        return weight;
+    public Map<String, Hedge> getHedges() {
+        return this.hedges;
     }
 
-    public void setWeight(double weight) {
-        this.weight = weight;
+    public void setHedges(Map<String, Hedge> hedges) {
+        this.hedges = hedges;
     }
 
-    public String getText() {
-        return text;
+    public double activationDegree(TNorm conjunction, SNorm disjunction) {
+        if (!isLoaded()) {
+            throw new RuntimeException(String.format("[rule error] the following rule is not loaded: %s", text));
+        }
+        return weight * this.antecedent.activationDegree(conjunction, disjunction);
     }
 
-    protected void setText(String text) {
-        this.text = text;
+    public void activate(double activationDegree, TNorm activation) {
+        if (!isLoaded()) {
+            throw new RuntimeException(String.format("[rule error] the following rule is not loaded: %s", text));
+        }
+        this.consequent.modify(activationDegree, activation);
+    }
+
+    public boolean isLoaded() {
+        return antecedent.isLoaded() && consequent.isLoaded();
+    }
+
+    public void unload() {
+        antecedent.unload();
+        consequent.unload();
+        hedges.clear();
+    }
+
+    public void load(Engine engine) {
+        load(text, engine);
+    }
+
+    public void load(String rule, Engine engine) {
+        this.text = rule;
+        StringTokenizer tokenizer = new StringTokenizer(rule);
+        String token;
+        String strAntecedent = "";
+        String strConsequent = "";
+        double weight = 1.0;
+
+        final byte S_NONE = 0, S_IF = 1, S_THEN = 2, S_WITH = 3, S_END = 4;
+        byte state = S_NONE;
+        try {
+            while (tokenizer.hasMoreTokens()) {
+                token = tokenizer.nextToken();
+
+                switch (state) {
+                    case S_NONE:
+                        if (Rule.FL_IF.equals(token)) {
+                            state = S_IF;
+                        } else {
+                            throw new RuntimeException(String.format(
+                                    "[syntax error] expected keyword <%s>, but found <%s> in rule: %s", Rule.FL_IF, token, rule));
+                        }
+                        break;
+
+                    case S_IF:
+                        if (Rule.FL_THEN.equals(token)) {
+                            state = S_THEN;
+                        } else {
+                            strAntecedent += token + " ";
+                        }
+                        break;
+                    case S_THEN:
+                        if (Rule.FL_WITH.equals(token)) {
+                            state = S_WITH;
+                        } else {
+                            strConsequent += token + " ";
+                        }
+                        break;
+                    case S_WITH:
+                        try {
+                            weight = Op.toDouble(token);
+                            state = S_END;
+                        } catch (NumberFormatException ex) {
+                            throw ex;
+                        }
+                        break;
+
+                    case S_END:
+                        throw new RuntimeException(String.format(
+                                "[syntax error] unexpected token <%s> at the end of rule", token));
+                }
+            }
+
+            if (state == S_NONE) {
+                throw new RuntimeException(String.format("[syntax error] " + (rule.isEmpty() ? "empty" : "ignored") + "rule: %s", rule));
+            } else if (state == S_IF) {
+                throw new RuntimeException(String.format(
+                        "[syntax error] keyword <%s> not found in rule: %s",
+                        Rule.FL_THEN, rule));
+            } else if (state == S_WITH) {
+                throw new RuntimeException(String.format(
+                        "[syntax error] expected a numeric value as the weight of the rule: %s",
+                        rule));
+            }
+            antecedent = new Antecedent();
+            antecedent.load(strAntecedent, this, engine);
+
+            consequent = new Consequent();
+            consequent.load(strConsequent, this, engine);
+            this.weight = weight;
+        } catch (RuntimeException ex) {
+            unload();
+            throw ex;
+        }
+    }
+
+    @Override
+    public String toString() {
+        return new FllExporter().toString(this);
+    }
+
+    public static Rule parse(String rule, Engine engine) {
+        Rule result = new Rule();
+        result.load(rule, engine);
+        return result;
     }
 }

@@ -41,12 +41,12 @@ public class FuzzyLite {
 
     }
     public static final String NAME = "jfuzzylite";
-    public static final String VERSION = "1.0";
-    public static final String LONG_VERSION = "1.0b1401";
-    public static final String AUTHOR = "Juan Rada-Vilela";
+    public static final String VERSION = "5.0";
+    public static final String LONG_VERSION = "5.0b1412";
+    public static final String AUTHOR = "Juan Rada-Vilela, Ph.D.";
     protected static DecimalFormat DF = new FLDecimalFormat("0.000");
     protected static int DECIMALS = 3;
-    protected static double MACHEPS = 1e-5; //Machine epsilon to differentiate numbers
+    protected static double MACHEPS = 1e-6; //Machine epsilon to differentiate numbers
 
     public static Logger logger() {
         return Logger.getLogger("fuzzylite");

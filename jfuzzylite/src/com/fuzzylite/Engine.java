@@ -55,7 +55,6 @@ public class Engine {
     protected List<InputVariable> inputVariables;
     protected List<OutputVariable> outputVariables;
     protected List<RuleBlock> ruleBlocks;
-    protected List<Hedge> hedges;
 
     public Engine() {
         this("");
@@ -66,7 +65,6 @@ public class Engine {
         this.inputVariables = new ArrayList<InputVariable>();
         this.outputVariables = new ArrayList<OutputVariable>();
         this.ruleBlocks = new ArrayList<RuleBlock>();
-        this.hedges = new ArrayList<Hedge>();
     }
 
     public String getName() {
@@ -295,7 +293,8 @@ public class Engine {
 
     public enum Type {
 
-        NONE, MAMDANI, LARSEN, TAKAGI_SUGENO, TSUKAMOTO, INVERSE_TSUKAMOTO, UNKNOWN;
+        NONE, MAMDANI, LARSEN, TAKAGI_SUGENO, TSUKAMOTO, INVERSE_TSUKAMOTO, 
+        HYBRID, UNKNOWN;
     };
 
     public Type type() {
@@ -577,67 +576,4 @@ public class Engine {
     public void setRuleBlocks(List<RuleBlock> ruleBlocks) {
         this.ruleBlocks = ruleBlocks;
     }
-
-    /*
-     * Hedges
-     */
-    public Hedge getHedge(String name) {
-        for (Hedge hedge : this.hedges) {
-            if (name.equals(hedge.getName())) {
-                return hedge;
-            }
-        }
-        throw new RuntimeException(String.format(
-                "[engine error] no hedge by name <%s>", name));
-    }
-
-    public Hedge getHedge(int index) {
-        return this.hedges.get(index);
-    }
-
-    public void addHedge(Hedge hedge) {
-        this.hedges.add(hedge);
-    }
-
-    public Hedge removeHedge(Hedge hedge) {
-        return this.hedges.remove(hedge) ? hedge : null;
-    }
-
-    public Hedge removeHedge(String name) {
-        for (Iterator<Hedge> it = this.hedges.iterator(); it.hasNext();) {
-            Hedge hedge = it.next();
-            if (name.equals(hedge.getName())) {
-                it.remove();
-                return hedge;
-            }
-        }
-        throw new RuntimeException(String.format(
-                "[engine error] no hedge by name <%s>", name));
-    }
-
-    public Hedge removeHedge(int index) {
-        return this.hedges.remove(index);
-    }
-
-    public boolean hasHedge(String name) {
-        for (Hedge hedge : this.hedges) {
-            if (name.equals(hedge.getName())) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    public int numberOfHedges() {
-        return this.hedges.size();
-    }
-
-    public List<Hedge> getHedges() {
-        return this.hedges;
-    }
-
-    public void setHedges(List<Hedge> hedges) {
-        this.hedges = hedges;
-    }
-
 }

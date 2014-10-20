@@ -20,6 +20,7 @@
 package com.fuzzylite.rule;
 
 import com.fuzzylite.Engine;
+import com.fuzzylite.Op;
 import com.fuzzylite.factory.FactoryManager;
 import com.fuzzylite.factory.HedgeFactory;
 import com.fuzzylite.hedge.Any;
@@ -28,23 +29,49 @@ import com.fuzzylite.norm.SNorm;
 import com.fuzzylite.norm.TNorm;
 import com.fuzzylite.term.Function;
 import com.fuzzylite.variable.InputVariable;
+import com.fuzzylite.variable.OutputVariable;
+import com.fuzzylite.variable.Variable;
 import java.util.ArrayDeque;
+import java.util.ArrayList;
 import java.util.Deque;
+import java.util.List;
+import java.util.ListIterator;
 import java.util.StringTokenizer;
 
 public class Antecedent {
 
-    protected Expression root;
+    protected String text;
+    protected Expression expression;
 
-    public Expression getRoot() {
-        return this.root;
+    public Antecedent() {
+        this.text = "";
+    }
+
+    public String getText() {
+        return text;
+    }
+
+    public void setText(String text) {
+        this.text = text;
+    }
+
+    public Expression getExpression() {
+        return this.expression;
+    }
+
+    public boolean isLoaded() {
+        return this.expression != null;
     }
 
     public double activationDegree(TNorm conjunction, SNorm disjunction) {
-        return this.activationDegree(conjunction, disjunction, root);
+        return this.activationDegree(conjunction, disjunction, expression);
     }
 
     public double activationDegree(TNorm conjunction, SNorm disjunction, Expression node) {
+        if (!isLoaded()) {
+            throw new RuntimeException(String.format(
+                    "[antecedent error] antecedent <%s> is not loaded", text));
+        }
         if (node instanceof Proposition) {
             Proposition proposition = (Proposition) node;
             if (!proposition.variable.isEnabled()) {
@@ -63,23 +90,44 @@ public class Antecedent {
 
             }
 
-            InputVariable inputVariable = (InputVariable) proposition.getVariable();
-            double result = proposition.getTerm().membership(inputVariable.getInputValue());
+            double result = Double.NaN;
+            if (proposition.getVariable() instanceof InputVariable) {
+                InputVariable inputVariable = (InputVariable) proposition.getVariable();
+                result = proposition.getTerm().membership(inputVariable.getInputValue());
+            } else if (proposition.getVariable() instanceof OutputVariable) {
+                OutputVariable outputVariable = (OutputVariable) proposition.getVariable();
+                result = outputVariable.fuzzyOutput().activationDegree(proposition.getTerm());
+            }
+            ListIterator<Hedge> reverseIterator = proposition.getHedges()
+                    .listIterator(proposition.getHedges().size());
+            while (reverseIterator.hasPrevious()) {
+                result = reverseIterator.previous().hedge(result);
+            }
             for (int i = proposition.getHedges().size() - 1; i >= 0; --i) {
                 result = proposition.getHedges().get(i).hedge(result);
             }
             return result;
-        } else if (node instanceof Operator) {
+        }
+
+        if (node instanceof Operator) {
             Operator operator = (Operator) node;
             if (operator.getLeft() == null || operator.getRight() == null) {
                 throw new RuntimeException("[syntax error] left and right operators cannot be null");
             }
             if (Rule.FL_AND.equals(operator.getName())) {
+                if (conjunction == null) {
+                    throw new RuntimeException(String.format("[conjunction error] "
+                            + "the following rule requires a conjunction operator:\n%s", text));
+                }
                 return conjunction.compute(
                         activationDegree(conjunction, disjunction, operator.getLeft()),
                         activationDegree(conjunction, disjunction, operator.getRight()));
             }
             if (Rule.FL_OR.equals(operator.getName())) {
+                if (disjunction == null) {
+                    throw new RuntimeException(String.format("[disjunction error] "
+                            + "the following rule requires a disjunction operator:\n%s", text));
+                }
                 return disjunction.compute(
                         activationDegree(conjunction, disjunction, operator.getLeft()),
                         activationDegree(conjunction, disjunction, operator.getRight()));
@@ -92,7 +140,21 @@ public class Antecedent {
         }
     }
 
-    public void load(String antecedent, Engine engine) {
+    public void unload() {
+        expression = null;
+    }
+
+    public void load(Rule rule, Engine engine) {
+        load(text, rule, engine);
+    }
+
+    public void load(String antecedent, Rule rule, Engine engine) {
+        unload();
+        this.text = antecedent;
+        if (antecedent.trim().isEmpty()) {
+            throw new RuntimeException("[syntax error] antecedent is empty");
+        }
+
         Function function = new Function();
         String postfix = function.toPostfix(antecedent);
         /*
@@ -115,9 +177,15 @@ public class Antecedent {
         while (tokenizer.hasMoreTokens()) {
             token = tokenizer.nextToken();
             if ((state & S_VARIABLE) > 0) {
+                Variable variable = null;
                 if (engine.hasInputVariable(token)) {
+                    variable = engine.getInputVariable(token);
+                } else if (engine.hasOutputVariable(token)) {
+                    variable = engine.getOutputVariable(token);
+                }
+                if (variable != null) {
                     proposition = new Proposition();
-                    proposition.variable = engine.getInputVariable(token);
+                    proposition.variable = variable;
                     expressionStack.push(proposition);
 
                     state = S_IS;
@@ -134,13 +202,13 @@ public class Antecedent {
 
             if ((state & S_HEDGE) > 0) {
                 Hedge hedge = null;
-                if (engine.hasHedge(token)) {
-                    hedge = engine.getHedge(token);
+                if (rule.getHedges().containsKey(token)) {
+                    hedge = rule.getHedges().get(token);
                 } else {
                     HedgeFactory hedgeFactory = FactoryManager.instance().hedge();
                     if (hedgeFactory.isRegistered(token)) {
                         hedge = hedgeFactory.createInstance(token);
-                        engine.addHedge(hedge);
+                        rule.getHedges().put(token, hedge);
                     }
                 }
                 if (hedge != null) {
@@ -164,7 +232,7 @@ public class Antecedent {
 
             if ((state & S_AND_OR) > 0) {
                 if (Rule.FL_AND.equals(token) || Rule.FL_OR.equals(token)) {
-                    if (expressionStack.size() != 2) {
+                    if (expressionStack.size() < 2) {
                         throw new RuntimeException(String.format(
                                 "[syntax error] logical operator <%s> expects two operands, but found <%d>",
                                 token, expressionStack.size()));
@@ -183,7 +251,7 @@ public class Antecedent {
             //If reached this point, there was an error
             if ((state & S_VARIABLE) > 0 || (state & S_AND_OR) > 0) {
                 throw new RuntimeException(String.format(
-                        "[syntax error] expected input variable or operator, but found <%s>",
+                        "[syntax error] expected variable or logical operator, but found <%s>",
                         token));
             }
             if ((state & S_IS) > 0) {
@@ -201,28 +269,33 @@ public class Antecedent {
                     token));
         }
         if (expressionStack.size() != 1) {
+            List<String> errors = new ArrayList<String>();
+            while(expressionStack.size()>  1){
+                Expression expression = expressionStack.pop();
+                errors.add(expression.toString());
+            }
             throw new RuntimeException(String.format(
-                    "[syntax error] stack expected to contain the root, but contains %d nodes",
-                    expressionStack.size()));
+                    "[syntax error] unable to parse the following expressions: <%s>", 
+                    Op.join(errors, " ")));
         }
-        this.root = expressionStack.pop();
+        this.expression = expressionStack.pop();
     }
 
     @Override
     public String toString() {
-        return this.toInfix(this.root);
+        return this.toInfix(this.expression);
     }
 
     public String toPrefix() {
-        return this.toPrefix(this.root);
+        return this.toPrefix(this.expression);
     }
 
     public String toInfix() {
-        return this.toInfix(this.root);
+        return this.toInfix(this.expression);
     }
 
     public String toPostfix() {
-        return this.toPostfix(this.root);
+        return this.toPostfix(this.expression);
     }
 
     public String toPrefix(Expression node) {
