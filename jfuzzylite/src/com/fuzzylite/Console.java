@@ -344,8 +344,8 @@ public class Console {
         OutputVariable outputVariable1 = new OutputVariable();
         outputVariable1.setName("Power");
         outputVariable1.setRange(0.000, 2.000);
-        outputVariable1.setLockOutputRange(false);
-        outputVariable1.setLockValidOutput(false);
+        outputVariable1.setLockOutputValueInRange(false);
+        outputVariable1.setLockPreviousOutputValue(false);
         outputVariable1.setDefaultValue(Double.NaN);
         outputVariable1.setDefuzzifier(new Centroid(200));
         outputVariable1.fuzzyOutput().setAccumulation(new Maximum());
@@ -388,8 +388,8 @@ public class Console {
         OutputVariable outputVariable1 = new OutputVariable();
         outputVariable1.setName("outputFx");
         outputVariable1.setRange(-1.000, 1.000);
-        outputVariable1.setLockOutputRange(false);
-        outputVariable1.setLockValidOutput(true);
+        outputVariable1.setLockOutputValueInRange(false);
+        outputVariable1.setLockPreviousOutputValue(true);
         outputVariable1.setDefaultValue(Double.NaN);
         outputVariable1.setDefuzzifier(new WeightedAverage());
         outputVariable1.fuzzyOutput().setAccumulation(null);
@@ -407,8 +407,8 @@ public class Console {
         OutputVariable outputVariable2 = new OutputVariable();
         outputVariable2.setName("trueFx");
         outputVariable2.setRange(-1, 1);
-        outputVariable2.setLockOutputRange(false);
-        outputVariable2.setLockValidOutput(true);
+        outputVariable2.setLockOutputValueInRange(false);
+        outputVariable2.setLockPreviousOutputValue(true);
         outputVariable2.setDefaultValue(Double.NaN);
         outputVariable2.setDefuzzifier(new WeightedAverage());
         outputVariable2.fuzzyOutput().setAccumulation(null);
@@ -418,8 +418,8 @@ public class Console {
         OutputVariable outputVariable3 = new OutputVariable();
         outputVariable3.setName("diffFx");
         outputVariable3.setRange(-1, 1);
-        outputVariable3.setLockOutputRange(false);
-        outputVariable3.setLockValidOutput(false);
+        outputVariable3.setLockOutputValueInRange(false);
+        outputVariable3.setLockPreviousOutputValue(false);
         outputVariable3.setDefaultValue(Double.NaN);
         outputVariable3.setDefuzzifier(new WeightedAverage());
         outputVariable3.fuzzyOutput().setAccumulation(null);

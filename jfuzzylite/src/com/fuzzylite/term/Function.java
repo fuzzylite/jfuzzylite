@@ -315,7 +315,7 @@ public class Function extends Term {
                 this.variables.put(inputVariable.getName(), inputVariable.getInputValue());
             }
             for (OutputVariable outputVariable : this.engine.getOutputVariables()) {
-                this.variables.put(outputVariable.getName(), outputVariable.getLastValidOutput());
+                this.variables.put(outputVariable.getName(), outputVariable.getPreviousOutputValue());
             }
         }
         this.variables.put("x", x);

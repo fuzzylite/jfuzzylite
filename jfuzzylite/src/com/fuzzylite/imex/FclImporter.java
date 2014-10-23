@@ -268,15 +268,15 @@ public class FclImporter extends Importer {
             } else if ("DEFAULT".equals(firstToken)) {
                 Op.Pair<Double, Boolean> defaultAndLock = extractDefaultValue(line);
                 outputVariable.setDefaultValue(defaultAndLock.first);
-                outputVariable.setLockValidOutput(defaultAndLock.second
-                        || outputVariable.isLockingValidOutput());
+                outputVariable.setLockPreviousOutputValue(defaultAndLock.second
+                        || outputVariable.isLockedPreviousOutputValue());
             } else if ("RANGE".equals(firstToken)) {
                 Op.Pair<Double, Double> range = extractRange(line);
                 outputVariable.setRange(range.first, range.second);
             } else if ("LOCK".equals(firstToken)) {
                 Op.Pair<Boolean, Boolean> output_range = extractLocksOutputAndRange(line);
-                outputVariable.setLockValidOutput(output_range.first);
-                outputVariable.setLockOutputRange(output_range.second);
+                outputVariable.setLockPreviousOutputValue(output_range.first);
+                outputVariable.setLockOutputValueInRange(output_range.second);
             } else if ("ENABLED".equals(firstToken)) {
                 outputVariable.setEnabled(extractEnabled(line));
             } else {

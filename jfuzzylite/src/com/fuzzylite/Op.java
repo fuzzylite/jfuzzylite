@@ -121,9 +121,39 @@ public class Op {
         return -x;
     }
 
+    public static double bound(double x, double min, double max) {
+        if (isGt(x, max)) {
+            return max;
+        }
+        if (isLt(x, min)) {
+            return min;
+        }
+        return x;
+    }
+
+    public static boolean in(double x, double min, double max) {
+        return in(x, min, max, true, true);
+    }
+
+    public static boolean in(double x, double min, double max, boolean geq, boolean leq) {
+        boolean left = geq ? isGE(x, min) : isGt(x, min);
+        boolean right = leq ? isLE(x, max) : isLt(x, max);
+        return (left && right);
+    }
+
+    public static boolean isFinite(double x) {
+        return !(Double.isNaN(x) || Double.isInfinite(x));
+    }
+
     public static double scale(double x,
             double fromMin, double fromMax, double toMin, double toMax) {
         return (toMax - toMin) / (fromMax - fromMin) * (x - fromMin) + toMin;
+    }
+
+    public static double scale(double x,
+            double fromMin, double fromMax, double toMin, double toMax, boolean bounded) {
+        double result = (toMax - toMin) / (fromMax - fromMin) * (x - fromMin) + toMin;
+        return bounded ? Op.bound(x, toMin, toMax) : result;
     }
 
     public static List<String> split(String string, String delimiter) {

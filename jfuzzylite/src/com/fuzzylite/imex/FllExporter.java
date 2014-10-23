@@ -117,9 +117,9 @@ public class FllExporter extends Exporter {
         result.append(String.format("%sdefault: %s%s", indent,
                 Op.str(outputVariable.getDefaultValue()), separator));
         result.append(String.format("%slock-valid: %s%s", indent,
-                String.valueOf(outputVariable.isLockingValidOutput()), separator));
+                String.valueOf(outputVariable.isLockedPreviousOutputValue()), separator));
         result.append(String.format("%slock-range: %s%s", indent,
-                String.valueOf(outputVariable.isLockingOutputRange()), separator));
+                String.valueOf(outputVariable.isLockedOutputValueInRange()), separator));
         for (Term term : outputVariable.getTerms()) {
             result.append(String.format("%s%s%s", indent, toString(term), separator));
         }
