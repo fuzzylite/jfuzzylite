@@ -22,7 +22,7 @@ package com.fuzzylite.defuzzifier;
 //TODO: check  http://en.wikipedia.org/wiki/Adaptive_quadrature
 public abstract class IntegralDefuzzifier extends Defuzzifier {
 
-    public static final int DEFAULT_RESOLUTION = 200;
+    protected static int DEFAULT_RESOLUTION = 200;
     protected int resolution = DEFAULT_RESOLUTION;
 
     public IntegralDefuzzifier() {
@@ -39,4 +39,13 @@ public abstract class IntegralDefuzzifier extends Defuzzifier {
     public void setResolution(int resolution) {
         this.resolution = resolution;
     }
+
+    public static void setDefaultResolution(int defaultResolution) {
+        IntegralDefuzzifier.DEFAULT_RESOLUTION = defaultResolution;
+    }
+
+    public static int getDefaultResolution() {
+        return IntegralDefuzzifier.DEFAULT_RESOLUTION;
+    }
+
 }

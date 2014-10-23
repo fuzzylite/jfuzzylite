@@ -115,8 +115,8 @@ public class Engine {
                 ruleBlock.activate();
             }
         }
-        
-        for (OutputVariable outputVariable : this.outputVariables){
+
+        for (OutputVariable outputVariable : this.outputVariables) {
             outputVariable.defuzzify();
         }
 
@@ -155,7 +155,7 @@ public class Engine {
     public void configure(String conjunction, String disjunction,
             String activation, String accumulation, String defuzzifier) {
         configure(conjunction, disjunction, activation, accumulation, defuzzifier,
-                IntegralDefuzzifier.DEFAULT_RESOLUTION);
+                IntegralDefuzzifier.getDefaultResolution());
     }
 
     public void configure(String conjunction, String disjunction,
@@ -296,7 +296,7 @@ public class Engine {
 
     public enum Type {
 
-        NONE, MAMDANI, LARSEN, TAKAGI_SUGENO, TSUKAMOTO, INVERSE_TSUKAMOTO, 
+        NONE, MAMDANI, LARSEN, TAKAGI_SUGENO, TSUKAMOTO, INVERSE_TSUKAMOTO,
         HYBRID, UNKNOWN;
     };
 
