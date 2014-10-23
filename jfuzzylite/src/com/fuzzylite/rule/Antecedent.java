@@ -1,4 +1,5 @@
 /*
+ Author: Juan Rada-Vilela, Ph.D.
  Copyright (C) 2010-2014 FuzzyLite Limited
  All rights reserved
 
@@ -16,6 +17,10 @@
 
  You should have received a copy of the GNU Lesser General Public License
  along with jfuzzylite.  If not, see <http://www.gnu.org/licenses/>.
+
+ fuzzylite™ is a trademark of FuzzyLite Limited.
+ jfuzzylite™ is a trademark of FuzzyLite Limited.
+
  */
 package com.fuzzylite.rule;
 
@@ -270,12 +275,12 @@ public class Antecedent {
         }
         if (expressionStack.size() != 1) {
             List<String> errors = new ArrayList<String>();
-            while(expressionStack.size()>  1){
+            while (expressionStack.size() > 1) {
                 Expression expression = expressionStack.pop();
                 errors.add(expression.toString());
             }
             throw new RuntimeException(String.format(
-                    "[syntax error] unable to parse the following expressions: <%s>", 
+                    "[syntax error] unable to parse the following expressions: <%s>",
                     Op.join(errors, " ")));
         }
         this.expression = expressionStack.pop();

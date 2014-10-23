@@ -19,6 +19,7 @@
  along with jfuzzylite.  If not, see <http://www.gnu.org/licenses/>.
 
  fuzzylite™ is a trademark of FuzzyLite Limited.
+ jfuzzylite™ is a trademark of FuzzyLite Limited.
 
  */
 package com.fuzzylite.norm.s;
@@ -30,17 +31,14 @@ import com.fuzzylite.norm.SNorm;
  *
  * @author jcrada
  */
-public class NilpotentMaximum extends SNorm
-{
+public class NilpotentMaximum extends SNorm {
 
-  @Override
-  public double compute(double a, double b)
-  {
-    if (Op.isLt(a + b, 1.0))
-    {
-      return Math.max(a, b);
+    @Override
+    public double compute(double a, double b) {
+        if (Op.isLt(a + b, 1.0)) {
+            return Math.max(a, b);
+        }
+        return 1.0;
     }
-    return 1.0;
-  }
 
 }

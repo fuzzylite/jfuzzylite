@@ -1,4 +1,5 @@
 /*
+ Author: Juan Rada-Vilela, Ph.D.
  Copyright (C) 2010-2014 FuzzyLite Limited
  All rights reserved
 
@@ -16,6 +17,10 @@
 
  You should have received a copy of the GNU Lesser General Public License
  along with jfuzzylite.  If not, see <http://www.gnu.org/licenses/>.
+
+ fuzzylite™ is a trademark of FuzzyLite Limited.
+ jfuzzylite™ is a trademark of FuzzyLite Limited.
+
  */
 package com.fuzzylite.rule;
 
@@ -33,31 +38,31 @@ import java.util.List;
 import java.util.StringTokenizer;
 
 public class Consequent {
-    
+
     protected String text;
     protected List<Proposition> conclusions;
-    
+
     public Consequent() {
         this.text = "";
         this.conclusions = new ArrayList<Proposition>();
     }
-    
+
     public String getText() {
         return text;
     }
-    
+
     public void setText(String text) {
         this.text = text;
     }
-    
+
     public List<Proposition> getConclusions() {
         return conclusions;
     }
-    
+
     public void setConclusions(List<Proposition> conclusions) {
         this.conclusions = conclusions;
     }
-    
+
     public void modify(double activationDegree, TNorm activation) {
         if (!isLoaded()) {
             throw new RuntimeException(String.format(
@@ -71,7 +76,7 @@ public class Consequent {
                         activationDegree = hedge.hedge(activationDegree);
                     }
                 }
-                
+
                 Activated term = new Activated(proposition.getTerm(), activationDegree, activation);
                 OutputVariable outputVariable = (OutputVariable) proposition.getVariable();
                 outputVariable.fuzzyOutput().getTerms().add(term);
@@ -79,19 +84,19 @@ public class Consequent {
             }
         }
     }
-    
+
     public boolean isLoaded() {
         return !this.conclusions.isEmpty();
     }
-    
+
     public void unload() {
         this.conclusions.clear();
     }
-    
+
     public void load(Rule rule, Engine engine) {
         load(text, rule, engine);
     }
-    
+
     public void load(String consequent, Rule rule, Engine engine) {
         unload();
         this.text = consequent;
@@ -111,17 +116,17 @@ public class Consequent {
          */
         final byte S_VARIABLE = 1, S_IS = 2, S_HEDGE = 4, S_TERM = 8, S_AND = 16, S_WITH = 32;
         byte state = S_VARIABLE;
-        
+
         this.conclusions.clear();
-        
+
         Proposition proposition = null;
-        
+
         StringTokenizer tokenizer = new StringTokenizer(consequent);
         String token = "";
         try {
             while (tokenizer.hasMoreTokens()) {
                 token = tokenizer.nextToken();
-                
+
                 if ((state & S_VARIABLE) > 0) {
                     if (engine.hasOutputVariable(token)) {
                         proposition = new Proposition();
@@ -131,14 +136,14 @@ public class Consequent {
                         continue;
                     }
                 }
-                
+
                 if ((state & S_IS) > 0) {
                     if (Rule.FL_IS.equals(token)) {
                         state = S_HEDGE | S_TERM;
                         continue;
                     }
                 }
-                
+
                 if ((state & S_HEDGE) > 0) {
                     Hedge hedge = null;
                     if (rule.getHedges().containsKey(token)) {
@@ -156,7 +161,7 @@ public class Consequent {
                         continue;
                     }
                 }
-                
+
                 if ((state & S_TERM) > 0) {
                     if (proposition.variable.hasTerm(token)) {
                         proposition.term = proposition.variable.getTerm(token);
@@ -164,7 +169,7 @@ public class Consequent {
                         continue;
                     }
                 }
-                
+
                 if ((state & S_AND) > 0) {
                     if (Rule.FL_AND.equals(token)) {
                         state = S_VARIABLE;
@@ -196,7 +201,7 @@ public class Consequent {
                 throw new RuntimeException(String.format(
                         "[syntax error] unexpected token <%s>", token));
             }
-            
+
             if (!((state & S_AND) > 0 || ((state & S_WITH) > 0))) {
                 if ((state & S_VARIABLE) > 0) {
                     throw new RuntimeException(String.format(
@@ -206,7 +211,7 @@ public class Consequent {
                     throw new RuntimeException(String.format(
                             "[syntax error] consequent expected keyword <%s> after <%s>", Rule.FL_IS, token));
                 }
-                
+
                 if ((state & S_HEDGE) > 0 || (state & S_TERM) > 0) {
                     throw new RuntimeException(String.format(
                             "[syntax error] consequent expected hedge or term after <%s>", token));
@@ -217,7 +222,7 @@ public class Consequent {
             throw ex;
         }
     }
-    
+
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
@@ -230,5 +235,5 @@ public class Consequent {
         }
         return sb.toString();
     }
-    
+
 }

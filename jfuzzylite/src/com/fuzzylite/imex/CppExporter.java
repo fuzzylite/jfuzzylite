@@ -1,4 +1,5 @@
 /*
+ Author: Juan Rada-Vilela, Ph.D.
  Copyright (C) 2010-2014 FuzzyLite Limited
  All rights reserved
 
@@ -16,6 +17,10 @@
 
  You should have received a copy of the GNU Lesser General Public License
  along with jfuzzylite.  If not, see <http://www.gnu.org/licenses/>.
+
+ fuzzylite™ is a trademark of FuzzyLite Limited.
+ jfuzzylite™ is a trademark of FuzzyLite Limited.
+
  */
 package com.fuzzylite.imex;
 
@@ -163,7 +168,7 @@ public class CppExporter extends Exporter {
             List<Double> xy = new ArrayList<Double>();
             Discrete t = (Discrete) term;
             Iterator<Discrete.Pair> it = t.iterator();
-            while(it.hasNext()){
+            while (it.hasNext()) {
                 Discrete.Pair pair = it.next();
                 xy.add(pair.getX());
                 xy.add(pair.getY());
