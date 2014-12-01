@@ -38,8 +38,8 @@ import com.fuzzylite.variable.Variable;
 
 public class FllExporter extends Exporter {
 
-    protected String indent;
-    protected String separator;
+    private String indent;
+    private String separator;
 
     public FllExporter() {
         this("  ", "\n");

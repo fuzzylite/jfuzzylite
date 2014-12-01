@@ -39,8 +39,8 @@ import java.util.StringTokenizer;
 
 public class Consequent {
 
-    protected String text;
-    protected List<Proposition> conclusions;
+    private String text;
+    private List<Proposition> conclusions;
 
     public Consequent() {
         this.text = "";
@@ -69,10 +69,10 @@ public class Consequent {
                     "[consequent error] consequent <%s> is not loaded", text));
         }
         for (Proposition proposition : conclusions) {
-            if (proposition.variable.isEnabled()) {
-                if (!proposition.hedges.isEmpty()) {
-                    for (int i = proposition.hedges.size() - 1; i >= 0; --i) {
-                        Hedge hedge = proposition.hedges.get(i);
+            if (proposition.getVariable().isEnabled()) {
+                if (!proposition.getHedges().isEmpty()) {
+                    for (int i = proposition.getHedges().size() - 1; i >= 0; --i) {
+                        Hedge hedge = proposition.getHedges().get(i);
                         activationDegree = hedge.hedge(activationDegree);
                     }
                 }
@@ -156,15 +156,15 @@ public class Consequent {
                         }
                     }
                     if (hedge != null) {
-                        proposition.hedges.add(hedge);
+                        proposition.getHedges().add(hedge);
                         state = S_HEDGE | S_TERM;
                         continue;
                     }
                 }
 
                 if ((state & S_TERM) > 0) {
-                    if (proposition.variable.hasTerm(token)) {
-                        proposition.term = proposition.variable.getTerm(token);
+                    if (proposition.getVariable().hasTerm(token)) {
+                        proposition.setTerm(proposition.getVariable().getTerm(token));
                         state = S_AND | S_WITH;
                         continue;
                     }

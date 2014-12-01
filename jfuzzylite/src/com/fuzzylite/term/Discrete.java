@@ -67,13 +67,13 @@ public class Discrete extends Term implements List<Pair> {
         }
 
         @Override
-        protected Pair clone() throws CloneNotSupportedException {
+        public Pair clone() throws CloneNotSupportedException {
             return new Pair(x, y);
         }
 
     }
 
-    protected List<Pair> xy;
+    private List<Pair> xy;
 
     public Discrete() {
         this("");
@@ -202,7 +202,7 @@ public class Discrete extends Term implements List<Pair> {
     }
 
     @Override
-    protected Discrete clone() throws CloneNotSupportedException {
+    public Discrete clone() throws CloneNotSupportedException {
         List<Pair> xyClone = new ArrayList<Pair>(this.xy.size());
         for (Pair p : this.xy) {
             xyClone.add(p.clone());

@@ -29,7 +29,7 @@ import java.util.List;
 
 public class Bell extends Term {
 
-    protected double center, width, slope;
+    private double center, width, slope;
 
     public Bell() {
         this("");

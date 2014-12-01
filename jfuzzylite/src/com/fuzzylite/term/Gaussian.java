@@ -29,7 +29,7 @@ import java.util.List;
 
 public class Gaussian extends Term {
 
-    protected double mean, standardDeviation;
+    private double mean, standardDeviation;
 
     public Gaussian() {
         this("");

@@ -33,8 +33,8 @@ import java.util.List;
  */
 public class Spike extends Term {
 
-    protected double center;
-    protected double width;
+    private double center;
+    private double width;
 
     public Spike() {
         this("");

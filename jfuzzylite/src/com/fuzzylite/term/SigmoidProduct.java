@@ -29,8 +29,8 @@ import java.util.List;
 
 public class SigmoidProduct extends Term {
 
-    protected double left, rising;
-    protected double falling, right;
+    private double left, rising;
+    private double falling, right;
 
     public SigmoidProduct() {
         this("");

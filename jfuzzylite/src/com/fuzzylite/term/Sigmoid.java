@@ -29,7 +29,7 @@ import java.util.List;
 
 public class Sigmoid extends Term {
 
-    protected double inflection, slope;
+    private double inflection, slope;
 
     public Sigmoid() {
         this("");

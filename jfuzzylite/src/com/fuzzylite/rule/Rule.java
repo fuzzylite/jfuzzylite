@@ -43,11 +43,11 @@ public class Rule {
     public static final String FL_OR = "or";
     public static final String FL_WITH = "with";
 
-    protected String text;
-    protected double weight = 1.0;
-    protected Antecedent antecedent;
-    protected Consequent consequent;
-    protected Map<String, Hedge> hedges;
+    private String text;
+    private double weight = 1.0;
+    private Antecedent antecedent;
+    private Consequent consequent;
+    private Map<String, Hedge> hedges;
 
     public Rule() {
         hedges = new HashMap<String, Hedge>();

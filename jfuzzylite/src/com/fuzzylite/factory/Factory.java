@@ -30,7 +30,7 @@ import java.util.Set;
 
 public class Factory<T> {
 
-    protected Map<String, Class<? extends T>> map;
+    private Map<String, Class<? extends T>> map;
 
     public Factory() {
         this.map = new HashMap<String, Class<? extends T>>();

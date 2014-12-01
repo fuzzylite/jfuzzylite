@@ -32,10 +32,10 @@ import java.util.List;
 
 public class Accumulated extends Term {
 
-    protected List<Activated> terms;
-    protected double minimum;
-    protected double maximum;
-    protected SNorm accumulation;
+    private List<Activated> terms;
+    private double minimum;
+    private double maximum;
+    private SNorm accumulation;
 
     public Accumulated() {
         this("");

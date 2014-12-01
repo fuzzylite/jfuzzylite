@@ -29,8 +29,8 @@ import java.util.List;
 
 public class GaussianProduct extends Term {
 
-    protected double meanA, standardDeviationA;
-    protected double meanB, standardDeviationB;
+    private double meanA, standardDeviationA;
+    private double meanB, standardDeviationB;
 
     public GaussianProduct() {
         this("");

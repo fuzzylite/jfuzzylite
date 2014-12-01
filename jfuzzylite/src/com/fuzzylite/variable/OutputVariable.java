@@ -28,17 +28,18 @@ import com.fuzzylite.Op;
 import com.fuzzylite.defuzzifier.Defuzzifier;
 import com.fuzzylite.imex.FllExporter;
 import com.fuzzylite.term.Accumulated;
+import com.fuzzylite.term.Term;
 
 public class OutputVariable extends Variable {
 
-    protected Accumulated fuzzyOutput;
-    protected Defuzzifier defuzzifier;
-    protected double outputValue;
-    protected double previousOutputValue;
-    protected double defaultValue;
+    private Accumulated fuzzyOutput;
+    private Defuzzifier defuzzifier;
+    private double outputValue;
+    private double previousOutputValue;
+    private double defaultValue;
 
-    protected boolean lockOutputValueInRange;
-    protected boolean lockPreviousOutputValue;
+    private boolean lockOutputValueInRange;
+    private boolean lockPreviousOutputValue;
 
     public OutputVariable() {
         this("");
@@ -133,13 +134,13 @@ public class OutputVariable extends Variable {
             this.previousOutputValue = this.outputValue;
         }
         double result;
-        boolean isValid = this.enabled && !this.fuzzyOutput.getTerms().isEmpty();
+        boolean isValid = this.isEnabled() && !this.fuzzyOutput.getTerms().isEmpty();
         if (isValid) {
             if (this.defuzzifier == null) {
                 throw new RuntimeException(String.format(
-                        "[defuzzifier error] defuzzifier needed to defuzzify output variable <%s>", name));
+                        "[defuzzifier error] defuzzifier needed to defuzzify output variable <%s>", getName()));
             }
-            result = this.defuzzifier.defuzzify(fuzzyOutput, minimum, maximum);
+            result = this.defuzzifier.defuzzify(fuzzyOutput, this.getMinimum(), this.getMaximum());
         } else {
             //if a previous defuzzification was successfully performed and
             //and the output is supposed to not change when the output is empty
@@ -150,25 +151,26 @@ public class OutputVariable extends Variable {
             }
         }
         if (this.lockOutputValueInRange) {
-            result = Op.bound(result, minimum, maximum);
+            result = Op.bound(result, this.getMinimum(), this.getMaximum());
         }
         return result;
     }
 
     public String fuzzyOutputValue() {
         StringBuilder sb = new StringBuilder();
-        for (int i = 0; i < terms.size(); ++i) {
-            double degree = fuzzyOutput.activationDegree(terms.get(i));
-            if (i == 0) {
+        for (Term term : getTerms()){
+            double degree = fuzzyOutput.activationDegree(term);
+            if (sb.length() == 0) {
                 sb.append(Op.str(degree));
             } else {
                 if (Double.isNaN(degree) || Op.isGE(degree, 0.0)) {
-                    sb.append(" + ").append(Op.str(degree));
+                    sb.append(" + ");
                 } else {
-                    sb.append(" - ").append(Op.str(Math.abs(degree)));
+                    sb.append(" - ");
                 }
+                sb.append(Op.str(Math.abs(degree)));
             }
-            sb.append("/").append(terms.get(i).getName());
+            sb.append("/").append(term.getName());
         }
         return sb.toString();
     }

@@ -29,7 +29,7 @@ import java.util.List;
 
 public class Triangle extends Term {
 
-    protected double a, b, c;
+    private double a, b, c;
 
     public Triangle() {
         this("");

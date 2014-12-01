@@ -30,9 +30,9 @@ import com.fuzzylite.imex.FllExporter;
 
 public class Activated extends Term {
 
-    protected Term term;
-    protected double degree;
-    protected TNorm activation;
+    private Term term;
+    private double degree;
+    private TNorm activation;
 
     public Activated() {
         this(null, 1.0, null);

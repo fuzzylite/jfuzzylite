@@ -29,8 +29,8 @@ import java.util.List;
 
 public class Cosine extends Term {
 
-    protected double center;
-    protected double width;
+    private double center;
+    private double width;
 
     Cosine() {
         this("");

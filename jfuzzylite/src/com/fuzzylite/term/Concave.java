@@ -29,8 +29,8 @@ import java.util.List;
 
 public class Concave extends Term {
 
-    protected double inflection;
-    protected double end;
+    private double inflection;
+    private double end;
 
     public Concave() {
         this("");

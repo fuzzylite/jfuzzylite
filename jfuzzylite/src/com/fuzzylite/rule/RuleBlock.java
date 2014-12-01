@@ -35,12 +35,12 @@ import java.util.List;
 
 public class RuleBlock {
 
-    protected String name;
-    protected List<Rule> rules;
-    protected TNorm conjunction;
-    protected SNorm disjunction;
-    protected TNorm activation;
-    protected boolean enabled;
+    private String name;
+    private List<Rule> rules;
+    private TNorm conjunction;
+    private SNorm disjunction;
+    private TNorm activation;
+    private boolean enabled;
 
     public RuleBlock() {
         this("");

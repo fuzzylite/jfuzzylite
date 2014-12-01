@@ -29,7 +29,7 @@ import java.util.List;
 
 public class Rectangle extends Term {
 
-    protected double start, end;
+    private double start, end;
 
     public Rectangle() {
         this("");

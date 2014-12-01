@@ -60,7 +60,7 @@ import java.util.Iterator;
 
 public class FclExporter extends Exporter {
 
-    protected String indent;
+    private String indent;
 
     public FclExporter() {
         this("  ");

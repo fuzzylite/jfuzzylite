@@ -29,14 +29,23 @@ import java.util.List;
 
 public class Trapezoid extends Term {
 
-    protected double a, b, c, d;
+    private double a, b, c, d;
 
     public Trapezoid() {
         this("");
     }
 
     public Trapezoid(String name) {
-        this(name, Double.NaN, Double.NaN, Double.NaN, Double.NaN);
+        this(name, Double.NaN, Double.NaN);
+    }
+
+    public Trapezoid(String name, double a, double d) {
+        this.name = name;
+        double range = d - a;
+        this.a = a;
+        this.d = d;
+        this.b = a + range * 1.0 / 5.0;
+        this.c = a + range * 4.0 / 5.0;
     }
 
     public Trapezoid(String name, double a, double b, double c, double d) {

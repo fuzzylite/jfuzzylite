@@ -162,7 +162,7 @@ public class Function extends Term {
                     throw new RuntimeException("[function error] variable "
                             + "<" + variable + "> not registered in map");
                 }
-                result = variableValue.doubleValue();
+                result = variableValue;
             } else {
                 result = value;
             }
@@ -257,12 +257,12 @@ public class Function extends Term {
     /**
      * Function term
      */
-    protected String formula;
-    protected Engine engine;
-    protected Node root;
-    protected Map<String, Double> variables;
-    protected Map<String, Operator> operators;
-    protected Map<String, BuiltInFunction> functions;
+    private String formula;
+    private Engine engine;
+    private Node root;
+    private Map<String, Double> variables;
+    private Map<String, Operator> operators;
+    private Map<String, BuiltInFunction> functions;
 
     public Function() {
         this("");

@@ -26,7 +26,7 @@ package com.fuzzylite.factory;
 
 public class FactoryManager {
 
-    protected static FactoryManager instance;
+    private static FactoryManager instance;
 
     public synchronized static FactoryManager instance() {
         if (instance == null) {
@@ -40,13 +40,13 @@ public class FactoryManager {
         return instance;
     }
 
-    protected DefuzzifierFactory defuzzifier;
-    protected HedgeFactory hedge;
-    protected SNormFactory sNorm;
-    protected TNormFactory tNorm;
-    protected TermFactory term;
+    private DefuzzifierFactory defuzzifier;
+    private HedgeFactory hedge;
+    private SNormFactory sNorm;
+    private TNormFactory tNorm;
+    private TermFactory term;
 
-    protected FactoryManager() {
+    private FactoryManager() {
     }
 
     public DefuzzifierFactory defuzzifier() {

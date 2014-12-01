@@ -32,9 +32,9 @@ import java.util.List;
 
 public class Proposition extends Expression {
 
-    protected Variable variable;
-    protected List<Hedge> hedges;
-    protected Term term;
+    private Variable variable;
+    private List<Hedge> hedges;
+    private Term term;
 
     public Proposition() {
         this(null, null);

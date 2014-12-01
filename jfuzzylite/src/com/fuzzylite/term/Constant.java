@@ -28,7 +28,7 @@ import com.fuzzylite.Op;
 
 public class Constant extends Term {
 
-    protected double value;
+    private double value;
 
     public Constant() {
         this("");

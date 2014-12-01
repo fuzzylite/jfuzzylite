@@ -41,7 +41,7 @@ public class FldExporter extends Exporter {
     public static final int DEFAULT_MAXIMUM = 1024;
     public static final String DEFAULT_SEPARATOR = " ";
 
-    protected String separator;
+    private String separator;
 
     public FldExporter() {
         this(DEFAULT_SEPARATOR);

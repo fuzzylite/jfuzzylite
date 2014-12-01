@@ -29,7 +29,7 @@ import java.util.List;
 
 public class Ramp extends Term {
 
-    protected double start, end;
+    private double start, end;
 
     public Ramp() {
         this("");

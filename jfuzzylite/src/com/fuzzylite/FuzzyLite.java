@@ -33,7 +33,7 @@ public class FuzzyLite {
 
     //Extended DecimalFormat to provide atomic setting of RoundingMode
     //Rounding HALF_UP to match most results from fuzzylite C++ rounding mode
-    protected static class FLDecimalFormat extends DecimalFormat {
+    private static class FLDecimalFormat extends DecimalFormat {
 
         public FLDecimalFormat(String pattern) {
             this(pattern, RoundingMode.HALF_UP);
@@ -49,9 +49,9 @@ public class FuzzyLite {
     public static final String VERSION = "5.0";
     public static final String LONG_VERSION = "5.0b1412";
     public static final String AUTHOR = "Juan Rada-Vilela, Ph.D.";
-    protected static DecimalFormat DF = new FLDecimalFormat("0.000");
-    protected static int DECIMALS = 3;
-    protected static double MACHEPS = 1e-6; //Machine epsilon to differentiate numbers
+    private static DecimalFormat DF = new FLDecimalFormat("0.000");
+    private static int DECIMALS = 3;
+    private static double MACHEPS = 1e-6; //Machine epsilon to differentiate numbers
 
     public static Logger logger() {
         return Logger.getLogger("fuzzylite");

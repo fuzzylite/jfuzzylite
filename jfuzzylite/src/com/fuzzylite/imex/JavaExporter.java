@@ -38,8 +38,6 @@ import com.fuzzylite.term.Linear;
 import com.fuzzylite.term.Term;
 import com.fuzzylite.variable.InputVariable;
 import com.fuzzylite.variable.OutputVariable;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.regex.Pattern;
 
 public class JavaExporter extends Exporter {

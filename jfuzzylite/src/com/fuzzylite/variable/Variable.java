@@ -39,10 +39,10 @@ import java.util.Map;
 
 public class Variable {
 
-    protected String name;
-    protected double minimum, maximum;
-    protected List<Term> terms;
-    protected boolean enabled;
+    private String name;
+    private double minimum, maximum;
+    private List<Term> terms;
+    private boolean enabled;
 
     public Variable(String name) {
         this(name, Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY);

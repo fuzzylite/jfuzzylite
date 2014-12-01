@@ -45,8 +45,8 @@ import java.util.StringTokenizer;
 
 public class Antecedent {
 
-    protected String text;
-    protected Expression expression;
+    private String text;
+    private Expression expression;
 
     public Antecedent() {
         this.text = "";
@@ -79,7 +79,7 @@ public class Antecedent {
         }
         if (node instanceof Proposition) {
             Proposition proposition = (Proposition) node;
-            if (!proposition.variable.isEnabled()) {
+            if (!proposition.getVariable().isEnabled()) {
                 return 0.0;
             }
             if (!proposition.getHedges().isEmpty()) {
@@ -190,7 +190,7 @@ public class Antecedent {
                 }
                 if (variable != null) {
                     proposition = new Proposition();
-                    proposition.variable = variable;
+                    proposition.setVariable(variable);
                     expressionStack.push(proposition);
 
                     state = S_IS;
@@ -217,7 +217,7 @@ public class Antecedent {
                     }
                 }
                 if (hedge != null) {
-                    proposition.hedges.add(hedge);
+                    proposition.getHedges().add(hedge);
                     if (hedge instanceof Any) {
                         state = S_VARIABLE | S_AND_OR;
                     } else {
@@ -228,8 +228,8 @@ public class Antecedent {
             }
 
             if ((state & S_TERM) > 0) {
-                if (proposition.variable.hasTerm(token)) {
-                    proposition.term = proposition.variable.getTerm(token);
+                if (proposition.getVariable().hasTerm(token)) {
+                    proposition.setTerm(proposition.getVariable().getTerm(token));
                     state = S_VARIABLE | S_AND_OR;
                     continue;
                 }
@@ -243,9 +243,9 @@ public class Antecedent {
                                 token, expressionStack.size()));
                     }
                     Operator operator = new Operator();
-                    operator.name = token;
-                    operator.right = expressionStack.pop();
-                    operator.left = expressionStack.pop();
+                    operator.setName(token);
+                    operator.setRight(expressionStack.pop());
+                    operator.setLeft(expressionStack.pop());
                     expressionStack.push(operator);
 
                     state = S_VARIABLE | S_AND_OR;
@@ -276,8 +276,8 @@ public class Antecedent {
         if (expressionStack.size() != 1) {
             List<String> errors = new ArrayList<String>();
             while (expressionStack.size() > 1) {
-                Expression expression = expressionStack.pop();
-                errors.add(expression.toString());
+                Expression element = expressionStack.pop();
+                errors.add(element.toString());
             }
             throw new RuntimeException(String.format(
                     "[syntax error] unable to parse the following expressions: <%s>",
@@ -310,8 +310,8 @@ public class Antecedent {
         if (node instanceof Operator) {
             Operator operator = (Operator) node;
             return operator.toString() + " "
-                    + this.toPrefix(operator.left) + " "
-                    + this.toPrefix(operator.right) + " ";
+                    + this.toPrefix(operator.getLeft()) + " "
+                    + this.toPrefix(operator.getRight()) + " ";
         }
         throw new RuntimeException(String.format(
                 "[expression error] unexpected class <%s>",
@@ -324,9 +324,9 @@ public class Antecedent {
         }
         if (node instanceof Operator) {
             Operator operator = (Operator) node;
-            return this.toInfix(operator.left) + " "
+            return this.toInfix(operator.getLeft()) + " "
                     + operator.toString() + " "
-                    + this.toInfix(operator.right) + " ";
+                    + this.toInfix(operator.getRight()) + " ";
         }
         throw new RuntimeException(String.format(
                 "[expression error] unexpected class <%s>",
@@ -339,8 +339,8 @@ public class Antecedent {
         }
         if (node instanceof Operator) {
             Operator operator = (Operator) node;
-            return this.toPostfix(operator.left) + " "
-                    + this.toPostfix(operator.right) + " "
+            return this.toPostfix(operator.getLeft()) + " "
+                    + this.toPostfix(operator.getRight()) + " "
                     + operator.toString() + " ";
         }
         throw new RuntimeException(String.format(

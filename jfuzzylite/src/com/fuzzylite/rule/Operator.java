@@ -26,8 +26,8 @@ package com.fuzzylite.rule;
 
 public class Operator extends Expression {
 
-    protected String name;
-    protected Expression left, right;
+    private String name;
+    private Expression left, right;
 
     public Operator() {
         this("");

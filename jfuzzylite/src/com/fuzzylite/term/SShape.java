@@ -29,7 +29,7 @@ import java.util.List;
 
 public class SShape extends Term {
 
-    protected double start, end;
+    private double start, end;
 
     public SShape() {
         this("");

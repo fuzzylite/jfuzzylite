@@ -28,7 +28,7 @@ import com.fuzzylite.imex.FllExporter;
 
 public class InputVariable extends Variable {
 
-    protected double inputValue;
+    private double inputValue;
 
     public InputVariable() {
         this("");

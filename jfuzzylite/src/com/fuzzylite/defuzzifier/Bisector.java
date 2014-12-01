@@ -26,6 +26,7 @@ package com.fuzzylite.defuzzifier;
 
 import com.fuzzylite.FuzzyLite;
 import com.fuzzylite.Op;
+import static com.fuzzylite.Op.str;
 import com.fuzzylite.term.Term;
 
 public class Bisector extends IntegralDefuzzifier {
@@ -43,10 +44,10 @@ public class Bisector extends IntegralDefuzzifier {
         if (maximum - minimum > getResolution()) {
             FuzzyLite.logger().warning(String.format(
                     "[accuracy warning] resolution (%d)"
-                    + "is smaller than the range (%f, %f). "
+                    + "is smaller than the range (%s, %s). "
                     + "Improve the accuracy by increasing the resolution to a value "
                     + "greater or equal to the range.",
-                    getResolution(), minimum, maximum));
+                    getResolution(), str(minimum), str(maximum)));
         }
         double dx = (maximum - minimum) / getResolution();
 

@@ -47,7 +47,7 @@ import java.util.List;
 
 public class FllImporter extends Importer {
 
-    protected String separator;
+    private String separator;
 
     public FllImporter() {
         this("\n");

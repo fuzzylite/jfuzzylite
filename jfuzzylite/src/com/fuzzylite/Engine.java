@@ -56,10 +56,10 @@ import java.util.logging.Logger;
 
 public class Engine {
 
-    protected String name;
-    protected List<InputVariable> inputVariables;
-    protected List<OutputVariable> outputVariables;
-    protected List<RuleBlock> ruleBlocks;
+    private String name;
+    private List<InputVariable> inputVariables;
+    private List<OutputVariable> outputVariables;
+    private List<RuleBlock> ruleBlocks;
 
     public Engine() {
         this("");

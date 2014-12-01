@@ -28,7 +28,7 @@ public abstract class Hedge {
 
     public abstract double hedge(double x);
 
-    public final String getName() {
+    public String getName() {
         return getClass().getSimpleName().toLowerCase();
     }
 

@@ -29,8 +29,8 @@ import java.util.List;
 
 public class PiShape extends Term {
 
-    protected double bottomLeft, topLeft;
-    protected double topRight, bottomRight;
+    private double bottomLeft, topLeft;
+    private double topRight, bottomRight;
 
     public PiShape() {
         this("");
