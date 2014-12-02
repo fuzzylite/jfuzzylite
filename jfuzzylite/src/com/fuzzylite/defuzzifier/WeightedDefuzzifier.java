@@ -26,19 +26,66 @@ package com.fuzzylite.defuzzifier;
 
 import com.fuzzylite.FuzzyLite;
 import com.fuzzylite.Op;
+import com.fuzzylite.term.Concave;
+import com.fuzzylite.term.Constant;
+import com.fuzzylite.term.Function;
+import com.fuzzylite.term.Linear;
 import com.fuzzylite.term.Ramp;
 import com.fuzzylite.term.SShape;
 import com.fuzzylite.term.Sigmoid;
 import com.fuzzylite.term.Term;
-import com.fuzzylite.term.Activated;
 import com.fuzzylite.term.ZShape;
 
-public class Tsukamoto {
+/**
+ *
+ * @author jcrada
+ */
+public abstract class WeightedDefuzzifier extends Defuzzifier {
 
-    public static double tsukamoto(Activated term, double minimum, double maximum) {
-        Term monotonic = term.getTerm();
-        double w = term.getDegree();
+    public enum Type {
+
+        Automatic, TakagiSugeno, Tsukamoto
+    }
+
+    private Type type;
+
+    public WeightedDefuzzifier() {
+        this(Type.Automatic);
+    }
+
+    public WeightedDefuzzifier(Type type) {
+        this.type = type;
+    }
+
+    public Type getType() {
+        return type;
+    }
+
+    public void setType(Type type) {
+        this.type = type;
+    }
+
+    public Type inferType(Term term) {
+        if (term instanceof Constant || term instanceof Linear || term instanceof Function) {
+            return Type.TakagiSugeno;
+        }
+        return Type.Tsukamoto;
+    }
+
+    public boolean isMonotonic(Term term) {
+        return term instanceof Concave
+                || term instanceof Ramp
+                || term instanceof Sigmoid
+                || term instanceof SShape
+                || term instanceof ZShape;
+    }
+
+    public double tsukamoto(Term monotonic, double activationDegree,
+            double minimum, double maximum) {
+        double w = activationDegree;
         double z = Double.NaN;
+
+        boolean isTsukamoto = true;
 
         if (monotonic instanceof Ramp) {
             Ramp ramp = (Ramp) monotonic;
@@ -89,13 +136,22 @@ public class Tsukamoto {
             } else {
                 z = b;
             }
+
+        } else if (monotonic instanceof Concave) {
+            Concave concave = (Concave) monotonic;
+            double i = concave.getInflection();
+            double e = concave.getEnd();
+            z = (i - e) / concave.membership(w) + 2 * e - i;
+
+        } else {
+            isTsukamoto = false;
         }
 
-        if (!Double.isNaN(z)) {
+        if (isTsukamoto) {
             double fz = monotonic.membership(z);
             //Compare difference between estimated and true value
-            if (!Op.isEq(w, fz, 0.1)) {
-                FuzzyLite.logger().warning(String.format(
+            if (!Op.isEq(w, fz, 1e-2)) {
+                FuzzyLite.logger().finest(String.format(
                         "[tsukamoto warning] difference <%s> might suggest an inaccurate "
                         + "computation of z because it is expected w=f(z) in %s term <%s>, "
                         + "but w=%s f(z)=%s and z=%s", Op.str(Math.abs(w - fz)),
@@ -103,10 +159,9 @@ public class Tsukamoto {
                         Op.str(w), Op.str(fz), Op.str(z)));
             }
         } else {
-            // else if it is not a Tsukamoto controller, then fallback to the inverse Tsukamoto
-            z = monotonic.membership(term.getDegree());
+            // else fallback to the regular Takagi-Sugeno or inverse Tsukamoto (according to term)
+            z = monotonic.membership(w);
         }
-
         return z;
     }
 
