@@ -26,27 +26,49 @@ package com.fuzzylite.factory;
 
 public class FactoryManager {
 
-    private static FactoryManager instance;
+    protected static FactoryManager instance = new FactoryManager();
 
-    public synchronized static FactoryManager instance() {
-        if (instance == null) {
-            instance = new FactoryManager();
-            instance.setDefuzzifier(new DefuzzifierFactory());
-            instance.setHedge(new HedgeFactory());
-            instance.setSNorm(new SNormFactory());
-            instance.setTNorm(new TNormFactory());
-            instance.setTerm(new TermFactory());
-        }
+    public static FactoryManager instance() {
         return instance;
     }
 
+    private TNormFactory tnorm;
+    private SNormFactory snorm;
     private DefuzzifierFactory defuzzifier;
-    private HedgeFactory hedge;
-    private SNormFactory sNorm;
-    private TNormFactory tNorm;
     private TermFactory term;
+    private HedgeFactory hedge;
+    private FunctionFactory function;
 
     private FactoryManager() {
+        this(new TNormFactory(), new SNormFactory(), new DefuzzifierFactory(),
+                new TermFactory(), new HedgeFactory(), new FunctionFactory());
+    }
+
+    private FactoryManager(TNormFactory tnorm, SNormFactory snorm,
+            DefuzzifierFactory defuzzifier, TermFactory term, HedgeFactory hedge,
+            FunctionFactory function) {
+        this.tnorm = tnorm;
+        this.snorm = snorm;
+        this.defuzzifier = defuzzifier;
+        this.term = term;
+        this.hedge = hedge;
+        this.function = function;
+    }
+
+    public TNormFactory tnorm() {
+        return tnorm;
+    }
+
+    public void setTNorm(TNormFactory tnorm) {
+        this.tnorm = tnorm;
+    }
+
+    public SNormFactory snorm() {
+        return snorm;
+    }
+
+    public void setSNorm(SNormFactory snorm) {
+        this.snorm = snorm;
     }
 
     public DefuzzifierFactory defuzzifier() {
@@ -57,6 +79,14 @@ public class FactoryManager {
         this.defuzzifier = defuzzifier;
     }
 
+    public TermFactory term() {
+        return term;
+    }
+
+    public void setTerm(TermFactory term) {
+        this.term = term;
+    }
+
     public HedgeFactory hedge() {
         return hedge;
     }
@@ -65,27 +95,12 @@ public class FactoryManager {
         this.hedge = hedge;
     }
 
-    public SNormFactory snorm() {
-        return sNorm;
+    public FunctionFactory function() {
+        return function;
     }
 
-    public void setSNorm(SNormFactory sNorm) {
-        this.sNorm = sNorm;
+    public void setFunction(FunctionFactory function) {
+        this.function = function;
     }
 
-    public TNormFactory tnorm() {
-        return tNorm;
-    }
-
-    public void setTNorm(TNormFactory tNorm) {
-        this.tNorm = tNorm;
-    }
-
-    public TermFactory term() {
-        return term;
-    }
-
-    public void setTerm(TermFactory term) {
-        this.term = term;
-    }
 }

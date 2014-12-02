@@ -27,24 +27,82 @@ package com.fuzzylite.defuzzifier;
 import com.fuzzylite.term.Accumulated;
 import com.fuzzylite.term.Term;
 import com.fuzzylite.term.Activated;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 
-public class WeightedAverage extends Defuzzifier {
+public class WeightedAverage extends WeightedDefuzzifier {
+
+    public WeightedAverage() {
+        super(Type.Automatic);
+    }
+
+    public WeightedAverage(Type type) {
+        super(type);
+    }
 
     @Override
     public double defuzzify(Term term, double minimum, double maximum) {
-        Accumulated takagiSugeno = (Accumulated) term;
+        Accumulated fuzzyOutput = (Accumulated) term;
+
+        minimum = fuzzyOutput.getMinimum();
+        maximum = fuzzyOutput.getMaximum();
+
         double sum = 0.0;
         double weights = 0.0;
-        for (Term t : takagiSugeno.getTerms()) {
-            Activated thresholded = (Activated) t;
 
-            double w = thresholded.getDegree();
-            double z = Tsukamoto.tsukamoto(thresholded,
-                    takagiSugeno.getMinimum(), takagiSugeno.getMaximum());
-            //Traditionally, activation is the AlgebraicProduct
-            sum += thresholded.getActivation().compute(w, z);
-            weights += w;
+        if (fuzzyOutput.getAccumulation() == null) {
+            Type type = getType();
+            for (Activated activated : fuzzyOutput.getTerms()) {
+                double w = activated.getDegree();
+                if (type == Type.Automatic) {
+                    type = inferType(activated.getTerm());
+                }
+
+                double z = (type == Type.TakagiSugeno)
+                        ? activated.getTerm().membership(w)
+                        : tsukamoto(activated.getTerm(), w, minimum, maximum);
+                sum += w * z;
+                weights += w;
+            }
+        } else {
+            Map<Term, List<Activated>> groups = new HashMap<Term, List<Activated>>();
+            for (Activated value : fuzzyOutput.getTerms()) {
+                Term key = value.getTerm();
+                if (groups.containsKey(key)) {
+                    groups.get(key).add(value);
+                } else {
+                    List<Activated> list = new ArrayList<Activated>();
+                    list.add(value);
+                    groups.put(key, list);
+                }
+            }
+
+            Type type = getType();
+            Iterator<Term> it = groups.keySet().iterator();
+            while (it.hasNext()) {
+                Term activatedTerm = it.next();
+                double accumulatedDegree = 0.0;
+                for (Activated t : groups.get(activatedTerm)) {
+                    accumulatedDegree = fuzzyOutput.getAccumulation().compute(
+                            accumulatedDegree, t.getDegree());
+                }
+
+                if (type == Type.Automatic) {
+                    type = inferType(activatedTerm);
+                }
+
+                double z = (type == Type.TakagiSugeno)
+                        ? activatedTerm.membership(accumulatedDegree)
+                        : tsukamoto(activatedTerm, accumulatedDegree, minimum, maximum);
+
+                sum += accumulatedDegree * z;
+                weights += accumulatedDegree;
+            }
         }
+
         return sum / weights;
     }
 }

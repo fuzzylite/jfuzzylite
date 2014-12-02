@@ -68,7 +68,12 @@ public class Discrete extends Term implements List<Pair> {
 
         @Override
         public Pair clone() throws CloneNotSupportedException {
-            return new Pair(x, y);
+            return (Pair) super.clone();
+        }
+
+        @Override
+        public String toString() {
+            return "(" + Op.str(x) + "," + Op.str(y) + ")";
         }
 
     }
