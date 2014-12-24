@@ -33,7 +33,7 @@ import com.fuzzylite.defuzzifier.SmallestOfMaximum;
 import com.fuzzylite.defuzzifier.WeightedAverage;
 import com.fuzzylite.defuzzifier.WeightedSum;
 
-public class DefuzzifierFactory extends Factory<Defuzzifier> {
+public class DefuzzifierFactory extends ConstructionFactory<Defuzzifier> {
 
     public DefuzzifierFactory() {
         register(Bisector.class);

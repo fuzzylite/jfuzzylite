@@ -32,7 +32,7 @@ import com.fuzzylite.hedge.Seldom;
 import com.fuzzylite.hedge.Somewhat;
 import com.fuzzylite.hedge.Very;
 
-public class HedgeFactory extends Factory<Hedge> {
+public class HedgeFactory extends ConstructionFactory<Hedge> {
 
     public HedgeFactory() {
         register(new Any().getName(), Any.class);

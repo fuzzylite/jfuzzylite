@@ -25,8 +25,9 @@
 package com.fuzzylite.term;
 
 import com.fuzzylite.imex.FllExporter;
+import com.fuzzylite.misc.PubliclyCloneable;
 
-public abstract class Term implements Cloneable {
+public abstract class Term implements PubliclyCloneable {
 
     protected String name;
     protected double height;
@@ -70,5 +71,10 @@ public abstract class Term implements Cloneable {
     public abstract void configure(String parameters);
 
     public abstract double membership(double x);
+
+    @Override
+    public Term clone() throws CloneNotSupportedException {
+        return (Term) super.clone();
+    }
 
 }

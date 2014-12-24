@@ -33,7 +33,7 @@ import com.fuzzylite.norm.s.HamacherSum;
 import com.fuzzylite.norm.s.Maximum;
 import com.fuzzylite.norm.s.NormalizedSum;
 
-public class SNormFactory extends Factory<SNorm> {
+public class SNormFactory extends ConstructionFactory<SNorm> {
 
     public SNormFactory() {
         register(AlgebraicSum.class);

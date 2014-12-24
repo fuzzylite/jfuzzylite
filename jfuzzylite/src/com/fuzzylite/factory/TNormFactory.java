@@ -32,7 +32,7 @@ import com.fuzzylite.norm.t.EinsteinProduct;
 import com.fuzzylite.norm.t.HamacherProduct;
 import com.fuzzylite.norm.t.Minimum;
 
-public class TNormFactory extends Factory<TNorm> {
+public class TNormFactory extends ConstructionFactory<TNorm> {
 
     public TNormFactory() {
         register(AlgebraicProduct.class);

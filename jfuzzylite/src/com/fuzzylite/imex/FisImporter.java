@@ -26,6 +26,7 @@ package com.fuzzylite.imex;
 
 import com.fuzzylite.Engine;
 import com.fuzzylite.Op;
+import com.fuzzylite.misc.Pair;
 import com.fuzzylite.defuzzifier.Bisector;
 import com.fuzzylite.defuzzifier.Centroid;
 import com.fuzzylite.defuzzifier.LargestOfMaximum;
@@ -217,7 +218,7 @@ public class FisImporter extends Importer {
             } else if ("Enabled".equals(key)) {
                 inputVariable.setEnabled(Op.isEq(Op.toDouble(value), 1.0));
             } else if ("Range".equals(key)) {
-                Op.Pair<Double, Double> minmax = extractRange(value);
+                Pair<Double, Double> minmax = extractRange(value);
                 inputVariable.setMinimum(minmax.first);
                 inputVariable.setMaximum(minmax.second);
             } else if (key.startsWith("MF")) {
@@ -254,7 +255,7 @@ public class FisImporter extends Importer {
             } else if ("Enabled".equals(key)) {
                 outputVariable.setEnabled(Op.isEq(Op.toDouble(value), 1.0));
             } else if ("Range".equals(key)) {
-                Op.Pair<Double, Double> minmax = extractRange(value);
+                Pair<Double, Double> minmax = extractRange(value);
                 outputVariable.setMinimum(minmax.first);
                 outputVariable.setMaximum(minmax.second);
             } else if (key.startsWith("MF")) {
@@ -499,7 +500,7 @@ public class FisImporter extends Importer {
         return name;
     }
 
-    protected Op.Pair<Double, Double> extractRange(String range) {
+    protected Pair<Double, Double> extractRange(String range) {
         List<String> minmax = Op.split(range, " ");
         if (minmax.size() != 2) {
             throw new RuntimeException(String.format(
@@ -513,7 +514,7 @@ public class FisImporter extends Importer {
                     "[syntax error] expected range in format '[begin end]', "
                     + "but found <%s>", range));
         }
-        Op.Pair<Double, Double> result = new Op.Pair<Double, Double>();
+        Pair<Double, Double> result = new Pair<Double, Double>();
         result.first = Op.toDouble(begin.substring(1));
         result.second = Op.toDouble(end.substring(0, end.length() - 1));
         return result;

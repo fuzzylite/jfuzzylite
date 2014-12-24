@@ -43,7 +43,7 @@ import com.fuzzylite.term.Trapezoid;
 import com.fuzzylite.term.Triangle;
 import com.fuzzylite.term.ZShape;
 
-public class TermFactory extends Factory<Term> {
+public class TermFactory extends ConstructionFactory<Term> {
 
     public TermFactory() {
         register(Bell.class);

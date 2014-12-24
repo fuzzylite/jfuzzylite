@@ -26,6 +26,7 @@ package com.fuzzylite.imex;
 
 import com.fuzzylite.Engine;
 import com.fuzzylite.Op;
+import com.fuzzylite.misc.Pair;
 import com.fuzzylite.defuzzifier.Bisector;
 import com.fuzzylite.defuzzifier.Centroid;
 import com.fuzzylite.defuzzifier.Defuzzifier;
@@ -231,7 +232,7 @@ public class FclImporter extends Importer {
             StringTokenizer tokenizer = new StringTokenizer(line);
             String firstToken = tokenizer.nextToken();
             if ("RANGE".equals(firstToken)) {
-                Op.Pair<Double, Double> range = extractRange(line);
+                Pair<Double, Double> range = extractRange(line);
                 inputVariable.setRange(range.first, range.second);
             } else if ("ENABLED".equals(firstToken)) {
                 inputVariable.setEnabled(extractEnabled(line));
@@ -271,15 +272,15 @@ public class FclImporter extends Importer {
             } else if ("ACCU".equals(firstToken)) {
                 outputVariable.fuzzyOutput().setAccumulation(extractSNorm(line));
             } else if ("DEFAULT".equals(firstToken)) {
-                Op.Pair<Double, Boolean> defaultAndLock = extractDefaultValue(line);
+                Pair<Double, Boolean> defaultAndLock = extractDefaultValue(line);
                 outputVariable.setDefaultValue(defaultAndLock.first);
                 outputVariable.setLockPreviousOutputValue(defaultAndLock.second
                         || outputVariable.isLockedPreviousOutputValue());
             } else if ("RANGE".equals(firstToken)) {
-                Op.Pair<Double, Double> range = extractRange(line);
+                Pair<Double, Double> range = extractRange(line);
                 outputVariable.setRange(range.first, range.second);
             } else if ("LOCK".equals(firstToken)) {
-                Op.Pair<Boolean, Boolean> output_range = extractLocksOutputAndRange(line);
+                Pair<Boolean, Boolean> output_range = extractLocksOutputAndRange(line);
                 outputVariable.setLockPreviousOutputValue(output_range.first);
                 outputVariable.setLockOutputValueInRange(output_range.second);
             } else if ("ENABLED".equals(firstToken)) {
@@ -494,7 +495,7 @@ public class FclImporter extends Importer {
         return FactoryManager.instance().defuzzifier().createInstance(className);
     }
 
-    protected Op.Pair<Double, Boolean> extractDefaultValue(String line) {
+    protected Pair<Double, Boolean> extractDefaultValue(String line) {
         List<String> token = Op.split(line, ":=");
         if (token.size() != 2) {
             throw new RuntimeException("[syntax error] "
@@ -521,10 +522,10 @@ public class FclImporter extends Importer {
                     "[syntax error] expected keyword <NC>, but found <%s> in line: %s",
                     nc, line));
         }
-        return new Op.Pair<Double, Boolean>(value, lockValidOutput);
+        return new Pair<Double, Boolean>(value, lockValidOutput);
     }
 
-    protected Op.Pair<Double, Double> extractRange(String line) {
+    protected Pair<Double, Double> extractRange(String line) {
         List<String> token = Op.split(line, ":=");
         if (token.size() != 2) {
             throw new RuntimeException("[syntax error] "
@@ -558,10 +559,10 @@ public class FclImporter extends Importer {
                     token.get(index), line));
         }
 
-        return new Op.Pair<Double, Double>(minimum, maximum);
+        return new Pair<Double, Double>(minimum, maximum);
     }
 
-    protected Op.Pair<Boolean, Boolean> extractLocksOutputAndRange(String line) {
+    protected Pair<Boolean, Boolean> extractLocksOutputAndRange(String line) {
         int index = line.indexOf(':');
         if (index < 0) {
             throw new RuntimeException("[syntax error] expected property of type "
@@ -595,7 +596,7 @@ public class FclImporter extends Importer {
                     + "but found <%s> in line: ", value, line));
         }
 
-        return new Op.Pair<Boolean, Boolean>(output, range);
+        return new Pair<Boolean, Boolean>(output, range);
     }
 
     protected boolean extractEnabled(String line) {

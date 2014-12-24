@@ -28,11 +28,11 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
-public class Factory<T> {
+public class ConstructionFactory<T> {
 
     private Map<String, Class<? extends T>> map;
 
-    public Factory() {
+    public ConstructionFactory() {
         this.map = new HashMap<String, Class<? extends T>>();
     }
 

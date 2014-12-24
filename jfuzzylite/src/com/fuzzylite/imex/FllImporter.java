@@ -26,6 +26,7 @@ package com.fuzzylite.imex;
 
 import com.fuzzylite.Engine;
 import com.fuzzylite.Op;
+import com.fuzzylite.misc.Pair;
 import com.fuzzylite.defuzzifier.Defuzzifier;
 import com.fuzzylite.defuzzifier.IntegralDefuzzifier;
 import com.fuzzylite.factory.FactoryManager;
@@ -149,13 +150,13 @@ public class FllImporter extends Importer {
         InputVariable inputVariable = new InputVariable();
         engine.addInputVariable(inputVariable);
         while ((line = reader.readLine()) != null) {
-            Op.Pair<String, String> keyValue = parseKeyValue(line, ':');
+            Pair<String, String> keyValue = parseKeyValue(line, ':');
             if ("InputVariable".equals(keyValue.first)) {
                 inputVariable.setName(keyValue.second);
             } else if ("enabled".equals(keyValue.first)) {
                 inputVariable.setEnabled(parseBoolean(keyValue.second));
             } else if ("range".equals(keyValue.first)) {
-                Op.Pair<Double, Double> range = parseRange(keyValue.second);
+                Pair<Double, Double> range = parseRange(keyValue.second);
                 inputVariable.setRange(range.first, range.second);
             } else if ("term".equals(keyValue.first)) {
                 inputVariable.addTerm(parseTerm(keyValue.second, engine));
@@ -174,13 +175,13 @@ public class FllImporter extends Importer {
         OutputVariable outputVariable = new OutputVariable();
         engine.addOutputVariable(outputVariable);
         while ((line = reader.readLine()) != null) {
-            Op.Pair<String, String> keyValue = parseKeyValue(line, ':');
+            Pair<String, String> keyValue = parseKeyValue(line, ':');
             if ("OutputVariable".equals(keyValue.first)) {
                 outputVariable.setName(keyValue.second);
             } else if ("enabled".equals(keyValue.first)) {
                 outputVariable.setEnabled(parseBoolean(keyValue.second));
             } else if ("range".equals(keyValue.first)) {
-                Op.Pair<Double, Double> range = parseRange(keyValue.second);
+                Pair<Double, Double> range = parseRange(keyValue.second);
                 outputVariable.setRange(range.first, range.second);
             } else if ("default".equals(keyValue.first)) {
                 outputVariable.setDefaultValue(Op.toDouble(keyValue.second));
@@ -209,7 +210,7 @@ public class FllImporter extends Importer {
         RuleBlock ruleBlock = new RuleBlock();
         engine.addRuleBlock(ruleBlock);
         while ((line = reader.readLine()) != null) {
-            Op.Pair<String, String> keyValue = parseKeyValue(line, ':');
+            Pair<String, String> keyValue = parseKeyValue(line, ':');
             if ("RuleBlock".equals(keyValue.first)) {
                 ruleBlock.setName(keyValue.second);
             } else if ("enabled".equals(keyValue.first)) {
@@ -287,9 +288,9 @@ public class FllImporter extends Importer {
         return defuzzifier;
     }
 
-    protected Op.Pair<Double, Double> parseRange(String text) {
-        Op.Pair<String, String> range = parseKeyValue(text, ' ');
-        return new Op.Pair<Double, Double>(Op.toDouble(range.first), Op.toDouble(range.second));
+    protected Pair<Double, Double> parseRange(String text) {
+        Pair<String, String> range = parseKeyValue(text, ' ');
+        return new Pair<Double, Double>(Op.toDouble(range.first), Op.toDouble(range.second));
     }
 
     protected boolean parseBoolean(String bool) {
@@ -303,13 +304,13 @@ public class FllImporter extends Importer {
                 + "but found <" + bool + ">");
     }
 
-    protected Op.Pair<String, String> parseKeyValue(String text, char separator) {
+    protected Pair<String, String> parseKeyValue(String text, char separator) {
         int half = text.indexOf(separator);
         if (half < 0) {
             throw new RuntimeException("[syntax error] expected pair in the form "
                     + "<key" + separator + "value>, but found <" + text + ">");
         }
-        Op.Pair<String, String> result = new Op.Pair<String, String>();
+        Pair<String, String> result = new Pair<String, String>();
         result.first = text.substring(0, half);
         result.second = text.substring(half + 1);
         return result;

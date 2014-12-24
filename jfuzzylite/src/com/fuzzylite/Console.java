@@ -24,6 +24,7 @@
  */
 package com.fuzzylite;
 
+import com.fuzzylite.misc.Pair;
 import com.fuzzylite.defuzzifier.Centroid;
 import com.fuzzylite.defuzzifier.WeightedAverage;
 import com.fuzzylite.imex.CppExporter;
@@ -516,10 +517,10 @@ public class Console {
                     + "<" + from + "> to export");
         }
 
-        List<Op.Pair<Exporter, Importer>> tests = new ArrayList<Op.Pair<Exporter, Importer>>();
-        tests.add(new Op.Pair<Exporter, Importer>(new FllExporter(), new FllImporter()));
-        tests.add(new Op.Pair<Exporter, Importer>(new FclExporter(), new FclImporter()));
-        tests.add(new Op.Pair<Exporter, Importer>(new FisExporter(), new FisImporter()));
+        List<Pair<Exporter, Importer>> tests = new ArrayList<Pair<Exporter, Importer>>();
+        tests.add(new Pair<Exporter, Importer>(new FllExporter(), new FllImporter()));
+        tests.add(new Pair<Exporter, Importer>(new FclExporter(), new FclImporter()));
+        tests.add(new Pair<Exporter, Importer>(new FisExporter(), new FisImporter()));
 
         StringBuilder errors = new StringBuilder();
         for (int i = 0; i < examples.size(); ++i) {
@@ -536,7 +537,7 @@ public class Console {
 
                 Engine engine = importer.fromString(text.toString());
 
-                for (Op.Pair<Exporter, Importer> imex : tests) {
+                for (Pair<Exporter, Importer> imex : tests) {
                     String out = imex.first.toString(engine);
                     Engine copy = imex.second.fromString(out);
                     String out_copy = imex.first.toString(copy);
