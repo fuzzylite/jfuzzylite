@@ -28,13 +28,14 @@ import com.fuzzylite.Engine;
 import com.fuzzylite.Op;
 import com.fuzzylite.hedge.Hedge;
 import com.fuzzylite.imex.FllExporter;
+import com.fuzzylite.lang.Cloneable;
 import com.fuzzylite.norm.SNorm;
 import com.fuzzylite.norm.TNorm;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.StringTokenizer;
 
-public class Rule {
+public class Rule implements Cloneable {
 
     public static final String FL_IF = "if";
     public static final String FL_IS = "is";
@@ -206,5 +207,10 @@ public class Rule {
         Rule result = new Rule();
         result.load(rule, engine);
         return result;
+    }
+
+    @Override
+    public Rule clone() throws CloneNotSupportedException {
+        return (Rule) super.clone();
     }
 }

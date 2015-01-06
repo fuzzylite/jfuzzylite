@@ -32,4 +32,5 @@ public class NormalizedSum extends SNorm {
     public double compute(double a, double b) {
         return a + b / Math.max(1.0, Math.max(a, b));
     }
+
 }

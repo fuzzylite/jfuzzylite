@@ -28,7 +28,9 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
-public class ConstructionFactory<T> {
+import com.fuzzylite.lang.Cloneable;
+
+public class ConstructionFactory<T> implements Cloneable {
 
     private Map<String, Class<? extends T>> map;
 
@@ -65,5 +67,10 @@ public class ConstructionFactory<T> {
         } catch (Exception ex) {
             throw new RuntimeException(ex);
         }
+    }
+
+    @Override
+    public ConstructionFactory<T> clone() throws CloneNotSupportedException {
+        return (ConstructionFactory<T>) super.clone();
     }
 }

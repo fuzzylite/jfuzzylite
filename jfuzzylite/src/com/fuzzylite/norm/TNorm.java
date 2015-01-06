@@ -25,4 +25,5 @@
 package com.fuzzylite.norm;
 
 public abstract class TNorm extends Norm {
+
 }

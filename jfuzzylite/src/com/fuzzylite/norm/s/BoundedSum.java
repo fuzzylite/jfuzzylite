@@ -32,4 +32,5 @@ public class BoundedSum extends SNorm {
     public double compute(double a, double b) {
         return Math.min(1.0, Math.max(a, b));
     }
+
 }

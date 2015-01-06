@@ -25,8 +25,8 @@
 package com.fuzzylite.defuzzifier;
 
 import com.fuzzylite.term.Accumulated;
-import com.fuzzylite.term.Term;
 import com.fuzzylite.term.Activated;
+import com.fuzzylite.term.Term;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -100,7 +100,7 @@ public class WeightedSum extends WeightedDefuzzifier {
             }
         }
 
-        return sum ;
+        return sum;
     }
 
 }

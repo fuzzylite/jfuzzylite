@@ -24,8 +24,8 @@
  */
 package com.fuzzylite.norm.s;
 
-import com.fuzzylite.norm.SNorm;
 import com.fuzzylite.Op;
+import com.fuzzylite.norm.SNorm;
 
 public class DrasticSum extends SNorm {
 
@@ -36,4 +36,5 @@ public class DrasticSum extends SNorm {
         }
         return 1.0;
     }
+
 }

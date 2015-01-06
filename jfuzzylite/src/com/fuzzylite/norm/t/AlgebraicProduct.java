@@ -32,4 +32,5 @@ public class AlgebraicProduct extends TNorm {
     public double compute(double a, double b) {
         return a * b;
     }
+
 }

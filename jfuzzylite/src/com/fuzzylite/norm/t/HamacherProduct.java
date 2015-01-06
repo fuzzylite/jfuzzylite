@@ -32,4 +32,5 @@ public class HamacherProduct extends TNorm {
     public double compute(double a, double b) {
         return (a * b) / (a + b - a * b);
     }
+
 }

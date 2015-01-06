@@ -26,7 +26,6 @@ package com.fuzzylite.imex;
 
 import com.fuzzylite.Engine;
 import com.fuzzylite.Op;
-import com.fuzzylite.misc.Pair;
 import com.fuzzylite.defuzzifier.Bisector;
 import com.fuzzylite.defuzzifier.Centroid;
 import com.fuzzylite.defuzzifier.Defuzzifier;
@@ -36,6 +35,7 @@ import com.fuzzylite.defuzzifier.SmallestOfMaximum;
 import com.fuzzylite.defuzzifier.WeightedAverage;
 import com.fuzzylite.defuzzifier.WeightedSum;
 import com.fuzzylite.factory.FactoryManager;
+import com.fuzzylite.lang.Pair;
 import com.fuzzylite.norm.SNorm;
 import com.fuzzylite.norm.TNorm;
 import com.fuzzylite.norm.s.AlgebraicSum;
@@ -160,7 +160,7 @@ public class FclImporter extends Importer {
                     if (block.length() > 0) {
                         error += String.format("expected <%s> for block:\n%s", closingTag, block.toString());
                     } else {
-                        error += String.format("expected <%s>, but not found");
+                        error += String.format("expected <%s>, but not found", closingTag);
                     }
                     throw new RuntimeException(error);
                 }
@@ -233,7 +233,7 @@ public class FclImporter extends Importer {
             String firstToken = tokenizer.nextToken();
             if ("RANGE".equals(firstToken)) {
                 Pair<Double, Double> range = extractRange(line);
-                inputVariable.setRange(range.first, range.second);
+                inputVariable.setRange(range.getFirst(), range.getSecond());
             } else if ("ENABLED".equals(firstToken)) {
                 inputVariable.setEnabled(extractEnabled(line));
             } else if ("TERM".equals(firstToken)) {
@@ -273,16 +273,16 @@ public class FclImporter extends Importer {
                 outputVariable.fuzzyOutput().setAccumulation(extractSNorm(line));
             } else if ("DEFAULT".equals(firstToken)) {
                 Pair<Double, Boolean> defaultAndLock = extractDefaultValue(line);
-                outputVariable.setDefaultValue(defaultAndLock.first);
-                outputVariable.setLockPreviousOutputValue(defaultAndLock.second
+                outputVariable.setDefaultValue(defaultAndLock.getFirst());
+                outputVariable.setLockPreviousOutputValue(defaultAndLock.getSecond()
                         || outputVariable.isLockedPreviousOutputValue());
             } else if ("RANGE".equals(firstToken)) {
                 Pair<Double, Double> range = extractRange(line);
-                outputVariable.setRange(range.first, range.second);
+                outputVariable.setRange(range.getFirst(), range.getSecond());
             } else if ("LOCK".equals(firstToken)) {
                 Pair<Boolean, Boolean> output_range = extractLocksOutputAndRange(line);
-                outputVariable.setLockPreviousOutputValue(output_range.first);
-                outputVariable.setLockOutputValueInRange(output_range.second);
+                outputVariable.setLockPreviousOutputValue(output_range.getFirst());
+                outputVariable.setLockOutputValueInRange(output_range.getSecond());
             } else if ("ENABLED".equals(firstToken)) {
                 outputVariable.setEnabled(extractEnabled(line));
             } else {

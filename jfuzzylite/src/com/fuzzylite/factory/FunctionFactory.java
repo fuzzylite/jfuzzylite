@@ -22,13 +22,14 @@
  jfuzzylite™ is a trademark of FuzzyLite Limited.
 
  */
-
 package com.fuzzylite.factory;
+
+import com.fuzzylite.term.Function;
 
 /**
  *
  * @author jcrada
  */
-public class FunctionFactory {
+public class FunctionFactory extends CloningFactory<Function> {
 
 }

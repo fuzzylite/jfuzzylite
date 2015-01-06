@@ -32,4 +32,5 @@ public class AlgebraicSum extends SNorm {
     public double compute(double a, double b) {
         return a + b - (a * b);
     }
+
 }

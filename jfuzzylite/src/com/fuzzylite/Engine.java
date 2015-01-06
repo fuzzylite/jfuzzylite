@@ -31,8 +31,8 @@ import com.fuzzylite.factory.DefuzzifierFactory;
 import com.fuzzylite.factory.FactoryManager;
 import com.fuzzylite.factory.SNormFactory;
 import com.fuzzylite.factory.TNormFactory;
-import com.fuzzylite.hedge.Hedge;
 import com.fuzzylite.imex.FllExporter;
+import com.fuzzylite.lang.Cloneable;
 import com.fuzzylite.norm.SNorm;
 import com.fuzzylite.norm.TNorm;
 import com.fuzzylite.norm.t.AlgebraicProduct;
@@ -48,13 +48,12 @@ import com.fuzzylite.term.Term;
 import com.fuzzylite.term.ZShape;
 import com.fuzzylite.variable.InputVariable;
 import com.fuzzylite.variable.OutputVariable;
-
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.logging.Logger;
 
-public class Engine {
+public class Engine implements Cloneable {
 
     private String name;
     private List<InputVariable> inputVariables;
@@ -237,7 +236,8 @@ public class Engine {
                 } else if (defuzzifier instanceof IntegralDefuzzifier
                         && outputVariable.fuzzyOutput().getAccumulation() == null) {
                     message.append(String.format(
-                            "- Output variable <%s> has no Accumulation\n"));
+                            "- Output variable <%s> has no Accumulation\n",
+                            outputVariable.getName()));
                 }
             }
         }
@@ -387,6 +387,11 @@ public class Engine {
         return Type.UNKNOWN;
     }
 
+    @Override
+    public Engine clone() throws CloneNotSupportedException {
+//TODO: Deep clone.
+        return (Engine) super.clone();
+    }
 
     /*
      * InputVariables

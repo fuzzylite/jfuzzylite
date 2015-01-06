@@ -25,8 +25,8 @@
 package com.fuzzylite.term;
 
 import com.fuzzylite.Op;
-import com.fuzzylite.norm.TNorm;
 import com.fuzzylite.imex.FllExporter;
+import com.fuzzylite.norm.TNorm;
 
 public class Activated extends Term {
 

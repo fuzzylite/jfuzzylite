@@ -24,8 +24,14 @@
  */
 package com.fuzzylite.norm;
 
-public abstract class Norm {
+import com.fuzzylite.lang.Cloneable;
+
+public abstract class Norm implements Cloneable {
 
     public abstract double compute(double a, double b);
 
+    @Override
+    public Norm clone() throws CloneNotSupportedException {
+        return (Norm) super.clone();
+    }
 }

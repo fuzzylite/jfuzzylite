@@ -32,4 +32,5 @@ public class EinsteinProduct extends TNorm {
     public double compute(double a, double b) {
         return (a * b) / (2 - (a + b - a * b));
     }
+
 }

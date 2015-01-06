@@ -158,7 +158,7 @@ public class OutputVariable extends Variable {
 
     public String fuzzyOutputValue() {
         StringBuilder sb = new StringBuilder();
-        for (Term term : getTerms()){
+        for (Term term : getTerms()) {
             double degree = fuzzyOutput.activationDegree(term);
             if (sb.length() == 0) {
                 sb.append(Op.str(degree));

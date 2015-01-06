@@ -24,12 +24,19 @@
  */
 package com.fuzzylite.hedge;
 
-public abstract class Hedge {
+import com.fuzzylite.lang.Cloneable;
+
+public abstract class Hedge implements Cloneable {
 
     public abstract double hedge(double x);
 
     public String getName() {
         return getClass().getSimpleName().toLowerCase();
+    }
+
+    @Override
+    public Hedge clone() throws CloneNotSupportedException {
+        return (Hedge) super.clone();
     }
 
 }

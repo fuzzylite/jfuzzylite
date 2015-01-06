@@ -31,6 +31,7 @@ import com.fuzzylite.norm.t.DrasticProduct;
 import com.fuzzylite.norm.t.EinsteinProduct;
 import com.fuzzylite.norm.t.HamacherProduct;
 import com.fuzzylite.norm.t.Minimum;
+import com.fuzzylite.norm.t.NilpotentMinimum;
 
 public class TNormFactory extends ConstructionFactory<TNorm> {
 
@@ -41,5 +42,6 @@ public class TNormFactory extends ConstructionFactory<TNorm> {
         register(EinsteinProduct.class);
         register(HamacherProduct.class);
         register(Minimum.class);
+        register(NilpotentMinimum.class);
     }
 }

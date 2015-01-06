@@ -22,18 +22,41 @@
  jfuzzylite™ is a trademark of FuzzyLite Limited.
 
  */
-package com.fuzzylite.imex;
+package com.fuzzylite.lang;
 
-import com.fuzzylite.Engine;
-import com.fuzzylite.lang.Cloneable;
+public class Pair<Y, Z> {
 
-public abstract class Exporter implements Cloneable {
+    private Y first;
+    private Z second;
 
-    public abstract String toString(Engine engine);
+    public Pair() {
+        this(null, null);
+    }
+
+    public Pair(Y first, Z second) {
+        this.first = first;
+        this.second = second;
+    }
 
     @Override
-    public Exporter clone() throws CloneNotSupportedException {
-        return (Exporter) super.clone();
+    public String toString() {
+        return "{" + this.first + ":" + this.second + "}";
+    }
+
+    public Y getFirst() {
+        return first;
+    }
+
+    public void setFirst(Y first) {
+        this.first = first;
+    }
+
+    public Z getSecond() {
+        return second;
+    }
+
+    public void setSecond(Z second) {
+        this.second = second;
     }
 
 }

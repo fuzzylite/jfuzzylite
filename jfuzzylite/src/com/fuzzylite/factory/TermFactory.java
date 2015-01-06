@@ -25,7 +25,9 @@
 package com.fuzzylite.factory;
 
 import com.fuzzylite.term.Bell;
+import com.fuzzylite.term.Concave;
 import com.fuzzylite.term.Constant;
+import com.fuzzylite.term.Cosine;
 import com.fuzzylite.term.Discrete;
 import com.fuzzylite.term.Function;
 import com.fuzzylite.term.Gaussian;
@@ -38,6 +40,7 @@ import com.fuzzylite.term.SShape;
 import com.fuzzylite.term.Sigmoid;
 import com.fuzzylite.term.SigmoidDifference;
 import com.fuzzylite.term.SigmoidProduct;
+import com.fuzzylite.term.Spike;
 import com.fuzzylite.term.Term;
 import com.fuzzylite.term.Trapezoid;
 import com.fuzzylite.term.Triangle;
@@ -47,7 +50,9 @@ public class TermFactory extends ConstructionFactory<Term> {
 
     public TermFactory() {
         register(Bell.class);
+        register(Concave.class);
         register(Constant.class);
+        register(Cosine.class);
         register(Discrete.class);
         register(Function.class);
         register(Gaussian.class);
@@ -56,21 +61,13 @@ public class TermFactory extends ConstructionFactory<Term> {
         register(PiShape.class);
         register(Ramp.class);
         register(Rectangle.class);
-        register(SigmoidDifference.class);
-        register(Sigmoid.class);
-        register(SigmoidProduct.class);
         register(SShape.class);
+        register(Sigmoid.class);
+        register(SigmoidDifference.class);
+        register(SigmoidProduct.class);
+        register(Spike.class);
         register(Trapezoid.class);
         register(Triangle.class);
         register(ZShape.class);
-    }
-
-    @Override
-    public Term createInstance(String simpleName) {
-        Term result = super.createInstance(simpleName);
-        if (result instanceof Function) {
-            ((Function) result).loadBuiltInFunctions();
-        }
-        return result;
     }
 }

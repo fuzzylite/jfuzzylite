@@ -24,8 +24,8 @@
  */
 package com.fuzzylite.norm.t;
 
-import com.fuzzylite.norm.TNorm;
 import com.fuzzylite.Op;
+import com.fuzzylite.norm.TNorm;
 
 public class DrasticProduct extends TNorm {
 
@@ -36,4 +36,5 @@ public class DrasticProduct extends TNorm {
         }
         return 0.0;
     }
+
 }

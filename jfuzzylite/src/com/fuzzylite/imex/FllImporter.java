@@ -26,10 +26,10 @@ package com.fuzzylite.imex;
 
 import com.fuzzylite.Engine;
 import com.fuzzylite.Op;
-import com.fuzzylite.misc.Pair;
 import com.fuzzylite.defuzzifier.Defuzzifier;
 import com.fuzzylite.defuzzifier.IntegralDefuzzifier;
 import com.fuzzylite.factory.FactoryManager;
+import com.fuzzylite.lang.Pair;
 import com.fuzzylite.norm.SNorm;
 import com.fuzzylite.norm.TNorm;
 import com.fuzzylite.rule.Rule;
@@ -151,19 +151,19 @@ public class FllImporter extends Importer {
         engine.addInputVariable(inputVariable);
         while ((line = reader.readLine()) != null) {
             Pair<String, String> keyValue = parseKeyValue(line, ':');
-            if ("InputVariable".equals(keyValue.first)) {
-                inputVariable.setName(keyValue.second);
-            } else if ("enabled".equals(keyValue.first)) {
-                inputVariable.setEnabled(parseBoolean(keyValue.second));
-            } else if ("range".equals(keyValue.first)) {
-                Pair<Double, Double> range = parseRange(keyValue.second);
-                inputVariable.setRange(range.first, range.second);
-            } else if ("term".equals(keyValue.first)) {
-                inputVariable.addTerm(parseTerm(keyValue.second, engine));
+            if ("InputVariable".equals(keyValue.getFirst())) {
+                inputVariable.setName(keyValue.getSecond());
+            } else if ("enabled".equals(keyValue.getFirst())) {
+                inputVariable.setEnabled(parseBoolean(keyValue.getSecond()));
+            } else if ("range".equals(keyValue.getFirst())) {
+                Pair<Double, Double> range = parseRange(keyValue.getSecond());
+                inputVariable.setRange(range.getFirst(), range.getSecond());
+            } else if ("term".equals(keyValue.getFirst())) {
+                inputVariable.addTerm(parseTerm(keyValue.getSecond(), engine));
             } else {
                 throw new RuntimeException("[import error] "
-                        + "key <" + keyValue.first + "> " + "not recognized in pair <"
-                        + Op.join(":", keyValue.first, keyValue.second) + ">");
+                        + "key <" + keyValue.getFirst() + "> " + "not recognized in pair <"
+                        + Op.join(":", keyValue.getFirst(), keyValue.getSecond()) + ">");
             }
         }
         reader.close();
@@ -176,29 +176,29 @@ public class FllImporter extends Importer {
         engine.addOutputVariable(outputVariable);
         while ((line = reader.readLine()) != null) {
             Pair<String, String> keyValue = parseKeyValue(line, ':');
-            if ("OutputVariable".equals(keyValue.first)) {
-                outputVariable.setName(keyValue.second);
-            } else if ("enabled".equals(keyValue.first)) {
-                outputVariable.setEnabled(parseBoolean(keyValue.second));
-            } else if ("range".equals(keyValue.first)) {
-                Pair<Double, Double> range = parseRange(keyValue.second);
-                outputVariable.setRange(range.first, range.second);
-            } else if ("default".equals(keyValue.first)) {
-                outputVariable.setDefaultValue(Op.toDouble(keyValue.second));
-            } else if ("lock-valid".equals(keyValue.first)) {
-                outputVariable.setLockPreviousOutputValue(parseBoolean(keyValue.second));
-            } else if ("lock-range".equals(keyValue.first)) {
-                outputVariable.setLockOutputValueInRange(parseBoolean(keyValue.second));
-            } else if ("defuzzifier".equals(keyValue.first)) {
-                outputVariable.setDefuzzifier(parseDefuzzifier(keyValue.second));
-            } else if ("accumulation".equals(keyValue.first)) {
-                outputVariable.fuzzyOutput().setAccumulation(parseSNorm(keyValue.second));
-            } else if ("term".equals(keyValue.first)) {
-                outputVariable.addTerm(parseTerm(keyValue.second, engine));
+            if ("OutputVariable".equals(keyValue.getFirst())) {
+                outputVariable.setName(keyValue.getSecond());
+            } else if ("enabled".equals(keyValue.getFirst())) {
+                outputVariable.setEnabled(parseBoolean(keyValue.getSecond()));
+            } else if ("range".equals(keyValue.getFirst())) {
+                Pair<Double, Double> range = parseRange(keyValue.getSecond());
+                outputVariable.setRange(range.getFirst(), range.getSecond());
+            } else if ("default".equals(keyValue.getFirst())) {
+                outputVariable.setDefaultValue(Op.toDouble(keyValue.getSecond()));
+            } else if ("lock-valid".equals(keyValue.getFirst())) {
+                outputVariable.setLockPreviousOutputValue(parseBoolean(keyValue.getSecond()));
+            } else if ("lock-range".equals(keyValue.getFirst())) {
+                outputVariable.setLockOutputValueInRange(parseBoolean(keyValue.getSecond()));
+            } else if ("defuzzifier".equals(keyValue.getFirst())) {
+                outputVariable.setDefuzzifier(parseDefuzzifier(keyValue.getSecond()));
+            } else if ("accumulation".equals(keyValue.getFirst())) {
+                outputVariable.fuzzyOutput().setAccumulation(parseSNorm(keyValue.getSecond()));
+            } else if ("term".equals(keyValue.getFirst())) {
+                outputVariable.addTerm(parseTerm(keyValue.getSecond(), engine));
             } else {
                 throw new RuntimeException("[import error] "
-                        + "key <" + keyValue.first + "> " + "not recognized in pair <"
-                        + Op.join(":", keyValue.first, keyValue.second) + ">");
+                        + "key <" + keyValue.getFirst() + "> " + "not recognized in pair <"
+                        + Op.join(":", keyValue.getFirst(), keyValue.getSecond()) + ">");
             }
         }
         reader.close();
@@ -211,22 +211,22 @@ public class FllImporter extends Importer {
         engine.addRuleBlock(ruleBlock);
         while ((line = reader.readLine()) != null) {
             Pair<String, String> keyValue = parseKeyValue(line, ':');
-            if ("RuleBlock".equals(keyValue.first)) {
-                ruleBlock.setName(keyValue.second);
-            } else if ("enabled".equals(keyValue.first)) {
-                ruleBlock.setEnabled(parseBoolean(keyValue.second));
-            } else if ("conjunction".equals(keyValue.first)) {
-                ruleBlock.setConjunction(parseTNorm(keyValue.second));
-            } else if ("disjunction".equals(keyValue.first)) {
-                ruleBlock.setDisjunction(parseSNorm(keyValue.second));
-            } else if ("activation".equals(keyValue.first)) {
-                ruleBlock.setActivation(parseTNorm(keyValue.second));
-            } else if ("rule".equals(keyValue.first)) {
-                ruleBlock.addRule(Rule.parse(keyValue.second, engine));
+            if ("RuleBlock".equals(keyValue.getFirst())) {
+                ruleBlock.setName(keyValue.getSecond());
+            } else if ("enabled".equals(keyValue.getFirst())) {
+                ruleBlock.setEnabled(parseBoolean(keyValue.getSecond()));
+            } else if ("conjunction".equals(keyValue.getFirst())) {
+                ruleBlock.setConjunction(parseTNorm(keyValue.getSecond()));
+            } else if ("disjunction".equals(keyValue.getFirst())) {
+                ruleBlock.setDisjunction(parseSNorm(keyValue.getSecond()));
+            } else if ("activation".equals(keyValue.getFirst())) {
+                ruleBlock.setActivation(parseTNorm(keyValue.getSecond()));
+            } else if ("rule".equals(keyValue.getFirst())) {
+                ruleBlock.addRule(Rule.parse(keyValue.getSecond(), engine));
             } else {
                 throw new RuntimeException("[import error] "
-                        + "key <" + keyValue.first + "> " + "not recognized in pair <"
-                        + Op.join(":", keyValue.first, keyValue.second) + ">");
+                        + "key <" + keyValue.getFirst() + "> " + "not recognized in pair <"
+                        + Op.join(":", keyValue.getFirst(), keyValue.getSecond()) + ">");
             }
         }
         reader.close();
@@ -290,7 +290,7 @@ public class FllImporter extends Importer {
 
     protected Pair<Double, Double> parseRange(String text) {
         Pair<String, String> range = parseKeyValue(text, ' ');
-        return new Pair<Double, Double>(Op.toDouble(range.first), Op.toDouble(range.second));
+        return new Pair<Double, Double>(Op.toDouble(range.getFirst()), Op.toDouble(range.getSecond()));
     }
 
     protected boolean parseBoolean(String bool) {
@@ -311,8 +311,8 @@ public class FllImporter extends Importer {
                     + "<key" + separator + "value>, but found <" + text + ">");
         }
         Pair<String, String> result = new Pair<String, String>();
-        result.first = text.substring(0, half);
-        result.second = text.substring(half + 1);
+        result.setFirst(text.substring(0, half));
+        result.setSecond(text.substring(half + 1));
         return result;
     }
 

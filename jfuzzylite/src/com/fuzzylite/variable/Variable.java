@@ -28,6 +28,7 @@ import com.fuzzylite.Op;
 import static com.fuzzylite.Op.str;
 import com.fuzzylite.defuzzifier.Defuzzifier;
 import com.fuzzylite.imex.FllExporter;
+import com.fuzzylite.lang.Cloneable;
 import com.fuzzylite.term.Term;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -37,7 +38,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-public class Variable {
+public class Variable implements Cloneable {
 
     private String name;
     private double minimum, maximum;
@@ -193,6 +194,12 @@ public class Variable {
 
     public void setTerms(List<Term> terms) {
         this.terms = terms;
+    }
+
+    @Override
+    public Variable clone() throws CloneNotSupportedException {
+        //TODO: Check cloning.
+        return (Variable) super.clone();
     }
 
 }

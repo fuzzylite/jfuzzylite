@@ -32,4 +32,5 @@ public class BoundedDifference extends TNorm {
     public double compute(double a, double b) {
         return Math.max(0.0, a + b - 1);
     }
+
 }

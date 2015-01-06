@@ -31,6 +31,7 @@ import com.fuzzylite.norm.s.DrasticSum;
 import com.fuzzylite.norm.s.EinsteinSum;
 import com.fuzzylite.norm.s.HamacherSum;
 import com.fuzzylite.norm.s.Maximum;
+import com.fuzzylite.norm.s.NilpotentMaximum;
 import com.fuzzylite.norm.s.NormalizedSum;
 
 public class SNormFactory extends ConstructionFactory<SNorm> {
@@ -42,6 +43,7 @@ public class SNormFactory extends ConstructionFactory<SNorm> {
         register(EinsteinSum.class);
         register(HamacherSum.class);
         register(Maximum.class);
+        register(NilpotentMaximum.class);
         register(NormalizedSum.class);
     }
 }

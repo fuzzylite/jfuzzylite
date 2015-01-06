@@ -32,4 +32,5 @@ public class Minimum extends TNorm {
     public double compute(double a, double b) {
         return Math.min(a, b);
     }
+
 }

@@ -24,7 +24,6 @@
  */
 package com.fuzzylite;
 
-import com.fuzzylite.misc.Pair;
 import com.fuzzylite.defuzzifier.Centroid;
 import com.fuzzylite.defuzzifier.WeightedAverage;
 import com.fuzzylite.imex.CppExporter;
@@ -33,11 +32,12 @@ import com.fuzzylite.imex.FclExporter;
 import com.fuzzylite.imex.FclImporter;
 import com.fuzzylite.imex.FisExporter;
 import com.fuzzylite.imex.FisImporter;
-import com.fuzzylite.imex.Importer;
-import com.fuzzylite.imex.JavaExporter;
 import com.fuzzylite.imex.FldExporter;
 import com.fuzzylite.imex.FllExporter;
 import com.fuzzylite.imex.FllImporter;
+import com.fuzzylite.imex.Importer;
+import com.fuzzylite.imex.JavaExporter;
+import com.fuzzylite.lang.Pair;
 import com.fuzzylite.norm.s.Maximum;
 import com.fuzzylite.norm.t.AlgebraicProduct;
 import com.fuzzylite.norm.t.Minimum;
@@ -291,8 +291,8 @@ public class Console {
                         }
                         if (inputValues.size() != engine.numberOfInputVariables()) {
                             throw new RuntimeException(String.format(
-                                    "[export error] engine has <%i> input variables, "
-                                    + "but input data provides <%i> at line <%i>",
+                                    "[export error] engine has <%d> input variables, "
+                                    + "but input data provides <%d> at line <%d>",
                                     engine.numberOfInputVariables(),
                                     inputValues.size(), lineNumber));
                         }
@@ -538,14 +538,14 @@ public class Console {
                 Engine engine = importer.fromString(text.toString());
 
                 for (Pair<Exporter, Importer> imex : tests) {
-                    String out = imex.first.toString(engine);
-                    Engine copy = imex.second.fromString(out);
-                    String out_copy = imex.first.toString(copy);
+                    String out = imex.getFirst().toString(engine);
+                    Engine copy = imex.getSecond().fromString(out);
+                    String out_copy = imex.getFirst().toString(copy);
 
                     if (!out.equals(out_copy)) {
                         errors.append(String.format("[imex error] different results <%s,%s> at %s.%s",
-                                imex.first.getClass().getSimpleName(),
-                                imex.first.getClass().getSimpleName(),
+                                imex.getFirst().getClass().getSimpleName(),
+                                imex.getFirst().getClass().getSimpleName(),
                                 examples.get(i), from));
                     }
                 }

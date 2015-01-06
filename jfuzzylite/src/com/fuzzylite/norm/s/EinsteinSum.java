@@ -32,4 +32,5 @@ public class EinsteinSum extends SNorm {
     public double compute(double a, double b) {
         return (a + b) / (1.0 + a * b);
     }
+
 }

@@ -22,18 +22,10 @@
  jfuzzylite™ is a trademark of FuzzyLite Limited.
 
  */
-package com.fuzzylite.imex;
+package com.fuzzylite.lang;
 
-import com.fuzzylite.Engine;
-import com.fuzzylite.lang.Cloneable;
+public interface Cloneable extends java.lang.Cloneable {
 
-public abstract class Exporter implements Cloneable {
-
-    public abstract String toString(Engine engine);
-
-    @Override
-    public Exporter clone() throws CloneNotSupportedException {
-        return (Exporter) super.clone();
-    }
-
+    //Forces clone to be public
+    public Object clone() throws CloneNotSupportedException;
 }

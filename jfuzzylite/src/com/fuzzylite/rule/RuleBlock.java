@@ -118,6 +118,11 @@ public class RuleBlock {
         this.enabled = enabled;
     }
 
+    @Override
+    public RuleBlock clone() throws CloneNotSupportedException {
+        return (RuleBlock) super.clone();
+    }
+
     /*
      * Rules
      */
