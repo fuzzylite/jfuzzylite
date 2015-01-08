@@ -25,9 +25,9 @@
 package com.fuzzylite.term;
 
 import com.fuzzylite.imex.FllExporter;
-import com.fuzzylite.lang.Cloneable;
+import com.fuzzylite.lang.PubliclyCloneable;
 
-public abstract class Term implements Cloneable {
+public abstract class Term implements PubliclyCloneable {
 
     protected String name;
     protected double height;

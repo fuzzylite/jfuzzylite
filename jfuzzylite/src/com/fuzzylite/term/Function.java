@@ -28,6 +28,9 @@ import com.fuzzylite.Engine;
 import com.fuzzylite.FuzzyLite;
 import com.fuzzylite.Op;
 import static com.fuzzylite.Op.str;
+import com.fuzzylite.factory.FactoryManager;
+import com.fuzzylite.factory.FunctionFactory;
+import com.fuzzylite.lang.PubliclyCloneable;
 import com.fuzzylite.rule.Rule;
 import com.fuzzylite.variable.InputVariable;
 import com.fuzzylite.variable.OutputVariable;
@@ -35,7 +38,6 @@ import java.lang.reflect.Method;
 import java.util.ArrayDeque;
 import java.util.Deque;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.StringTokenizer;
@@ -43,73 +45,117 @@ import java.util.logging.Logger;
 
 public class Function extends Term {
 
-    public static abstract class Element {
+    public static class Element implements PubliclyCloneable {
 
-        public String name;
-        public Method method;
+        public enum Type {
+
+            OPERATOR, FUNCTION
+        }
+        private String name;
+        private String description;
+        private Type type;
+        private Method method;
+        private int precedence;
+        private int associativity;
+
+        public Element(String name, String description, Type type) {
+            this(name, description, type, null);
+        }
+
+        public Element(String name, String description, Type type, Method method) {
+            this(name, description, type, method, 0);
+        }
+
+        public Element(String name, String description, Type type, Method method, int precedence) {
+            this(name, description, type, method, precedence, -1);
+        }
+
+        public Element(String name, String description, Type type, Method method,
+                int precedence, int associativity) {
+            this.name = name;
+            this.description = description;
+            this.type = type;
+            this.method = method;
+            this.precedence = precedence;
+            this.associativity = associativity;
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public void setName(String name) {
+            this.name = name;
+        }
+
+        public String getDescription() {
+            return description;
+        }
+
+        public void setDescription(String description) {
+            this.description = description;
+        }
+
+        public Method getMethod() {
+            return method;
+        }
+
+        public void setMethod(Method method) {
+            this.method = method;
+        }
 
         public int getArity() {
             return method.getParameterTypes().length;
         }
-    }
 
-    public static class Operator extends Element {
-
-        public int precedence, associativity;
-
-        public Operator() {
-            this("", null, 0);
+        public Type getType() {
+            return type;
         }
 
-        public Operator(String name, Method operator, int precedence) {
-            this(name, operator, precedence, -1);
+        public void setType(Type type) {
+            this.type = type;
         }
 
-        public Operator(String name, Method operator, int precedence, int associativity) {
-            this.name = name;
-            this.method = operator;
+        public boolean isOperator() {
+            return this.type == Type.OPERATOR;
+        }
+
+        public boolean isFunction() {
+            return this.type == Type.FUNCTION;
+        }
+
+        public int getPrecedence() {
+            return precedence;
+        }
+
+        public void setPrecedence(int precedence) {
             this.precedence = precedence;
+        }
+
+        public int getAssociativity() {
+            return associativity;
+        }
+
+        public void setAssociativity(int associativity) {
             this.associativity = associativity;
         }
+
+        @Override
+        public Element clone() throws CloneNotSupportedException {
+            return (Element) super.clone();
+        }
+
     }
 
-    public static class BuiltInFunction extends Element {
+    public static class Node implements PubliclyCloneable {
 
-        public int associativity;
-
-        public BuiltInFunction() {
-            this("", null);
-        }
-
-        public BuiltInFunction(Method function) {
-            this(function.getName(), function);
-        }
-
-        public BuiltInFunction(String name, Method function) {
-            this(name, function, -1);
-        }
-
-        public BuiltInFunction(String name, Method function, int associativity) {
-            this.name = name;
-            this.method = function;
-            this.associativity = associativity;
-        }
-    }
-
-    public static class Node {
-
-        public Operator operator = null;
-        public BuiltInFunction function = null;
+        public Element element = null;
         public String variable = "";
         public double value = Double.NaN;
         public Node left = null, right = null;
 
-        public Node(Operator operator) {
-            this.operator = operator;
-        }
-
-        public Node(BuiltInFunction function) {
-            this.function = function;
+        public Node(Element element) {
+            this.element = element;
         }
 
         public Node(String variable) {
@@ -120,25 +166,35 @@ public class Function extends Term {
             this.value = value;
         }
 
+        @Override
+        public Node clone() throws CloneNotSupportedException {
+            Node result = (Node) super.clone();
+            if (element != null) {
+                result.element = element.clone();
+            }
+            if (left != null) {
+                result.left = left.clone();
+            }
+            if (right != null) {
+                result.right = right.clone();
+            }
+            return result;
+        }
+
         public double evaluate(Map<String, Double> localVariables) {
             Double result = Double.NaN;
-            if (operator != null || function != null) {
-                Element element = function;
-                if (operator != null) {
-                    element = operator;
-                }
-
+            if (element != null) {
                 try {
                     switch (element.getArity()) {
                         case 0:
-                            result = (Double) element.method.invoke(null);
+                            result = (Double) element.getMethod().invoke(null);
                             break;
                         case 1:
-                            result = (Double) element.method.invoke(null,
+                            result = (Double) element.getMethod().invoke(null,
                                     left.evaluate(localVariables));
                             break;
                         case 2:
-                            result = (Double) element.method.invoke(null,
+                            result = (Double) element.getMethod().invoke(null,
                                     right.evaluate(localVariables),
                                     left.evaluate(localVariables));
                             break;
@@ -150,7 +206,7 @@ public class Function extends Term {
                     }
                 } catch (Exception ex) {
                     throw new RuntimeException("[function error] exception thrown "
-                            + "invoking element <" + element.name + ">", ex);
+                            + "invoking element <" + element.getName() + ">", ex);
                 }
             } else if (variable != null && !variable.isEmpty()) {
                 if (localVariables == null || localVariables.isEmpty()) {
@@ -173,10 +229,8 @@ public class Function extends Term {
         @Override
         public String toString() {
             String result;
-            if (operator != null) {
-                result = operator.name;
-            } else if (function != null) {
-                result = function.name;
+            if (element != null) {
+                result = element.getName();
             } else if (variable != null && !variable.isEmpty()) {
                 result = variable;
             } else {
@@ -257,12 +311,10 @@ public class Function extends Term {
     /**
      * Function term
      */
+    private Node root;
     private String formula;
     private Engine engine;
-    private Node root;
     private Map<String, Double> variables;
-    private Map<String, Operator> operators;
-    private Map<String, BuiltInFunction> functions;
 
     public Function() {
         this("");
@@ -274,13 +326,10 @@ public class Function extends Term {
 
     public Function(String name, String formula, Engine engine) {
         this.name = name;
+        this.root = null;
         this.formula = formula;
         this.engine = engine;
-        this.root = null;
         this.variables = new HashMap<String, Double>();
-        this.operators = new HashMap<String, Operator>();
-        this.functions = new HashMap<String, BuiltInFunction>();
-        this.loadOperators();
     }
 
     @Override
@@ -296,54 +345,37 @@ public class Function extends Term {
         setFormula(parameters);
     }
 
-    public void load() {
-        load(this.formula, this.engine);
-    }
-
-    public void load(String formula) {
-        load(formula, null);
-    }
-
-    public void load(String formula, Engine engine) {
-        this.root = parse(formula);
-        this.formula = formula;
-        this.engine = engine;
-    }
-
     @Override
     public double membership(double x) {
         if (this.root == null) {
-            return Double.NaN;
+            throw new RuntimeException(String.format(
+                    "[function error] function <%s> not loaded.", formula));
         }
         if (this.engine != null) {
             for (InputVariable inputVariable : this.engine.getInputVariables()) {
                 this.variables.put(inputVariable.getName(), inputVariable.getInputValue());
             }
             for (OutputVariable outputVariable : this.engine.getOutputVariables()) {
-                this.variables.put(outputVariable.getName(), outputVariable.getPreviousOutputValue());
+                this.variables.put(outputVariable.getName(), outputVariable.getOutputValue());
             }
         }
         this.variables.put("x", x);
-        return evaluate();
+        return evaluate(this.variables);
     }
 
     public double evaluate() {
+        return this.evaluate(this.variables);
+    }
+
+    public double evaluate(Map<String, Double> localVariables) {
         if (this.root == null) {
             throw new RuntimeException("[function error] evaluation failed because function is not loaded");
         }
-        return this.root.evaluate(this.variables);
+        return this.root.evaluate(localVariables);
     }
 
     public static Function create(String name, String formula, Engine engine) {
-        return create(name, formula, engine, true);
-    }
-
-    public static Function create(String name, String formula,
-            Engine engine, boolean requiresFunctions) {
         Function result = new Function(name);
-        if (requiresFunctions) {
-            result.loadBuiltInFunctions();
-        }
         try {
             result.load(formula, engine);
         } catch (Exception ex) {
@@ -352,114 +384,44 @@ public class Function extends Term {
         return result;
     }
 
-    private void loadOperators() {
-        int p = 7;
-        try {
-            // (!) Logical and (~) Bitwise NOT
-            //        this->_unaryOperators["!"] = new Operator("!", std::logical_not<scalar>, p, 1);
-            // ~ negates a number
-            this.operators.put("~", new Operator("~",
-                    Op.class.getMethod("negate", double.class), p, 1));
-            --p; //Power
-            this.operators.put("^", new Operator("^",
-                    Math.class.getMethod("pow", double.class, double.class), p, 1));
-            --p; //Multiplication, Division, and Modulo
-            this.operators.put("*", new Operator("*",
-                    Op.class.getMethod("multiply", double.class, double.class), p));
-            this.operators.put("/", new Operator("/",
-                    Op.class.getMethod("divide", double.class, double.class), p));
-            this.operators.put("%", new Operator("%",
-                    Op.class.getMethod("modulo", double.class, double.class), p));
-            --p; //Addition, Subtraction
-            this.operators.put("+", new Operator("+",
-                    Op.class.getMethod("add", double.class, double.class), p));
-            this.operators.put("-", new Operator("-",
-                    Op.class.getMethod("subtract", double.class, double.class), p));
-//        //        --p; //Bitwise AND
-//        //        this->_binaryOperators["&"] = new Operator("&", std::bit_and, p);
-//        //        --p; //Bitwise OR
-//        //        this->_binaryOperators["|"] = new Operator("|", std::bit_or, p);
-            --p; //Logical AND
-            this.operators.put(Rule.FL_AND, new Operator(Rule.FL_AND,
-                    Op.class.getMethod("logicalAnd", double.class, double.class), p));
-            --p; //Logical OR
-            this.operators.put(Rule.FL_OR, new Operator(Rule.FL_OR,
-                    Op.class.getMethod("logicalOr", double.class, double.class), p));
-        } catch (Exception ex) {
-            throw new RuntimeException("[function error] operator could not be loaded", ex);
+    @Override
+    public Function clone() throws CloneNotSupportedException {
+        Function result = (Function) super.clone();
+        if (root != null) {
+            result.root = root.clone();
         }
+        result.variables = new HashMap<String, Double>();
+        result.variables.putAll(variables);
+        return result;
     }
 
-    public void loadBuiltInFunctions() {
-        try {
-            this.functions.put("acos", new BuiltInFunction(Math.class.getMethod("acos", double.class)));
-            this.functions.put("asin", new BuiltInFunction(Math.class.getMethod("asin", double.class)));
-            this.functions.put("atan", new BuiltInFunction(Math.class.getMethod("atan", double.class)));
-
-            this.functions.put("ceil", new BuiltInFunction(Math.class.getMethod("ceil", double.class)));
-            this.functions.put("cos", new BuiltInFunction(Math.class.getMethod("cos", double.class)));
-            this.functions.put("cosh", new BuiltInFunction(Math.class.getMethod("cosh", double.class)));
-            this.functions.put("exp", new BuiltInFunction(Math.class.getMethod("exp", double.class)));
-            this.functions.put("fabs", new BuiltInFunction(Math.class.getMethod("abs", double.class)));
-            this.functions.put("floor", new BuiltInFunction(Math.class.getMethod("floor", double.class)));
-            this.functions.put("log", new BuiltInFunction(Math.class.getMethod("log", double.class)));
-            this.functions.put("log10", new BuiltInFunction(Math.class.getMethod("log10", double.class)));
-
-            this.functions.put("sin", new BuiltInFunction(Math.class.getMethod("sin", double.class)));
-            this.functions.put("sinh", new BuiltInFunction(Math.class.getMethod("sinh", double.class)));
-            this.functions.put("sqrt", new BuiltInFunction(Math.class.getMethod("sqrt", double.class)));
-            this.functions.put("tan", new BuiltInFunction(Math.class.getMethod("tan", double.class)));
-            this.functions.put("tanh", new BuiltInFunction(Math.class.getMethod("tanh", double.class)));
-
-            this.functions.put("log1p", new BuiltInFunction(Math.class.getMethod("log1p", double.class)));
-            //not found in Java
-//            this.functions.put("acosh", new BuiltInFunction("acosh",  & (acosh)));
-//            this.functions.put("asinh", new BuiltInFunction("asinh",  & (asinh)));
-//            this.functions.put("atanh", new BuiltInFunction("atanh",  & (atanh)));
-
-            this.functions.put("pow", new BuiltInFunction(Math.class.getMethod("pow", double.class, double.class)));
-            this.functions.put("atan2", new BuiltInFunction(Math.class.getMethod("atan2", double.class, double.class)));
-            this.functions.put("fmod", new BuiltInFunction(Op.class.getMethod("modulo", double.class, double.class)));
-        } catch (Exception ex) {
-            throw new RuntimeException("[function error] built-in functions could not be loaded", ex);
-        }
+    public boolean isLoaded() {
+        return this.root != null;
     }
 
-    public boolean isOperator(String token) {
-        return this.operators.containsKey(token);
+    public void unload() {
+        this.root = null;
+        this.variables.clear();
     }
 
-    public boolean isBuiltInFunction(String token) {
-        return this.functions.containsKey(token);
+    public void load() {
+        load(this.formula, this.engine);
     }
 
-    public boolean isOperand(String token) {
-        //An operand is not a parenthesis...
-        if ("(".equals(token) || ")".equals(token) || ",".equals(token)) {
-            return false;
-        }
-        //nor an operator...
-        if (isOperator(token)) {
-            return false;
-        }
-        //nor a function...
-        if (isBuiltInFunction(token)) {
-            return false;
-        }
-        //...it is everything else :)
-        return true;
+    public void load(String formula) {
+        load(formula, this.engine);
+    }
+
+    public void load(String formula, Engine engine) {
+        this.root = parse(formula);
+        this.formula = formula;
+        this.engine = engine;
     }
 
     public String toPostfix(String formula) {
-        return toPostfix(formula, false);
-    }
-
-    public String toPostfix(final String formula, boolean loadFunctions) {
-        if (loadFunctions) {
-            loadBuiltInFunctions();
-        }
+        FunctionFactory factory = FactoryManager.instance().function();
         //Space the operator to tokenize easier
-        Set<String> toSpace = new HashSet<String>(this.operators.keySet());
+        Set<String> toSpace = factory.availableOperators();
         toSpace.remove(Rule.FL_AND);
         toSpace.remove(Rule.FL_OR);
         toSpace.add("(");
@@ -479,10 +441,15 @@ public class Function extends Term {
         while (tokenizer.hasMoreTokens()) {
             token = tokenizer.nextToken();
 
-            if (isOperand(token)) {
+            Element element = factory.getObject(token);
+
+            boolean isOperand = element == null && !"(".equals(token) && !")".equals(token)
+                    && !",".equals(token);
+
+            if (isOperand) {
                 queue.offer(token);
 
-            } else if (isBuiltInFunction(token)) {
+            } else if (element != null && element.isFunction()) {
                 stack.push(token);
 
             } else if (",".equals(token)) {
@@ -494,17 +461,18 @@ public class Function extends Term {
                             "[parsing error] mismatching parentheses in: %s", formula));
                 }
 
-            } else if (isOperator(token)) {
-                Operator op1 = getOperators().get(token);
-                while (true) {
-                    Operator op2;
-                    if (!stack.isEmpty() && isOperator(stack.peek())) {
-                        op2 = getOperators().get(stack.peek());
-                    } else {
+            } else if (element != null && element.isOperator()) {
+                Element op1 = element;
+                for (;;) {
+                    Element op2 = null;
+                    if (!stack.isEmpty()) {
+                        op2 = factory.getObject(stack.peek());
+                    }
+                    if (op2 == null) {
                         break;
                     }
 
-                    if ((op1.associativity < 0 && op1.precedence <= op2.precedence)
+                    if ((op1.associativity < 0 && op1.precedence == op2.precedence)
                             || op1.precedence < op2.precedence) {
                         queue.offer(stack.pop());
                     } else {
@@ -517,17 +485,21 @@ public class Function extends Term {
                 stack.push(token);
 
             } else if (")".equals(token)) {
-                while (!(stack.isEmpty() || "(".equals(stack.peek()))) {
+                while (!stack.isEmpty() && !"(".equals(stack.peek())) {
                     queue.offer(stack.pop());
                 }
                 if (stack.isEmpty() || !"(".equals(stack.peek())) {
                     throw new RuntimeException(String.format(
                             "[parsing error] mismatching parentheses in: %s", formula));
                 }
-                stack.pop();
+                stack.pop(); //get rid of "("
 
-                if (!stack.isEmpty() && isBuiltInFunction(stack.peek())) {
-                    queue.offer(stack.pop());
+                Element top = null;
+                if (!stack.isEmpty()) {
+                    top = factory.getObject(stack.peek());
+                }
+                if (top != null && top.isFunction()) {
+                    queue.push(stack.pop());
                 }
 
             } else {
@@ -537,12 +509,11 @@ public class Function extends Term {
         }
 
         while (!stack.isEmpty()) {
-            String pop = stack.pop();
-            if ("(".equals(pop) || ")".equals(pop)) {
+            if ("(".equals(stack.peek()) || ")".equals(stack.peek())) {
                 throw new RuntimeException(String.format(
                         "[parsing error] mismatching parentheses in: %s", formula));
             }
-            queue.offer(pop);
+            queue.offer(stack.pop());
         }
 
         StringBuilder result = new StringBuilder();
@@ -566,41 +537,33 @@ public class Function extends Term {
 
         StringTokenizer tokenizer = new StringTokenizer(postfix);
         String token;
+        FunctionFactory factory = FactoryManager.instance().function();
         while (tokenizer.hasMoreTokens()) {
             token = tokenizer.nextToken();
-            if (isOperator(token)) {
-                Operator op = getOperators().get(token);
-                if (op.getArity() > stack.size()) {
-                    throw new RuntimeException(String.format(
-                            "[function error] operator <%s> has arity <%d>, "
-                            + "but <%d> elements are available",
-                            op.name, op.getArity(), stack.size()));
+
+            Element element = factory.getObject(token);
+
+            boolean isOperand = element == null && !"(".equals(token) && !")".equals(token)
+                    && !",".equals(token);
+
+            if (element != null) {
+                if (element.getArity() > stack.size()) {
+                    throw new RuntimeException(String.format("[function error] operator <%s> has arity <%d>, "
+                            + "but <%d> elements are available", element.getName(), element.getArity(), stack.size()));
                 }
 
-                Node node = new Node(op);
+                Node node;
+                try {
+                    node = new Node(element.clone());
+                } catch (Exception ex) {
+                    throw new RuntimeException(ex);
+                }
                 node.left = stack.pop();
-                if (op.getArity() == 2) {
+                if (element.getArity() == 2) {
                     node.right = stack.pop();
                 }
                 stack.push(node);
-
-            } else if (isBuiltInFunction(token)) {
-                BuiltInFunction function = getFunctions().get(token);
-                if (function.getArity() > stack.size()) {
-                    throw new RuntimeException(String.format(
-                            "[function error] operator <%s> has arity <%d>, "
-                            + "but <%d> elements are available",
-                            function.name, function.getArity(), stack.size()));
-                }
-
-                Node node = new Node(function);
-                node.left = stack.pop();
-                if (function.getArity() == 2) {
-                    node.right = stack.pop();
-                }
-                stack.push(node);
-
-            } else if (isOperand(token)) {
+            } else if (isOperand) {
                 Node node;
                 try {
                     double value = Op.toDouble(token);
@@ -613,7 +576,7 @@ public class Function extends Term {
         }
         if (stack.size() != 1) {
             throw new RuntimeException(String.format(
-                    "[function error] parsing function <%s> due to: <%s>",
+                    "[function error] ill-formed formula <%s> due to: <%s>",
                     text, Op.join(stack, ";")));
         }
         return stack.pop();
@@ -643,14 +606,6 @@ public class Function extends Term {
         return variables;
     }
 
-    public Map<String, Operator> getOperators() {
-        return operators;
-    }
-
-    public Map<String, BuiltInFunction> getFunctions() {
-        return functions;
-    }
-
     public static void test(String[] args) throws Exception {
         Logger log = FuzzyLite.logger();
         Function f = new Function();
@@ -664,7 +619,6 @@ public class Function extends Term {
 
         f.getVariables().put("y", 1.0);
         text = "sin(y*x)^2/x";
-        f.loadBuiltInFunctions();
         log.info("pre: " + f.parse(text).toPrefix());
         log.info("in: " + f.parse(text).toInfix());
         log.info("pos: " + f.parse(text).toPostfix());

@@ -418,7 +418,7 @@ public class Console {
         outputVariable2.setDefaultValue(Double.NaN);
         outputVariable2.setDefuzzifier(new WeightedAverage());
         outputVariable2.fuzzyOutput().setAccumulation(null);
-        outputVariable2.addTerm(Function.create("fx", "sin(inputX)/inputX", engine, true));
+        outputVariable2.addTerm(Function.create("fx", "sin(inputX)/inputX", engine));
         engine.addOutputVariable(outputVariable2);
 
         OutputVariable outputVariable3 = new OutputVariable();
@@ -429,7 +429,7 @@ public class Console {
         outputVariable3.setDefaultValue(Double.NaN);
         outputVariable3.setDefuzzifier(new WeightedAverage());
         outputVariable3.fuzzyOutput().setAccumulation(null);
-        outputVariable3.addTerm(Function.create("diff", "fabs(outputFx-trueFx)", engine, true));
+        outputVariable3.addTerm(Function.create("diff", "fabs(outputFx-trueFx)", engine));
         engine.addOutputVariable(outputVariable3);
 
         RuleBlock ruleBlock1 = new RuleBlock();

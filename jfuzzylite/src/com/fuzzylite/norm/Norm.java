@@ -24,9 +24,9 @@
  */
 package com.fuzzylite.norm;
 
-import com.fuzzylite.lang.Cloneable;
+import com.fuzzylite.lang.PubliclyCloneable;
 
-public abstract class Norm implements Cloneable {
+public abstract class Norm implements PubliclyCloneable {
 
     public abstract double compute(double a, double b);
 

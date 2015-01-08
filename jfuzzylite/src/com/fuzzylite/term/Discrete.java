@@ -28,7 +28,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.fuzzylite.Op;
-import com.fuzzylite.lang.Cloneable;
+import com.fuzzylite.lang.PubliclyCloneable;
 import com.fuzzylite.term.Discrete.Pair;
 import java.util.Collection;
 import java.util.Iterator;
@@ -37,7 +37,7 @@ import java.util.ListIterator;
 
 public class Discrete extends Term implements List<Pair> {
 
-    public static class Pair implements Cloneable {
+    public static class Pair implements PubliclyCloneable {
 
         public double x;
         public double y;

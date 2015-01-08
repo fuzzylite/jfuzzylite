@@ -28,14 +28,14 @@ import com.fuzzylite.Engine;
 import com.fuzzylite.Op;
 import com.fuzzylite.hedge.Hedge;
 import com.fuzzylite.imex.FllExporter;
-import com.fuzzylite.lang.Cloneable;
+import com.fuzzylite.lang.PubliclyCloneable;
 import com.fuzzylite.norm.SNorm;
 import com.fuzzylite.norm.TNorm;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.StringTokenizer;
 
-public class Rule implements Cloneable {
+public class Rule implements PubliclyCloneable {
 
     public static final String FL_IF = "if";
     public static final String FL_IS = "is";

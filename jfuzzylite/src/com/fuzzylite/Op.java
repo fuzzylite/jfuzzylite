@@ -42,6 +42,14 @@ public class Op {
         return Math.abs(a - b) < macheps;
     }
 
+    public static boolean isNEq(double a, double b) {
+        return !isEq(a, b, FuzzyLite.getMachEps());
+    }
+
+    public static boolean isNEq(double a, double b, double macheps) {
+        return !isEq(a, b, macheps);
+    }
+
     public static boolean isLt(double a, double b) {
         return !isEq(a, b, FuzzyLite.getMachEps()) && a < b;
     }
@@ -100,6 +108,10 @@ public class Op {
 
     public static double logicalOr(double a, double b) {
         return (isEq(a, 1.0) || isEq(b, 1.0)) ? 1.0 : 0.0;
+    }
+
+    public static double logicalNot(double a) {
+        return isEq(a, 1.0) ? 0.0 : 1.0;
     }
 
     public static double negate(double x) {

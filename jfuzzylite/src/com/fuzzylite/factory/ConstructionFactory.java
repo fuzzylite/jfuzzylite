@@ -24,13 +24,12 @@
  */
 package com.fuzzylite.factory;
 
+import com.fuzzylite.lang.PubliclyCloneable;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
-import com.fuzzylite.lang.Cloneable;
-
-public class ConstructionFactory<T> implements Cloneable {
+public class ConstructionFactory<T> implements PubliclyCloneable {
 
     private Map<String, Class<? extends T>> map;
 
@@ -62,15 +61,28 @@ public class ConstructionFactory<T> implements Cloneable {
         if (simpleName == null || simpleName.isEmpty()) {
             return null;
         }
-        try {
-            return this.map.get(simpleName).newInstance();
-        } catch (Exception ex) {
-            throw new RuntimeException(ex);
+
+        if (this.map.containsKey(simpleName)) {
+            try {
+                return this.map.get(simpleName).newInstance();
+            } catch (Exception ex) {
+                throw new RuntimeException(ex);
+            }
         }
+        throw new RuntimeException("[construction error] constructor <" + simpleName
+                + "> not registered in " + getClass().getSimpleName());
     }
 
     @Override
     public ConstructionFactory<T> clone() throws CloneNotSupportedException {
         return (ConstructionFactory<T>) super.clone();
+    }
+
+    public Map<String, Class<? extends T>> getMap() {
+        return map;
+    }
+
+    public void setMap(Map<String, Class<? extends T>> map) {
+        this.map = map;
     }
 }

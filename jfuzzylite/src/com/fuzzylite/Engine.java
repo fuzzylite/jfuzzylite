@@ -32,7 +32,7 @@ import com.fuzzylite.factory.FactoryManager;
 import com.fuzzylite.factory.SNormFactory;
 import com.fuzzylite.factory.TNormFactory;
 import com.fuzzylite.imex.FllExporter;
-import com.fuzzylite.lang.Cloneable;
+import com.fuzzylite.lang.PubliclyCloneable;
 import com.fuzzylite.norm.SNorm;
 import com.fuzzylite.norm.TNorm;
 import com.fuzzylite.norm.t.AlgebraicProduct;
@@ -53,7 +53,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.logging.Logger;
 
-public class Engine implements Cloneable {
+public class Engine implements PubliclyCloneable {
 
     private String name;
     private List<InputVariable> inputVariables;

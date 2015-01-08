@@ -24,9 +24,9 @@
  */
 package com.fuzzylite.hedge;
 
-import com.fuzzylite.lang.Cloneable;
+import com.fuzzylite.lang.PubliclyCloneable;
 
-public abstract class Hedge implements Cloneable {
+public abstract class Hedge implements PubliclyCloneable {
 
     public abstract double hedge(double x);
 

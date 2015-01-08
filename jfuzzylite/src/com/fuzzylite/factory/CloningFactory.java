@@ -24,23 +24,17 @@
  */
 package com.fuzzylite.factory;
 
-import com.fuzzylite.lang.Cloneable;
+import com.fuzzylite.lang.PubliclyCloneable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class CloningFactory<T extends Cloneable> implements Cloneable {
+public class CloningFactory<T extends PubliclyCloneable> implements PubliclyCloneable {
 
-    private String name;
     private Map<String, T> objects;
 
     public CloningFactory() {
-        this("");
-    }
-
-    public CloningFactory(String name) {
-        this.name = name;
         this.objects = new HashMap<String, T>();
     }
 
@@ -77,8 +71,8 @@ public class CloningFactory<T extends Cloneable> implements Cloneable {
             }
             return null;
         }
-        throw new RuntimeException("[cloning error] " + this.name
-                + " object by name <" + key + "> not registered");
+        throw new RuntimeException("[cloning error] object by name <" + key
+                + "> not registered in " + getClass().getSimpleName());
     }
 
     public List<String> available() {
@@ -92,6 +86,14 @@ public class CloningFactory<T extends Cloneable> implements Cloneable {
     @Override
     public CloningFactory<T> clone() throws CloneNotSupportedException {
         return (CloningFactory<T>) super.clone();
+    }
+
+    public Map<String, T> getObjects() {
+        return objects;
+    }
+
+    public void setObjects(Map<String, T> objects) {
+        this.objects = objects;
     }
 
 }

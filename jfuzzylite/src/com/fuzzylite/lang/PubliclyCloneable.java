@@ -24,7 +24,7 @@
  */
 package com.fuzzylite.lang;
 
-public interface Cloneable extends java.lang.Cloneable {
+public interface PubliclyCloneable extends java.lang.Cloneable {
 
     //Forces clone to be public
     public Object clone() throws CloneNotSupportedException;
