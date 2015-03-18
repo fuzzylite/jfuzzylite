@@ -25,7 +25,6 @@
 package com.fuzzylite.factory;
 
 import com.fuzzylite.Op;
-import com.fuzzylite.lang.PubliclyCloneable;
 import com.fuzzylite.rule.Rule;
 import com.fuzzylite.term.Function;
 import java.util.HashSet;
@@ -36,7 +35,7 @@ import java.util.Set;
  *
  * @author jcrada
  */
-public class FunctionFactory extends CloningFactory<Function.Element> implements PubliclyCloneable {
+public class FunctionFactory extends CloningFactory<Function.Element> implements Op.Cloneable {
 
     public FunctionFactory() {
         registerOperators();
@@ -47,10 +46,10 @@ public class FunctionFactory extends CloningFactory<Function.Element> implements
         int p = 100;
         try {
             //OPERATORS:
-            //First order: not, neget
+            //First order: not, negate
             registerObject("!", new Function.Element("!", "Logical NOT", Function.Element.Type.OPERATOR,
                     Op.class.getMethod("logicalNot", double.class), p, 1));
-            registerObject("!", new Function.Element("~", "Negation", Function.Element.Type.OPERATOR,
+            registerObject("~", new Function.Element("~", "Negation", Function.Element.Type.OPERATOR,
                     Op.class.getMethod("negate", double.class), p, 1));
 
             p -= 10;
@@ -60,8 +59,8 @@ public class FunctionFactory extends CloningFactory<Function.Element> implements
 
             p -= 10;
             //Third order: Multiplication, Division, and Modulo
-            registerObject("^", new Function.Element("*", "Multiplication", Function.Element.Type.OPERATOR,
-                    Op.class.getMethod("multiply", double.class, double.class), p, 1));
+            registerObject("*", new Function.Element("*", "Multiplication", Function.Element.Type.OPERATOR,
+                    Op.class.getMethod("multiply", double.class, double.class), p));
 
             registerObject("/", new Function.Element("/", "Division", Function.Element.Type.OPERATOR,
                     Op.class.getMethod("divide", double.class, double.class), p));
@@ -143,7 +142,7 @@ public class FunctionFactory extends CloningFactory<Function.Element> implements
 
             registerObject("log1p", new Function.Element("log1p", "Natural logarithm plus one", Function.Element.Type.FUNCTION,
                     Math.class.getMethod("log1p", double.class)));
-            registerObject("log1p", new Function.Element("log1p", "Natural logarithm plus one", Function.Element.Type.FUNCTION,
+            registerObject("atan", new Function.Element("log1p", "Natural logarithm plus one", Function.Element.Type.FUNCTION,
                     Math.class.getMethod("atan", double.class)));
 
             registerObject("pow", new Function.Element("pow", "Power", Function.Element.Type.FUNCTION,

@@ -26,6 +26,7 @@ package com.fuzzylite.imex;
 
 import com.fuzzylite.Engine;
 import com.fuzzylite.Op;
+import com.fuzzylite.Op.Pair;
 import com.fuzzylite.defuzzifier.Bisector;
 import com.fuzzylite.defuzzifier.Centroid;
 import com.fuzzylite.defuzzifier.LargestOfMaximum;
@@ -40,7 +41,6 @@ import com.fuzzylite.hedge.Not;
 import com.fuzzylite.hedge.Seldom;
 import com.fuzzylite.hedge.Somewhat;
 import com.fuzzylite.hedge.Very;
-import com.fuzzylite.lang.Pair;
 import com.fuzzylite.norm.s.AlgebraicSum;
 import com.fuzzylite.norm.s.BoundedSum;
 import com.fuzzylite.norm.s.DrasticSum;

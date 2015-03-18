@@ -24,13 +24,13 @@
  */
 package com.fuzzylite.factory;
 
-import com.fuzzylite.lang.PubliclyCloneable;
+import com.fuzzylite.Op;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class CloningFactory<T extends PubliclyCloneable> implements PubliclyCloneable {
+public class CloningFactory<T extends Op.Cloneable> implements Op.Cloneable {
 
     private Map<String, T> objects;
 
@@ -82,18 +82,18 @@ public class CloningFactory<T extends PubliclyCloneable> implements PubliclyClon
         }
         return result;
     }
-
-    @Override
-    public CloningFactory<T> clone() throws CloneNotSupportedException {
-        return (CloningFactory<T>) super.clone();
-    }
-
+    
     public Map<String, T> getObjects() {
         return objects;
     }
 
     public void setObjects(Map<String, T> objects) {
         this.objects = objects;
+    }
+
+    @Override
+    public CloningFactory<T> clone() throws CloneNotSupportedException {
+        return (CloningFactory<T>) super.clone(); //To change body of generated methods, choose Tools | Templates.
     }
 
 }

@@ -24,10 +24,10 @@
  */
 package com.fuzzylite.defuzzifier;
 
-import com.fuzzylite.lang.PubliclyCloneable;
+import com.fuzzylite.Op;
 import com.fuzzylite.term.Term;
 
-public abstract class Defuzzifier implements PubliclyCloneable {
+public abstract class Defuzzifier implements Op.Cloneable {
 
     public abstract double defuzzify(Term term, double minimum, double maximum);
 

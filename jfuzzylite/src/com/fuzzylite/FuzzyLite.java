@@ -24,15 +24,18 @@
  */
 package com.fuzzylite;
 
+import java.io.InputStream;
 import java.math.RoundingMode;
 import java.text.DecimalFormat;
 import java.util.logging.Level;
+import java.util.logging.LogManager;
 import java.util.logging.Logger;
 
 public class FuzzyLite {
 
-    //Extended DecimalFormat to provide atomic setting of RoundingMode
-    //Rounding HALF_UP to match most results from fuzzylite C++ rounding mode
+    /*Extended DecimalFormat to provide atomic setting of RoundingMode
+     Rounding HALF_UP to match most results from fuzzylite C++ rounding mode
+     */
     private static class FLDecimalFormat extends DecimalFormat {
 
         public FLDecimalFormat(String pattern) {
@@ -52,9 +55,29 @@ public class FuzzyLite {
     private static DecimalFormat DF = new FLDecimalFormat("0.000");
     private static int DECIMALS = 3;
     private static double MACHEPS = 1e-6; //Machine epsilon to differentiate numbers
+    private static boolean debug = false;
 
-    public static Logger logger() {
-        return Logger.getLogger("fuzzylite");
+    private static final Logger LOG;
+
+    static {
+        LOG = Logger.getLogger("com.fuzzylite");
+        final InputStream inputStream = FuzzyLite.class.getResourceAsStream("/logging.properties");
+        try {
+            LogManager.getLogManager().readConfiguration(inputStream);
+        } catch (Exception ex) {
+            System.out.println("Could not load default /logging.properties file");
+            System.out.println(ex.getMessage());
+        }
+//        FuzzyLite.log().info("info");
+//        FuzzyLite.log().warning("warning");
+//        FuzzyLite.log().severe("severe");
+//        FuzzyLite.log().fine("fine");
+//        FuzzyLite.log().finer("finer");
+//        FuzzyLite.log().finest("finest");
+    }
+
+    public static Logger log() {
+        return LOG;
     }
 
     public static java.text.DecimalFormat getFormatter() {
@@ -84,35 +107,25 @@ public class FuzzyLite {
 
     public static void setLogging(boolean logging) {
         if (logging) {
-            if (logger().getLevel() == null || Level.OFF.equals(logger().getLevel())) {
-                logger().setLevel(Level.INFO);
-            }
+            log().setLevel(debug ? Level.FINEST : Level.INFO);
         } else {
-            logger().setLevel(Level.OFF);
+            log().setLevel(Level.OFF);
         }
     }
 
     public static boolean isLogging() {
-        return !(logger().getLevel() == null || Level.OFF.equals(logger().getLevel()));
-    }
-
-    public static boolean debug() {
-        return logger().getLevel() != null
-                && logger().getLevel().intValue() < Level.INFO.intValue();
+        return !(log().getLevel() == null || Level.OFF.equals(log().getLevel()));
     }
 
     public static void setDebug(boolean debug) {
-        if (debug) {
-            if (logger().getLevel() == null
-                    || logger().getLevel().intValue() >= Level.INFO.intValue()) {
-                logger().setLevel(Level.FINER);
-            }
-        } else {
-            if (logger().getLevel() != null
-                    && logger().getLevel().intValue() < Level.INFO.intValue()) {
-                logger().setLevel(Level.INFO);
-            }
+        FuzzyLite.debug = debug;
+        if (isLogging()) {
+            log().setLevel(debug ? Level.FINEST : Level.INFO);
         }
+    }
+
+    public static boolean debug() {
+        return FuzzyLite.debug;
     }
 
 }

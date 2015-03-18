@@ -28,7 +28,6 @@ import com.fuzzylite.Op;
 import static com.fuzzylite.Op.str;
 import com.fuzzylite.defuzzifier.Defuzzifier;
 import com.fuzzylite.imex.FllExporter;
-import com.fuzzylite.lang.PubliclyCloneable;
 import com.fuzzylite.term.Term;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -38,7 +37,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-public class Variable implements PubliclyCloneable {
+public class Variable implements Op.Cloneable {
 
     private String name;
     private double minimum, maximum;

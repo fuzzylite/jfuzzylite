@@ -24,6 +24,7 @@
  */
 package com.fuzzylite;
 
+import com.fuzzylite.Op.Pair;
 import com.fuzzylite.defuzzifier.Centroid;
 import com.fuzzylite.defuzzifier.WeightedAverage;
 import com.fuzzylite.imex.CppExporter;
@@ -37,7 +38,6 @@ import com.fuzzylite.imex.FllExporter;
 import com.fuzzylite.imex.FllImporter;
 import com.fuzzylite.imex.Importer;
 import com.fuzzylite.imex.JavaExporter;
-import com.fuzzylite.lang.Pair;
 import com.fuzzylite.norm.s.Maximum;
 import com.fuzzylite.norm.t.AlgebraicProduct;
 import com.fuzzylite.norm.t.Minimum;
@@ -524,7 +524,7 @@ public class Console {
 
         StringBuilder errors = new StringBuilder();
         for (int i = 0; i < examples.size(); ++i) {
-            System.out.println("Processing " + (i + 1) + "/" + examples.size() + ": " + examples.get(i));
+            FuzzyLite.log().info("Processing " + (i + 1) + "/" + examples.size() + ": " + examples.get(i));
             try {
                 StringBuilder text = new StringBuilder();
                 String input = sourceBase + examples.get(i) + "." + from;
@@ -553,7 +553,11 @@ public class Console {
                 String output = targetBase + examples.get(i) + "." + to;
                 File outputFile = new File(output);
                 if (!outputFile.exists()) {
-                    outputFile.createNewFile();
+                    try {
+                        outputFile.createNewFile();
+                    } catch (Exception ex) {
+                        FuzzyLite.log().severe(ex + ": " + outputFile);
+                    }
                 }
                 FileWriter target = new FileWriter(outputFile);
                 if ("cpp".equals(to)) {
@@ -585,29 +589,33 @@ public class Console {
                 target.close();
             } catch (Exception ex) {
                 errors.append("error at " + examples.get(i) + ":\n" + ex.toString() + "\n");
-                ex.printStackTrace();
+                FuzzyLite.log().severe(ex.toString());
                 return;
             }
         }
         if (errors.toString().isEmpty()) {
-            FuzzyLite.logger().info("No errors were found exporting files");
+            FuzzyLite.log().info("No errors were found exporting files");
         } else {
-            FuzzyLite.logger().info("The following errors were encountered while exporting:\n"
+            FuzzyLite.log().severe("The following errors were encountered while exporting:\n"
                     + errors.toString());
         }
     }
 
     public static void main(String[] args) {
-//        FuzzyLite.logger().setLevel(Level.INFO);
         if (args.length == 0) {
             System.out.println(usage());
             return;
         }
         if (args.length == 1 && "export-examples".equals(args[0])) {
-            String sourceBase = "/home/jcrada/Development/fl/jfuzzylite/examples/original";
+            String sourceBase = "/home/juan/Development/fl/jfuzzylite/examples/original";
             String targetBase = "/tmp/fl";
             FuzzyLite.setDecimals(3);
             try {
+                //mkdir -p /tmp/fl/mamdani/matlab
+                //mkdir -p /tmp/fl/mamdani/octave
+                //mkdir -p /tmp/fl/takagi-sugeno/matlab
+                //mkdir -p /tmp/fl/takagi-sugeno/octave
+                //mkdir -p /tmp/fl/tsukamoto
                 exportAllExamples("fis", "fll", sourceBase, targetBase);
                 exportAllExamples("fis", "fcl", sourceBase, targetBase);
                 exportAllExamples("fis", "fis", sourceBase, targetBase);
@@ -616,7 +624,7 @@ public class Console {
                 FuzzyLite.setDecimals(8);
                 exportAllExamples("fis", "fld", sourceBase, targetBase);
             } catch (Exception ex) {
-                ex.printStackTrace();
+                FuzzyLite.log().severe(ex.toString());
             }
             return;
         }
@@ -624,7 +632,7 @@ public class Console {
             Map<String, String> options = parse(args);
             process(options);
         } catch (Exception ex) {
-            ex.printStackTrace();
+            FuzzyLite.log().severe(ex.toString());
         }
     }
 }

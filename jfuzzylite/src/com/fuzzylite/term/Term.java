@@ -24,10 +24,10 @@
  */
 package com.fuzzylite.term;
 
+import com.fuzzylite.Op;
 import com.fuzzylite.imex.FllExporter;
-import com.fuzzylite.lang.PubliclyCloneable;
 
-public abstract class Term implements PubliclyCloneable {
+public abstract class Term implements Op.Cloneable {
 
     protected String name;
     protected double height;

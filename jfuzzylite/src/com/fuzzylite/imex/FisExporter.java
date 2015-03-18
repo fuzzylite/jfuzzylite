@@ -315,7 +315,7 @@ public class FisExporter extends Exporter {
                     }
                 }
                 if (proposition.getHedges().size() > 1) {
-                    FuzzyLite.logger().warning("[export warning] "
+                    FuzzyLite.log().warning("[export warning] "
                             + "only a few combinations of multiple "
                             + "hedges are supported in fis files");
                 }
