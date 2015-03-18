@@ -30,7 +30,6 @@ import com.fuzzylite.Op;
 import static com.fuzzylite.Op.str;
 import com.fuzzylite.factory.FactoryManager;
 import com.fuzzylite.factory.FunctionFactory;
-import com.fuzzylite.lang.PubliclyCloneable;
 import com.fuzzylite.rule.Rule;
 import com.fuzzylite.variable.InputVariable;
 import com.fuzzylite.variable.OutputVariable;
@@ -45,7 +44,7 @@ import java.util.logging.Logger;
 
 public class Function extends Term {
 
-    public static class Element implements PubliclyCloneable {
+    public static class Element implements Op.Cloneable {
 
         public enum Type {
 
@@ -147,7 +146,7 @@ public class Function extends Term {
 
     }
 
-    public static class Node implements PubliclyCloneable {
+    public static class Node implements Op.Cloneable {
 
         public Element element = null;
         public String variable = "";
@@ -209,7 +208,7 @@ public class Function extends Term {
                             + "invoking element <" + element.getName() + ">", ex);
                 }
             } else if (variable != null && !variable.isEmpty()) {
-                if (localVariables == null || localVariables.isEmpty()) {
+                if (localVariables == null) {
                     throw new RuntimeException("[function error] expected a map of "
                             + "variables, but none was provided");
                 }
@@ -222,7 +221,7 @@ public class Function extends Term {
             } else {
                 result = value;
             }
-            FuzzyLite.logger().finest(String.format("%s = %s", toPostfix(), str(result)));
+            FuzzyLite.log().finest(String.format("%s = %s", toPostfix(), str(result)));
             return result;
         }
 
@@ -431,6 +430,7 @@ public class Function extends Term {
         for (String operator : toSpace) {
             spacedFormula = spacedFormula.replace(operator, " " + operator + " ");
         }
+        FuzzyLite.log().finest(spacedFormula);
 
         //Tokenizer
         Deque<String> queue = new ArrayDeque<String>();
@@ -448,8 +448,10 @@ public class Function extends Term {
 
             if (isOperand) {
                 queue.offer(token);
+                FuzzyLite.log().finest(token + " is operand");
 
             } else if (element != null && element.isFunction()) {
+                FuzzyLite.log().finest(token + " is function");
                 stack.push(token);
 
             } else if (",".equals(token)) {
@@ -462,6 +464,7 @@ public class Function extends Term {
                 }
 
             } else if (element != null && element.isOperator()) {
+                FuzzyLite.log().finest(token + " is operator");
                 Element op1 = element;
                 for (;;) {
                     Element op2 = null;
@@ -606,24 +609,29 @@ public class Function extends Term {
         return variables;
     }
 
-    public static void test(String[] args) throws Exception {
-        Logger log = FuzzyLite.logger();
+    public static void main(String[] args) throws Exception {
+        FuzzyLite.setDebug(true);
+        Logger log = FuzzyLite.log();
+
         Function f = new Function();
         String text = "3+4*2/(1-5)^2^3";
-//        String formula = "3+4*2/2";
-        log.info(f.toPostfix(text));
-        log.info(f.parse(text).toInfix());
-        log.info(Op.str(f.parse(text).evaluate(f.getVariables())));
-        f.load(text);
-        log.info(">>>" + Op.str(f.evaluate()));
+        String formula = "3+4*2/2";
+//        log.info(f.toPostfix(text));
+//        log.info(f.parse(text).toInfix());
+//        log.info(Op.str(f.parse(text).evaluate(f.getVariables())));
+//        f.load(text);
+//        log.info(">>>" + Op.str(f.evaluate()));
 
         f.getVariables().put("y", 1.0);
-        text = "sin(y*x)^2/x";
+        text = "sin (y*x)^2/x";
+        log.info("post: " + f.toPostfix(text));
         log.info("pre: " + f.parse(text).toPrefix());
         log.info("in: " + f.parse(text).toInfix());
         log.info("pos: " + f.parse(text).toPostfix());
         f.load(text);
         log.info("Result: " + Op.str(f.membership(1)));
+
+        System.exit(0);
 
         text = "(Temperature is High and Oxigen is Low) or "
                 + "(Temperature is Low and (Oxigen is Low or Oxigen is High))";

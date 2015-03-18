@@ -151,7 +151,7 @@ public abstract class WeightedDefuzzifier extends Defuzzifier {
             double fz = monotonic.membership(z);
             //Compare difference between estimated and true value
             if (!Op.isEq(w, fz, 1e-2)) {
-                FuzzyLite.logger().finest(String.format(
+                FuzzyLite.log().finest(String.format(
                         "[tsukamoto warning] difference <%s> might suggest an inaccurate "
                         + "computation of z because it is expected w=f(z) in %s term <%s>, "
                         + "but w=%s f(z)=%s and z=%s", Op.str(Math.abs(w - fz)),

@@ -24,12 +24,12 @@
  */
 package com.fuzzylite.factory;
 
-import com.fuzzylite.lang.PubliclyCloneable;
+import com.fuzzylite.Op;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
-public class ConstructionFactory<T> implements PubliclyCloneable {
+public class ConstructionFactory<T> implements Op.Cloneable {
 
     private Map<String, Class<? extends T>> map;
 

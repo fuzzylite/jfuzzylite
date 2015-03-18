@@ -357,4 +357,48 @@ public class Op {
         return result;
     }
 
+    /**
+     * Classes
+     */
+    public static interface Cloneable extends java.lang.Cloneable {
+
+        public Object clone() throws CloneNotSupportedException;
+    }
+
+    public static class Pair<Y, Z> {
+
+        private Y first;
+        private Z second;
+
+        public Pair() {
+            this(null, null);
+        }
+
+        public Pair(Y first, Z second) {
+            this.first = first;
+            this.second = second;
+        }
+
+        @Override
+        public String toString() {
+            return "{" + this.first + ":" + this.second + "}";
+        }
+
+        public Y getFirst() {
+            return first;
+        }
+
+        public void setFirst(Y first) {
+            this.first = first;
+        }
+
+        public Z getSecond() {
+            return second;
+        }
+
+        public void setSecond(Z second) {
+            this.second = second;
+        }
+    }
+
 }

@@ -26,9 +26,9 @@ package com.fuzzylite.imex;
 
 import com.fuzzylite.Engine;
 
-import com.fuzzylite.lang.PubliclyCloneable;
+import com.fuzzylite.Op;
 
-public abstract class Importer implements PubliclyCloneable {
+public abstract class Importer implements Op.Cloneable {
 
     public abstract Engine fromString(String text);
 
