@@ -264,10 +264,12 @@ public class Engine implements Op.Cloneable {
                                 ruleBlock.getName(), r));
                     } else {
                         int thenIndex = rule.getText().indexOf(" " + Rule.FL_THEN + " ");
-                        if (rule.getText().indexOf(" " + Rule.FL_AND + " ") < thenIndex) {
+                        int andIndex = rule.getText().indexOf(" " + Rule.FL_AND + " ");
+                        int orIndex = rule.getText().indexOf(" " + Rule.FL_OR + " ") ;
+                        if (andIndex != -1 && andIndex < thenIndex) {
                             ++requiresConjunction;
                         }
-                        if (rule.getText().indexOf(" " + Rule.FL_OR + " ") < thenIndex) {
+                        if (orIndex != -1 && orIndex < thenIndex) {
                             ++requiresDisjunction;
                         }
                     }

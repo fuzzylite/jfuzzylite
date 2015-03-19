@@ -37,8 +37,8 @@ import com.fuzzylite.variable.InputVariable;
 import com.fuzzylite.variable.OutputVariable;
 import com.fuzzylite.variable.Variable;
 import java.util.ArrayDeque;
-import java.util.ArrayList;
 import java.util.Deque;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.StringTokenizer;
@@ -107,9 +107,6 @@ public class Antecedent {
                     .listIterator(proposition.getHedges().size());
             while (reverseIterator.hasPrevious()) {
                 result = reverseIterator.previous().hedge(result);
-            }
-            for (int i = proposition.getHedges().size() - 1; i >= 0; --i) {
-                result = proposition.getHedges().get(i).hedge(result);
             }
             return result;
         }
@@ -237,7 +234,7 @@ public class Antecedent {
 
             if ((state & S_AND_OR) > 0) {
                 if (Rule.FL_AND.equals(token) || Rule.FL_OR.equals(token)) {
-                    if (expressionStack.size() < 2) {
+                    if (expressionStack.size() != 2) {
                         throw new RuntimeException(String.format(
                                 "[syntax error] logical operator <%s> expects two operands, but found <%d>",
                                 token, expressionStack.size()));
@@ -274,7 +271,7 @@ public class Antecedent {
                     token));
         }
         if (expressionStack.size() != 1) {
-            List<String> errors = new ArrayList<String>();
+            List<String> errors = new LinkedList<String>();
             while (expressionStack.size() > 1) {
                 Expression element = expressionStack.pop();
                 errors.add(element.toString());
