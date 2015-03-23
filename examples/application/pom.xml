@@ -1,9 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.fuzzylite</groupId>
-    <artifactId>jfuzzylite</artifactId>
+    <artifactId>examples</artifactId>
     <version>5.0</version>
     <packaging>jar</packaging>
     <licenses>
@@ -14,15 +13,9 @@
         </license>
     </licenses>
 
-    <name>jfuzzylite</name>
+    <name>examples</name>
     <description>
-        jfuzzylite™ is a cross-platform, free and open-source fuzzy logic control 
-        library programmed entirely in Java. Its goal is to allow you to easily 
-        create fuzzy logic controllers in a few steps utilizing object-oriented 
-        programming without requiring any third-party libraries.
-
-        jfuzzylite™ is the equivalent of the fuzzylite® library for Java and 
-        Android platforms.
+        Examples of jfuzzylite™
     </description>
     <url>http://www.fuzzylite.com/java</url>
 
@@ -35,7 +28,7 @@
         <connection>scm:git:git://github.com/fuzzylite/jfuzzylite.git</connection>
         <developerConnection>scm:git:https://jcrada@github.com/fuzzylite/jfuzzylite.git</developerConnection>
         <tag>HEAD</tag>
-        <url>https://github.com/fuzzylite/jfuzzylite</url>
+        <url>https://github.com/fuzzylite/jfuzzylite/examples/application</url>
     </scm>
 
     <developers>
@@ -85,11 +78,9 @@
         <maven.compiler.target>1.6</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-        <jfuzzylite.path>/home/juan/Development/fl/jfuzzylite/jfuzzylite/</jfuzzylite.path>
-
     </properties>
 
-  
+
 
     <dependencies>
         <dependency>
@@ -99,7 +90,7 @@
             <scope>compile</scope>
         </dependency>
     </dependencies>
-  
+
     <build>
         <plugins>
             <plugin>
@@ -117,6 +108,5 @@
             </plugin>
         </plugins>
     </build>
-
 
 </project>
