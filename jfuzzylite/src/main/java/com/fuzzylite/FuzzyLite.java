@@ -61,12 +61,13 @@ public class FuzzyLite {
 
     static {
         LOG = Logger.getLogger("com.fuzzylite");
-        final InputStream inputStream = FuzzyLite.class.getResourceAsStream("/logging.properties");
+        String configurationFile = "/logging.properties";
+        final InputStream inputStream = FuzzyLite.class.getResourceAsStream(configurationFile);
         try {
             LogManager.getLogManager().readConfiguration(inputStream);
         } catch (Exception ex) {
-            System.out.println("Could not load default /logging.properties file");
-            System.out.println(ex.getMessage());
+            System.out.println(String.format("WARNING: Could not load default %s file", configurationFile));
+            System.out.println(ex);
         }
 //        FuzzyLite.log().info("info");
 //        FuzzyLite.log().warning("warning");

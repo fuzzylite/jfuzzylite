@@ -22,39 +22,36 @@
  jfuzzylite™ is a trademark of FuzzyLite Limited.
 
  */
-package com.fuzzylite.imex;
+package com.fuzzylite.examples;
 
 import com.fuzzylite.Engine;
-
-import com.fuzzylite.Op;
-import java.io.BufferedReader;
+import com.fuzzylite.FuzzyLite;
+import com.fuzzylite.imex.FldExporter;
+import com.fuzzylite.imex.FllImporter;
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
+import java.net.URL;
 
-public abstract class Importer implements Op.Cloneable {
+public class SimpleDimmer {
 
-    public abstract Engine fromString(String text);
+    private Engine engine;
 
-    public Engine fromFile(File file) throws IOException {
-        BufferedReader reader = new BufferedReader(new FileReader(file));
-        String line;
-        StringBuilder textEngine = new StringBuilder();
+    public SimpleDimmer() {
+        String configurationFile = "/SimpleDimmer.fll";
+        URL url = SimpleDimmer.class.getResource(configurationFile);
         try {
-            while ((line = reader.readLine()) != null) {
-                textEngine.append(line).append("\n");
-            }
-        } catch (IOException ex) {
-            throw ex;
-        } finally {
-            reader.close();
+            engine = new FllImporter().fromFile(new File(url.toURI()));
+        } catch (Exception ex) {
+            FuzzyLite.log().severe(ex.toString());
         }
-        return fromString(textEngine.toString());
     }
 
-    @Override
-    public Importer clone() throws CloneNotSupportedException {
-        return (Importer) super.clone();
+    public void run() {
+        FldExporter exporter = new FldExporter();
+        FuzzyLite.log().info(exporter.toString(engine, 10 * engine.getInputVariables().size()));
     }
+
+    public static void main(String[] args) {
+        new SimpleDimmer().run();
+    }
+
 }
