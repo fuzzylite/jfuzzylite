@@ -40,6 +40,9 @@ public class Centroid extends IntegralDefuzzifier {
 
     @Override
     public double defuzzify(Term term, double minimum, double maximum) {
+        if (!Double.isFinite(minimum + maximum)) {
+            return Double.NaN;
+        }
         if (maximum - minimum > getResolution()) {
             FuzzyLite.log().warning(String.format(
                     "[accuracy warning] resolution (%d)"
@@ -64,6 +67,11 @@ public class Centroid extends IntegralDefuzzifier {
         ycentroid /= 2 * area;
         area *= dx; //total area... unused, but for future reference.
         return xcentroid;
+    }
+
+    @Override
+    public Centroid clone() throws CloneNotSupportedException {
+        return (Centroid) super.clone();
     }
 
 }

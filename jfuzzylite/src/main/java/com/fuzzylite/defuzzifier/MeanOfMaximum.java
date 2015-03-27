@@ -41,6 +41,9 @@ public class MeanOfMaximum extends IntegralDefuzzifier {
 
     @Override
     public double defuzzify(Term term, double minimum, double maximum) {
+        if (!Double.isFinite(minimum + maximum)) {
+            return Double.NaN;
+        }
         if (maximum - minimum > getResolution()) {
             FuzzyLite.log().warning(String.format(
                     "[accuracy warning] resolution (%d)"
@@ -75,5 +78,10 @@ public class MeanOfMaximum extends IntegralDefuzzifier {
         }
 
         return (xlargest + xsmallest) / 2.0;
+    }
+
+    @Override
+    public MeanOfMaximum clone() throws CloneNotSupportedException {
+        return (MeanOfMaximum) super.clone();
     }
 }

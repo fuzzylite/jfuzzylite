@@ -41,6 +41,9 @@ public class SmallestOfMaximum extends IntegralDefuzzifier {
 
     @Override
     public double defuzzify(Term term, double minimum, double maximum) {
+        if (!Double.isFinite(minimum + maximum)) {
+            return Double.NaN;
+        }
         if (maximum - minimum > getResolution()) {
             FuzzyLite.log().warning(String.format(
                     "[accuracy warning] resolution (%d)"
@@ -63,5 +66,10 @@ public class SmallestOfMaximum extends IntegralDefuzzifier {
             }
         }
         return xsmallest;
+    }
+
+    @Override
+    public SmallestOfMaximum clone() throws CloneNotSupportedException {
+        return (SmallestOfMaximum) super.clone();
     }
 }
