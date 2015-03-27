@@ -34,4 +34,9 @@ public class Extremely extends Hedge {
                 ? 2.0 * x * x
                 : 1.0 - 2.0 * (1.0 - x) * (1.0 - x);
     }
+
+    @Override
+    public Extremely clone() throws CloneNotSupportedException {
+        return (Extremely) super.clone();
+    }
 }

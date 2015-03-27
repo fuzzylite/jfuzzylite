@@ -34,4 +34,9 @@ public class Seldom extends Hedge {
                 ? Math.sqrt(x / 2.0)
                 : 1.0 - Math.sqrt((1.0 - x) / 2.0);
     }
+
+    @Override
+    public Seldom clone() throws CloneNotSupportedException {
+        return (Seldom) super.clone();
+    }
 }

@@ -30,4 +30,9 @@ public class Somewhat extends Hedge {
     public double hedge(double x) {
         return Math.sqrt(x);
     }
+    
+    @Override
+    public Somewhat clone() throws CloneNotSupportedException {
+        return (Somewhat) super.clone();
+    }
 }
