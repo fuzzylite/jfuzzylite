@@ -35,6 +35,7 @@ import com.fuzzylite.hedge.Very;
 public class HedgeFactory extends ConstructionFactory<Hedge> {
 
     public HedgeFactory() {
+        register("", null);
         register(new Any().getName(), Any.class);
         register(new Extremely().getName(), Extremely.class);
         register(new Not().getName(), Not.class);

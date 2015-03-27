@@ -26,15 +26,16 @@ package com.fuzzylite.factory;
 
 import com.fuzzylite.Op;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
 public class ConstructionFactory<T> implements Op.Cloneable {
 
-    private Map<String, Class<? extends T>> map;
+    private Map<String, Class<? extends T>> constructors;
 
     public ConstructionFactory() {
-        this.map = new HashMap<String, Class<? extends T>>();
+        this.constructors = new HashMap<String, Class<? extends T>>();
     }
 
     public void register(Class<? extends T> clazz) {
@@ -42,29 +43,33 @@ public class ConstructionFactory<T> implements Op.Cloneable {
     }
 
     public void register(String simpleName, Class<? extends T> clazz) {
-        this.map.put(simpleName, clazz);
+        this.constructors.put(simpleName, clazz);
     }
 
     public void deregister(String simpleName) {
-        this.map.remove(simpleName);
+        this.constructors.remove(simpleName);
     }
 
     public boolean isRegistered(String simpleName) {
-        return this.map.containsKey(simpleName);
+        return this.constructors.containsKey(simpleName);
     }
 
     public Set<String> available() {
-        return this.map.keySet();
+        return new HashSet(this.constructors.keySet());
     }
 
     public T createInstance(String simpleName) {
-        if (simpleName == null || simpleName.isEmpty()) {
+        if (simpleName == null) {
             return null;
         }
 
-        if (this.map.containsKey(simpleName)) {
+        if (this.constructors.containsKey(simpleName)) {
             try {
-                return this.map.get(simpleName).newInstance();
+                Class<? extends T> clazz = this.constructors.get(simpleName);
+                if (clazz != null) {
+                    return clazz.newInstance();
+                }
+                return null;
             } catch (Exception ex) {
                 throw new RuntimeException(ex);
             }
@@ -73,16 +78,19 @@ public class ConstructionFactory<T> implements Op.Cloneable {
                 + "> not registered in " + getClass().getSimpleName());
     }
 
+    public Map<String, Class<? extends T>> getConstructors() {
+        return constructors;
+    }
+
+    public void setConstructors(Map<String, Class<? extends T>> constructors) {
+        this.constructors = constructors;
+    }
+
     @Override
     public ConstructionFactory<T> clone() throws CloneNotSupportedException {
-        return (ConstructionFactory<T>) super.clone();
+        ConstructionFactory<T> result = (ConstructionFactory<T>) super.clone();
+        result.constructors = new HashMap<String, Class<? extends T>>(this.constructors);
+        return result;
     }
 
-    public Map<String, Class<? extends T>> getMap() {
-        return map;
-    }
-
-    public void setMap(Map<String, Class<? extends T>> map) {
-        this.map = map;
-    }
 }

@@ -36,6 +36,7 @@ import com.fuzzylite.norm.t.NilpotentMinimum;
 public class TNormFactory extends ConstructionFactory<TNorm> {
 
     public TNormFactory() {
+        register("", null);
         register(AlgebraicProduct.class);
         register(BoundedDifference.class);
         register(DrasticProduct.class);

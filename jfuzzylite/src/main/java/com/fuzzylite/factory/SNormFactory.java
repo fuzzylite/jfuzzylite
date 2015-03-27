@@ -37,6 +37,7 @@ import com.fuzzylite.norm.s.NormalizedSum;
 public class SNormFactory extends ConstructionFactory<SNorm> {
 
     public SNormFactory() {
+        register("", null);
         register(AlgebraicSum.class);
         register(BoundedSum.class);
         register(DrasticSum.class);
