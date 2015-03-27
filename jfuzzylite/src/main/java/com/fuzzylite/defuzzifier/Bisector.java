@@ -41,6 +41,9 @@ public class Bisector extends IntegralDefuzzifier {
 
     @Override
     public double defuzzify(Term term, double minimum, double maximum) {
+        if (Double.isFinite(minimum + maximum)) {
+            return Double.NaN;
+        }
         if (maximum - minimum > getResolution()) {
             FuzzyLite.log().warning(String.format(
                     "[accuracy warning] resolution (%d)"
@@ -70,5 +73,10 @@ public class Bisector extends IntegralDefuzzifier {
         //Inverse weighted average to compensate
         double bisector = (leftArea * xRight + rightArea * xLeft) / (leftArea + rightArea);
         return bisector;
+    }
+
+    @Override
+    public Bisector clone() throws CloneNotSupportedException {
+        return (Bisector) super.clone();
     }
 }
