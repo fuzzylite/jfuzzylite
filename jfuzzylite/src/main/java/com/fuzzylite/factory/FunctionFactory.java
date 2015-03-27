@@ -153,9 +153,9 @@ public class FunctionFactory extends CloningFactory<Function.Element> implements
                     Op.class.getMethod("modulo", double.class, double.class)));
 
             //not found in Java
-//            this.functions.put("acosh", new BuiltInFunction("acosh",  & (acosh)));
-//            this.functions.put("asinh", new BuiltInFunction("asinh",  & (asinh)));
-//            this.functions.put("atanh", new BuiltInFunction("atanh",  & (atanh)));
+            //this.functions.put("acosh", new BuiltInFunction("acosh",  & (acosh)));
+            //this.functions.put("asinh", new BuiltInFunction("asinh",  & (asinh)));
+            //this.functions.put("atanh", new BuiltInFunction("atanh",  & (atanh)));
         } catch (Exception ex) {
             throw new RuntimeException("[factory error] unable to register function", ex);
         }

@@ -185,7 +185,7 @@ public class FllImporter extends Importer {
                 outputVariable.setRange(range.getFirst(), range.getSecond());
             } else if ("default".equals(keyValue.getFirst())) {
                 outputVariable.setDefaultValue(Op.toDouble(keyValue.getSecond()));
-            } else if ("lock-valid".equals(keyValue.getFirst())) {
+            } else if ("lock-previous".equals(keyValue.getFirst())) {
                 outputVariable.setLockPreviousOutputValue(parseBoolean(keyValue.getSecond()));
             } else if ("lock-range".equals(keyValue.getFirst())) {
                 outputVariable.setLockOutputValueInRange(parseBoolean(keyValue.getSecond()));

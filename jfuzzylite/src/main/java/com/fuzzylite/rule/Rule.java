@@ -127,7 +127,7 @@ public class Rule implements Op.Cloneable {
         String token;
         String strAntecedent = "";
         String strConsequent = "";
-        double weight = 1.0;
+        double ruleWeight = 1.0;
 
         final byte S_NONE = 0, S_IF = 1, S_THEN = 2, S_WITH = 3, S_END = 4;
         byte state = S_NONE;
@@ -161,7 +161,7 @@ public class Rule implements Op.Cloneable {
                         break;
                     case S_WITH:
                         try {
-                            weight = Op.toDouble(token);
+                            ruleWeight = Op.toDouble(token);
                             state = S_END;
                         } catch (NumberFormatException ex) {
                             throw ex;
@@ -190,7 +190,7 @@ public class Rule implements Op.Cloneable {
 
             consequent = new Consequent();
             consequent.load(strConsequent, this, engine);
-            this.weight = weight;
+            this.weight = ruleWeight;
         } catch (RuntimeException ex) {
             unload();
             throw ex;

@@ -164,14 +164,14 @@ public class Variable implements Op.Cloneable {
         this.terms.add(term);
     }
 
-    public Term removeTerm(Term term) {
-        return this.terms.remove(term) ? term : null;
+    public boolean removeTerm(Term term) {
+        return this.terms.remove(term);
     }
 
     public Term removeTerm(String name) {
         for (Iterator<Term> it = this.terms.iterator(); it.hasNext();) {
             Term term = it.next();
-            if (name.equals(term.getName())) {
+            if (term.getName().equals(name)) {
                 it.remove();
                 return term;
             }

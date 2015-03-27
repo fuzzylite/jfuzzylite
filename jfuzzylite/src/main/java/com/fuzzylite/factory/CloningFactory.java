@@ -82,7 +82,7 @@ public class CloningFactory<T extends Op.Cloneable> implements Op.Cloneable {
         }
         return result;
     }
-    
+
     public Map<String, T> getObjects() {
         return objects;
     }
@@ -93,7 +93,7 @@ public class CloningFactory<T extends Op.Cloneable> implements Op.Cloneable {
 
     @Override
     public CloningFactory<T> clone() throws CloneNotSupportedException {
-        return (CloningFactory<T>) super.clone(); //To change body of generated methods, choose Tools | Templates.
+        return (CloningFactory<T>) super.clone();
     }
 
 }
