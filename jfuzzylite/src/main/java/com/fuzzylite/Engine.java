@@ -171,8 +171,7 @@ public class Engine implements Op.Cloneable {
         TNorm objActivation = tnormFactory.createInstance(activation);
         SNorm objAccumulation = snormFactory.createInstance(accumulation);
 
-        DefuzzifierFactory defuzzifierFactory
-                = FactoryManager.instance().defuzzifier();
+        DefuzzifierFactory defuzzifierFactory = FactoryManager.instance().defuzzifier();
         Defuzzifier objDefuzzifier = defuzzifierFactory.createInstance(defuzzifier);
         if (objDefuzzifier instanceof IntegralDefuzzifier) {
             ((IntegralDefuzzifier) objDefuzzifier).setResolution(resolution);
@@ -265,7 +264,7 @@ public class Engine implements Op.Cloneable {
                     } else {
                         int thenIndex = rule.getText().indexOf(" " + Rule.FL_THEN + " ");
                         int andIndex = rule.getText().indexOf(" " + Rule.FL_AND + " ");
-                        int orIndex = rule.getText().indexOf(" " + Rule.FL_OR + " ") ;
+                        int orIndex = rule.getText().indexOf(" " + Rule.FL_OR + " ");
                         if (andIndex != -1 && andIndex < thenIndex) {
                             ++requiresConjunction;
                         }

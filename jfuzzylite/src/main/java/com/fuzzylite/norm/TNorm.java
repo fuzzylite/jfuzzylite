@@ -26,4 +26,8 @@ package com.fuzzylite.norm;
 
 public abstract class TNorm extends Norm {
 
+    @Override
+    public TNorm clone() throws CloneNotSupportedException {
+        return (TNorm) super.clone();
+    }
 }

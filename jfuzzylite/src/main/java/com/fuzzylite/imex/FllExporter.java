@@ -121,7 +121,7 @@ public class FllExporter extends Exporter {
                 toString(outputVariable.getDefuzzifier()), separator));
         result.append(String.format("%sdefault: %s%s", indent,
                 Op.str(outputVariable.getDefaultValue()), separator));
-        result.append(String.format("%slock-valid: %s%s", indent,
+        result.append(String.format("%slock-previous: %s%s", indent,
                 String.valueOf(outputVariable.isLockedPreviousOutputValue()), separator));
         result.append(String.format("%slock-range: %s%s", indent,
                 String.valueOf(outputVariable.isLockedOutputValueInRange()), separator));
