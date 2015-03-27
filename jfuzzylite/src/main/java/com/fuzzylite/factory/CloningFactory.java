@@ -25,10 +25,10 @@
 package com.fuzzylite.factory;
 
 import com.fuzzylite.Op;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 public class CloningFactory<T extends Op.Cloneable> implements Op.Cloneable {
 
@@ -75,12 +75,8 @@ public class CloningFactory<T extends Op.Cloneable> implements Op.Cloneable {
                 + "> not registered in " + getClass().getSimpleName());
     }
 
-    public List<String> available() {
-        List<String> result = new ArrayList<String>();
-        for (String key : this.objects.keySet()) {
-            result.add(key);
-        }
-        return result;
+    public Set<String> available() {
+        return new HashSet<String>(this.objects.keySet());
     }
 
     public Map<String, T> getObjects() {
@@ -93,7 +89,9 @@ public class CloningFactory<T extends Op.Cloneable> implements Op.Cloneable {
 
     @Override
     public CloningFactory<T> clone() throws CloneNotSupportedException {
-        return (CloningFactory<T>) super.clone();
+        CloningFactory result = (CloningFactory<T>) super.clone();
+        result.objects = new HashMap<String, Op.Cloneable>(this.objects);
+        return result;
     }
 
 }

@@ -49,6 +49,7 @@ import com.fuzzylite.term.ZShape;
 public class TermFactory extends ConstructionFactory<Term> {
 
     public TermFactory() {
+        register("", null);
         register(Bell.class);
         register(Concave.class);
         register(Constant.class);
