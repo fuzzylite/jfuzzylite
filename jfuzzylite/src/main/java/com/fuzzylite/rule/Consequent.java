@@ -35,6 +35,7 @@ import com.fuzzylite.variable.OutputVariable;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.ListIterator;
 import java.util.StringTokenizer;
 
 public class Consequent {
@@ -71,12 +72,12 @@ public class Consequent {
         for (Proposition proposition : conclusions) {
             if (proposition.getVariable().isEnabled()) {
                 if (!proposition.getHedges().isEmpty()) {
-                    for (int i = proposition.getHedges().size() - 1; i >= 0; --i) {
-                        Hedge hedge = proposition.getHedges().get(i);
-                        activationDegree = hedge.hedge(activationDegree);
+                    int lastIndex = proposition.getHedges().size() - 1;
+                    ListIterator<Hedge> rit = proposition.getHedges().listIterator(lastIndex);
+                    while (rit.hasPrevious()) {
+                        activationDegree = rit.previous().hedge(activationDegree);
                     }
                 }
-
                 Activated term = new Activated(proposition.getTerm(), activationDegree, activation);
                 OutputVariable outputVariable = (OutputVariable) proposition.getVariable();
                 outputVariable.fuzzyOutput().getTerms().add(term);
@@ -117,8 +118,6 @@ public class Consequent {
         final byte S_VARIABLE = 1, S_IS = 2, S_HEDGE = 4, S_TERM = 8, S_AND = 16, S_WITH = 32;
         byte state = S_VARIABLE;
 
-        this.conclusions.clear();
-
         Proposition proposition = null;
 
         StringTokenizer tokenizer = new StringTokenizer(consequent);
@@ -150,7 +149,7 @@ public class Consequent {
                         hedge = rule.getHedges().get(token);
                     } else {
                         HedgeFactory hedgeFactory = FactoryManager.instance().hedge();
-                        if (hedgeFactory.isRegistered(token)) {
+                        if (hedgeFactory.hasConstructor(token)) {
                             hedge = hedgeFactory.constructObject(token);
                             rule.getHedges().put(token, hedge);
                         }
@@ -202,7 +201,7 @@ public class Consequent {
                         "[syntax error] unexpected token <%s>", token));
             }
 
-            if (!((state & S_AND) > 0 || ((state & S_WITH) > 0))) {
+            if (!((state & S_AND) > 0 || ((state & S_WITH) > 0))) { //only acceptable final state
                 if ((state & S_VARIABLE) > 0) {
                     throw new RuntimeException(String.format(
                             "[syntax error] consequent expected output variable after <%s>", token));

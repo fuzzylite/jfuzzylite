@@ -25,6 +25,7 @@
 package com.fuzzylite.rule;
 
 import com.fuzzylite.Engine;
+import com.fuzzylite.FuzzyLite;
 import com.fuzzylite.Op;
 import com.fuzzylite.factory.FactoryManager;
 import com.fuzzylite.factory.HedgeFactory;
@@ -83,16 +84,17 @@ public class Antecedent {
                 return 0.0;
             }
             if (!proposition.getHedges().isEmpty()) {
-                int lastIndex = proposition.getHedges().size() - 1;
-                Hedge any = proposition.getHedges().get(lastIndex);
+                int lastIndex = proposition.getHedges().size();
+                ListIterator<Hedge> rit = proposition.getHedges().listIterator(lastIndex);
+                Hedge any = rit.previous();
+                //if last hedge is "Any", apply hedges in reverse order and return degree
                 if (any instanceof Any) {
                     double result = any.hedge(Double.NaN);
-                    while (--lastIndex >= 0) {
-                        result = proposition.getHedges().get(lastIndex).hedge(result);
+                    while (rit.hasPrevious()) {
+                        result = rit.previous().hedge(result);
                     }
                     return result;
                 }
-
             }
 
             double result = Double.NaN;
@@ -103,8 +105,8 @@ public class Antecedent {
                 OutputVariable outputVariable = (OutputVariable) proposition.getVariable();
                 result = outputVariable.fuzzyOutput().activationDegree(proposition.getTerm());
             }
-            ListIterator<Hedge> reverseIterator = proposition.getHedges()
-                    .listIterator(proposition.getHedges().size());
+            int lastIndex = proposition.getHedges().size();
+            ListIterator<Hedge> reverseIterator = proposition.getHedges().listIterator(lastIndex);
             while (reverseIterator.hasPrevious()) {
                 result = reverseIterator.previous().hedge(result);
             }
@@ -151,14 +153,12 @@ public class Antecedent {
     }
 
     public void load(String antecedent, Rule rule, Engine engine) {
+        FuzzyLite.log().finest("Antedecent: " + antecedent);
         unload();
         this.text = antecedent;
         if (antecedent.trim().isEmpty()) {
             throw new RuntimeException("[syntax error] antecedent is empty");
         }
-
-        Function function = new Function();
-        String postfix = function.toPostfix(antecedent);
         /*
          Builds an proposition tree from the antecedent of a fuzzy rule.
          The rules are:
@@ -168,13 +168,16 @@ public class Antecedent {
          4) After a term comes a variable or an operator
          */
 
+        Function function = new Function();
+        String postfix = function.toPostfix(antecedent);
+
         final byte S_VARIABLE = 1, S_IS = 2, S_HEDGE = 4, S_TERM = 8, S_AND_OR = 16;
         byte state = S_VARIABLE;
         Deque<Expression> expressionStack = new ArrayDeque<Expression>();
         Proposition proposition = null;
 
         StringTokenizer tokenizer = new StringTokenizer(postfix);
-        String token;
+        String token = "";
 
         while (tokenizer.hasMoreTokens()) {
             token = tokenizer.nextToken();
@@ -191,6 +194,7 @@ public class Antecedent {
                     expressionStack.push(proposition);
 
                     state = S_IS;
+                    FuzzyLite.log().finest("Token <" + token + "> is variable");
                     continue;
                 }
             }
@@ -198,6 +202,7 @@ public class Antecedent {
             if ((state & S_IS) > 0) {
                 if (Rule.FL_IS.equals(token)) {
                     state = S_HEDGE | S_TERM;
+                    FuzzyLite.log().finest("Token <" + token + "> is keyword");
                     continue;
                 }
             }
@@ -208,7 +213,7 @@ public class Antecedent {
                     hedge = rule.getHedges().get(token);
                 } else {
                     HedgeFactory hedgeFactory = FactoryManager.instance().hedge();
-                    if (hedgeFactory.isRegistered(token)) {
+                    if (hedgeFactory.hasConstructor(token)) {
                         hedge = hedgeFactory.constructObject(token);
                         rule.getHedges().put(token, hedge);
                     }
@@ -220,6 +225,7 @@ public class Antecedent {
                     } else {
                         state = S_HEDGE | S_TERM;
                     }
+                    FuzzyLite.log().finest("Token <" + token + "> is hedge");
                     continue;
                 }
             }
@@ -228,6 +234,7 @@ public class Antecedent {
                 if (proposition.getVariable().hasTerm(token)) {
                     proposition.setTerm(proposition.getVariable().getTerm(token));
                     state = S_VARIABLE | S_AND_OR;
+                    FuzzyLite.log().finest("Token <" + token + "> is term");
                     continue;
                 }
             }
@@ -246,6 +253,8 @@ public class Antecedent {
                     expressionStack.push(operator);
 
                     state = S_VARIABLE | S_AND_OR;
+                    FuzzyLite.log().finest(String.format("Subtree : (%s) (%s)",
+                            operator.getLeft(), operator.getRight()));
                     continue;
                 }
             }
@@ -270,6 +279,20 @@ public class Antecedent {
                     "[syntax error] unexpected token <%s>",
                     token));
         }
+
+        if (!((state & S_VARIABLE) > 0 || (state & S_AND_OR) > 0)) { //only acceptable final state
+            if ((state & S_IS) > 0) {
+                throw new RuntimeException(String.format(
+                        "[syntax error] expected keyword <%s> after <%s>",
+                        Rule.FL_IS, token));
+            }
+            if ((state & S_HEDGE) > 0 || (state & S_TERM) > 0) {
+                throw new RuntimeException(String.format(
+                        "[syntax error] expected hedge or term, but found <%s>",
+                        token));
+            }
+        }
+
         if (expressionStack.size() != 1) {
             List<String> errors = new LinkedList<String>();
             while (expressionStack.size() > 1) {
@@ -301,6 +324,11 @@ public class Antecedent {
     }
 
     public String toPrefix(Expression node) {
+        if (!isLoaded()) {
+            throw new RuntimeException(String.format(
+                    "[antecedent error] antecedent <%s> is not loaded",
+                    this.text));
+        }
         if (node instanceof Proposition) {
             return node.toString();
         }
@@ -316,6 +344,11 @@ public class Antecedent {
     }
 
     public String toInfix(Expression node) {
+        if (!isLoaded()) {
+            throw new RuntimeException(String.format(
+                    "[antecedent error] antecedent <%s> is not loaded",
+                    this.text));
+        }
         if (node instanceof Proposition) {
             return node.toString();
         }
@@ -331,6 +364,11 @@ public class Antecedent {
     }
 
     public String toPostfix(Expression node) {
+        if (!isLoaded()) {
+            throw new RuntimeException(String.format(
+                    "[antecedent error] antecedent <%s> is not loaded",
+                    this.text));
+        }
         if (node instanceof Proposition) {
             return node.toString();
         }
