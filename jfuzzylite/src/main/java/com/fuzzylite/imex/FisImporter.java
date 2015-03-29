@@ -47,6 +47,7 @@ import com.fuzzylite.norm.s.DrasticSum;
 import com.fuzzylite.norm.s.EinsteinSum;
 import com.fuzzylite.norm.s.HamacherSum;
 import com.fuzzylite.norm.s.Maximum;
+import com.fuzzylite.norm.s.NilpotentMaximum;
 import com.fuzzylite.norm.s.NormalizedSum;
 import com.fuzzylite.norm.t.AlgebraicProduct;
 import com.fuzzylite.norm.t.BoundedDifference;
@@ -54,10 +55,13 @@ import com.fuzzylite.norm.t.DrasticProduct;
 import com.fuzzylite.norm.t.EinsteinProduct;
 import com.fuzzylite.norm.t.HamacherProduct;
 import com.fuzzylite.norm.t.Minimum;
+import com.fuzzylite.norm.t.NilpotentMinimum;
 import com.fuzzylite.rule.Rule;
 import com.fuzzylite.rule.RuleBlock;
 import com.fuzzylite.term.Bell;
+import com.fuzzylite.term.Concave;
 import com.fuzzylite.term.Constant;
+import com.fuzzylite.term.Cosine;
 import com.fuzzylite.term.Discrete;
 import com.fuzzylite.term.Function;
 import com.fuzzylite.term.Gaussian;
@@ -70,6 +74,7 @@ import com.fuzzylite.term.SShape;
 import com.fuzzylite.term.Sigmoid;
 import com.fuzzylite.term.SigmoidDifference;
 import com.fuzzylite.term.SigmoidProduct;
+import com.fuzzylite.term.Spike;
 import com.fuzzylite.term.Term;
 import com.fuzzylite.term.Trapezoid;
 import com.fuzzylite.term.Triangle;
@@ -88,7 +93,11 @@ import java.util.regex.Pattern;
 
 public class FisImporter extends Importer {
 
-    protected static int and = 0, or = 1, imp = 2, agg = 3, defuzz = 4;
+    protected static int and = 0, or = 1, imp = 2, agg = 3, defuzz = 4, all = 5;
+
+    public FisImporter() {
+
+    }
 
     @Override
     public Engine fromString(String fis) {
@@ -96,9 +105,12 @@ public class FisImporter extends Importer {
 
         BufferedReader fisReader = new BufferedReader(new StringReader(fis));
         String line;
+
+        int lineNumber = 0;
         List<String> sections = new ArrayList<String>();
         try {
             while ((line = fisReader.readLine()) != null) {
+                ++lineNumber;
                 List<String> comments = Op.split(line, "//");
                 if (comments.size() > 1) {
                     line = comments.get(0);
@@ -129,16 +141,16 @@ public class FisImporter extends Importer {
                         sections.set(lastIndex, section);
                     } else {
                         throw new RuntimeException(String.format(
-                                "[import error] line <%s> "
-                                + "does not belong to any section", line));
+                                "[import error] line %d <%s> "
+                                + "does not belong to any section", lineNumber, line));
                     }
                 }
             }
 
-            String[] methods = new String[5];
+            String[] configuration = new String[all];
             for (String section : sections) {
                 if (section.startsWith("[System]")) {
-                    importSystem(section, engine, methods);
+                    importSystem(section, engine, configuration);
                 } else if (section.startsWith("[Input")) {
                     importInput(section, engine);
                 } else if (section.startsWith("[Output")) {
@@ -149,9 +161,9 @@ public class FisImporter extends Importer {
                     throw new RuntimeException(String.format(
                             "[import error] section not recognized: %s", section));
                 }
-                engine.configure(tnorm(methods[and]), snorm(methods[or]),
-                        tnorm(methods[imp]), snorm(methods[agg]),
-                        defuzzifier(methods[defuzz]));
+                engine.configure(translateTNorm(configuration[and]), translateSNorm(configuration[or]),
+                        translateTNorm(configuration[imp]), translateSNorm(configuration[agg]),
+                        translateDefuzzifier(configuration[defuzz]));
             }
         } catch (Exception ex) {
             throw new RuntimeException(ex);
@@ -214,15 +226,15 @@ public class FisImporter extends Importer {
             String value = keyValue.get(1).trim();
 
             if ("Name".equals(key)) {
-                inputVariable.setName(Op.makeValidId(value));
+                inputVariable.setName(Op.validName(value));
             } else if ("Enabled".equals(key)) {
                 inputVariable.setEnabled(Op.isEq(Op.toDouble(value), 1.0));
             } else if ("Range".equals(key)) {
-                Pair<Double, Double> minmax = extractRange(value);
+                Pair<Double, Double> minmax = parseRange(value);
                 inputVariable.setMinimum(minmax.getFirst());
                 inputVariable.setMaximum(minmax.getSecond());
             } else if (key.startsWith("MF")) {
-                inputVariable.addTerm(prepareTerm(extractTerm(value), engine));
+                inputVariable.addTerm(parseTerm(value, engine));
             } else if ("NumMFs".equals(key)) {
                 //ignore
             } else {
@@ -251,21 +263,21 @@ public class FisImporter extends Importer {
             String value = keyValue.get(1).trim();
 
             if ("Name".equals(key)) {
-                outputVariable.setName(Op.makeValidId(value));
+                outputVariable.setName(Op.validName(value));
             } else if ("Enabled".equals(key)) {
                 outputVariable.setEnabled(Op.isEq(Op.toDouble(value), 1.0));
             } else if ("Range".equals(key)) {
-                Pair<Double, Double> minmax = extractRange(value);
+                Pair<Double, Double> minmax = parseRange(value);
                 outputVariable.setMinimum(minmax.getFirst());
                 outputVariable.setMaximum(minmax.getSecond());
             } else if (key.startsWith("MF")) {
-                outputVariable.addTerm(prepareTerm(extractTerm(value), engine));
+                outputVariable.addTerm(parseTerm(value, engine));
             } else if ("Default".equals(key)) {
                 outputVariable.setDefaultValue(Op.toDouble(value));
-            } else if ("LockValid".equals(key)) {
-                outputVariable.setLockPreviousOutputValue((int) Op.toDouble(value) == 1);
+            } else if ("LockPrevious".equals(key)) {
+                outputVariable.setLockPreviousOutputValue(Op.isEq(Op.toDouble(value), 1.0));
             } else if ("LockRange".equals(key)) {
-                outputVariable.setLockOutputValueInRange((int) Op.toDouble(value) == 1);
+                outputVariable.setLockOutputValueInRange(Op.isEq(Op.toDouble(value), 1.0));
             } else if ("NumMFs".equals(key)) {
                 //ignore
             } else {
@@ -345,16 +357,16 @@ public class FisImporter extends Importer {
                 consequent.add(proposition);
             }
 
-            StringBuilder rule = new StringBuilder();
-            rule.append(Rule.FL_IF).append(" ");
+            StringBuilder ruleText = new StringBuilder();
+            ruleText.append(Rule.FL_IF).append(" ");
             for (Iterator<String> it = antecedent.iterator(); it.hasNext();) {
-                rule.append(it.next());
+                ruleText.append(it.next());
                 if (it.hasNext()) {
-                    rule.append(" ");
+                    ruleText.append(" ");
                     if ("1".equals(connector)) {
-                        rule.append(Rule.FL_AND).append(" ");
+                        ruleText.append(Rule.FL_AND).append(" ");
                     } else if ("2".equals(connector)) {
-                        rule.append(Rule.FL_OR).append(" ");
+                        ruleText.append(Rule.FL_OR).append(" ");
                     } else {
                         throw new RuntimeException(String.format(
                                 "[syntax error] connector <%s> not recognized",
@@ -363,11 +375,11 @@ public class FisImporter extends Importer {
                 }
             }
 
-            rule.append(String.format(" %s ", Rule.FL_THEN));
+            ruleText.append(String.format(" %s ", Rule.FL_THEN));
             for (Iterator<String> it = consequent.iterator(); it.hasNext();) {
-                rule.append(it.next());
+                ruleText.append(it.next());
                 if (it.hasNext()) {
-                    rule.append(String.format(" %s ", Rule.FL_AND));
+                    ruleText.append(String.format(" %s ", Rule.FL_AND));
                 }
             }
 
@@ -380,13 +392,16 @@ public class FisImporter extends Importer {
             }
             double weight = Op.toDouble(weightString);
             if (!Op.isEq(weight, 1.0)) {
-                rule.append(String.format(" %s %s",
+                ruleText.append(String.format(" %s %s",
                         Rule.FL_WITH, Op.str(weight)));
             }
-
-            ruleBlock.addRule(Rule.parse(rule.toString(), engine));
+            Rule rule = new Rule(ruleText.toString());
+            try {
+                rule.load(engine);
+            } finally {
+                ruleBlock.addRule(rule);
+            }
         }
-
     }
 
     protected String translateProposition(double code, Variable variable) {
@@ -428,7 +443,7 @@ public class FisImporter extends Importer {
         return result.toString();
     }
 
-    protected String tnorm(String name) {
+    protected String translateTNorm(String name) {
         if ("min".equals(name)) {
             return Minimum.class.getSimpleName();
         }
@@ -447,10 +462,13 @@ public class FisImporter extends Importer {
         if ("hamacher_product".equals(name)) {
             return HamacherProduct.class.getSimpleName();
         }
+        if ("nilpotent_minimum".equals(name)) {
+            return NilpotentMinimum.class.getSimpleName();
+        }
         return name;
     }
 
-    protected String snorm(String name) {
+    protected String translateSNorm(String name) {
         if ("max".equals(name)) {
             return Maximum.class.getSimpleName();
         }
@@ -472,10 +490,13 @@ public class FisImporter extends Importer {
         if ("hamacher_sum".equals(name)) {
             return HamacherSum.class.getSimpleName();
         }
+        if ("nilpotent_maximum".equals(name)) {
+            return NilpotentMaximum.class.getSimpleName();
+        }
         return name;
     }
 
-    protected String defuzzifier(String name) {
+    protected String translateDefuzzifier(String name) {
         if ("centroid".equals(name)) {
             return Centroid.class.getSimpleName();
         }
@@ -500,7 +521,7 @@ public class FisImporter extends Importer {
         return name;
     }
 
-    protected Pair<Double, Double> extractRange(String range) {
+    protected Pair<Double, Double> parseRange(String range) {
         List<String> minmax = Op.split(range, " ");
         if (minmax.size() != 2) {
             throw new RuntimeException(String.format(
@@ -520,7 +541,7 @@ public class FisImporter extends Importer {
         return result;
     }
 
-    protected Term extractTerm(String fis) {
+    protected Term parseTerm(String fis, Engine engine) {
         String line = "";
         for (char c : fis.toCharArray()) {
             if (!(c == '[' || c == ']')) {
@@ -550,26 +571,15 @@ public class FisImporter extends Importer {
         return createInstance(
                 termParams.get(0).trim(),
                 nameTerm.get(0).trim(),
-                parameters);
+                parameters, engine);
     }
 
-    protected Term prepareTerm(Term term, Engine engine) {
-        if (term instanceof Linear) {
-            Linear linear = (Linear) term;
-            linear.set(linear.coefficients, engine.getInputVariables());
-        } else if (term instanceof Function) {
-            Function function = (Function) term;
-            function.setEngine(engine);
-            //builtin functions are loaded from TermFactory
-            function.load();
-        }
-        return term;
-    }
-
-    protected Term createInstance(String mClass, String name, List<String> parameters) {
+    protected Term createInstance(String mClass, String name, List<String> parameters, Engine engine) {
         Map<String, String> mapping = new HashMap<String, String>();
         mapping.put("discretemf", Discrete.class.getSimpleName());
+        mapping.put("concavemf", Concave.class.getSimpleName());
         mapping.put("constant", Constant.class.getSimpleName());
+        mapping.put("cosinemf", Cosine.class.getSimpleName());
         mapping.put("function", Function.class.getSimpleName());
         mapping.put("gbellmf", Bell.class.getSimpleName());
         mapping.put("gaussmf", Gaussian.class.getSimpleName());
@@ -582,6 +592,7 @@ public class FisImporter extends Importer {
         mapping.put("sigmf", Sigmoid.class.getSimpleName());
         mapping.put("dsigmf", SigmoidDifference.class.getSimpleName());
         mapping.put("psigmf", SigmoidProduct.class.getSimpleName());
+        mapping.put("spikemf", Spike.class.getSimpleName());
         mapping.put("trapmf", Trapezoid.class.getSimpleName());
         mapping.put("trimf", Triangle.class.getSimpleName());
         mapping.put("zmf", ZShape.class.getSimpleName());
@@ -620,13 +631,20 @@ public class FisImporter extends Importer {
             flClass = mClass;
         }
 
-        Term result = FactoryManager.instance().term().createInstance(flClass);
-        result.setName(Op.makeValidId(name));
+        Term term = FactoryManager.instance().term().constructObject(flClass);
+        Term.updateReference(term, engine);
+        term.setName(Op.validName(name));
         String separator = " ";
-        if (result instanceof Function) {
+        if (term instanceof Function) {
             separator = "";
         }
-        result.configure(Op.join(sortedParameters, separator));
-        return result;
+        term.configure(Op.join(sortedParameters, separator));
+        return term;
     }
+
+    @Override
+    public FisImporter clone() throws CloneNotSupportedException {
+        return (FisImporter) super.clone();
+    }
+
 }

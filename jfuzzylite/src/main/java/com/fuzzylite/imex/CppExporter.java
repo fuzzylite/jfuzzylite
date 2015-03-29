@@ -29,6 +29,7 @@ import com.fuzzylite.Op;
 import static com.fuzzylite.Op.str;
 import com.fuzzylite.defuzzifier.Defuzzifier;
 import com.fuzzylite.defuzzifier.IntegralDefuzzifier;
+import com.fuzzylite.hedge.Hedge;
 import com.fuzzylite.norm.Norm;
 import com.fuzzylite.rule.Rule;
 import com.fuzzylite.rule.RuleBlock;
@@ -38,18 +39,42 @@ import com.fuzzylite.term.Linear;
 import com.fuzzylite.term.Term;
 import com.fuzzylite.variable.InputVariable;
 import com.fuzzylite.variable.OutputVariable;
-import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.regex.Pattern;
 
 public class CppExporter extends Exporter {
 
+    private boolean prefixNamespace;
+
+    public CppExporter() {
+        this(false);
+    }
+
+    public CppExporter(boolean prefixNamespace) {
+        this.prefixNamespace = prefixNamespace;
+    }
+
+    protected String fl() {
+        return fl("");
+    }
+
+    protected String fl(String clazz) {
+        return this.prefixNamespace ? "fl::" + clazz : clazz;
+    }
+
+    public void setPrefixNamespace(boolean prefixNamespace) {
+        this.prefixNamespace = prefixNamespace;
+    }
+
+    public boolean isPrefixNamespace() {
+        return this.prefixNamespace;
+    }
+
     @Override
     public String toString(Engine engine) {
         StringBuilder result = new StringBuilder();
 
-        result.append("fl::Engine* engine = new fl::Engine;\n");
+        result.append(fl("Engine* ") + "engine = new " + fl("Engine;\n"));
         result.append(String.format(
                 "engine->setName(\"%s\");\n", engine.getName()));
 
@@ -77,7 +102,7 @@ public class CppExporter extends Exporter {
         }
         StringBuilder result = new StringBuilder();
         result.append(String.format(
-                "fl::InputVariable* %s = new fl::InputVariable;\n", name));
+                fl("InputVariable* ") + "%s = new " + fl("InputVariable;\n"), name));
         result.append(String.format(
                 "%s->setEnabled(%s);\n", name, String.valueOf(inputVariable.isEnabled())));
         result.append(String.format(
@@ -101,7 +126,7 @@ public class CppExporter extends Exporter {
         }
         StringBuilder result = new StringBuilder();
         result.append(String.format(
-                "fl::OutputVariable* %s = new fl::OutputVariable;\n", name));
+                fl("OutputVariable* ") + "%s = new " + fl("OutputVariable;\n"), name));
         result.append(String.format(
                 "%s->setEnabled(%s);\n", name, String.valueOf(outputVariable.isEnabled())));
         result.append(String.format(
@@ -119,10 +144,10 @@ public class CppExporter extends Exporter {
                 "%s->setDefaultValue(%s);\n", name,
                 toString(outputVariable.getDefaultValue())));
         result.append(String.format(
-                "%s->setLockValidOutput(%s);\n", name,
+                "%s->setLockPreviousOutputValue(%s);\n", name,
                 outputVariable.isLockedPreviousOutputValue()));
         result.append(String.format(
-                "%s->setLockOutputRange(%s);\n", name,
+                "%s->setLockOutputValueInRange(%s);\n", name,
                 outputVariable.isLockedOutputValueInRange()));
         for (Term term : outputVariable.getTerms()) {
             result.append(String.format("%s->addTerm(%s);\n",
@@ -140,7 +165,7 @@ public class CppExporter extends Exporter {
         }
         StringBuilder result = new StringBuilder();
         result.append(String.format(
-                "fl::RuleBlock* %s = new fl::RuleBlock;\n", name));
+                fl() + "RuleBlock* %s = new " + fl() + "RuleBlock;\n", name));
         result.append(String.format(
                 "%s->setEnabled(%s);\n", name, String.valueOf(ruleBlock.isEnabled())));
         result.append(String.format(
@@ -152,7 +177,8 @@ public class CppExporter extends Exporter {
         result.append(String.format(
                 "%s->setActivation(%s);\n", name, toString(ruleBlock.getActivation())));
         for (Rule rule : ruleBlock.getRules()) {
-            result.append(String.format("%s->addRule(fl::Rule::parse(\"%s\", engine));\n",
+            result.append(String.format("%s->addRule("
+                    + fl("Rule") + "::parse(\"%s\", engine));\n",
                     name, rule.getText()));
         }
         result.append(String.format(
@@ -160,73 +186,74 @@ public class CppExporter extends Exporter {
         return result.toString();
     }
 
+    public String toString(double value) {
+        if (Double.isNaN(value)) {
+            return "fl::nan";
+        } else if (Double.isInfinite(value)) {
+            return value > 0 ? "fl::inf" : "-fl::inf";
+        }
+        return str(value);
+    }
+
     public String toString(Term term) {
         if (term == null) {
-            return "NULL";
+            return "fl::null";
         }
         if (term instanceof Discrete) {
-            List<Double> xy = new ArrayList<Double>();
             Discrete t = (Discrete) term;
-            Iterator<Discrete.Pair> it = t.iterator();
-            while (it.hasNext()) {
-                Discrete.Pair pair = it.next();
-                xy.add(pair.getX());
-                xy.add(pair.getY());
-            }
-            String result = String.format("fl::%s::create(\"%s\", %d, %s)",
+            List<Double> xy = Discrete.toList(t.getXY());
+            String result = String.format(fl("%s") + "::create(\"%s\", %d, %s)",
                     Discrete.class.getSimpleName(), term.getName(),
                     xy.size(), Op.join(xy, ", "));
             return result;
         }
         if (term instanceof Function) {
             Function t = (Function) term;
-            String result = String.format("fl::%s::create(\"%s\", \"%s\", engine)",
+            String result = String.format(fl("%s") + "::create(\"%s\", \"%s\", engine)",
                     Function.class.getSimpleName(), term.getName(),
                     t.getFormula());
             return result;
         }
         if (term instanceof Linear) {
             Linear t = (Linear) term;
-            String result = String.format("fl::%s::create(\"%s\", engine->inputVariables(), %s)",
+            String result = String.format(fl("%s") + "::create(\"%s\", engine, %s)",
                     Linear.class.getSimpleName(), term.getName(), Op.join(t.getCoefficients(), ", "));
             return result;
         }
 
-        String result = String.format("new fl::%s(\"%s\", %s)",
+        String result = String.format("new " + fl("%s") + "(\"%s\", %s)",
                 term.getClass().getSimpleName(), term.getName(),
                 term.parameters().replaceAll(Pattern.quote(" "), ", "));
         return result;
     }
 
-    public String toString(Defuzzifier defuzzifier) {
-        if (defuzzifier == null) {
-            return "NULL";
-        }
-        if (defuzzifier instanceof IntegralDefuzzifier) {
-            IntegralDefuzzifier integralDefuzzifier = (IntegralDefuzzifier) defuzzifier;
-            return String.format("new fl::%s(%d)",
-                    integralDefuzzifier.getClass().getSimpleName(),
-                    integralDefuzzifier.getResolution());
-        }
-        return String.format("new fl::%s",
-                defuzzifier.getClass().getSimpleName());
+    public String toString(Hedge hedge) {
+        return "new " + fl(hedge.getClass().getSimpleName());
     }
 
     public String toString(Norm norm) {
         if (norm == null) {
-            return "NULL";
+            return "fl::null";
         }
-        return String.format("new fl::%s", norm.getClass().getSimpleName());
+        return "new " + fl(norm.getClass().getSimpleName());
     }
 
-    public String toString(double value) {
-        if (Double.isNaN(value)) {
-            return "fl::nan";
-        } else if (Double.isInfinite(value)) {
-            return value > 0 ? "fl::inf"
-                    : "-fl::inf";
+    public String toString(Defuzzifier defuzzifier) {
+        if (defuzzifier == null) {
+            return "fl::null";
         }
-        return str(value);
+        if (defuzzifier instanceof IntegralDefuzzifier) {
+            IntegralDefuzzifier integralDefuzzifier = (IntegralDefuzzifier) defuzzifier;
+            return String.format("new " + fl("%s(%d)"),
+                    integralDefuzzifier.getClass().getSimpleName(),
+                    integralDefuzzifier.getResolution());
+        }
+        return "new " + fl(defuzzifier.getClass().getSimpleName());
+    }
+
+    @Override
+    public CppExporter clone() throws CloneNotSupportedException {
+        return (CppExporter) super.clone();
     }
 
 }

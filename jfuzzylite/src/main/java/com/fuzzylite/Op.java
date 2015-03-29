@@ -344,17 +344,17 @@ public class Op {
         return result;
     }
 
-    public static String makeValidId(String id) {
-        if (id == null) {
-            return null;
+    public static String validName(String id) {
+        if (id == null || id.trim().isEmpty()){
+            return "unnamed";
         }
-        String result = "";
+        StringBuilder result = new StringBuilder();
         for (char c : id.toCharArray()) {
             if (c == '_' || c == '.' || Character.isLetterOrDigit(c)) {
-                result += c;
+                result.append(c);
             }
         }
-        return result;
+        return result.toString();
     }
 
     /**

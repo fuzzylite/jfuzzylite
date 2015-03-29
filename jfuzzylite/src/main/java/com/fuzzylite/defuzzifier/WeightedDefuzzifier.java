@@ -53,6 +53,10 @@ public abstract class WeightedDefuzzifier extends Defuzzifier {
         this(Type.Automatic);
     }
 
+    public WeightedDefuzzifier(String type) {
+        this(Type.valueOf(type));
+    }
+
     public WeightedDefuzzifier(Type type) {
         this.type = type;
     }
@@ -164,5 +168,4 @@ public abstract class WeightedDefuzzifier extends Defuzzifier {
         }
         return z;
     }
-
 }

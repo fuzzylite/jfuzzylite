@@ -29,10 +29,17 @@ import com.fuzzylite.Op;
 import com.fuzzylite.variable.InputVariable;
 import com.fuzzylite.variable.OutputVariable;
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.Reader;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.io.Writer;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.StringTokenizer;
 
@@ -42,6 +49,9 @@ public class FldExporter extends Exporter {
     public static final String DEFAULT_SEPARATOR = " ";
 
     private String separator;
+    private boolean exportHeaders;
+    private boolean exportInputValues;
+    private boolean exportOutputValues;
 
     public FldExporter() {
         this(DEFAULT_SEPARATOR);
@@ -59,38 +69,46 @@ public class FldExporter extends Exporter {
         this.separator = separator;
     }
 
-    public String header(Engine engine) {
-        String inputsHeader = headerInputVariables(engine.getInputVariables());
-        String outputsHeader = headerOutputVariables(engine.getOutputVariables());
-        StringBuilder result = new StringBuilder();
-        result.append(String.format("@Engine: %s;", engine.getName()));
-        if (!inputsHeader.isEmpty()) {
-            result.append(separator).append(inputsHeader);
-        }
-        if (!outputsHeader.isEmpty()) {
-            result.append(separator).append(outputsHeader);
-        }
-        return result.toString();
+    public boolean exportsHeaders() {
+        return exportHeaders;
     }
 
-    public String headerInputVariables(List<InputVariable> inputVariables) {
-        List<String> result = new ArrayList<String>();
-        for (InputVariable inputVariable : inputVariables) {
-            if (inputVariable.isEnabled()) {
-                result.add("@InputVariable: " + inputVariable.getName() + ";");
+    public void setExportHeaders(boolean exportHeaders) {
+        this.exportHeaders = exportHeaders;
+    }
+
+    public boolean exportsInputValues() {
+        return exportInputValues;
+    }
+
+    public void setExportInputValues(boolean exportInputValues) {
+        this.exportInputValues = exportInputValues;
+    }
+
+    public boolean exportsOutputValues() {
+        return exportOutputValues;
+    }
+
+    public void setExportOutputValues(boolean exportOutputValues) {
+        this.exportOutputValues = exportOutputValues;
+    }
+
+    public String header(Engine engine) {
+        List<String> result = new LinkedList<String>();
+        if (exportInputValues) {
+            for (InputVariable inputVariable : engine.getInputVariables()) {
+                if (inputVariable.isEnabled()) {
+                    result.add("@InputVariable: " + inputVariable.getName() + ";");
+                }
             }
         }
-        return Op.join(result, separator);
-    }
-
-    public String headerOutputVariables(List<OutputVariable> outputVariables) {
-        List<String> result = new ArrayList<String>();
-        for (OutputVariable outputVariable : outputVariables) {
+        for (OutputVariable outputVariable : engine.getOutputVariables()) {
             if (outputVariable.isEnabled()) {
                 result.add("@OutputVariable: " + outputVariable.getName() + ";");
             }
         }
-        return Op.join(result, separator);
+
+        return String.format("#@Engine: %s;\n#", engine.getName()) + Op.join(result, separator);
     }
 
     @Override
@@ -101,17 +119,83 @@ public class FldExporter extends Exporter {
     public String toString(Engine engine, int maximumNumberOfResults) {
         StringWriter writer = new StringWriter();
         try {
-            toWriter(engine, writer, maximumNumberOfResults, separator);
-        } catch (Exception ex) {
+            write(engine, writer, maximumNumberOfResults);
+        } catch (Exception ex) { 
             throw new RuntimeException("[exporter error] an exception occurred while exporting the results", ex);
         }
         return writer.toString();
     }
 
-    public void toWriter(Engine engine, Writer writer, int maximumNumberOfResults, String separator)
-            throws Exception {
-        writer.write("#" + header(engine) + "\n");
+    public void toFile(File file, Engine engine, int maximumNumberOfResults) throws IOException {
+        if (!file.exists()) {
+            file.createNewFile();
+        }
+        BufferedWriter writer = new BufferedWriter(new FileWriter(file));
+        write(engine, writer, maximumNumberOfResults);
+        writer.close();
+    }
 
+    public String toString(Engine engine, String inputData) {
+        StringWriter writer = new StringWriter();
+        if (exportHeaders) {
+            writer.write("#" + header(engine) + "\n");
+        }
+        BufferedReader reader = new BufferedReader(new StringReader(inputData));
+        String line;
+        try {
+            while ((line = reader.readLine()) != null) {
+                line = line.trim();
+                if (!line.isEmpty() && line.charAt(0) == '#') {
+                    continue;
+                }
+                List<Double> inputValues = parse(line);
+                write(engine, writer, inputValues);
+                writer.flush();
+            }
+        } catch (Exception ex) {
+            throw new RuntimeException(ex);
+        }
+        return writer.toString();
+    }
+
+    public void toFile(File file, Engine engine, String inputData) throws IOException {
+        if (!file.exists()) {
+            file.createNewFile();
+        }
+        BufferedWriter writer = new BufferedWriter(new FileWriter(file));
+        if (exportHeaders) {
+            writer.write(header(engine) + "\n");
+        }
+        BufferedReader reader = new BufferedReader(new FileReader(file));
+        String line;
+        while ((line = reader.readLine()) != null) {
+            line = line.trim();
+            if (!line.isEmpty() && line.charAt(0) == '#') {
+                continue;
+            }
+            List<Double> inputValues = parse(line);
+            write(engine, writer, inputValues);
+            writer.flush();
+        }
+        writer.close();
+    }
+
+    public List<Double> parse(String values) {
+        List<Double> inputValues = new ArrayList<Double>();
+        if (!(values.isEmpty() || values.charAt(0) == '#')) {
+            StringTokenizer tokenizer = new StringTokenizer(values);
+            while (tokenizer.hasMoreTokens()) {
+                inputValues.add(Op.toDouble(tokenizer.nextToken()));
+            }
+        }
+        return inputValues;
+    }
+
+    public void write(Engine engine, Writer writer, int maximumNumberOfResults)
+            throws IOException {
+        if (exportHeaders) {
+            writer.write(header(engine) + "\n");
+        }
         int resolution = -1 + (int) Math.max(1.0, Math.pow(
                 maximumNumberOfResults, 1.0 / engine.numberOfInputVariables()));
 
@@ -124,84 +208,61 @@ public class FldExporter extends Exporter {
             maxSampleValues[i] = resolution;
         }
 
-        boolean overflow = false;
-        while (!overflow) {
-            List<String> values = new ArrayList<String>();
+        engine.restart();
 
+        boolean overflow = false;
+        List<Double> inputValues = new ArrayList<Double>(engine.numberOfInputVariables());
+        while (!overflow) {
             for (int i = 0; i < engine.numberOfInputVariables(); ++i) {
                 InputVariable inputVariable = engine.getInputVariable(i);
-                if (inputVariable.isEnabled()) {
-                    double inputValue = inputVariable.getMinimum()
-                            + sampleValues[i] * inputVariable.range() / resolution;
-                    inputVariable.setInputValue(inputValue);
-                    values.add(Op.str(inputValue));
-                }
+                inputValues.set(i, inputVariable.getMinimum()
+                        + sampleValues[i] * inputVariable.range() / Math.max(1.0, resolution));
             }
-
-            engine.process();
-
-            for (OutputVariable outputVariable : engine.getOutputVariables()) {
-                if (outputVariable.isEnabled()) {
-                    values.add(Op.str(outputVariable.defuzzify()));
-                }
-            }
-
-            writer.write(Op.join(values, separator) + "\n");
-            writer.flush();
-
+            write(engine, writer, inputValues);
             overflow = Op.increment(sampleValues, minSampleValues, maxSampleValues);
         }
     }
 
-    public String toString(Engine engine, String inputData) {
-        StringWriter writer = new StringWriter();
-        writer.write("#" + header(engine) + "\n");
-        BufferedReader reader = new BufferedReader(new StringReader(inputData));
+    public void write(Engine engine, Writer writer, Reader reader) throws IOException {
+        if (exportHeaders) {
+            writer.write(header(engine) + "\n");
+        }
+
+        engine.restart();
+
         String line;
         int lineNumber = 0;
-        try {
-            while ((line = reader.readLine()) != null) {
-                ++lineNumber;
-                List<Double> inputValues = parse(line.trim());
-                if (inputValues.isEmpty()) {
-                    continue;
-                }
-                if (inputValues.size() != engine.numberOfInputVariables()) {
-                    throw new RuntimeException("[export error] engine has "
-                            + "<" + engine.numberOfInputVariables() + "> input variables, "
-                            + "but input data provides <" + inputValues.size() + "> "
-                            + "at line number <" + lineNumber + ">");
-                }
-                toWriter(engine, writer, inputValues, separator);
-                writer.write("\n");
-                writer.flush();
+        BufferedReader bufferedReader = new BufferedReader(reader);
+        while ((line = bufferedReader.readLine()) != null) {
+            ++lineNumber;
+            List<Double> inputValues = parse(line.trim());
+            try {
+                write(engine, writer, inputValues);
+            } catch (IOException ex) {
+                throw new IOException(String.format("IOException writing line <%d>", lineNumber), ex);
             }
-        } catch (Exception ex) {
-            throw new RuntimeException(ex);
         }
-        return writer.toString();
     }
 
-    public List<Double> parse(String values) {
-        List<Double> result = new ArrayList<Double>();
-        if (values.isEmpty() || values.charAt(0) == '#') {
-            return result;
+    public void write(Engine engine, Writer writer, List<Double> inputValues) throws IOException {
+        if (inputValues.isEmpty()) {
+            writer.write("\n");
+            return;
         }
-        StringTokenizer tokenizer = new StringTokenizer(values);
-        while (tokenizer.hasMoreTokens()) {
-            result.add(Op.toDouble(tokenizer.nextToken()));
-        }
-        return result;
-    }
 
-    public void toWriter(Engine engine, Writer writer, List<Double> inputValues,
-            String separator) throws Exception {
+        if (inputValues.size() < engine.numberOfInputVariables()) {
+            throw new RuntimeException(String.format(
+                    "[export error] engine has <%d> input variables, "
+                    + "but input data provides <%d> values",
+                    engine.numberOfInputVariables(), inputValues.size()));
+        }
+
         List<Double> values = new ArrayList<Double>();
         for (int i = 0; i < engine.numberOfInputVariables(); ++i) {
             InputVariable inputVariable = engine.getInputVariable(i);
-            if (inputVariable.isEnabled()) {
-                double inputValue = inputValues.get(i);
-                inputVariable.setInputValue(inputValue);
+            double inputValue = inputVariable.isEnabled() ? inputValues.get(i) : Double.NaN;
+            inputVariable.setInputValue(inputValue);
+            if (exportInputValues) {
                 values.add(inputValue);
             }
         }
@@ -210,11 +271,17 @@ public class FldExporter extends Exporter {
 
         for (int i = 0; i < engine.numberOfOutputVariables(); ++i) {
             OutputVariable outputVariable = engine.getOutputVariable(i);
-            if (outputVariable.isEnabled()) {
-                values.add(outputVariable.defuzzify());
+            outputVariable.defuzzify();
+            if (exportOutputValues) {
+                values.add(outputVariable.getOutputValue());
             }
         }
         writer.write(Op.join(values, separator));
+    }
+
+    @Override
+    public Exporter clone() throws CloneNotSupportedException {
+        return (FldExporter) super.clone();
     }
 
 }

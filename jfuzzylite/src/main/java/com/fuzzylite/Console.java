@@ -296,7 +296,7 @@ public class Console {
                                     engine.numberOfInputVariables(),
                                     inputValues.size(), lineNumber));
                         }
-                        fldExporter.toWriter(engine, writer, inputValues, fldExporter.getSeparator());
+                        fldExporter.write(engine, writer, inputValues);
                         writer.write("\n");
                         writer.flush();
                     }
@@ -579,7 +579,7 @@ public class Console {
                             + "import com.fuzzylite.rule.*;\n"
                             + "import com.fuzzylite.term.*;\n"
                             + "import com.fuzzylite.variable.*;\n\n"
-                            + "public class " + Op.makeValidId(className) + "{\n"
+                            + "public class " + Op.validName(className) + "{\n"
                             + "public static void main(String[] args){\n"
                             + exporter.toString(engine)
                             + "\n}\n}\n");

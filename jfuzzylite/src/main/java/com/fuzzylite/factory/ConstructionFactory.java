@@ -58,7 +58,7 @@ public class ConstructionFactory<T> implements Op.Cloneable {
         return new HashSet(this.constructors.keySet());
     }
 
-    public T createInstance(String simpleName) {
+    public T constructObject(String simpleName) {
         if (simpleName == null) {
             return null;
         }

@@ -59,6 +59,12 @@ public class Engine implements Op.Cloneable {
     private List<OutputVariable> outputVariables;
     private List<RuleBlock> ruleBlocks;
 
+    public enum Type {
+
+        NONE, MAMDANI, LARSEN, TAKAGI_SUGENO, TSUKAMOTO, INVERSE_TSUKAMOTO,
+        HYBRID, UNKNOWN;
+    };
+
     public Engine() {
         this("");
     }
@@ -166,13 +172,13 @@ public class Engine implements Op.Cloneable {
         TNormFactory tnormFactory = FactoryManager.instance().tnorm();
         SNormFactory snormFactory = FactoryManager.instance().snorm();
 
-        TNorm objConjunction = tnormFactory.createInstance(conjunction);
-        SNorm objDisjunction = snormFactory.createInstance(disjunction);
-        TNorm objActivation = tnormFactory.createInstance(activation);
-        SNorm objAccumulation = snormFactory.createInstance(accumulation);
+        TNorm objConjunction = tnormFactory.constructObject(conjunction);
+        SNorm objDisjunction = snormFactory.constructObject(disjunction);
+        TNorm objActivation = tnormFactory.constructObject(activation);
+        SNorm objAccumulation = snormFactory.constructObject(accumulation);
 
         DefuzzifierFactory defuzzifierFactory = FactoryManager.instance().defuzzifier();
-        Defuzzifier objDefuzzifier = defuzzifierFactory.createInstance(defuzzifier);
+        Defuzzifier objDefuzzifier = defuzzifierFactory.constructObject(defuzzifier);
         if (objDefuzzifier instanceof IntegralDefuzzifier) {
             ((IntegralDefuzzifier) objDefuzzifier).setResolution(resolution);
         }
@@ -298,12 +304,6 @@ public class Engine implements Op.Cloneable {
     public String toString() {
         return new FllExporter().toString(this);
     }
-
-    public enum Type {
-
-        NONE, MAMDANI, LARSEN, TAKAGI_SUGENO, TSUKAMOTO, INVERSE_TSUKAMOTO,
-        HYBRID, UNKNOWN;
-    };
 
     public Type type() {
         if (outputVariables.isEmpty()) {

@@ -50,6 +50,11 @@ public class Rule implements Op.Cloneable {
     private Map<String, Hedge> hedges;
 
     public Rule() {
+        this("");
+    }
+    
+    public Rule(String text){
+        this.text = text;
         hedges = new HashMap<String, Hedge>();
     }
 

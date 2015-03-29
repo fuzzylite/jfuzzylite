@@ -45,12 +45,14 @@ import com.fuzzylite.hedge.Somewhat;
 import com.fuzzylite.hedge.Very;
 import com.fuzzylite.norm.Norm;
 import com.fuzzylite.norm.SNorm;
+import com.fuzzylite.norm.TNorm;
 import com.fuzzylite.norm.s.AlgebraicSum;
 import com.fuzzylite.norm.s.BoundedSum;
 import com.fuzzylite.norm.s.DrasticSum;
 import com.fuzzylite.norm.s.EinsteinSum;
 import com.fuzzylite.norm.s.HamacherSum;
 import com.fuzzylite.norm.s.Maximum;
+import com.fuzzylite.norm.s.NilpotentMaximum;
 import com.fuzzylite.norm.s.NormalizedSum;
 import com.fuzzylite.norm.t.AlgebraicProduct;
 import com.fuzzylite.norm.t.BoundedDifference;
@@ -58,13 +60,16 @@ import com.fuzzylite.norm.t.DrasticProduct;
 import com.fuzzylite.norm.t.EinsteinProduct;
 import com.fuzzylite.norm.t.HamacherProduct;
 import com.fuzzylite.norm.t.Minimum;
+import com.fuzzylite.norm.t.NilpotentMinimum;
 import com.fuzzylite.rule.Expression;
 import com.fuzzylite.rule.Operator;
 import com.fuzzylite.rule.Proposition;
 import com.fuzzylite.rule.Rule;
 import com.fuzzylite.rule.RuleBlock;
 import com.fuzzylite.term.Bell;
+import com.fuzzylite.term.Concave;
 import com.fuzzylite.term.Constant;
+import com.fuzzylite.term.Cosine;
 import com.fuzzylite.term.Discrete;
 import com.fuzzylite.term.Function;
 import com.fuzzylite.term.Gaussian;
@@ -77,6 +82,7 @@ import com.fuzzylite.term.SShape;
 import com.fuzzylite.term.Sigmoid;
 import com.fuzzylite.term.SigmoidDifference;
 import com.fuzzylite.term.SigmoidProduct;
+import com.fuzzylite.term.Spike;
 import com.fuzzylite.term.Term;
 import com.fuzzylite.term.Trapezoid;
 import com.fuzzylite.term.Triangle;
@@ -91,13 +97,12 @@ import java.util.List;
 
 public class FisExporter extends Exporter {
 
+    public FisExporter() {
+
+    }
+
     @Override
     public String toString(Engine engine) {
-        if (engine.numberOfRuleBlocks() != 1) {
-            throw new RuntimeException(String.format("[export error] "
-                    + "fis files require one rule block, but engine has <%d> rule blocks",
-                    engine.numberOfRuleBlocks()));
-        }
         StringBuilder result = new StringBuilder();
 
         result.append(exportSystem(engine)).append("\n");
@@ -112,17 +117,58 @@ public class FisExporter extends Exporter {
         StringBuilder result = new StringBuilder();
         result.append("[System]\n");
         result.append(String.format("Name='%s'\n", engine.getName()));
-        result.append(String.format("Type='%s'\n", extractType(engine)));
+        String type;
+        if (engine.type() == Engine.Type.MAMDANI || engine.type() == Engine.Type.LARSEN) {
+            type = "mamdani";
+        } else if (engine.type() == Engine.Type.TAKAGI_SUGENO) {
+            type = "sugeno";
+        } else if (engine.type() == Engine.Type.TSUKAMOTO) {
+            type = "tsukamoto";
+        } else if (engine.type() == Engine.Type.INVERSE_TSUKAMOTO) {
+            type = "inverse tsukamoto";
+        } else if (engine.type() == Engine.Type.HYBRID) {
+            type = "hybrid";
+        } else {
+            type = "unknown";
+        }
+        result.append(String.format("Type='%s'\n", type));
 //        result.append(String.format("Version=%s\n", FuzzyLite.VERSION));
         result.append(String.format("NumInputs=%d\n", engine.numberOfInputVariables()));
         result.append(String.format("NumOutputs=%d\n", engine.numberOfOutputVariables()));
-        RuleBlock ruleBlock = engine.getRuleBlock(0);
-        result.append(String.format("NumRules=%d\n", ruleBlock.numberOfRules()));
-        result.append(String.format("AndMethod='%s'\n", toString(ruleBlock.getConjunction())));
-        result.append(String.format("OrMethod='%s'\n", toString(ruleBlock.getDisjunction())));
-        result.append(String.format("ImpMethod='%s'\n", toString(ruleBlock.getActivation())));
-        result.append(String.format("AggMethod='%s'\n", extractAccumulation(engine)));
-        result.append(String.format("DefuzzMethod='%s'\n", extractDefuzzifier(engine)));
+
+        int numberOfRules = 0;
+        TNorm conjunction = null;
+        SNorm disjunction = null;
+        TNorm activation = null;
+        for (RuleBlock ruleBlock : engine.getRuleBlocks()) {
+            numberOfRules += ruleBlock.numberOfRules();
+            if (conjunction == null) {
+                conjunction = ruleBlock.getConjunction();
+            }
+            if (disjunction == null) {
+                disjunction = ruleBlock.getDisjunction();
+            }
+            if (activation == null) {
+                activation = ruleBlock.getActivation();
+            }
+        }
+        result.append(String.format("NumRules=%d\n", numberOfRules));
+        result.append(String.format("AndMethod='%s'\n", toString(conjunction)));
+        result.append(String.format("OrMethod='%s'\n", toString(disjunction)));
+        result.append(String.format("ImpMethod='%s'\n", toString(activation)));
+
+        SNorm accumulation = null;
+        Defuzzifier defuzzifier = null;
+        for (OutputVariable outputVariable : engine.getOutputVariables()) {
+            if (accumulation == null) {
+                accumulation = outputVariable.fuzzyOutput().getAccumulation();
+            }
+            if (defuzzifier == null) {
+                defuzzifier = outputVariable.getDefuzzifier();
+            }
+        }
+        result.append(String.format("AggMethod='%s'\n", toString(accumulation)));
+        result.append(String.format("DefuzzMethod='%s'\n", toString(defuzzifier)));
         return result.toString();
     }
 
@@ -166,7 +212,7 @@ public class FisExporter extends Exporter {
                 result.append(String.format("Default=%s\n", str(outputVariable.getDefaultValue())));
             }
             if (outputVariable.isLockedPreviousOutputValue()) {
-                result.append(String.format("LockValid=%d\n", outputVariable.isLockedPreviousOutputValue() ? 1 : 0));
+                result.append(String.format("LockPrevious=%d\n", outputVariable.isLockedPreviousOutputValue() ? 1 : 0));
             }
             if (outputVariable.isLockedOutputValueInRange()) {
                 result.append(String.format("LockRange=%d\n", outputVariable.isLockedOutputValueInRange() ? 1 : 0));
@@ -185,11 +231,17 @@ public class FisExporter extends Exporter {
 
     public String exportRules(Engine engine) {
         StringBuilder result = new StringBuilder();
-
         result.append("[Rules]\n");
-        RuleBlock ruleBlock = engine.getRuleBlock(0);
-        for (Rule rule : ruleBlock.getRules()) {
-            result.append(exportRule(rule, engine)).append("\n");
+        int ruleBlockNumber = 0;
+        for (RuleBlock ruleBlock : engine.getRuleBlocks()) {
+            if (engine.numberOfRuleBlocks() > 1) {
+                result.append(String.format("# RuleBlock %d", ++ruleBlockNumber));
+            }
+            for (Rule rule : ruleBlock.getRules()) {
+                if (rule.isLoaded()) {
+                    result.append(exportRule(rule, engine)).append("\n");
+                }
+            }
         }
         return result.toString();
     }
@@ -253,51 +305,6 @@ public class FisExporter extends Exporter {
         return result.toString();
     }
 
-    protected String extractType(Engine engine) {
-        if (engine.type() == Engine.Type.NONE) {
-            return "none";
-        } else if (engine.type() == Engine.Type.MAMDANI || engine.type() == Engine.Type.LARSEN) {
-            return "mamdani";
-        } else if (engine.type() == Engine.Type.TAKAGI_SUGENO) {
-            return "sugeno";
-        } else if (engine.type() == Engine.Type.TSUKAMOTO) {
-            return "tsukamoto";
-        } else if (engine.type() == Engine.Type.INVERSE_TSUKAMOTO) {
-            return "inverse tsukamoto";
-        }
-        return "unknown";
-    }
-
-    protected String extractAccumulation(Engine engine) {
-        SNorm accumulation = null;
-        for (OutputVariable outputVariable : engine.getOutputVariables()) {
-            SNorm other = outputVariable.fuzzyOutput().getAccumulation();
-            if (accumulation == null) {
-                accumulation = other;
-            } else if (!accumulation.getClass().equals(other.getClass())) {
-                throw new RuntimeException("[export error] "
-                        + "fis files require all output variables to have the "
-                        + "same accumulation operator");
-            }
-        }
-        return toString(accumulation);
-    }
-
-    protected String extractDefuzzifier(Engine engine) {
-        Defuzzifier defuzzifier = null;
-        for (OutputVariable outputVariable : engine.getOutputVariables()) {
-            Defuzzifier other = outputVariable.getDefuzzifier();
-            if (defuzzifier == null) {
-                defuzzifier = other;
-            } else if (!defuzzifier.getClass().equals(other.getClass())) {
-                throw new RuntimeException("[export error] "
-                        + "fis files require all output variables "
-                        + "to have the same defuzzifier");
-            }
-        }
-        return toString(defuzzifier);
-    }
-
     protected String translate(List<Proposition> propositions, List<Variable> variables) {
         StringBuilder result = new StringBuilder();
         for (Variable variable : variables) {
@@ -322,14 +329,14 @@ public class FisExporter extends Exporter {
                 for (Hedge hedge : proposition.getHedges()) {
                     if (hedge instanceof Not) {
                         negated *= -1;
-                    } else if (hedge instanceof Seldom) {
-                        plusHedge += 0.01;
-                    } else if (hedge instanceof Somewhat) {
-                        plusHedge += 0.05;
-                    } else if (hedge instanceof Very) {
-                        plusHedge += 0.2;
                     } else if (hedge instanceof Extremely) {
                         plusHedge += 0.3;
+                    } else if (hedge instanceof Very) {
+                        plusHedge += 0.2;
+                    } else if (hedge instanceof Somewhat) {
+                        plusHedge += 0.05;
+                    } else if (hedge instanceof Seldom) {
+                        plusHedge += 0.01;
                     } else if (hedge instanceof Any) {
                         plusHedge += 0.99;
                     } else {
@@ -352,16 +359,110 @@ public class FisExporter extends Exporter {
         return result.toString();
     }
 
+    public String toString(Norm norm) {
+        if (norm == null) {
+            return "";
+        }
+        //T-Norms
+        if (norm instanceof Minimum) {
+            return "min";
+        }
+        if (norm instanceof AlgebraicProduct) {
+            return "prod";
+        }
+        if (norm instanceof BoundedDifference) {
+            return "bounded_difference";
+        }
+        if (norm instanceof DrasticProduct) {
+            return "drastic_product";
+        }
+        if (norm instanceof EinsteinProduct) {
+            return "einstein_product";
+        }
+        if (norm instanceof HamacherProduct) {
+            return "hamasher_product";
+        }
+        if (norm instanceof NilpotentMinimum) {
+            return "nilpotent_minimum";
+        }
+
+        //S-Norms
+        if (norm instanceof Maximum) {
+            return "max";
+        }
+        if (norm instanceof AlgebraicSum) {
+            return "sum";
+        }
+        if (norm instanceof NormalizedSum) {
+            return "normalized_sum";
+        }
+        if (norm instanceof BoundedSum) {
+            return "bounded_sum";
+        }
+        if (norm instanceof DrasticSum) {
+            return "drastic_sum";
+        }
+        if (norm instanceof EinsteinSum) {
+            return "einstein_sum";
+        }
+        if (norm instanceof HamacherSum) {
+            return "hamacher_sum";
+        }
+        if (norm instanceof NilpotentMaximum) {
+            return "nilpotent_maximum";
+        }
+
+        return norm.getClass().getSimpleName();
+    }
+
+    public String toString(Defuzzifier defuzzifier) {
+        if (defuzzifier == null) {
+            return "";
+        }
+        if (defuzzifier instanceof Centroid) {
+            return "centroid";
+        }
+        if (defuzzifier instanceof Bisector) {
+            return "bisector";
+        }
+        if (defuzzifier instanceof LargestOfMaximum) {
+            return "lom";
+        }
+        if (defuzzifier instanceof MeanOfMaximum) {
+            return "mom";
+        }
+        if (defuzzifier instanceof SmallestOfMaximum) {
+            return "som";
+        }
+        if (defuzzifier instanceof WeightedAverage) {
+            return "wtaver";
+        }
+        if (defuzzifier instanceof WeightedSum) {
+            return "wtsum";
+        }
+        return defuzzifier.getClass().getSimpleName();
+    }
+
     public String toString(Term term) {
         if (term instanceof Bell) {
             Bell t = (Bell) term;
             return String.format("'%s':'gbellmf',[%s]", term.getName(),
                     Op.join(" ", t.getWidth(), t.getSlope(), t.getCenter()));
         }
+        if (term instanceof Concave) {
+            Concave t = (Concave) term;
+            return String.format("'%s':'concavemf',[%s]", term.getName(),
+                    Op.join(" ", t.getInflection(), t.getEnd()));
+        }
         if (term instanceof Constant) {
             Constant t = (Constant) term;
             return String.format("'%s':'constant',[%s]", term.getName(),
                     str(t.getValue()));
+        }
+        if (term instanceof Cosine) {
+            Cosine t = (Cosine) term;
+            return String.format("'%s':'cosinemf',[%s]", term.getName(),
+                    Op.join(" ", t.getCenter(), t.getWidth()));
         }
         if (term instanceof Discrete) {
             Discrete t = (Discrete) term;
@@ -428,6 +529,11 @@ public class FisExporter extends Exporter {
             return String.format("'%s':'smf',[%s]", term.getName(),
                     Op.join(" ", t.getStart(), t.getEnd()));
         }
+        if (term instanceof Spike) {
+            Spike t = (Spike) term;
+            return String.format("'%s':'spikemf',[%s]", term.getName(),
+                    Op.join(" ", t.getCenter(), t.getWidth()));
+        }
         if (term instanceof Trapezoid) {
             Trapezoid t = (Trapezoid) term;
             return String.format("'%s':'trapmf',[%s]", term.getName(),
@@ -447,81 +553,9 @@ public class FisExporter extends Exporter {
                 + "term of class <%s> not supported", term.getClass().getName()));
     }
 
-    public String toString(Defuzzifier defuzzifier) {
-        if (defuzzifier == null) {
-            return "";
-        }
-        if (defuzzifier instanceof Centroid) {
-            return "centroid";
-        }
-        if (defuzzifier instanceof Bisector) {
-            return "bisector";
-        }
-        if (defuzzifier instanceof SmallestOfMaximum) {
-            return "som";
-        }
-        if (defuzzifier instanceof LargestOfMaximum) {
-            return "lom";
-        }
-        if (defuzzifier instanceof MeanOfMaximum) {
-            return "mom";
-        }
-        if (defuzzifier instanceof WeightedAverage) {
-            return "wtaver";
-        }
-        if (defuzzifier instanceof WeightedSum) {
-            return "wtsum";
-        }
-        return defuzzifier.getClass().getSimpleName();
-    }
-
-    public String toString(Norm norm) {
-        if (norm == null) {
-            return "";
-        }
-        //T-Norms
-        if (norm instanceof Minimum) {
-            return "min";
-        }
-        if (norm instanceof AlgebraicProduct) {
-            return "prod";
-        }
-        if (norm instanceof BoundedDifference) {
-            return "bounded_difference";
-        }
-        if (norm instanceof DrasticProduct) {
-            return "drastic_product";
-        }
-        if (norm instanceof EinsteinProduct) {
-            return "einstein_product";
-        }
-        if (norm instanceof HamacherProduct) {
-            return "hamasher_product";
-        }
-
-        //S-Norms
-        if (norm instanceof Maximum) {
-            return "max";
-        }
-        if (norm instanceof AlgebraicSum) {
-            return "sum";
-        }
-        if (norm instanceof NormalizedSum) {
-            return "normalized_sum";
-        }
-        if (norm instanceof BoundedSum) {
-            return "bounded_sum";
-        }
-        if (norm instanceof DrasticSum) {
-            return "drastic_sum";
-        }
-        if (norm instanceof EinsteinSum) {
-            return "einstein_sum";
-        }
-        if (norm instanceof HamacherSum) {
-            return "hamacher_sum";
-        }
-        return norm.getClass().getSimpleName();
+    @Override
+    public FisExporter clone() throws CloneNotSupportedException {
+        return (FisExporter) super.clone();
     }
 
 }

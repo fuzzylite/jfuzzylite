@@ -24,6 +24,7 @@
  */
 package com.fuzzylite.term;
 
+import com.fuzzylite.Engine;
 import com.fuzzylite.Op;
 import com.fuzzylite.imex.FllExporter;
 
@@ -75,6 +76,19 @@ public abstract class Term implements Op.Cloneable {
     @Override
     public Term clone() throws CloneNotSupportedException {
         return (Term) super.clone();
+    }
+
+    public static void updateReference(Term term, Engine engine) {
+        if (term instanceof Linear) {
+            ((Linear) term).setEngine(engine);
+        } else if (term instanceof Function) {
+            Function function = (Function) term;
+            function.setEngine(engine);
+            try {
+                function.load();
+            } finally {
+            }
+        }
     }
 
 }
