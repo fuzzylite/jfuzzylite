@@ -25,6 +25,7 @@
 package com.fuzzylite.factory;
 
 import com.fuzzylite.Op;
+
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -50,12 +51,12 @@ public class ConstructionFactory<T> implements Op.Cloneable {
         this.constructors.remove(simpleName);
     }
 
-    public boolean isRegistered(String simpleName) {
+    public boolean hasConstructor(String simpleName) {
         return this.constructors.containsKey(simpleName);
     }
 
     public Set<String> available() {
-        return new HashSet(this.constructors.keySet());
+        return new HashSet<String>(this.constructors.keySet());
     }
 
     public T constructObject(String simpleName) {

@@ -44,7 +44,7 @@ public class Rule implements Op.Cloneable {
     public static final String FL_WITH = "with";
 
     private String text;
-    private double weight = 1.0;
+    private double weight;
     private Antecedent antecedent;
     private Consequent consequent;
     private Map<String, Hedge> hedges;
@@ -52,10 +52,17 @@ public class Rule implements Op.Cloneable {
     public Rule() {
         this("");
     }
-    
-    public Rule(String text){
+
+    public Rule(String text) {
+        this(text, 1.0);
+    }
+
+    public Rule(String text, double weight) {
         this.text = text;
-        hedges = new HashMap<String, Hedge>();
+        this.weight = weight;
+        this.antecedent = new Antecedent();
+        this.consequent = new Consequent();
+        this.hedges = new HashMap<String, Hedge>();
     }
 
     public String getText() {
@@ -139,7 +146,10 @@ public class Rule implements Op.Cloneable {
         try {
             while (tokenizer.hasMoreTokens()) {
                 token = tokenizer.nextToken();
-
+                int commentIndex = token.indexOf("#");
+                if (commentIndex >= 0) {
+                    token = token.substring(0, commentIndex);
+                }
                 switch (state) {
                     case S_NONE:
                         if (Rule.FL_IF.equals(token)) {
@@ -190,10 +200,7 @@ public class Rule implements Op.Cloneable {
                         "[syntax error] expected a numeric value as the weight of the rule: %s",
                         rule));
             }
-            antecedent = new Antecedent();
             antecedent.load(strAntecedent, this, engine);
-
-            consequent = new Consequent();
             consequent.load(strConsequent, this, engine);
             this.weight = ruleWeight;
         } catch (RuntimeException ex) {

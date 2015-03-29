@@ -24,6 +24,7 @@
  */
 package com.fuzzylite.rule;
 
+import com.fuzzylite.Engine;
 import com.fuzzylite.FuzzyLite;
 import com.fuzzylite.Op;
 import static com.fuzzylite.Op.str;
@@ -31,6 +32,7 @@ import com.fuzzylite.imex.FllExporter;
 import com.fuzzylite.norm.SNorm;
 import com.fuzzylite.norm.TNorm;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 public class RuleBlock {
@@ -64,18 +66,52 @@ public class RuleBlock {
     }
 
     public void activate() {
+        FuzzyLite.log().finest("Activating ruleblock: " + name);
         for (Rule rule : rules) {
-            double activationDegree = rule.activationDegree(conjunction, disjunction);
-            FuzzyLite.log().fine(String.format("[degree=%s] %s", str(activationDegree), rule.toString()));
-            if (Op.isGt(activationDegree, 0.0)) {
-                rule.activate(activationDegree, activation);
+            if (rule.isLoaded()) {
+                double activationDegree = rule.activationDegree(conjunction, disjunction);
+                FuzzyLite.log().finest(String.format("[degree=%s] %s", str(activationDegree), rule.toString()));
+                if (Op.isGt(activationDegree, 0.0)) {
+                    rule.activate(activationDegree, activation);
+                }
+            } else {
+                FuzzyLite.log().finest("Rule not loaded: " + rule.toString());
             }
         }
     }
 
+    public void unloadRules() {
+        for (Rule rule : this.rules) {
+            rule.unload();
+        }
+    }
+
+    public void loadRules(Engine engine) {
+        List<String> exceptions = new LinkedList<String>();
+        for (Rule rule : this.rules) {
+            if (rule.isLoaded()) {
+                rule.unload();
+            }
+            try {
+                rule.load(engine);
+            } catch (Exception ex) {
+                exceptions.add(String.format("[%s]: %s", rule.getText(), ex.toString()));
+            }
+        }
+        if (exceptions.size() > 0) {
+            throw new RuntimeException("[ruleblock error] the following "
+                    + "rules could not be loaded:\n" + Op.join(exceptions, "\n"));
+        }
+    }
+    
+    public void reloadRules(Engine engine){
+        unloadRules();
+        loadRules(engine);
+    }
+
     @Override
     public String toString() {
-        return new FllExporter("", "; ").toString(this);
+        return new FllExporter().toString(this);
     }
 
     public String getName() {
@@ -120,7 +156,21 @@ public class RuleBlock {
 
     @Override
     public RuleBlock clone() throws CloneNotSupportedException {
-        return (RuleBlock) super.clone();
+        RuleBlock result = (RuleBlock) super.clone();
+        if (this.conjunction != null) {
+            result.conjunction = this.conjunction.clone();
+        }
+        if (this.disjunction != null) {
+            result.disjunction = this.disjunction.clone();
+        }
+        if (this.activation != null) {
+            result.activation = this.activation.clone();
+        }
+        result.rules = new ArrayList<Rule>(this.rules.size());
+        for (Rule rule : this.rules) {
+            result.addRule(rule.clone());
+        }
+        return result;
     }
 
     /*
