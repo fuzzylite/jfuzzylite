@@ -41,7 +41,7 @@ public class SmallestOfMaximum extends IntegralDefuzzifier {
 
     @Override
     public double defuzzify(Term term, double minimum, double maximum) {
-        if (!Double.isFinite(minimum + maximum)) {
+        if (!Op.isFinite(minimum + maximum)) {
             return Double.NaN;
         }
         if (maximum - minimum > getResolution()) {

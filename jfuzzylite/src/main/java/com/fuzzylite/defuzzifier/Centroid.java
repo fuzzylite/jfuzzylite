@@ -25,6 +25,7 @@
 package com.fuzzylite.defuzzifier;
 
 import com.fuzzylite.FuzzyLite;
+import com.fuzzylite.Op;
 import static com.fuzzylite.Op.str;
 import com.fuzzylite.term.Term;
 
@@ -40,7 +41,7 @@ public class Centroid extends IntegralDefuzzifier {
 
     @Override
     public double defuzzify(Term term, double minimum, double maximum) {
-        if (!Double.isFinite(minimum + maximum)) {
+        if (!Op.isFinite(minimum + maximum)) {
             return Double.NaN;
         }
         if (maximum - minimum > getResolution()) {
