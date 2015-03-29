@@ -49,6 +49,7 @@ import com.fuzzylite.norm.t.DrasticProduct;
 import com.fuzzylite.norm.t.EinsteinProduct;
 import com.fuzzylite.norm.t.HamacherProduct;
 import com.fuzzylite.norm.t.Minimum;
+import com.fuzzylite.norm.t.NilpotentMinimum;
 import com.fuzzylite.rule.Rule;
 import com.fuzzylite.rule.RuleBlock;
 import com.fuzzylite.term.Constant;
@@ -197,6 +198,89 @@ public class FclExporter extends Exporter {
         return result.toString();
     }
 
+    public String toString(Norm norm) {
+        if (norm == null) {
+            return "NONE";
+        }
+        //T-Norms
+        if (norm instanceof Minimum) {
+            return "MIN";
+        }
+        if (norm instanceof AlgebraicProduct) {
+            return "PROD";
+        }
+        if (norm instanceof BoundedDifference) {
+            return "BDIF";
+        }
+        if (norm instanceof DrasticProduct) {
+            return "DPROD";
+        }
+        if (norm instanceof EinsteinProduct) {
+            return "EPROD";
+        }
+        if (norm instanceof HamacherProduct) {
+            return "HPROD";
+        }
+        if (norm instanceof NilpotentMinimum) {
+            return "NMIN";
+        }
+
+        //S-Norms
+        if (norm instanceof Maximum) {
+            return "MAX";
+        }
+        if (norm instanceof AlgebraicSum) {
+            return "ASUM";
+        }
+        if (norm instanceof NormalizedSum) {
+            return "NSUM";
+        }
+        if (norm instanceof BoundedSum) {
+            return "BSUM";
+        }
+        if (norm instanceof DrasticSum) {
+            return "DSUM";
+        }
+        if (norm instanceof EinsteinSum) {
+            return "ESUM";
+        }
+        if (norm instanceof HamacherSum) {
+            return "HSUM";
+        }
+        if (norm instanceof NilpotentMinimum) {
+            return "NMIN";
+        }
+        return norm.getClass().getSimpleName();
+    }
+
+    public String toString(Defuzzifier defuzzifier) {
+        if (defuzzifier == null) {
+            return "NONE";
+        }
+        if (defuzzifier instanceof Centroid) {
+            return "COG";
+        }
+        if (defuzzifier instanceof Bisector) {
+            return "COA";
+        }
+        if (defuzzifier instanceof SmallestOfMaximum) {
+            return "LM";
+        }
+        if (defuzzifier instanceof LargestOfMaximum) {
+            return "RM";
+        }
+        if (defuzzifier instanceof MeanOfMaximum) {
+            return "MM";
+        }
+        if (defuzzifier instanceof WeightedAverage) {
+            return "COGS";
+        }
+        if (defuzzifier instanceof WeightedSum) {
+            return "COGSS";
+        }
+        return defuzzifier.getClass().getSimpleName();
+    }
+
     public String toString(Term term) {
         if (term == null) {
             return "";
@@ -225,81 +309,9 @@ public class FclExporter extends Exporter {
         return term.getClass().getSimpleName() + " " + term.parameters();
     }
 
-    public String toString(Defuzzifier defuzzifier) {
-        if (defuzzifier == null) {
-            return "";
-        }
-        if (defuzzifier instanceof Centroid) {
-            return "COG";
-        }
-        if (defuzzifier instanceof Bisector) {
-            return "COA";
-        }
-        if (defuzzifier instanceof SmallestOfMaximum) {
-            return "LM";
-        }
-        if (defuzzifier instanceof LargestOfMaximum) {
-            return "RM";
-        }
-        if (defuzzifier instanceof MeanOfMaximum) {
-            return "MM";
-        }
-        if (defuzzifier instanceof WeightedAverage) {
-            return "COGS";
-        }
-        if (defuzzifier instanceof WeightedSum) {
-            return "COGSS";
-        }
-        return defuzzifier.getClass().getSimpleName();
-    }
-
-    public String toString(Norm norm) {
-        if (norm == null) {
-            return "";
-        }
-        //T-Norms
-        if (norm instanceof Minimum) {
-            return "MIN";
-        }
-        if (norm instanceof AlgebraicProduct) {
-            return "PROD";
-        }
-        if (norm instanceof BoundedDifference) {
-            return "BDIF";
-        }
-        if (norm instanceof DrasticProduct) {
-            return "DPROD";
-        }
-        if (norm instanceof EinsteinProduct) {
-            return "EPROD";
-        }
-        if (norm instanceof HamacherProduct) {
-            return "HPROD";
-        }
-
-        //S-Norms
-        if (norm instanceof Maximum) {
-            return "MAX";
-        }
-        if (norm instanceof AlgebraicSum) {
-            return "ASUM";
-        }
-        if (norm instanceof NormalizedSum) {
-            return "NSUM";
-        }
-        if (norm instanceof BoundedSum) {
-            return "BSUM";
-        }
-        if (norm instanceof DrasticSum) {
-            return "DSUM";
-        }
-        if (norm instanceof EinsteinSum) {
-            return "ESUM";
-        }
-        if (norm instanceof HamacherSum) {
-            return "HSUM";
-        }
-        return norm.getClass().getSimpleName();
+    @Override
+    public FclExporter clone() throws CloneNotSupportedException {
+        return (FclExporter) super.clone();
     }
 
 }

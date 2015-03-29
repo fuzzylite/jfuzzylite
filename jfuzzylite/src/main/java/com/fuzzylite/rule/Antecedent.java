@@ -209,7 +209,7 @@ public class Antecedent {
                 } else {
                     HedgeFactory hedgeFactory = FactoryManager.instance().hedge();
                     if (hedgeFactory.isRegistered(token)) {
-                        hedge = hedgeFactory.createInstance(token);
+                        hedge = hedgeFactory.constructObject(token);
                         rule.getHedges().put(token, hedge);
                     }
                 }

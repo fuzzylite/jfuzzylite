@@ -28,6 +28,7 @@ import com.fuzzylite.Engine;
 import com.fuzzylite.Op;
 import com.fuzzylite.defuzzifier.Defuzzifier;
 import com.fuzzylite.defuzzifier.IntegralDefuzzifier;
+import com.fuzzylite.defuzzifier.WeightedDefuzzifier;
 import com.fuzzylite.norm.Norm;
 import com.fuzzylite.rule.Rule;
 import com.fuzzylite.rule.RuleBlock;
@@ -35,6 +36,9 @@ import com.fuzzylite.term.Term;
 import com.fuzzylite.variable.InputVariable;
 import com.fuzzylite.variable.OutputVariable;
 import com.fuzzylite.variable.Variable;
+import java.util.Collection;
+import java.util.LinkedList;
+import java.util.List;
 
 public class FllExporter extends Exporter {
 
@@ -68,84 +72,116 @@ public class FllExporter extends Exporter {
 
     @Override
     public String toString(Engine engine) {
-        StringBuilder result = new StringBuilder();
-        result.append(String.format("Engine: %s%s", engine.getName(), separator));
+        List<String> result = new LinkedList<String>();
+        result.add(String.format("Engine: %s", engine.getName()));
         for (InputVariable inputVariable : engine.getInputVariables()) {
-            result.append(toString(inputVariable));
+            result.add(toString(inputVariable));
         }
         for (OutputVariable outputVariable : engine.getOutputVariables()) {
-            result.append(toString(outputVariable));
+            result.add(toString(outputVariable));
         }
         for (RuleBlock ruleBlock : engine.getRuleBlocks()) {
-            result.append(toString(ruleBlock));
+            result.add(toString(ruleBlock));
         }
-        return result.toString();
+        return Op.join(result, separator);
+    }
+
+    public String toStringVariables(Collection<? extends Variable> variables) {
+        List<String> result = new LinkedList<String>();
+        for (Variable variable : variables) {
+            result.add(toString(variable));
+        }
+        return Op.join(result, separator);
+    }
+
+    public String toStringInputVariables(Collection<InputVariable> variables) {
+        List<String> result = new LinkedList<String>();
+        for (InputVariable variable : variables) {
+            result.add(toString(variable));
+        }
+        return Op.join(result, separator);
+    }
+
+    public String toStringOutputVariables(Collection<OutputVariable> variables) {
+        List<String> result = new LinkedList<String>();
+        for (OutputVariable variable : variables) {
+            result.add(toString(variable));
+        }
+        return Op.join(result, separator);
+    }
+
+    public String toStringRuleBlocks(Collection<RuleBlock> ruleBlocks) {
+        List<String> result = new LinkedList<String>();
+        for (RuleBlock ruleBlock : ruleBlocks) {
+            result.add(toString(ruleBlock));
+        }
+        return Op.join(result, separator);
     }
 
     public String toString(Variable variable) {
-        StringBuilder result = new StringBuilder();
-        result.append(String.format("Variable: %s%s", variable.getName(), separator));
-        result.append(String.format("%senabled: %s%s", indent,
-                String.valueOf(variable.isEnabled()), separator));
-        result.append(String.format("%srange: %s%s", indent,
-                Op.join(" ", variable.getMinimum(), variable.getMaximum()), separator));
+        List<String> result = new LinkedList<String>();
+        result.add(String.format("Variable: %s", variable.getName()));
+        result.add(String.format("%senabled: %s", indent,
+                String.valueOf(variable.isEnabled())));
+        result.add(String.format("%srange: %s", indent,
+                Op.join(" ", variable.getMinimum(), variable.getMaximum())));
         for (Term term : variable.getTerms()) {
-            result.append(String.format("%s%s%s", indent, toString(term), separator));
+            result.add(String.format("%s%s", indent, toString(term)));
         }
-        return result.toString();
+        return Op.join(result, separator);
     }
 
     public String toString(InputVariable inputVariable) {
-        StringBuilder result = new StringBuilder();
-        result.append(String.format("InputVariable: %s%s", inputVariable.getName(), separator));
-        result.append(String.format("%senabled: %s%s", indent,
-                String.valueOf(inputVariable.isEnabled()), separator));
-        result.append(String.format("%srange: %s%s", indent,
-                Op.join(" ", inputVariable.getMinimum(), inputVariable.getMaximum()), separator));
+        List<String> result = new LinkedList<String>();
+        result.add(String.format("InputVariable: %s", inputVariable.getName()));
+        result.add(String.format("%senabled: %s", indent,
+                String.valueOf(inputVariable.isEnabled())));
+        result.add(String.format("%srange: %s", indent,
+                Op.join(" ", inputVariable.getMinimum(), inputVariable.getMaximum())));
         for (Term term : inputVariable.getTerms()) {
-            result.append(String.format("%s%s%s", indent, toString(term), separator));
+            result.add(String.format("%s%s", indent, toString(term)));
         }
-        return result.toString();
+        return Op.join(result, separator);
     }
 
     public String toString(OutputVariable outputVariable) {
-        StringBuilder result = new StringBuilder();
-        result.append(String.format("OutputVariable: %s%s", outputVariable.getName(), separator));
-        result.append(String.format("%senabled: %s%s", indent,
-                String.valueOf(outputVariable.isEnabled()), separator));
-        result.append(String.format("%srange: %s%s", indent,
-                Op.join(" ", outputVariable.getMinimum(), outputVariable.getMaximum()), separator));
-        result.append(String.format("%saccumulation: %s%s", indent,
-                toString(outputVariable.fuzzyOutput().getAccumulation()), separator));
-        result.append(String.format("%sdefuzzifier: %s%s", indent,
-                toString(outputVariable.getDefuzzifier()), separator));
-        result.append(String.format("%sdefault: %s%s", indent,
-                Op.str(outputVariable.getDefaultValue()), separator));
-        result.append(String.format("%slock-previous: %s%s", indent,
-                String.valueOf(outputVariable.isLockedPreviousOutputValue()), separator));
-        result.append(String.format("%slock-range: %s%s", indent,
-                String.valueOf(outputVariable.isLockedOutputValueInRange()), separator));
+        List<String> result = new LinkedList<String>();
+        result.add(String.format("OutputVariable: %s", outputVariable.getName()));
+        result.add(String.format("%senabled: %s", indent,
+                String.valueOf(outputVariable.isEnabled())));
+        result.add(String.format("%srange: %s", indent,
+                Op.join(" ", outputVariable.getMinimum(), outputVariable.getMaximum())));
+        result.add(String.format("%saccumulation: %s", indent,
+                toString(outputVariable.fuzzyOutput().getAccumulation())));
+        result.add(String.format("%sdefuzzifier: %s", indent,
+                toString(outputVariable.getDefuzzifier())));
+        result.add(String.format("%sdefault: %s", indent,
+                Op.str(outputVariable.getDefaultValue())));
+        result.add(String.format("%slock-previous: %s", indent,
+                String.valueOf(outputVariable.isLockedPreviousOutputValue())));
+        result.add(String.format("%slock-range: %s", indent,
+                String.valueOf(outputVariable.isLockedOutputValueInRange())));
         for (Term term : outputVariable.getTerms()) {
-            result.append(String.format("%s%s%s", indent, toString(term), separator));
+            result.add(String.format("%s%s", indent, toString(term)));
         }
-        return result.toString();
+        return Op.join(result, separator);
     }
 
     public String toString(RuleBlock ruleBlock) {
-        StringBuilder result = new StringBuilder();
-        result.append(String.format("RuleBlock: %s%s", ruleBlock.getName(), separator));
-        result.append(String.format("%senabled: %s%s", indent,
-                String.valueOf(ruleBlock.isEnabled()), separator));
-        result.append(String.format("%sconjunction: %s%s", indent,
-                toString(ruleBlock.getConjunction()), separator));
-        result.append(String.format("%sdisjunction: %s%s", indent,
-                toString(ruleBlock.getDisjunction()), separator));
-        result.append(String.format("%sactivation: %s%s", indent,
-                toString(ruleBlock.getActivation()), separator));
+        List<String> result = new LinkedList<String>();
+        result.add(String.format("RuleBlock: %s", ruleBlock.getName()));
+        result.add(String.format("%senabled: %s", indent,
+                String.valueOf(ruleBlock.isEnabled())));
+        result.add(String.format("%sconjunction: %s", indent,
+                toString(ruleBlock.getConjunction())));
+        result.add(String.format("%sdisjunction: %s", indent,
+                toString(ruleBlock.getDisjunction())));
+        result.add(String.format("%sactivation: %s", indent,
+                toString(ruleBlock.getActivation())));
         for (Rule rule : ruleBlock.getRules()) {
-            result.append(String.format("%s%s%s", indent, toString(rule), separator));
+            result.add(String.format("%s%s", indent, toString(rule)));
         }
-        return result.toString();
+        return Op.join(result, separator);
     }
 
     public String toString(Rule rule) {
@@ -169,11 +205,18 @@ public class FllExporter extends Exporter {
         if (defuzzifier == null) {
             return "none";
         }
+        String result = defuzzifier.getClass().getSimpleName();
         if (defuzzifier instanceof IntegralDefuzzifier) {
-            return defuzzifier.getClass().getSimpleName() + " "
-                    + ((IntegralDefuzzifier) defuzzifier).getResolution();
+            return result + " " + ((IntegralDefuzzifier) defuzzifier).getResolution();
+        } else if (defuzzifier instanceof WeightedDefuzzifier) {
+            return result + " " + ((WeightedDefuzzifier) defuzzifier).getType().toString();
         }
-        return defuzzifier.getClass().getSimpleName();
+        return result;
+    }
+
+    @Override
+    public FllExporter clone() throws CloneNotSupportedException {
+        return (FllExporter) super.clone();
     }
 
 }

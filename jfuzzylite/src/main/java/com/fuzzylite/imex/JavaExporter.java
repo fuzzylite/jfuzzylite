@@ -29,6 +29,7 @@ import com.fuzzylite.Op;
 import static com.fuzzylite.Op.str;
 import com.fuzzylite.defuzzifier.Defuzzifier;
 import com.fuzzylite.defuzzifier.IntegralDefuzzifier;
+import com.fuzzylite.defuzzifier.WeightedDefuzzifier;
 import com.fuzzylite.norm.Norm;
 import com.fuzzylite.rule.Rule;
 import com.fuzzylite.rule.RuleBlock;
@@ -41,6 +42,10 @@ import com.fuzzylite.variable.OutputVariable;
 import java.util.regex.Pattern;
 
 public class JavaExporter extends Exporter {
+
+    public JavaExporter() {
+
+    }
 
     @Override
     public String toString(Engine engine) {
@@ -117,10 +122,10 @@ public class JavaExporter extends Exporter {
                 "%s.setDefaultValue(%s);\n", name,
                 toString(outputVariable.getDefaultValue())));
         result.append(String.format(
-                "%s.setLockValidOutput(%s);\n", name,
+                "%s.setLockPreviousOutputValue(%s);\n", name,
                 outputVariable.isLockedPreviousOutputValue()));
         result.append(String.format(
-                "%s.setLockOutputRange(%s);\n", name,
+                "%s.setLockOutputValueInRange(%s);\n", name,
                 outputVariable.isLockedOutputValueInRange()));
         for (Term term : outputVariable.getTerms()) {
             result.append(String.format("%s.addTerm(%s);\n",
@@ -170,14 +175,14 @@ public class JavaExporter extends Exporter {
         }
         if (term instanceof Function) {
             Function t = (Function) term;
-            String result = String.format("%s.create(\"%s\", \"%s\", engine, true)",
+            String result = String.format("%s.create(\"%s\", \"%s\", engine)",
                     Function.class.getSimpleName(), term.getName(),
                     t.getFormula());
             return result;
         }
         if (term instanceof Linear) {
             Linear t = (Linear) term;
-            String result = String.format("%s.create(\"%s\", engine.getInputVariables(), %s)",
+            String result = String.format("%s.create(\"%s\", engine, %s)",
                     Linear.class.getSimpleName(), term.getName(),
                     Op.join(t.getCoefficients(), ", "));
             return result;
@@ -194,23 +199,23 @@ public class JavaExporter extends Exporter {
             return "null";
         }
         if (defuzzifier instanceof IntegralDefuzzifier) {
-            IntegralDefuzzifier integralDefuzzifier = (IntegralDefuzzifier) defuzzifier;
-            String result = String.format("new %s(%d)",
-                    integralDefuzzifier.getClass().getSimpleName(),
-                    integralDefuzzifier.getResolution());
-            return result;
+            return String.format("new %s(%d)",
+                    defuzzifier.getClass().getSimpleName(),
+                    ((IntegralDefuzzifier) defuzzifier).getResolution());
         }
-        String result = String.format("new %s()",
-                defuzzifier.getClass().getSimpleName());
-        return result;
+        if (defuzzifier instanceof WeightedDefuzzifier) {
+            return String.format("new %s(\"%s\")",
+                    defuzzifier.getClass().getSimpleName(),
+                    ((WeightedDefuzzifier) defuzzifier).getType());
+        }
+        return String.format("new %s()", defuzzifier.getClass().getSimpleName());
     }
 
     public String toString(Norm norm) {
         if (norm == null) {
             return "null";
         }
-        String result = String.format("new %s()", norm.getClass().getSimpleName());
-        return result;
+        return String.format("new %s()", norm.getClass().getSimpleName());
     }
 
     public String toString(double value) {
@@ -221,6 +226,11 @@ public class JavaExporter extends Exporter {
                     : "Double.NEGATIVE_INFINITY";
         }
         return str(value);
+    }
+
+    @Override
+    public JavaExporter clone() throws CloneNotSupportedException {
+        return (JavaExporter) super.clone();
     }
 
 }

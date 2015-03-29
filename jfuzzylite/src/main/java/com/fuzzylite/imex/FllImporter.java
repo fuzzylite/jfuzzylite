@@ -25,24 +25,23 @@
 package com.fuzzylite.imex;
 
 import com.fuzzylite.Engine;
+import com.fuzzylite.FuzzyLite;
 import com.fuzzylite.Op;
 import com.fuzzylite.Op.Pair;
 import com.fuzzylite.defuzzifier.Defuzzifier;
 import com.fuzzylite.defuzzifier.IntegralDefuzzifier;
+import com.fuzzylite.defuzzifier.WeightedDefuzzifier;
 import com.fuzzylite.factory.FactoryManager;
 import com.fuzzylite.norm.SNorm;
 import com.fuzzylite.norm.TNorm;
 import com.fuzzylite.rule.Rule;
 import com.fuzzylite.rule.RuleBlock;
-import com.fuzzylite.term.Function;
-import com.fuzzylite.term.Linear;
 import com.fuzzylite.term.Term;
 import com.fuzzylite.variable.InputVariable;
 import com.fuzzylite.variable.OutputVariable;
 import java.io.BufferedReader;
 import java.io.StringReader;
 import java.util.ArrayDeque;
-import java.util.ArrayList;
 import java.util.Deque;
 import java.util.List;
 
@@ -222,7 +221,14 @@ public class FllImporter extends Importer {
             } else if ("activation".equals(keyValue.getFirst())) {
                 ruleBlock.setActivation(parseTNorm(keyValue.getSecond()));
             } else if ("rule".equals(keyValue.getFirst())) {
-                ruleBlock.addRule(Rule.parse(keyValue.getSecond(), engine));
+                Rule rule = new Rule();
+                rule.setText(keyValue.getSecond());
+                try {
+                    rule.load(engine);
+                } catch (Exception ex) {
+                    FuzzyLite.log().warning(ex.toString());
+                }
+                ruleBlock.addRule(rule);
             } else {
                 throw new RuntimeException("[import error] "
                         + "key <" + keyValue.getFirst() + "> " + "not recognized in pair <"
@@ -239,8 +245,9 @@ public class FllImporter extends Importer {
                     + "expected a term in format <name class parameters>, "
                     + "but found <" + text + ">");
         }
-        Term term = FactoryManager.instance().term().createInstance(tokens.get(1));
-        term.setName(tokens.get(0));
+        Term term = FactoryManager.instance().term().constructObject(tokens.get(1));
+        Term.updateReference(term, engine);
+        term.setName(Op.validName(tokens.get(0)));
         StringBuilder parameters = new StringBuilder();
         for (int i = 2; i < tokens.size(); ++i) {
             parameters.append(tokens.get(i));
@@ -249,41 +256,37 @@ public class FllImporter extends Importer {
             }
         }
         term.configure(parameters.toString());
-        //special cases
-        if (term instanceof Linear) {
-            ((Linear) term).inputVariables = new ArrayList<InputVariable>(engine.getInputVariables());
-        } else if (term instanceof Function) {
-            Function function = (Function) term;
-            function.setEngine(engine);
-            function.load();
-        }
         return term;
     }
 
     protected TNorm parseTNorm(String name) {
-        if (name.isEmpty() || "none".equals(name)) {
-            return null;
+        if ("none".equals(name)) {
+            FactoryManager.instance().tnorm().constructObject("");
         }
-        return FactoryManager.instance().tnorm().createInstance(name);
+        return FactoryManager.instance().tnorm().constructObject(name);
     }
 
     protected SNorm parseSNorm(String name) {
-        if (name.isEmpty() || "none".equals(name)) {
-            return null;
+        if ("none".equals(name)) {
+            FactoryManager.instance().snorm().constructObject("");
         }
-        return FactoryManager.instance().snorm().createInstance(name);
+        return FactoryManager.instance().snorm().constructObject(name);
     }
 
     protected Defuzzifier parseDefuzzifier(String text) {
-        if (text.isEmpty() || "none".equals(text)) {
-            return null;
-        }
         List<String> parameters = Op.split(text, " ");
-        Defuzzifier defuzzifier = FactoryManager.instance().
-                defuzzifier().createInstance(parameters.get(0));
-        if (defuzzifier instanceof IntegralDefuzzifier && parameters.size() > 1) {
-            ((IntegralDefuzzifier) defuzzifier).setResolution(
-                    Integer.parseInt(parameters.get(1)));
+        String name = parameters.get(0);
+        if ("none".equals(name)) {
+            return FactoryManager.instance().defuzzifier().constructObject("");
+        }
+        Defuzzifier defuzzifier = FactoryManager.instance().defuzzifier().constructObject(name);
+        if (parameters.size() > 1){
+            String parameter = parameters.get(1);
+            if (defuzzifier instanceof IntegralDefuzzifier){
+                ((IntegralDefuzzifier)defuzzifier).setResolution(Integer.parseInt(parameter));
+            }else if (defuzzifier instanceof WeightedDefuzzifier){
+                ((WeightedDefuzzifier)defuzzifier).setType(WeightedDefuzzifier.Type.valueOf(parameter));
+            }
         }
         return defuzzifier;
     }
@@ -341,6 +344,11 @@ public class FllImporter extends Importer {
         }
 
         return line.substring(start, end + 1);
+    }
+
+    @Override
+    public FllImporter clone() throws CloneNotSupportedException {
+        return (FllImporter) super.clone();
     }
 
 }
