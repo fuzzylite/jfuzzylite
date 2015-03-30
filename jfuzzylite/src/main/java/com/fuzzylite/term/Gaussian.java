@@ -25,6 +25,7 @@
 package com.fuzzylite.term;
 
 import com.fuzzylite.Op;
+import java.util.Iterator;
 import java.util.List;
 
 public class Gaussian extends Term {
@@ -63,10 +64,11 @@ public class Gaussian extends Term {
                     "[configuration error] term <%s> requires <%d> parameters",
                     this.getClass().getSimpleName(), required));
         }
-        setMean(Op.toDouble(values.get(0)));
-        setStandardDeviation(Op.toDouble(values.get(1)));
+        Iterator<String> it = values.iterator();
+        setMean(Op.toDouble(it.next()));
+        setStandardDeviation(Op.toDouble(it.next()));
         if (values.size() > required) {
-            setHeight(Op.toDouble(values.get(required)));
+            setHeight(Op.toDouble(it.next()));
         }
     }
 

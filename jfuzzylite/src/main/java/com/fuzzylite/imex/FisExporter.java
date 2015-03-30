@@ -537,12 +537,12 @@ public class FisExporter extends Exporter {
         if (term instanceof Trapezoid) {
             Trapezoid t = (Trapezoid) term;
             return String.format("'%s':'trapmf',[%s]", term.getName(),
-                    Op.join(" ", t.getA(), t.getB(), t.getC(), t.getD()));
+                    Op.join(" ", t.getVertexA(), t.getVertexB(), t.getVertexC(), t.getVertexD()));
         }
         if (term instanceof Triangle) {
             Triangle t = (Triangle) term;
             return String.format("'%s':'trimf',[%s]", term.getName(),
-                    Op.join(" ", t.getA(), t.getB(), t.getC()));
+                    Op.join(" ", t.getVertexA(), t.getVertexB(), t.getVertexC()));
         }
         if (term instanceof ZShape) {
             ZShape t = (ZShape) term;

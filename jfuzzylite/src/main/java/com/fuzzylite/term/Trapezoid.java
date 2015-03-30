@@ -25,11 +25,12 @@
 package com.fuzzylite.term;
 
 import com.fuzzylite.Op;
+import java.util.Iterator;
 import java.util.List;
 
 public class Trapezoid extends Term {
 
-    private double a, b, c, d;
+    private double vertexA, vertexB, vertexC, vertexD;
 
     public Trapezoid() {
         this("");
@@ -39,26 +40,26 @@ public class Trapezoid extends Term {
         this(name, Double.NaN, Double.NaN);
     }
 
-    public Trapezoid(String name, double a, double d) {
+    public Trapezoid(String name, double vertexA, double vertexD) {
         this.name = name;
-        double range = d - a;
-        this.a = a;
-        this.d = d;
-        this.b = a + range * 1.0 / 5.0;
-        this.c = a + range * 4.0 / 5.0;
+        double range = vertexD - vertexA;
+        this.vertexA = vertexA;
+        this.vertexD = vertexD;
+        this.vertexB = vertexA + range * 1.0 / 5.0;
+        this.vertexC = vertexA + range * 4.0 / 5.0;
     }
 
-    public Trapezoid(String name, double a, double b, double c, double d) {
+    public Trapezoid(String name, double vertexA, double vertexB, double vertexC, double vertexD) {
         this.name = name;
-        this.a = a;
-        this.b = b;
-        this.c = c;
-        this.d = d;
+        this.vertexA = vertexA;
+        this.vertexB = vertexB;
+        this.vertexC = vertexC;
+        this.vertexD = vertexD;
     }
 
     @Override
     public String parameters() {
-        return Op.join(" ", a, b, c, d)
+        return Op.join(" ", vertexA, vertexB, vertexC, vertexD)
                 + (!Op.isEq(height, 1.0) ? " " + Op.str(height) : "");
     }
 
@@ -74,10 +75,14 @@ public class Trapezoid extends Term {
                     "[configuration error] term <%s> requires <%d> parameters",
                     this.getClass().getSimpleName(), required));
         }
-        setA(Op.toDouble(values.get(0)));
-        setB(Op.toDouble(values.get(1)));
-        setC(Op.toDouble(values.get(2)));
-        setD(Op.toDouble(values.get(3)));
+        Iterator<String> it = values.iterator();
+        setVertexA(Op.toDouble(it.next()));
+        setVertexB(Op.toDouble(it.next()));
+        setVertexC(Op.toDouble(it.next()));
+        setVertexD(Op.toDouble(it.next()));
+        if (values.size() > required){
+            setHeight(Op.toDouble(it.next()));
+        }
     }
 
     @Override
@@ -86,47 +91,47 @@ public class Trapezoid extends Term {
             return Double.NaN;
         }
 
-        if (Op.isLE(x, a) || Op.isGE(x, d)) {
+        if (Op.isLE(x, vertexA) || Op.isGE(x, vertexD)) {
             return 0.0;
-        } else if (Op.isLt(x, b)) {
-            return Math.min(1.0, (x - a) / (b - a));
-        } else if (Op.isLE(x, c)) {
+        } else if (Op.isLt(x, vertexB)) {
+            return Math.min(1.0, (x - vertexA) / (vertexB - vertexA));
+        } else if (Op.isLE(x, vertexC)) {
             return 1.0;
-        } else if (Op.isLt(x, d)) {
-            return (d - x) / (d - c);
+        } else if (Op.isLt(x, vertexD)) {
+            return (vertexD - x) / (vertexD - vertexC);
         }
         return 0.0;
     }
 
-    public double getA() {
-        return a;
+    public double getVertexA() {
+        return vertexA;
     }
 
-    public void setA(double a) {
-        this.a = a;
+    public void setVertexA(double vertexA) {
+        this.vertexA = vertexA;
     }
 
-    public double getB() {
-        return b;
+    public double getVertexB() {
+        return vertexB;
     }
 
-    public void setB(double b) {
-        this.b = b;
+    public void setVertexB(double vertexB) {
+        this.vertexB = vertexB;
     }
 
-    public double getC() {
-        return c;
+    public double getVertexC() {
+        return vertexC;
     }
 
-    public void setC(double c) {
-        this.c = c;
+    public void setVertexC(double vertexC) {
+        this.vertexC = vertexC;
     }
 
-    public double getD() {
-        return d;
+    public double getVertexD() {
+        return vertexD;
     }
 
-    public void setD(double d) {
-        this.d = d;
+    public void setVertexD(double vertexD) {
+        this.vertexD = vertexD;
     }
 }

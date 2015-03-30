@@ -25,32 +25,33 @@
 package com.fuzzylite.term;
 
 import com.fuzzylite.Op;
+import java.util.Iterator;
 import java.util.List;
 
 public class ZShape extends Term {
-
+    
     private double start, end;
-
+    
     public ZShape() {
         this("");
     }
-
+    
     public ZShape(String name) {
         this(name, Double.NaN, Double.NaN);
     }
-
+    
     public ZShape(String name, double start, double end) {
         this.name = name;
         this.start = start;
         this.end = end;
     }
-
+    
     @Override
     public String parameters() {
         return Op.join(" ", start, end)
                 + (!Op.isEq(height, 1.0) ? " " + Op.str(height) : "");
     }
-
+    
     @Override
     public void configure(String parameters) {
         if (parameters.isEmpty()) {
@@ -63,10 +64,14 @@ public class ZShape extends Term {
                     "[configuration error] term <%s> requires <%d> parameters",
                     this.getClass().getSimpleName(), required));
         }
-        setStart(Op.toDouble(values.get(0)));
-        setEnd(Op.toDouble(values.get(1)));
+        Iterator<String> it = values.iterator();
+        setStart(Op.toDouble(it.next()));
+        setEnd(Op.toDouble(it.next()));
+        if (values.size() > required) {
+            setHeight(Op.toDouble(it.next()));
+        }
     }
-
+    
     @Override
     public double membership(double x) {
         if (Double.isNaN(x)) {
@@ -75,7 +80,7 @@ public class ZShape extends Term {
         //from Octave zmf.m
         double average = (start + end) / 2;
         double difference = end - start;
-
+        
         if (Op.isLE(x, start)) {
             return 1.0;
         } else if (Op.isLE(x, average)) {
@@ -85,21 +90,21 @@ public class ZShape extends Term {
         }
         return 0.0;
     }
-
+    
     public double getStart() {
         return start;
     }
-
+    
     public void setStart(double start) {
         this.start = start;
     }
-
+    
     public double getEnd() {
         return end;
     }
-
+    
     public void setEnd(double end) {
         this.end = end;
     }
-
+    
 }

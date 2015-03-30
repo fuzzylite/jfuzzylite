@@ -25,6 +25,7 @@
 package com.fuzzylite.term;
 
 import com.fuzzylite.Op;
+import java.util.Iterator;
 import java.util.List;
 
 public class Concave extends Term {
@@ -68,10 +69,11 @@ public class Concave extends Term {
                     "[configuration error] term <%s> requires <%d> parameters",
                     this.getClass().getSimpleName(), required));
         }
-        setInflection(Op.toDouble(values.get(0)));
-        setEnd(Op.toDouble(values.get(1)));
+        Iterator<String> it = values.iterator();
+        setInflection(Op.toDouble(it.next()));
+        setEnd(Op.toDouble(it.next()));
         if (values.size() > required) {
-            setHeight(Op.toDouble(values.get(required)));
+            setHeight(Op.toDouble(it.next()));
         }
     }
 

@@ -25,6 +25,7 @@
 package com.fuzzylite.term;
 
 import com.fuzzylite.Op;
+import java.util.Iterator;
 import java.util.List;
 
 public class SigmoidDifference extends Term {
@@ -67,10 +68,14 @@ public class SigmoidDifference extends Term {
                     "[configuration error] term <%s> requires <%d> parameters",
                     this.getClass().getSimpleName(), required));
         }
-        setLeft(Op.toDouble(values.get(0)));
-        setRising(Op.toDouble(values.get(1)));
-        setFalling(Op.toDouble(values.get(2)));
-        setRight(Op.toDouble(values.get(3)));
+        Iterator<String> it = values.iterator();
+        setLeft(Op.toDouble(it.next()));
+        setRising(Op.toDouble(it.next()));
+        setFalling(Op.toDouble(it.next()));
+        setRight(Op.toDouble(it.next()));
+        if (values.size() > required) {
+            setHeight(Op.toDouble(it.next()));
+        }
     }
 
     @Override

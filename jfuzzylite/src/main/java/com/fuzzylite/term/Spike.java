@@ -25,6 +25,7 @@
 package com.fuzzylite.term;
 
 import com.fuzzylite.Op;
+import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -72,10 +73,11 @@ public class Spike extends Term {
                     "[configuration error] term <%s> requires <%d> parameters",
                     this.getClass().getSimpleName(), required));
         }
-        setCenter(Op.toDouble(values.get(0)));
-        setWidth(Op.toDouble(values.get(1)));
+        Iterator<String> it = values.iterator();
+        setCenter(Op.toDouble(it.next()));
+        setWidth(Op.toDouble(it.next()));
         if (values.size() > required) {
-            setHeight(Op.toDouble(values.get(required)));
+            setHeight(Op.toDouble(it.next()));
         }
     }
 

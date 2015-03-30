@@ -25,6 +25,7 @@
 package com.fuzzylite.term;
 
 import com.fuzzylite.Op;
+import java.util.Iterator;
 import java.util.List;
 
 public class Rectangle extends Term {
@@ -63,8 +64,12 @@ public class Rectangle extends Term {
                     "[configuration error] term <%s> requires <%d> parameters",
                     this.getClass().getSimpleName(), required));
         }
-        setStart(Op.toDouble(values.get(0)));
-        setEnd(Op.toDouble(values.get(1)));
+        Iterator<String> it = values.iterator();
+        setStart(Op.toDouble(it.next()));
+        setEnd(Op.toDouble(it.next()));
+        if (values.size() > required){
+            setHeight(Op.toDouble(it.next()));
+        }
     }
 
     @Override

@@ -25,6 +25,7 @@
 package com.fuzzylite.term;
 
 import com.fuzzylite.Op;
+import java.util.Iterator;
 import java.util.List;
 
 public class PiShape extends Term {
@@ -67,10 +68,14 @@ public class PiShape extends Term {
                     "[configuration error] term <%s> requires <%d> parameters",
                     this.getClass().getSimpleName(), required));
         }
-        setBottomLeft(Op.toDouble(values.get(0)));
-        setTopLeft(Op.toDouble(values.get(1)));
-        setTopRight(Op.toDouble(values.get(2)));
-        setBottomRight(Op.toDouble(values.get(3)));
+        Iterator<String> it = values.iterator();
+        setBottomLeft(Op.toDouble(it.next()));
+        setTopLeft(Op.toDouble(it.next()));
+        setTopRight(Op.toDouble(it.next()));
+        setBottomRight(Op.toDouble(it.next()));
+        if (values.size() > required){
+            setHeight(Op.toDouble(it.next()));
+        }
     }
 
     @Override

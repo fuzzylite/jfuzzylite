@@ -25,11 +25,12 @@
 package com.fuzzylite.term;
 
 import com.fuzzylite.Op;
+import java.util.Iterator;
 import java.util.List;
 
 public class Triangle extends Term {
 
-    private double a, b, c;
+    private double vertexA, vertexB, vertexC;
 
     public Triangle() {
         this("");
@@ -39,20 +40,20 @@ public class Triangle extends Term {
         this(name, Double.NaN, Double.NaN, Double.NaN);
     }
 
-    public Triangle(String name, double a, double c) {
-        this(name, a, (a + c) / 2, c);
+    public Triangle(String name, double vertexA, double vertexC) {
+        this(name, vertexA, (vertexA + vertexC) / 2.0, vertexC);
     }
 
-    public Triangle(String name, double a, double b, double c) {
+    public Triangle(String name, double vertexA, double vertexB, double vertexC) {
         this.name = name;
-        this.a = a;
-        this.b = b;
-        this.c = c;
+        this.vertexA = vertexA;
+        this.vertexB = vertexB;
+        this.vertexC = vertexC;
     }
 
     @Override
     public String parameters() {
-        return Op.join(" ", a, b, c)
+        return Op.join(" ", vertexA, vertexB, vertexC)
                 + (!Op.isEq(height, 1.0) ? " " + Op.str(height) : "");
     }
 
@@ -68,9 +69,13 @@ public class Triangle extends Term {
                     "[configuration error] term <%s> requires <%d> parameters",
                     this.getClass().getSimpleName(), required));
         }
-        setA(Op.toDouble(values.get(0)));
-        setB(Op.toDouble(values.get(1)));
-        setC(Op.toDouble(values.get(2)));
+        Iterator<String> it = values.iterator();
+        setVertexA(Op.toDouble(it.next()));
+        setVertexB(Op.toDouble(it.next()));
+        setVertexC(Op.toDouble(it.next()));
+        if (values.size() > required){
+            setHeight(Op.toDouble(it.next()));
+        }
     }
 
     @Override
@@ -79,39 +84,39 @@ public class Triangle extends Term {
             return Double.NaN;
         }
 
-        if (Op.isLE(x, a) || Op.isGE(x, c)) {
+        if (Op.isLE(x, vertexA) || Op.isGE(x, vertexC)) {
             return 0.0;
-        } else if (Op.isEq(x, b)) {
+        } else if (Op.isEq(x, vertexB)) {
             return 1.0;
-        } else if (Op.isLt(x, b)) {
-            return (x - a) / (b - a);
+        } else if (Op.isLt(x, vertexB)) {
+            return (x - vertexA) / (vertexB - vertexA);
         } else {
-            return (c - x) / (c - b);
+            return (vertexC - x) / (vertexC - vertexB);
         }
     }
 
-    public double getA() {
-        return a;
+    public double getVertexA() {
+        return vertexA;
     }
 
-    public void setA(double a) {
-        this.a = a;
+    public void setVertexA(double vertexA) {
+        this.vertexA = vertexA;
     }
 
-    public double getB() {
-        return b;
+    public double getVertexB() {
+        return vertexB;
     }
 
-    public void setB(double b) {
-        this.b = b;
+    public void setVertexB(double vertexB) {
+        this.vertexB = vertexB;
     }
 
-    public double getC() {
-        return c;
+    public double getVertexC() {
+        return vertexC;
     }
 
-    public void setC(double c) {
-        this.c = c;
+    public void setVertexC(double vertexC) {
+        this.vertexC = vertexC;
     }
 
 }

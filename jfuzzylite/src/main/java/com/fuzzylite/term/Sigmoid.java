@@ -25,6 +25,7 @@
 package com.fuzzylite.term;
 
 import com.fuzzylite.Op;
+import java.util.Iterator;
 import java.util.List;
 
 public class Sigmoid extends Term {
@@ -63,8 +64,12 @@ public class Sigmoid extends Term {
                     "[configuration error] term <%s> requires <%d> parameters",
                     this.getClass().getSimpleName(), required));
         }
-        setInflection(Op.toDouble(values.get(0)));
-        setSlope(Op.toDouble(values.get(1)));
+        Iterator<String> it = values.iterator();
+        setInflection(Op.toDouble(it.next()));
+        setSlope(Op.toDouble(it.next()));
+        if (values.size() > required) {
+            setHeight(Op.toDouble(it.next()));
+        }
     }
 
     @Override
