@@ -51,6 +51,7 @@ public class Antecedent {
 
     public Antecedent() {
         this.text = "";
+        this.expression = null;
     }
 
     public String getText() {

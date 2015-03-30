@@ -30,9 +30,5 @@ public class Very extends Hedge {
     public double hedge(double x) {
         return x * x;
     }
-    
-    @Override
-    public Very clone() throws CloneNotSupportedException {
-        return (Very) super.clone();
-    }
+
 }

@@ -168,4 +168,9 @@ public abstract class WeightedDefuzzifier extends Defuzzifier {
         }
         return z;
     }
+
+    @Override
+    public WeightedDefuzzifier clone() throws CloneNotSupportedException {
+        return (WeightedDefuzzifier) super.clone();
+    }
 }

@@ -53,4 +53,9 @@ public abstract class IntegralDefuzzifier extends Defuzzifier {
         return IntegralDefuzzifier.DEFAULT_RESOLUTION;
     }
 
+    @Override
+    public IntegralDefuzzifier clone() throws CloneNotSupportedException {
+        return (IntegralDefuzzifier) super.clone();
+    }
+
 }

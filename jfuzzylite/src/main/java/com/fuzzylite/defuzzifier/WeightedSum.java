@@ -103,8 +103,4 @@ public class WeightedSum extends WeightedDefuzzifier {
         return sum;
     }
 
-    @Override
-    public WeightedSum clone() throws CloneNotSupportedException {
-        return (WeightedSum) super.clone();
-    }
 }

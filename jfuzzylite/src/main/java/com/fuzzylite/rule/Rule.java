@@ -222,6 +222,11 @@ public class Rule implements Op.Cloneable {
 
     @Override
     public Rule clone() throws CloneNotSupportedException {
-        return (Rule) super.clone();
+        Rule result = (Rule) super.clone();
+        result.antecedent = new Antecedent();
+        result.consequent = new Consequent();
+        result.hedges = new HashMap<String, Hedge>(this.hedges);
+        return result;
+
     }
 }

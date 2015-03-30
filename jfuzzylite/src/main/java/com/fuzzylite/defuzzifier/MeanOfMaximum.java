@@ -80,8 +80,4 @@ public class MeanOfMaximum extends IntegralDefuzzifier {
         return (xlargest + xsmallest) / 2.0;
     }
 
-    @Override
-    public MeanOfMaximum clone() throws CloneNotSupportedException {
-        return (MeanOfMaximum) super.clone();
-    }
 }
