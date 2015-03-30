@@ -77,7 +77,7 @@ public class Variable implements Op.Cloneable {
 
     @Override
     public String toString() {
-        return new FllExporter("", "; ").toString(this);
+        return new FllExporter().toString(this);
     }
 
     public void sort(final Defuzzifier defuzzifier) {

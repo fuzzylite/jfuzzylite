@@ -53,7 +53,7 @@ public class InputVariable extends Variable {
 
     @Override
     public String toString() {
-        return new FllExporter("", "; ").toString(this);
+        return new FllExporter().toString(this);
     }
 
 }

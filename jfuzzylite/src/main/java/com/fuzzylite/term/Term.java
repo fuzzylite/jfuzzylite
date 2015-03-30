@@ -64,7 +64,7 @@ public abstract class Term implements Op.Cloneable {
 
     @Override
     public String toString() {
-        return new FllExporter("", "; ").toString(this);
+        return new FllExporter().toString(this);
     }
 
     public abstract String parameters();
