@@ -31,8 +31,4 @@ public class Any extends Hedge {
         return 1.0;
     }
 
-    @Override
-    public Any clone() throws CloneNotSupportedException {
-        return (Any) super.clone();
-    }
 }

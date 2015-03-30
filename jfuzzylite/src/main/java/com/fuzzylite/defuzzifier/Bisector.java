@@ -75,8 +75,4 @@ public class Bisector extends IntegralDefuzzifier {
         return bisector;
     }
 
-    @Override
-    public Bisector clone() throws CloneNotSupportedException {
-        return (Bisector) super.clone();
-    }
 }
