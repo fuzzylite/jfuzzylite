@@ -31,11 +31,36 @@ import java.util.List;
 
 public class Op {
 
+    public static double bound(double x, double min, double max) {
+        if (isGt(x, max)) {
+            return max;
+        }
+        if (isLt(x, min)) {
+            return min;
+        }
+        return x;
+    }
+
+    public static boolean in(double x, double min, double max) {
+        return in(x, min, max, true, true);
+    }
+
+    public static boolean in(double x, double min, double max, boolean geq,
+            boolean leq) {
+        boolean left = geq ? isGE(x, min) : isGt(x, min);
+        boolean right = leq ? isLE(x, max) : isLt(x, max);
+        return (left && right);
+    }
+
+    public static boolean isFinite(double x) {
+        return !(Double.isNaN(x) || Double.isInfinite(x));
+    }
+
     /*
      * Math Operations
      */
     public static boolean isEq(double a, double b) {
-        return Math.abs(a - b) < FuzzyLite.getMachEps();
+        return isEq(a, b, FuzzyLite.getMachEps());
     }
 
     public static boolean isEq(double a, double b, double macheps) {
@@ -43,7 +68,7 @@ public class Op {
     }
 
     public static boolean isNEq(double a, double b) {
-        return !isEq(a, b, FuzzyLite.getMachEps());
+        return isNEq(a, b, FuzzyLite.getMachEps());
     }
 
     public static boolean isNEq(double a, double b, double macheps) {
@@ -51,7 +76,7 @@ public class Op {
     }
 
     public static boolean isLt(double a, double b) {
-        return !isEq(a, b, FuzzyLite.getMachEps()) && a < b;
+        return isLt(a, b, FuzzyLite.getMachEps());
     }
 
     public static boolean isLt(double a, double b, double macheps) {
@@ -59,7 +84,7 @@ public class Op {
     }
 
     public static boolean isLE(double a, double b) {
-        return isEq(a, b, FuzzyLite.getMachEps()) || a < b;
+        return isLE(a, b, FuzzyLite.getMachEps());
     }
 
     public static boolean isLE(double a, double b, double macheps) {
@@ -67,7 +92,7 @@ public class Op {
     }
 
     public static boolean isGt(double a, double b) {
-        return !isEq(a, b, FuzzyLite.getMachEps()) && a > b;
+        return isGt(a, b, FuzzyLite.getMachEps());
     }
 
     public static boolean isGt(double a, double b, double macheps) {
@@ -75,7 +100,7 @@ public class Op {
     }
 
     public static boolean isGE(double a, double b) {
-        return isEq(a, b, FuzzyLite.getMachEps()) || a > b;
+        return isGE(a, b, FuzzyLite.getMachEps());
     }
 
     public static boolean isGE(double a, double b, double macheps) {
@@ -118,46 +143,24 @@ public class Op {
         return -x;
     }
 
-    public static double bound(double x, double min, double max) {
-        if (isGt(x, max)) {
-            return max;
-        }
-        if (isLt(x, min)) {
-            return min;
-        }
-        return x;
-    }
-
-    public static boolean in(double x, double min, double max) {
-        return in(x, min, max, true, true);
-    }
-
-    public static boolean in(double x, double min, double max, boolean geq, boolean leq) {
-        boolean left = geq ? isGE(x, min) : isGt(x, min);
-        boolean right = leq ? isLE(x, max) : isLt(x, max);
-        return (left && right);
-    }
-
-    public static boolean isFinite(double x) {
-        return !(Double.isNaN(x) || Double.isInfinite(x));
-    }
-
-    public static double scale(double x,
-            double fromMin, double fromMax, double toMin, double toMax) {
+    public static double scale(double x, double fromMin, double fromMax,
+            double toMin, double toMax) {
         return (toMax - toMin) / (fromMax - fromMin) * (x - fromMin) + toMin;
     }
 
-    public static double scale(double x,
-            double fromMin, double fromMax, double toMin, double toMax, boolean bounded) {
-        double result = (toMax - toMin) / (fromMax - fromMin) * (x - fromMin) + toMin;
+    public static double scale(double x, double fromMin, double fromMax,
+            double toMin, double toMax, boolean bounded) {
+        double result = (toMax - toMin) / (fromMax - fromMin) * (x - fromMin)
+                + toMin;
         return bounded ? Op.bound(x, toMin, toMax) : result;
     }
 
     public static List<String> split(String string, String delimiter) {
         return split(string, delimiter, true);
     }
-
-    public static List<String> split(String str, String delimiter, boolean ignoreEmpty) {
+//TODO: Check changing return type from ArrayList to LinkedList.
+    public static List<String> split(String str, String delimiter,
+            boolean ignoreEmpty) {
         List<String> result = new ArrayList<String>();
         if (str.isEmpty() || delimiter.isEmpty()) {
             result.add(str);
@@ -217,7 +220,8 @@ public class Op {
         return increment(array, array.length - 1, min, max);
     }
 
-    public static boolean increment(int[] array, int position, int[] min, int[] max) {
+    public static boolean increment(int[] array, int position, int[] min,
+            int[] max) {
         if (position < 0) {
             return true;
         }
@@ -327,7 +331,7 @@ public class Op {
         return result;
     }
 
-    //@SafeVarargs
+    // @SafeVarargs
     public static <T> String join(String separator, T... x) {
         String result = "";
         for (int i = 0; i < x.length; ++i) {

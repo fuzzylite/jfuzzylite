@@ -24,6 +24,8 @@
  */
 package com.fuzzylite.variable;
 
+import java.util.Iterator;
+
 import com.fuzzylite.Op;
 import com.fuzzylite.defuzzifier.Defuzzifier;
 import com.fuzzylite.imex.FllExporter;
@@ -158,19 +160,21 @@ public class OutputVariable extends Variable {
 
     public String fuzzyOutputValue() {
         StringBuilder sb = new StringBuilder();
-        for (Term term : getTerms()) {
+        Iterator<Term> it = getTerms().iterator();
+        if (it.hasNext()){
+            Term term = it.next();
             double degree = fuzzyOutput.activationDegree(term);
-            if (sb.length() == 0) {
-                sb.append(Op.str(degree));
-            } else {
+            sb.append(Op.str(degree)).append("/").append(term.getName());
+            while(it.hasNext()){
+                term = it.next();
+                degree = fuzzyOutput.activationDegree(term);
                 if (Double.isNaN(degree) || Op.isGE(degree, 0.0)) {
-                    sb.append(" + ");
+                    sb.append(" + ").append(Op.str(degree));
                 } else {
-                    sb.append(" - ");
+                    sb.append(" - ").append(Op.str(Math.abs(degree)));
                 }
-                sb.append(Op.str(Math.abs(degree)));
+                sb.append("/").append(term.getName());
             }
-            sb.append("/").append(term.getName());
         }
         return sb.toString();
     }

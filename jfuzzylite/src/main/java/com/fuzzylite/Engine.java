@@ -465,8 +465,7 @@ public class Engine implements Op.Cloneable {
      * OutputVariables
      */
     public double getOutputValue(String name) {
-        OutputVariable outputVariable = getOutputVariable(name);
-        return outputVariable.getOutputValue();
+        return getOutputVariable(name).getOutputValue();
     }
 
     public OutputVariable getOutputVariable(String name) {

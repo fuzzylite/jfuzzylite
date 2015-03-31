@@ -25,10 +25,15 @@
 package com.fuzzylite.variable;
 
 import com.fuzzylite.Op;
+
 import static com.fuzzylite.Op.str;
+
 import com.fuzzylite.defuzzifier.Defuzzifier;
 import com.fuzzylite.imex.FllExporter;
+import com.fuzzylite.term.Constant;
+import com.fuzzylite.term.Linear;
 import com.fuzzylite.term.Term;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -54,53 +59,6 @@ public class Variable implements Op.Cloneable {
         this.maximum = maximum;
         this.terms = new ArrayList<Term>();
         this.enabled = true;
-    }
-
-    public String fuzzify(double x) {
-        String result = "";
-        for (int i = 0; i < terms.size(); ++i) {
-            Term term = terms.get(i);
-            double fx = term.membership(x);
-            if (i == 0) {
-                result += str(fx);
-            } else {
-                if (Double.isNaN(fx) || Op.isGE(fx, 0.0)) {
-                    result += " + " + str(fx);
-                } else {
-                    result += " - " + str(fx);
-                }
-            }
-            result += "/" + term.getName();
-        }
-        return result;
-    }
-
-    @Override
-    public String toString() {
-        return new FllExporter().toString(this);
-    }
-
-    public void sort(final Defuzzifier defuzzifier) {
-        if (defuzzifier == null) {
-            Collections.sort(terms, new Comparator<Term>() {
-                @Override
-                public int compare(Term o1, Term o2) {
-                    return o1.getName().compareTo(o2.getName());
-                }
-            });
-        } else {
-            final Map<Term, Double> map = new HashMap<Term, Double>();
-            for (Term term : terms) {
-                map.put(term, defuzzifier.defuzzify(term, minimum, maximum));
-            }
-
-            Collections.sort(terms, new Comparator<Term>() {
-                @Override
-                public int compare(Term o1, Term o2) {
-                    return map.get(o1).compareTo(map.get(o2));
-                }
-            });
-        }
     }
 
     public String getName() {
@@ -144,9 +102,95 @@ public class Variable implements Op.Cloneable {
         return this.enabled;
     }
 
+    @Override
+    public String toString() {
+        return new FllExporter().toString(this);
+    }
+
+    public String fuzzify(double x) {
+        StringBuilder sb = new StringBuilder();
+        Iterator<Term> it = getTerms().iterator();
+        if (it.hasNext()) {
+            Term term = it.next();
+            double degree = term.membership(x);
+            sb.append(Op.str(degree)).append("/").append(term.getName());
+            while (it.hasNext()) {
+                term = it.next();
+                degree = term.membership(x);
+                if (Double.isNaN(degree) || Op.isGE(degree, 0.0)) {
+                    sb.append(" + ").append(Op.str(degree));
+                } else {
+                    sb.append(" - ").append(Op.str(Math.abs(degree)));
+                }
+                sb.append("/").append(term.getName());
+            }
+        }
+        return sb.toString();
+    }
+
+    public Op.Pair<Double, Term> highestMembership(double x) {
+        Op.Pair<Double, Term> result = new Op.Pair<Double, Term>(0.0, null);
+        for (Term term : terms) {
+            double y = Double.NaN;
+            try {
+                y = term.membership(x);
+            } catch (Exception ex) {
+                // ignore
+            }
+            if (Op.isGt(y, result.getFirst())) {
+                result.setFirst(y);
+                result.setSecond(term);
+            }
+        }
+        return result;
+    }
+
+    public Double highestMembershipValue(double x) {
+        return highestMembership(x).getFirst();
+    }
+
+    public Term highestMembershipTerm(double x) {
+        return highestMembership(x).getSecond();
+    }
+
+    public void sort(Defuzzifier defuzzifier) {
+        final Map<Term, Double> map = new HashMap<Term, Double>();
+        for (Term term : terms) {
+            try {
+                if (term instanceof Constant || term instanceof Linear) {
+                    map.put(term, term.membership(0));
+                } else {
+                    map.put(term, defuzzifier.defuzzify(term, minimum, maximum));
+                }
+            } catch (Exception ex) {
+                map.put(term, Double.POSITIVE_INFINITY);
+            }
+        }
+
+        Collections.sort(terms, new Comparator<Term>() {
+            @Override
+            public int compare(Term o1, Term o2) {
+                return map.get(o1).compareTo(map.get(o2));
+            }
+        });
+    }
+
     /*
      * Terms
      */
+
+    public void addTerm(Term term) {
+        this.terms.add(term);
+    }
+
+    public void insert(Term term, int index) {
+        this.terms.add(index, term);
+    }
+
+    public Term getTerm(int index) {
+        return this.terms.get(index);
+    }
+
     public Term getTerm(String name) {
         for (Term term : this.terms) {
             if (name.equals(term.getName())) {
@@ -156,12 +200,8 @@ public class Variable implements Op.Cloneable {
         return null;
     }
 
-    public Term getTerm(int index) {
-        return this.terms.get(index);
-    }
-
-    public void addTerm(Term term) {
-        this.terms.add(term);
+    public boolean hasTerm(String name) {
+        return this.getTerm(name) != null;
     }
 
     public boolean removeTerm(Term term) {
@@ -169,7 +209,8 @@ public class Variable implements Op.Cloneable {
     }
 
     public Term removeTerm(String name) {
-        for (Iterator<Term> it = this.terms.iterator(); it.hasNext();) {
+        Iterator<Term> it = this.terms.iterator();
+        while(it.hasNext()) {
             Term term = it.next();
             if (term.getName().equals(name)) {
                 it.remove();
@@ -179,9 +220,6 @@ public class Variable implements Op.Cloneable {
         return null;
     }
 
-    public boolean hasTerm(String name) {
-        return this.getTerm(name) != null;
-    }
 
     public int numberOfTerms() {
         return this.terms.size();
