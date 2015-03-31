@@ -110,4 +110,9 @@ public class Concave extends Term {
         this.end = end;
     }
 
+    @Override
+    public Concave clone() throws CloneNotSupportedException {
+        return (Concave) super.clone();
+    }
+
 }

@@ -47,4 +47,9 @@ public class SNormFactory extends ConstructionFactory<SNorm> {
         register(NilpotentMaximum.class);
         register(NormalizedSum.class);
     }
+
+    @Override
+    public SNormFactory clone() throws CloneNotSupportedException {
+        return (SNormFactory) super.clone();
+    }
 }

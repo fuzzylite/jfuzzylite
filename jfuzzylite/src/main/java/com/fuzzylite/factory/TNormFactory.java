@@ -45,4 +45,9 @@ public class TNormFactory extends ConstructionFactory<TNorm> {
         register(Minimum.class);
         register(NilpotentMinimum.class);
     }
+
+    @Override
+    public TNormFactory clone() throws CloneNotSupportedException {
+        return (TNormFactory) super.clone();
+    }
 }

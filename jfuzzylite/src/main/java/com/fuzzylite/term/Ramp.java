@@ -117,4 +117,9 @@ public class Ramp extends Term {
         this.end = end;
     }
 
+    @Override
+    public Ramp clone() throws CloneNotSupportedException {
+        return (Ramp) super.clone();
+    }
+
 }

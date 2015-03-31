@@ -103,8 +103,8 @@ public class RuleBlock {
                     + "rules could not be loaded:\n" + Op.join(exceptions, "\n"));
         }
     }
-    
-    public void reloadRules(Engine engine){
+
+    public void reloadRules(Engine engine) {
         unloadRules();
         loadRules(engine);
     }

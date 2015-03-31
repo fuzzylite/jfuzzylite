@@ -120,4 +120,9 @@ public class SigmoidProduct extends Term {
         this.right = right;
     }
 
+    @Override
+    public SigmoidProduct clone() throws CloneNotSupportedException {
+        return (SigmoidProduct) super.clone();
+    }
+
 }

@@ -33,4 +33,9 @@ public class HamacherProduct extends TNorm {
         return (a * b) / (a + b - a * b);
     }
 
+    @Override
+    public HamacherProduct clone() throws CloneNotSupportedException {
+        return (HamacherProduct) super.clone();
+    }
+
 }

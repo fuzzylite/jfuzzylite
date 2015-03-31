@@ -67,7 +67,7 @@ public class SShape extends Term {
         Iterator<String> it = values.iterator();
         setStart(Op.toDouble(it.next()));
         setEnd(Op.toDouble(it.next()));
-        if (values.size() > required){
+        if (values.size() > required) {
             setHeight(Op.toDouble(it.next()));
         }
     }
@@ -106,6 +106,11 @@ public class SShape extends Term {
 
     public void setEnd(double end) {
         this.end = end;
+    }
+
+    @Override
+    public SShape clone() throws CloneNotSupportedException {
+        return (SShape) super.clone();
     }
 
 }

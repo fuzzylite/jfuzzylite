@@ -466,7 +466,7 @@ public class Engine implements Op.Cloneable {
      */
     public double getOutputValue(String name) {
         OutputVariable outputVariable = getOutputVariable(name);
-        return outputVariable.defuzzify();
+        return outputVariable.getOutputValue();
     }
 
     public OutputVariable getOutputVariable(String name) {

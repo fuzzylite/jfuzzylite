@@ -41,4 +41,9 @@ public class NilpotentMaximum extends SNorm {
         return 1.0;
     }
 
+    @Override
+    public NilpotentMaximum clone() throws CloneNotSupportedException {
+        return (NilpotentMaximum) super.clone();
+    }
+
 }

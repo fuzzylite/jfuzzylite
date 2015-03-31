@@ -37,4 +37,9 @@ public class DrasticProduct extends TNorm {
         return 0.0;
     }
 
+    @Override
+    public DrasticProduct clone() throws CloneNotSupportedException {
+        return (DrasticProduct) super.clone();
+    }
+
 }

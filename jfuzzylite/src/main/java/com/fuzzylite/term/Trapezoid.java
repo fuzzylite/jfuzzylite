@@ -80,7 +80,7 @@ public class Trapezoid extends Term {
         setVertexB(Op.toDouble(it.next()));
         setVertexC(Op.toDouble(it.next()));
         setVertexD(Op.toDouble(it.next()));
-        if (values.size() > required){
+        if (values.size() > required) {
             setHeight(Op.toDouble(it.next()));
         }
     }
@@ -134,4 +134,10 @@ public class Trapezoid extends Term {
     public void setVertexD(double vertexD) {
         this.vertexD = vertexD;
     }
+
+    @Override
+    public Trapezoid clone() throws CloneNotSupportedException {
+        return (Trapezoid) super.clone();
+    }
+
 }

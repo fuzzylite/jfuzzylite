@@ -41,4 +41,9 @@ public class NilpotentMinimum extends TNorm {
         return 0.0;
     }
 
+    @Override
+    public NilpotentMinimum clone() throws CloneNotSupportedException {
+        return (NilpotentMinimum) super.clone();
+    }
+
 }

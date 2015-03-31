@@ -208,11 +208,13 @@ public class Discrete extends Term implements List<Pair> {
 
     @Override
     public Discrete clone() throws CloneNotSupportedException {
+        Discrete result = (Discrete) super.clone();
         List<Pair> xyClone = new ArrayList<Pair>(this.xy.size());
         for (Pair p : this.xy) {
             xyClone.add(p.clone());
         }
-        return new Discrete(this.name, xyClone);
+        result.xy = xyClone;
+        return result;
     }
 
     public static List<Double> toList(List<Pair> xyValues) {

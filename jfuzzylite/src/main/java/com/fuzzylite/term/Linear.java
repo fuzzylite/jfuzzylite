@@ -115,4 +115,11 @@ public class Linear extends Term {
         this.engine = engine;
     }
 
+    @Override
+    public Linear clone() throws CloneNotSupportedException {
+        Linear result = (Linear) super.clone();
+        result.coefficients = new ArrayList<Double>(this.coefficients);
+        return result;
+    }
+
 }

@@ -67,7 +67,7 @@ public class Rectangle extends Term {
         Iterator<String> it = values.iterator();
         setStart(Op.toDouble(it.next()));
         setEnd(Op.toDouble(it.next()));
-        if (values.size() > required){
+        if (values.size() > required) {
             setHeight(Op.toDouble(it.next()));
         }
     }
@@ -97,6 +97,11 @@ public class Rectangle extends Term {
 
     public void setEnd(double end) {
         this.end = end;
+    }
+
+    @Override
+    public Rectangle clone() throws CloneNotSupportedException {
+        return (Rectangle) super.clone();
     }
 
 }

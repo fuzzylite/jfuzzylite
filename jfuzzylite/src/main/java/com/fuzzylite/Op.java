@@ -345,7 +345,7 @@ public class Op {
     }
 
     public static String validName(String id) {
-        if (id == null || id.trim().isEmpty()){
+        if (id == null || id.trim().isEmpty()) {
             return "unnamed";
         }
         StringBuilder result = new StringBuilder();

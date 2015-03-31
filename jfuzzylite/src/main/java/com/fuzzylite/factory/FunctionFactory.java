@@ -186,4 +186,9 @@ public class FunctionFactory extends CloningFactory<Function.Element> implements
         return functions;
     }
 
+    @Override
+    public FunctionFactory clone() throws CloneNotSupportedException {
+        return (FunctionFactory) super.clone();
+    }
+
 }

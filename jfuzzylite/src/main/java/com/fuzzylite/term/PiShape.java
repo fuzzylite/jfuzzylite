@@ -73,7 +73,7 @@ public class PiShape extends Term {
         setTopLeft(Op.toDouble(it.next()));
         setTopRight(Op.toDouble(it.next()));
         setBottomRight(Op.toDouble(it.next()));
-        if (values.size() > required){
+        if (values.size() > required) {
             setHeight(Op.toDouble(it.next()));
         }
     }
@@ -136,6 +136,11 @@ public class PiShape extends Term {
 
     public void setBottomRight(double bottomRight) {
         this.bottomRight = bottomRight;
+    }
+
+    @Override
+    public PiShape clone() throws CloneNotSupportedException {
+        return (PiShape) super.clone();
     }
 
 }

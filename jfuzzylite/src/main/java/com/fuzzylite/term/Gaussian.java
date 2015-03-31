@@ -96,4 +96,10 @@ public class Gaussian extends Term {
     public void setStandardDeviation(double standardDeviation) {
         this.standardDeviation = standardDeviation;
     }
+
+    @Override
+    public Gaussian clone() throws CloneNotSupportedException {
+        return (Gaussian) super.clone();
+    }
+
 }

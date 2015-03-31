@@ -33,4 +33,8 @@ public class Maximum extends SNorm {
         return Math.max(a, b);
     }
 
+    @Override
+    public Maximum clone() throws CloneNotSupportedException {
+        return (Maximum) super.clone();
+    }
 }

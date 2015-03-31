@@ -34,9 +34,9 @@ import java.io.IOException;
 public abstract class Exporter implements Op.Cloneable {
 
     public abstract String toString(Engine engine);
-    
-    public void toFile(File file, Engine engine) throws IOException{
-        if (!file.exists()){
+
+    public void toFile(File file, Engine engine) throws IOException {
+        if (!file.exists()) {
             file.createNewFile();
         }
         BufferedWriter writer = new BufferedWriter(new FileWriter(file));

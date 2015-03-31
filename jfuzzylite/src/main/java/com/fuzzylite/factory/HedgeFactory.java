@@ -43,4 +43,9 @@ public class HedgeFactory extends ConstructionFactory<Hedge> {
         register(new Somewhat().getName(), Somewhat.class);
         register(new Very().getName(), Very.class);
     }
+
+    @Override
+    public HedgeFactory clone() throws CloneNotSupportedException {
+        return (HedgeFactory) super.clone();
+    }
 }

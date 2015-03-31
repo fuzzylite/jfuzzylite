@@ -129,7 +129,7 @@ public class OutputVariable extends Variable {
         this.lockPreviousOutputValue = lockPreviousOutputValue;
     }
 
-    public double defuzzify() {
+    public void defuzzify() {
         if (Op.isFinite(this.outputValue)) {
             this.previousOutputValue = this.outputValue;
         }
@@ -153,7 +153,7 @@ public class OutputVariable extends Variable {
         if (this.lockOutputValueInRange) {
             result = Op.bound(result, this.getMinimum(), this.getMaximum());
         }
-        return result;
+        this.outputValue = result;
     }
 
     public String fuzzyOutputValue() {
@@ -184,6 +184,16 @@ public class OutputVariable extends Variable {
     @Override
     public String toString() {
         return new FllExporter().toString(this);
+    }
+
+    @Override
+    public OutputVariable clone() throws CloneNotSupportedException {
+        OutputVariable result = (OutputVariable) super.clone();
+        result.fuzzyOutput = this.fuzzyOutput.clone();
+        if (this.defuzzifier != null) {
+            result.defuzzifier = this.defuzzifier.clone();
+        }
+        return result;
     }
 
 }

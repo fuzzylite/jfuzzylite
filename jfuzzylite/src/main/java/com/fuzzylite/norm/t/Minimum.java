@@ -33,4 +33,9 @@ public class Minimum extends TNorm {
         return Math.min(a, b);
     }
 
+    @Override
+    public Minimum clone() throws CloneNotSupportedException {
+        return (Minimum) super.clone();
+    }
+
 }

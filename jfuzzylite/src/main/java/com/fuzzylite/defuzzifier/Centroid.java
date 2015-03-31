@@ -70,4 +70,8 @@ public class Centroid extends IntegralDefuzzifier {
         return xcentroid;
     }
 
+    @Override
+    public Centroid clone() throws CloneNotSupportedException {
+        return (Centroid) super.clone();
+    }
 }

@@ -71,4 +71,10 @@ public class TermFactory extends ConstructionFactory<Term> {
         register(Triangle.class);
         register(ZShape.class);
     }
+
+    @Override
+    public TermFactory clone() throws CloneNotSupportedException {
+        return (TermFactory) super.clone();
+    }
+
 }

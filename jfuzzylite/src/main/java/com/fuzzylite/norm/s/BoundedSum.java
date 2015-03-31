@@ -33,4 +33,9 @@ public class BoundedSum extends SNorm {
         return Math.min(1.0, Math.max(a, b));
     }
 
+    @Override
+    public BoundedSum clone() throws CloneNotSupportedException {
+        return (BoundedSum) super.clone();
+    }
+
 }

@@ -106,4 +106,9 @@ public class WeightedAverage extends WeightedDefuzzifier {
         return sum / weights;
     }
 
+    @Override
+    public WeightedAverage clone() throws CloneNotSupportedException {
+        return (WeightedAverage) super.clone();
+    }
+
 }

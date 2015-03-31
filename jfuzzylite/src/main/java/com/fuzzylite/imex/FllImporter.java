@@ -280,12 +280,12 @@ public class FllImporter extends Importer {
             return FactoryManager.instance().defuzzifier().constructObject("");
         }
         Defuzzifier defuzzifier = FactoryManager.instance().defuzzifier().constructObject(name);
-        if (parameters.size() > 1){
+        if (parameters.size() > 1) {
             String parameter = parameters.get(1);
-            if (defuzzifier instanceof IntegralDefuzzifier){
-                ((IntegralDefuzzifier)defuzzifier).setResolution(Integer.parseInt(parameter));
-            }else if (defuzzifier instanceof WeightedDefuzzifier){
-                ((WeightedDefuzzifier)defuzzifier).setType(WeightedDefuzzifier.Type.valueOf(parameter));
+            if (defuzzifier instanceof IntegralDefuzzifier) {
+                ((IntegralDefuzzifier) defuzzifier).setResolution(Integer.parseInt(parameter));
+            } else if (defuzzifier instanceof WeightedDefuzzifier) {
+                ((WeightedDefuzzifier) defuzzifier).setType(WeightedDefuzzifier.Type.valueOf(parameter));
             }
         }
         return defuzzifier;

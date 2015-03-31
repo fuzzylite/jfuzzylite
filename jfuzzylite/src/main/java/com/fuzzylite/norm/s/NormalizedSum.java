@@ -33,4 +33,8 @@ public class NormalizedSum extends SNorm {
         return a + b / Math.max(1.0, Math.max(a, b));
     }
 
+    @Override
+    public NormalizedSum clone() throws CloneNotSupportedException {
+        return (NormalizedSum) super.clone();
+    }
 }

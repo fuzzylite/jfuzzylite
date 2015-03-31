@@ -73,7 +73,7 @@ public class Triangle extends Term {
         setVertexA(Op.toDouble(it.next()));
         setVertexB(Op.toDouble(it.next()));
         setVertexC(Op.toDouble(it.next()));
-        if (values.size() > required){
+        if (values.size() > required) {
             setHeight(Op.toDouble(it.next()));
         }
     }
@@ -117,6 +117,11 @@ public class Triangle extends Term {
 
     public void setVertexC(double vertexC) {
         this.vertexC = vertexC;
+    }
+
+    @Override
+    public Triangle clone() throws CloneNotSupportedException {
+        return (Triangle) super.clone();
     }
 
 }

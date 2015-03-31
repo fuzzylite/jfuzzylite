@@ -30,4 +30,9 @@ public class Not extends Hedge {
     public double hedge(double x) {
         return 1.0 - x;
     }
+
+    @Override
+    public Not clone() throws CloneNotSupportedException {
+        return (Not) super.clone();
+    }
 }

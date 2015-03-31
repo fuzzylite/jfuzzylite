@@ -33,4 +33,8 @@ public class BoundedDifference extends TNorm {
         return Math.max(0.0, a + b - 1);
     }
 
+    @Override
+    public BoundedDifference clone() throws CloneNotSupportedException {
+        return (BoundedDifference) super.clone();
+    }
 }

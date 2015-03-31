@@ -124,4 +124,9 @@ public class GaussianProduct extends Term {
         this.standardDeviationB = standardDeviationB;
     }
 
+    @Override
+    public GaussianProduct clone() throws CloneNotSupportedException {
+        return (GaussianProduct) super.clone();
+    }
+
 }

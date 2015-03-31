@@ -150,4 +150,17 @@ public class Accumulated extends Term {
         this.accumulation = accumulation;
     }
 
+    @Override
+    public Accumulated clone() throws CloneNotSupportedException {
+        Accumulated result = (Accumulated) super.clone();
+        if (this.accumulation != null) {
+            result.accumulation = this.accumulation.clone();
+        }
+        result.terms = new ArrayList<Activated>(this.terms.size());
+        for (Activated term : this.terms) {
+            result.terms.add(term.clone());
+        }
+        return result;
+    }
+
 }

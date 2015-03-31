@@ -96,4 +96,8 @@ public class Sigmoid extends Term {
         this.slope = slope;
     }
 
+    @Override
+    public Sigmoid clone() throws CloneNotSupportedException {
+        return (Sigmoid) super.clone();
+    }
 }

@@ -120,7 +120,7 @@ public class FldExporter extends Exporter {
         StringWriter writer = new StringWriter();
         try {
             write(engine, writer, maximumNumberOfResults);
-        } catch (Exception ex) { 
+        } catch (Exception ex) {
             throw new RuntimeException("[exporter error] an exception occurred while exporting the results", ex);
         }
         return writer.toString();
@@ -280,7 +280,7 @@ public class FldExporter extends Exporter {
     }
 
     @Override
-    public Exporter clone() throws CloneNotSupportedException {
+    public FldExporter clone() throws CloneNotSupportedException {
         return (FldExporter) super.clone();
     }
 

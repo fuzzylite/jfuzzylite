@@ -33,4 +33,8 @@ public class EinsteinSum extends SNorm {
         return (a + b) / (1.0 + a * b);
     }
 
+    @Override
+    public EinsteinSum clone() throws CloneNotSupportedException {
+        return (EinsteinSum) super.clone();
+    }
 }

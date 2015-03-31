@@ -69,4 +69,9 @@ public class Constant extends Term {
         this.value = value;
     }
 
+    @Override
+    public Constant clone() throws CloneNotSupportedException {
+        return (Constant) super.clone();
+    }
+
 }

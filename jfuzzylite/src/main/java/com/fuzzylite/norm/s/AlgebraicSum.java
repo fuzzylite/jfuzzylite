@@ -33,4 +33,9 @@ public class AlgebraicSum extends SNorm {
         return a + b - (a * b);
     }
 
+    @Override
+    public AlgebraicSum clone() throws CloneNotSupportedException {
+        return (AlgebraicSum) super.clone();
+    }
+
 }

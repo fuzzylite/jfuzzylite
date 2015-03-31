@@ -386,11 +386,10 @@ public class Function extends Term {
     @Override
     public Function clone() throws CloneNotSupportedException {
         Function result = (Function) super.clone();
-        if (root != null) {
-            result.root = root.clone();
+        if (this.root != null) {
+            result.root = this.root.clone();
         }
-        result.variables = new HashMap<String, Double>();
-        result.variables.putAll(variables);
+        result.variables = new HashMap<String, Double>(this.variables);
         return result;
     }
 
@@ -626,7 +625,6 @@ public class Function extends Term {
         log.info("pos: " + f.parse(text).toPostfix());
         f.load(text);
         log.info("Result: " + Op.str(f.membership(1)));
-
 
         text = "(Temperature is High and Oxigen is Low) or "
                 + "(Temperature is Low and (Oxigen is Low or Oxigen is High))";

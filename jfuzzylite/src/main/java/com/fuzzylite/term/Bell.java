@@ -107,4 +107,9 @@ public class Bell extends Term {
         this.slope = slope;
     }
 
+    @Override
+    public Bell clone() throws CloneNotSupportedException {
+        return (Bell) super.clone();
+    }
+
 }

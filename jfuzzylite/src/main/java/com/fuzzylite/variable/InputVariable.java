@@ -56,4 +56,9 @@ public class InputVariable extends Variable {
         return new FllExporter().toString(this);
     }
 
+    @Override
+    public InputVariable clone() throws CloneNotSupportedException {
+        return (InputVariable) super.clone();
+    }
+
 }

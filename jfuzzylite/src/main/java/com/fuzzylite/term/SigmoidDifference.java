@@ -120,4 +120,8 @@ public class SigmoidDifference extends Term {
         this.right = right;
     }
 
+    @Override
+    public SigmoidDifference clone() throws CloneNotSupportedException {
+        return (SigmoidDifference) super.clone();
+    }
 }

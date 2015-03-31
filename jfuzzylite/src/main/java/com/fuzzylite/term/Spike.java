@@ -105,4 +105,9 @@ public class Spike extends Term {
         this.width = width;
     }
 
+    @Override
+    public Spike clone() throws CloneNotSupportedException {
+        return (Spike) super.clone();
+    }
+
 }

@@ -197,8 +197,12 @@ public class Variable implements Op.Cloneable {
 
     @Override
     public Variable clone() throws CloneNotSupportedException {
-        //TODO: Check cloning.
-        return (Variable) super.clone();
+        Variable result = (Variable) super.clone();
+        result.terms = new ArrayList<Term>(this.terms.size());
+        for (Term term : this.terms) {
+            result.terms.add(term.clone());
+        }
+        return result;
     }
 
 }

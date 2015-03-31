@@ -33,4 +33,8 @@ public class EinsteinProduct extends TNorm {
         return (a * b) / (2 - (a + b - a * b));
     }
 
+    @Override
+    public EinsteinProduct clone() throws CloneNotSupportedException {
+        return (EinsteinProduct) super.clone();
+    }
 }

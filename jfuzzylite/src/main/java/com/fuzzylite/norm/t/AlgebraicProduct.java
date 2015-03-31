@@ -33,4 +33,9 @@ public class AlgebraicProduct extends TNorm {
         return a * b;
     }
 
+    @Override
+    public AlgebraicProduct clone() throws CloneNotSupportedException {
+        return (AlgebraicProduct) super.clone();
+    }
+
 }

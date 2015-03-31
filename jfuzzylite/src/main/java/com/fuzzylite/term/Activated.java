@@ -101,4 +101,9 @@ public class Activated extends Term {
         this.activation = activation;
     }
 
+    @Override
+    public Activated clone() throws CloneNotSupportedException {
+        return (Activated) super.clone();
+    }
+
 }

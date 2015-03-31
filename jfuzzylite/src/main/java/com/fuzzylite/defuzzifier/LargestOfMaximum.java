@@ -68,4 +68,9 @@ public class LargestOfMaximum extends IntegralDefuzzifier {
         return xlargest;
     }
 
+    @Override
+    public LargestOfMaximum clone() throws CloneNotSupportedException {
+        return (LargestOfMaximum) super.clone();
+    }
+
 }

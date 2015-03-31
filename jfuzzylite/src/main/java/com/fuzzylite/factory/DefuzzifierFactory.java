@@ -44,4 +44,10 @@ public class DefuzzifierFactory extends ConstructionFactory<Defuzzifier> {
         register(WeightedAverage.class);
         register(WeightedSum.class);
     }
+
+    @Override
+    public DefuzzifierFactory clone() throws CloneNotSupportedException {
+        return (DefuzzifierFactory) super.clone();
+    }
+
 }

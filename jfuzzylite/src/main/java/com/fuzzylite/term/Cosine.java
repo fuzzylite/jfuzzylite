@@ -105,4 +105,9 @@ public class Cosine extends Term {
         this.width = width;
     }
 
+    @Override
+    public Cosine clone() throws CloneNotSupportedException {
+        return (Cosine) super.clone();
+    }
+
 }

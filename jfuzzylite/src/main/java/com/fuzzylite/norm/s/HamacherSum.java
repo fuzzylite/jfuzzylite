@@ -33,4 +33,9 @@ public class HamacherSum extends SNorm {
         return (a + b - 2 * a * b) / (1 - a * b);
     }
 
+    @Override
+    public HamacherSum clone() throws CloneNotSupportedException {
+        return (HamacherSum) super.clone();
+    }
+
 }

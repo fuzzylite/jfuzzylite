@@ -1,109 +1,109 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
-    <modelVersion>4.0.0</modelVersion>
-    <groupId>com.fuzzylite</groupId>
-    <artifactId>jfuzzylite</artifactId>
-    <version>5.0</version>
-    <packaging>jar</packaging>
-    <licenses>
-        <license>
-            <name>GNU Lesser General Public License</name>
-            <url>https://www.gnu.org/licenses/lgpl.html</url>
-            <distribution>repo</distribution>
-        </license>
-    </licenses>
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>com.fuzzylite</groupId>
+  <artifactId>jfuzzylite</artifactId>
+  <version>5.0</version>
+  <packaging>jar</packaging>
+  <licenses>
+    <license>
+      <name>GNU Lesser General Public License</name>
+      <url>https://www.gnu.org/licenses/lgpl.html</url>
+      <distribution>repo</distribution>
+    </license>
+  </licenses>
 
-    <name>jfuzzylite</name>
-    <description>
-        jfuzzylite™ is a cross-platform, free and open-source fuzzy logic control 
-        library programmed entirely in Java. Its goal is to allow you to easily 
-        create fuzzy logic controllers in a few steps utilizing object-oriented 
-        programming without requiring any third-party libraries.
+  <name>jfuzzylite</name>
+  <description>
+    jfuzzylite™ is a cross-platform, free and open-source fuzzy logic control 
+    library programmed entirely in Java. Its goal is to allow you to easily 
+    create fuzzy logic controllers in a few steps utilizing object-oriented 
+    programming without requiring any third-party libraries.
 
-        jfuzzylite™ is the equivalent of the fuzzylite® library for Java and 
-        Android platforms.
-    </description>
-    <url>http://www.fuzzylite.com/java</url>
+    jfuzzylite™ is the equivalent of the fuzzylite® library for Java and 
+    Android platforms.
+  </description>
+  <url>http://www.fuzzylite.com/java</url>
 
-    <organization>
-        <name>FuzzyLite Ltd</name>
-        <url>http://www.fuzzylite.com</url>
-    </organization>
+  <organization>
+    <name>FuzzyLite Ltd</name>
+    <url>http://www.fuzzylite.com</url>
+  </organization>
 
-    <scm>
-        <connection>scm:git:git://github.com/fuzzylite/jfuzzylite.git</connection>
-        <developerConnection>scm:git:https://jcrada@github.com/fuzzylite/jfuzzylite.git</developerConnection>
-        <tag>HEAD</tag>
-        <url>https://github.com/fuzzylite/jfuzzylite</url>
-    </scm>
+  <scm>
+    <connection>scm:git:git://github.com/fuzzylite/jfuzzylite.git</connection>
+    <developerConnection>scm:git:https://jcrada@github.com/fuzzylite/jfuzzylite.git</developerConnection>
+    <tag>HEAD</tag>
+    <url>https://github.com/fuzzylite/jfuzzylite</url>
+  </scm>
 
-    <developers>
-        <developer>
-            <id>jcrada</id>
-            <name>Juan Rada-Vilela, Ph.D.</name>
+  <developers>
+    <developer>
+      <id>jcrada</id>
+      <name>Juan Rada-Vilela, Ph.D.</name>
 
-            <url>http://www.fuzzylite.com/jcrada</url>
-            <organization>FuzzyLite Ltd</organization>
-            <organizationUrl>http://www.fuzzylite.com</organizationUrl>
-            <roles>
-                <role>Chief Executive Officer</role>
-                <role>Software Architect</role>
-                <role>Software Engineer</role>
-            </roles>
-            <timezone>New Zealand/Wellington</timezone>
-            <properties>
-                <picUrl>http://www.fuzzylite.com/icon/fuzzylite.png</picUrl>
-            </properties>
-        </developer>
-    </developers>
+      <url>http://www.fuzzylite.com/jcrada</url>
+      <organization>FuzzyLite Ltd</organization>
+      <organizationUrl>http://www.fuzzylite.com</organizationUrl>
+      <roles>
+        <role>Chief Executive Officer</role>
+        <role>Software Architect</role>
+        <role>Software Engineer</role>
+      </roles>
+      <timezone>New Zealand/Wellington</timezone>
+      <properties>
+        <picUrl>http://www.fuzzylite.com/icon/fuzzylite.png</picUrl>
+      </properties>
+    </developer>
+  </developers>
 
-    <!--
-    <repositories>
-        <repository>
-            <releases>
-                <enabled>true</enabled>
-                <updatePolicy>always</updatePolicy>
-                <checksumPolicy>fail</checksumPolicy>
-            </releases>
-            <snapshots>
-                <enabled>true</enabled>
-                <updatePolicy>never</updatePolicy>
-                <checksumPolicy>fail</checksumPolicy>
-            </snapshots>
-            <id>github</id>
-            <name>Central Repository</name>
-            <url>https://github.com/fuzzylite/jfuzzylite.git</url>
-            <layout>default</layout>
-        </repository>
-    </repositories>-->
+  <!--
+  <repositories>
+      <repository>
+          <releases>
+              <enabled>true</enabled>
+              <updatePolicy>always</updatePolicy>
+              <checksumPolicy>fail</checksumPolicy>
+          </releases>
+          <snapshots>
+              <enabled>true</enabled>
+              <updatePolicy>never</updatePolicy>
+              <checksumPolicy>fail</checksumPolicy>
+          </snapshots>
+          <id>github</id>
+          <name>Central Repository</name>
+          <url>https://github.com/fuzzylite/jfuzzylite.git</url>
+          <layout>default</layout>
+      </repository>
+  </repositories>-->
 
 
-    <properties>
-        <jdk.version>1.6</jdk.version>
-        <maven.compiler.source>1.6</maven.compiler.source>
-        <maven.compiler.target>1.6</maven.compiler.target>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-        <jfuzzylite.path>/home/juan/Development/fl/jfuzzylite/jfuzzylite/</jfuzzylite.path>
+  <properties>
+    <jdk.version>1.6</jdk.version>
+    <maven.compiler.source>1.6</maven.compiler.source>
+    <maven.compiler.target>1.6</maven.compiler.target>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+    <jfuzzylite.path>/home/juan/Development/fl/jfuzzylite/jfuzzylite/</jfuzzylite.path>
 
-    </properties>
+  </properties>
 
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-source-plugin</artifactId>
-                <version>2.4</version>
-                <executions>
-                    <execution>
-                        <id>attach-sources</id>
-                        <goals>
-                            <goal>jar</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
-        </plugins>
-    </build>
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-source-plugin</artifactId>
+        <version>2.4</version>
+        <executions>
+          <execution>
+            <id>attach-sources</id>
+            <goals>
+              <goal>jar</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
 </project>

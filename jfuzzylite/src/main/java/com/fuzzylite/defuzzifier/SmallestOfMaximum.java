@@ -68,4 +68,9 @@ public class SmallestOfMaximum extends IntegralDefuzzifier {
         return xsmallest;
     }
 
+    @Override
+    public SmallestOfMaximum clone() throws CloneNotSupportedException {
+        return (SmallestOfMaximum) super.clone();
+    }
+
 }

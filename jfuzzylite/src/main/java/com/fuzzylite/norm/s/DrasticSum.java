@@ -37,4 +37,9 @@ public class DrasticSum extends SNorm {
         return 1.0;
     }
 
+    @Override
+    public DrasticSum clone() throws CloneNotSupportedException {
+        return (DrasticSum) super.clone();
+    }
+
 }
