@@ -447,8 +447,8 @@ public class Function extends Term {
                     && !",".equals(token);
 
             if (isOperand) {
-                queue.offer(token);
                 FuzzyLite.log().finest(token + " is operand");
+                queue.offer(token);
 
             } else if (element != null && element.isFunction()) {
                 FuzzyLite.log().finest(token + " is function");
@@ -488,7 +488,7 @@ public class Function extends Term {
                 stack.push(token);
 
             } else if (")".equals(token)) {
-                while (!stack.isEmpty() && !"(".equals(stack.peek())) {
+                while (!(stack.isEmpty() || "(".equals(stack.peek()))) {
                     queue.offer(stack.pop());
                 }
                 if (stack.isEmpty() || !"(".equals(stack.peek())) {
@@ -497,12 +497,8 @@ public class Function extends Term {
                 }
                 stack.pop(); //get rid of "("
 
-                Element top = null;
-                if (!stack.isEmpty()) {
-                    top = factory.getObject(stack.peek());
-                }
-                if (top != null && top.isFunction()) {
-                    queue.push(stack.pop());
+                if (!stack.isEmpty() && factory.getObject(stack.peek()).isFunction()) {
+                    queue.offer(stack.pop());
                 }
 
             } else {
@@ -631,7 +627,6 @@ public class Function extends Term {
         f.load(text);
         log.info("Result: " + Op.str(f.membership(1)));
 
-        System.exit(0);
 
         text = "(Temperature is High and Oxigen is Low) or "
                 + "(Temperature is Low and (Oxigen is Low or Oxigen is High))";
