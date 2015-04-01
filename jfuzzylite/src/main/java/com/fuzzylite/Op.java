@@ -159,6 +159,7 @@ public class Op {
         return split(string, delimiter, true);
     }
 //TODO: Check changing return type from ArrayList to LinkedList.
+
     public static List<String> split(String str, String delimiter,
             boolean ignoreEmpty) {
         List<String> result = new ArrayList<String>();
@@ -244,20 +245,16 @@ public class Op {
      * String Operations
      */
     public static <T extends Number> String str(T x) {
-        String result = "";
         if (Double.isNaN(x.doubleValue())) {
-            result = "nan";
-        } else if (Double.isInfinite(x.doubleValue())) {
-            if (isLt(x.doubleValue(), 0.0)) {
-                result = "-";
-            }
-            result += "inf";
-        } else if (isEq(x.doubleValue(), 0.0)) {
-            result = FuzzyLite.getFormatter().format(0.0);
-        } else {
-            result = FuzzyLite.getFormatter().format(x);
+            return "nan";
         }
-        return result;
+        if (Double.isInfinite(x.doubleValue())) {
+            return isLt(x.doubleValue(), 0.0) ? "-inf" : "inf";
+        }
+        if (isEq(x.doubleValue(), 0.0)) {
+            return FuzzyLite.getFormatter().format(0.0);
+        }
+        return FuzzyLite.getFormatter().format(x);
     }
 
     public static <T> String join(Collection<T> x, String separator) {

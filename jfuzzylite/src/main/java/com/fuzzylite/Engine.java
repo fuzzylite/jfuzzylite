@@ -27,6 +27,7 @@ package com.fuzzylite;
 import static com.fuzzylite.Op.str;
 import com.fuzzylite.defuzzifier.Defuzzifier;
 import com.fuzzylite.defuzzifier.IntegralDefuzzifier;
+import com.fuzzylite.defuzzifier.WeightedDefuzzifier;
 import com.fuzzylite.factory.DefuzzifierFactory;
 import com.fuzzylite.factory.FactoryManager;
 import com.fuzzylite.factory.SNormFactory;
@@ -35,18 +36,14 @@ import com.fuzzylite.imex.FllExporter;
 import com.fuzzylite.norm.SNorm;
 import com.fuzzylite.norm.TNorm;
 import com.fuzzylite.norm.t.AlgebraicProduct;
+import com.fuzzylite.rule.Consequent;
+import com.fuzzylite.rule.Proposition;
 import com.fuzzylite.rule.Rule;
 import com.fuzzylite.rule.RuleBlock;
-import com.fuzzylite.term.Constant;
-import com.fuzzylite.term.Function;
-import com.fuzzylite.term.Linear;
-import com.fuzzylite.term.Ramp;
-import com.fuzzylite.term.SShape;
-import com.fuzzylite.term.Sigmoid;
 import com.fuzzylite.term.Term;
-import com.fuzzylite.term.ZShape;
 import com.fuzzylite.variable.InputVariable;
 import com.fuzzylite.variable.OutputVariable;
+import com.fuzzylite.variable.Variable;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -61,8 +58,8 @@ public class Engine implements Op.Cloneable {
 
     public enum Type {
 
-        NONE, MAMDANI, LARSEN, TAKAGI_SUGENO, TSUKAMOTO, INVERSE_TSUKAMOTO,
-        HYBRID, UNKNOWN;
+        Mamdani, Larsen, TakagiSugeno, Tsukamoto, InverseTsukamoto,
+        Hybrid, Unknown;
     };
 
     public Engine() {
@@ -76,12 +73,153 @@ public class Engine implements Op.Cloneable {
         this.ruleBlocks = new ArrayList<RuleBlock>();
     }
 
-    public String getName() {
-        return name;
+    public void configure(String conjunction, String disjunction,
+            String activation, String accumulation, String defuzzifier) {
+        TNormFactory tnormFactory = FactoryManager.instance().tnorm();
+        SNormFactory snormFactory = FactoryManager.instance().snorm();
+
+        TNorm objConjunction = tnormFactory.constructObject(conjunction);
+        SNorm objDisjunction = snormFactory.constructObject(disjunction);
+        TNorm objActivation = tnormFactory.constructObject(activation);
+        SNorm objAccumulation = snormFactory.constructObject(accumulation);
+
+        DefuzzifierFactory defuzzifierFactory = FactoryManager.instance().defuzzifier();
+        Defuzzifier objDefuzzifier = defuzzifierFactory.constructObject(defuzzifier);
+        configure(objConjunction, objDisjunction, objActivation, objAccumulation, objDefuzzifier);
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void configure(TNorm conjunction, SNorm disjunction,
+            TNorm activation, SNorm accumulation,
+            Defuzzifier defuzzifier) {
+        try {
+            for (RuleBlock ruleblock : this.ruleBlocks) {
+                ruleblock.setConjunction(conjunction == null ? null : conjunction.clone());
+                ruleblock.setDisjunction(disjunction == null ? null : disjunction.clone());
+                ruleblock.setActivation(activation == null ? null : activation.clone());
+            }
+            for (OutputVariable outputVariable : this.outputVariables) {
+                outputVariable.setDefuzzifier(defuzzifier == null ? null : defuzzifier.clone());
+                outputVariable.fuzzyOutput().setAccumulation(accumulation == null ? null : accumulation.clone());
+            }
+        } catch (Exception ex) {
+            throw new RuntimeException(ex);
+        }
+    }
+
+    public boolean isReady() {
+        return isReady(new StringBuilder());
+    }
+
+    public boolean isReady(StringBuilder message) {
+        message.setLength(0);
+        if (this.inputVariables.isEmpty()) {
+            message.append("- Engine has no input variables\n");
+        }
+        for (int i = 0; i < this.inputVariables.size(); ++i) {
+            InputVariable inputVariable = this.inputVariables.get(i);
+            if (inputVariable == null) {
+                message.append(String.format(
+                        "- Engine has a null input variable at index <%d>\n", i));
+            } else if (inputVariable.getTerms().isEmpty()) {
+                //ignore because sometimes inputs can be empty: takagi-sugeno/matlab/slcpp1.fis
+                //message.append(String.format("- Input variable <%s> has no terms\n", inputVariable.getName()));
+            }
+        }
+
+        if (this.outputVariables.isEmpty()) {
+            message.append("- Engine has no output variables\n");
+        }
+        for (int i = 0; i < this.outputVariables.size(); ++i) {
+            OutputVariable outputVariable = this.outputVariables.get(i);
+            if (outputVariable == null) {
+                message.append(String.format(
+                        "- Engine has a null output variable at index <%d>\n", i));
+            } else {
+                if (outputVariable.getTerms().isEmpty()) {
+                    message.append(String.format(
+                            "- Output variable <%s> has no terms\n", outputVariable.getName()));
+                }
+                Defuzzifier defuzzifier = outputVariable.getDefuzzifier();
+                if (defuzzifier == null) {
+                    message.append(String.format(
+                            "- Output variable <%s> has no defuzzifier\n",
+                            outputVariable.getName()));
+                } else if (defuzzifier instanceof IntegralDefuzzifier
+                        && outputVariable.fuzzyOutput().getAccumulation() == null) {
+                    message.append(String.format(
+                            "- Output variable <%s> has no Accumulation\n",
+                            outputVariable.getName()));
+                }
+            }
+        }
+
+        if (this.ruleBlocks.isEmpty()) {
+            message.append("- Engine has no rule blocks\n");
+        }
+        for (int i = 0; i < this.ruleBlocks.size(); ++i) {
+            RuleBlock ruleBlock = this.ruleBlocks.get(i);
+            if (ruleBlock == null) {
+                message.append(String.format(
+                        "- Engine has a null rule block at index <%d>\n", i));
+            } else {
+                if (ruleBlock.getRules().isEmpty()) {
+                    message.append(String.format(
+                            "- Rule block <%s> has no rules\n", ruleBlock.getName()));
+                }
+                int requiresConjunction = 0;
+                int requiresDisjunction = 0;
+                int requiresActivation = 0;
+                for (int r = 0; r < this.ruleBlocks.size(); ++r) {
+                    Rule rule = ruleBlock.getRule(r);
+                    if (rule == null) {
+                        message.append(String.format(
+                                "- Rule block <%s> has a null rule at index <%d>\n",
+                                ruleBlock.getName(), r));
+                    } else {
+                        int thenIndex = rule.getText().indexOf(" " + Rule.FL_THEN + " ");
+                        int andIndex = rule.getText().indexOf(" " + Rule.FL_AND + " ");
+                        int orIndex = rule.getText().indexOf(" " + Rule.FL_OR + " ");
+                        if (andIndex != -1 && andIndex < thenIndex) {
+                            ++requiresConjunction;
+                        }
+                        if (orIndex != -1 && orIndex < thenIndex) {
+                            ++requiresDisjunction;
+                        }
+                        if (rule.isLoaded()) {
+                            Consequent consequent = rule.getConsequent();
+                            for (Proposition proposition : consequent.getConclusions()) {
+                                if (proposition.getVariable() instanceof OutputVariable) {
+                                    OutputVariable outputVariable = (OutputVariable) proposition.getVariable();
+                                    if (outputVariable.getDefuzzifier() instanceof IntegralDefuzzifier) {
+                                        ++requiresActivation;
+                                        break;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+                if (requiresConjunction > 0 && ruleBlock.getConjunction() == null) {
+                    message.append(String.format(
+                            "- Rule block <%s> has no conjunction operator\n", ruleBlock.getName()));
+                    message.append(String.format(
+                            "- Rule block <%s> has %d rules that require conjunction operator", ruleBlock.getName(), requiresConjunction));
+                }
+                if (requiresDisjunction > 0 && ruleBlock.getDisjunction() == null) {
+                    message.append(String.format(
+                            "- Rule block <%s> has no disjunction operator\n", ruleBlock.getName()));
+                    message.append(String.format(
+                            "- Rule block <%s> has %d rules that require disjunction operator", ruleBlock.getName(), requiresDisjunction));
+                }
+                if (requiresActivation > 0 && ruleBlock.getActivation() == null) {
+                    message.append(String.format(
+                            "- Rule block <%s> has no activation operator\n", ruleBlock.getName()));
+                    message.append(String.format(
+                            "- Rule block <%s> has %d rules that require activation operator", ruleBlock.getName(), requiresActivation));
+                }
+            }
+        }
+        return message.length() == 0;
     }
 
     public void restart() {
@@ -161,143 +299,12 @@ public class Engine implements Op.Cloneable {
          */
     }
 
-    public void configure(String conjunction, String disjunction,
-            String activation, String accumulation, String defuzzifier) {
-        configure(conjunction, disjunction, activation, accumulation, defuzzifier,
-                IntegralDefuzzifier.getDefaultResolution());
+    public String getName() {
+        return name;
     }
 
-    public void configure(String conjunction, String disjunction,
-            String activation, String accumulation, String defuzzifier, int resolution) {
-        TNormFactory tnormFactory = FactoryManager.instance().tnorm();
-        SNormFactory snormFactory = FactoryManager.instance().snorm();
-
-        TNorm objConjunction = tnormFactory.constructObject(conjunction);
-        SNorm objDisjunction = snormFactory.constructObject(disjunction);
-        TNorm objActivation = tnormFactory.constructObject(activation);
-        SNorm objAccumulation = snormFactory.constructObject(accumulation);
-
-        DefuzzifierFactory defuzzifierFactory = FactoryManager.instance().defuzzifier();
-        Defuzzifier objDefuzzifier = defuzzifierFactory.constructObject(defuzzifier);
-        if (objDefuzzifier instanceof IntegralDefuzzifier) {
-            ((IntegralDefuzzifier) objDefuzzifier).setResolution(resolution);
-        }
-        configure(objConjunction, objDisjunction, objActivation, objAccumulation, objDefuzzifier);
-    }
-
-    public void configure(TNorm conjunction, SNorm disjunction,
-            TNorm activation, SNorm accumulation,
-            Defuzzifier defuzzifier) {
-        for (RuleBlock ruleblock : this.ruleBlocks) {
-            ruleblock.setConjunction(conjunction);
-            ruleblock.setDisjunction(disjunction);
-            ruleblock.setActivation(activation);
-        }
-        for (OutputVariable outputVariable : this.outputVariables) {
-            outputVariable.setDefuzzifier(defuzzifier);
-            outputVariable.fuzzyOutput().setAccumulation(accumulation);
-        }
-    }
-
-    public boolean isReady() {
-        return isReady(new StringBuilder());
-    }
-
-    public boolean isReady(StringBuilder message) {
-        message.setLength(0);
-        if (this.inputVariables.isEmpty()) {
-            message.append("- Engine has no input variables\n");
-        }
-        for (int i = 0; i < this.inputVariables.size(); ++i) {
-            InputVariable inputVariable = this.inputVariables.get(i);
-            if (inputVariable == null) {
-                message.append(String.format(
-                        "- Engine has a null input variable at index <%d>\n", i));
-            } else if (inputVariable.getTerms().isEmpty()) {
-                //ignore because sometimes inputs can be empty: takagi-sugeno/matlab/slcpp1.fis
-                //message.append(String.format("- Input variable <%s> has no terms\n", inputVariable.getName()));
-            }
-        }
-
-        if (this.outputVariables.isEmpty()) {
-            message.append("- Engine has no output variables\n");
-        }
-        for (int i = 0; i < this.outputVariables.size(); ++i) {
-            OutputVariable outputVariable = this.outputVariables.get(i);
-            if (outputVariable == null) {
-                message.append(String.format(
-                        "- Engine has a null output variable at index <%d>\n", i));
-            } else {
-                if (outputVariable.getTerms().isEmpty()) {
-                    message.append(String.format(
-                            "- Output variable <%s> has no terms\n", outputVariable.getName()));
-                }
-                Defuzzifier defuzzifier = outputVariable.getDefuzzifier();
-                if (defuzzifier == null) {
-                    message.append(String.format(
-                            "- Output variable <%s> has no defuzzifier\n",
-                            outputVariable.getName()));
-                } else if (defuzzifier instanceof IntegralDefuzzifier
-                        && outputVariable.fuzzyOutput().getAccumulation() == null) {
-                    message.append(String.format(
-                            "- Output variable <%s> has no Accumulation\n",
-                            outputVariable.getName()));
-                }
-            }
-        }
-
-        if (this.ruleBlocks.isEmpty()) {
-            message.append("- Engine has no rule blocks\n");
-        }
-        for (int i = 0; i < this.ruleBlocks.size(); ++i) {
-            RuleBlock ruleBlock = this.ruleBlocks.get(i);
-            if (ruleBlock == null) {
-                message.append(String.format(
-                        "- Engine has a null rule block at index <%d>\n", i));
-            } else {
-                if (ruleBlock.getRules().isEmpty()) {
-                    message.append(String.format(
-                            "- Rule block <%s> has no rules\n", ruleBlock.getName()));
-                }
-                int requiresConjunction = 0;
-                int requiresDisjunction = 0;
-                for (int r = 0; r < this.ruleBlocks.size(); ++r) {
-                    Rule rule = ruleBlock.getRule(r);
-                    if (rule == null) {
-                        message.append(String.format(
-                                "- Rule block <%s> has a null rule at index <%d>\n",
-                                ruleBlock.getName(), r));
-                    } else {
-                        int thenIndex = rule.getText().indexOf(" " + Rule.FL_THEN + " ");
-                        int andIndex = rule.getText().indexOf(" " + Rule.FL_AND + " ");
-                        int orIndex = rule.getText().indexOf(" " + Rule.FL_OR + " ");
-                        if (andIndex != -1 && andIndex < thenIndex) {
-                            ++requiresConjunction;
-                        }
-                        if (orIndex != -1 && orIndex < thenIndex) {
-                            ++requiresDisjunction;
-                        }
-                    }
-                }
-                if (requiresConjunction > 0 && ruleBlock.getConjunction() == null) {
-                    message.append(String.format(
-                            "- Rule block <%s> has no Conjunction\n", ruleBlock.getName()));
-                    message.append(String.format(
-                            "- Rule block <%s> has %d rules that require Conjunction", ruleBlock.getName(), requiresConjunction));
-                }
-                if (requiresDisjunction > 0 && ruleBlock.getDisjunction() == null) {
-                    message.append(String.format(
-                            "- Rule block <%s> has no Disjunction\n", ruleBlock.getName()));
-                    message.append(String.format(
-                            "- Rule block <%s> has %d rules that require Disjunction", ruleBlock.getName(), requiresDisjunction));
-                }
-                if (ruleBlock.getActivation() == null) {
-                    message.append(String.format(
-                            "- Rule block <%s> has no Activation\n", ruleBlock.getName()));
-                }
-            }
-        }
-        return message.length() == 0;
+    public void setName(String name) {
+        this.name = name;
     }
 
     @Override
@@ -305,23 +312,20 @@ public class Engine implements Op.Cloneable {
         return new FllExporter().toString(this);
     }
 
-    public Type type() {
+    public Type type(StringBuilder reason) {
+        reason.setLength(0);
         if (outputVariables.isEmpty()) {
-            return Type.NONE;
+            reason.append("- Engine has no output variables");
+            return Type.Unknown;
         }
         //mamdani
         boolean mamdani = true;
         for (OutputVariable outputVariable : outputVariables) {
-            //Terms cannot be Constant or Linear
-            for (Term term : outputVariable.getTerms()) {
-                mamdani &= term != null
-                        && !(term instanceof Constant || term instanceof Linear);
-            }
             //Defuzzifier must be integral
             mamdani &= outputVariable.getDefuzzifier() instanceof IntegralDefuzzifier;
         }
 
-        boolean larsen = mamdani;
+        boolean larsen = mamdani && !ruleBlocks.isEmpty();
         //Larsen is Mamdani with AlgebraicProduct as Activation
         if (mamdani) {
             for (RuleBlock ruleBlock : ruleBlocks) {
@@ -329,68 +333,110 @@ public class Engine implements Op.Cloneable {
             }
         }
         if (larsen) {
-            return Type.LARSEN;
+            reason.append("- Output variables have integral defuzzifiers\n")
+                    .append("- Rule blocks activate using the algebraic product T-Norm");
+            return Type.Larsen;
         }
         if (mamdani) {
-            return Type.MAMDANI;
+            reason.append("-Output variables have integral defuzzifiers");
+            return Type.Mamdani;
         }
         //else keep checking
 
         boolean takagiSugeno = true;
         for (OutputVariable outputVariable : outputVariables) {
-            //Takagi-Sugeno has only Constant, Linear or Function terms
-            for (Term term : outputVariable.getTerms()) {
-                takagiSugeno &= term instanceof Constant
-                        || term instanceof Linear
-                        || term instanceof Function;
+            WeightedDefuzzifier weightedDefuzzifier = null;
+            if (outputVariable.getDefuzzifier() instanceof WeightedDefuzzifier) {
+                weightedDefuzzifier = (WeightedDefuzzifier) outputVariable.getDefuzzifier();
+                takagiSugeno &= weightedDefuzzifier.getType() == WeightedDefuzzifier.Type.Automatic
+                        || weightedDefuzzifier.getType() == WeightedDefuzzifier.Type.TakagiSugeno;
+            } else {
+                takagiSugeno = false;
             }
-            //and the defuzzifier cannot be integral
-            Defuzzifier defuzzifier = outputVariable.getDefuzzifier();
-            takagiSugeno &= defuzzifier != null && !(defuzzifier instanceof IntegralDefuzzifier);
+
+            if (takagiSugeno) {
+                //Takagi-Sugeno has only Constant, Linear or Function terms
+                for (Iterator<Term> it = outputVariable.getTerms().iterator();
+                        takagiSugeno && it.hasNext();) {
+                    takagiSugeno &= weightedDefuzzifier.inferType(it.next())
+                            == WeightedDefuzzifier.Type.TakagiSugeno;
+                }
+            }
         }
         if (takagiSugeno) {
-            return Type.TAKAGI_SUGENO;
+            reason.append("- Output variables have weighted defuzzifiers\n")
+                    .append("- Output variables have constant, linear or function terms");
+            return Type.TakagiSugeno;
         }
 
         boolean tsukamoto = true;
         for (OutputVariable outputVariable : outputVariables) {
-            //Tsukamoto has only monotonic terms: Ramp, Sigmoid, SShape, or ZShape
-            for (Term term : outputVariable.getTerms()) {
-                tsukamoto &= term instanceof Ramp
-                        || term instanceof Sigmoid
-                        || term instanceof SShape
-                        || term instanceof ZShape;
+            WeightedDefuzzifier weightedDefuzzifier = null;
+            if (outputVariable.getDefuzzifier() instanceof WeightedDefuzzifier) {
+                weightedDefuzzifier = (WeightedDefuzzifier) outputVariable.getDefuzzifier();
+                tsukamoto &= weightedDefuzzifier.getType() == WeightedDefuzzifier.Type.Automatic
+                        || weightedDefuzzifier.getType() == WeightedDefuzzifier.Type.Tsukamoto;
+            } else {
+                tsukamoto = false;
             }
-            //and the defuzzifier cannot be integral
-            Defuzzifier defuzzifier = outputVariable.getDefuzzifier();
-            tsukamoto &= defuzzifier != null && !(defuzzifier instanceof IntegralDefuzzifier);
+
+            if (tsukamoto) {
+                //Tsukamoto has only monotonic terms: Concave, Ramp, Sigmoid, SShape, or ZShape
+                for (Iterator<Term> it = outputVariable.getTerms().iterator();
+                        tsukamoto && it.hasNext();) {
+                    tsukamoto &= weightedDefuzzifier.isMonotonic(it.next());
+                }
+            }
         }
         if (tsukamoto) {
-            return Type.TSUKAMOTO;
+            reason.append("- Output variables have weighted defuzzifiers\n")
+                    .append("- Output variables only have monotonic terms");
+            return Type.Tsukamoto;
         }
 
+        //Inverse Tsukamoto
         boolean inverseTsukamoto = true;
         for (OutputVariable outputVariable : outputVariables) {
-            //Terms cannot be Constant or Linear, like Mamdani
-            for (Term term : outputVariable.getTerms()) {
-                inverseTsukamoto &= term != null
-                        && !(term instanceof Constant || term instanceof Linear);
-            }
             //Defuzzifier cannot be integral
             Defuzzifier defuzzifier = outputVariable.getDefuzzifier();
-            inverseTsukamoto &= defuzzifier != null && !(defuzzifier instanceof IntegralDefuzzifier);
+            inverseTsukamoto &= defuzzifier != null && defuzzifier instanceof WeightedDefuzzifier;
         }
         if (inverseTsukamoto) {
-            return Type.INVERSE_TSUKAMOTO;
+            reason.append("- Output variables have weighted defuzzifiers\n")
+                    .append("- Output variables do not only have constant, linear or function terms\n")
+                    .append("- Output variables do not only have monotonic terms\n");
+            return Type.InverseTsukamoto;
         }
 
-        return Type.UNKNOWN;
+        boolean hybrid = true;
+        for (OutputVariable outputVariable : outputVariables) {
+            //Output variables have non-null defuzzifiers
+            hybrid &= outputVariable.getDefuzzifier() != null;
+        }
+        if (hybrid) {
+            reason.append("- Output variables have different defuzzifiers");
+            return Type.Hybrid;
+        }
+
+        reason.append("- There are output variables without a defuzzifier");
+        return Type.Unknown;
+    }
+
+    public Type type() {
+        return type(new StringBuilder());
     }
 
     @Override
     public Engine clone() throws CloneNotSupportedException {
 //TODO: Deep clone.
         return (Engine) super.clone();
+    }
+
+    public List<Variable> variables() {
+        List<Variable> result = new ArrayList<Variable>(inputVariables.size() + outputVariables.size());
+        result.addAll(inputVariables);
+        result.addAll(outputVariables);
+        return result;
     }
 
     /*
@@ -419,14 +465,14 @@ public class Engine implements Op.Cloneable {
         this.inputVariables.add(inputVariable);
     }
 
-    public InputVariable removeInputVariable(InputVariable inputVariable) {
-        return this.inputVariables.remove(inputVariable) ? inputVariable : null;
+    public boolean removeInputVariable(InputVariable inputVariable) {
+        return this.inputVariables.remove(inputVariable);
     }
 
     public InputVariable removeInputVariable(String name) {
         for (Iterator<InputVariable> it = this.inputVariables.iterator(); it.hasNext();) {
             InputVariable inputVariable = it.next();
-            if (name.equals(inputVariable.getName())) {
+            if (inputVariable.getName().equals(name)) {
                 it.remove();
                 return inputVariable;
             }
@@ -442,7 +488,7 @@ public class Engine implements Op.Cloneable {
 
     public boolean hasInputVariable(String name) {
         for (InputVariable inputVariable : this.inputVariables) {
-            if (name.equals(inputVariable.getName())) {
+            if (inputVariable.getName().equals(name)) {
                 return true;
             }
         }
@@ -470,7 +516,7 @@ public class Engine implements Op.Cloneable {
 
     public OutputVariable getOutputVariable(String name) {
         for (OutputVariable outputVariable : this.outputVariables) {
-            if (name.equals(outputVariable.getName())) {
+            if (outputVariable.getName().equals(name)) {
                 return outputVariable;
             }
         }
@@ -486,14 +532,14 @@ public class Engine implements Op.Cloneable {
         this.outputVariables.add(outputVariable);
     }
 
-    public OutputVariable removeOutputVariable(OutputVariable outputVariable) {
-        return this.outputVariables.remove(outputVariable) ? outputVariable : null;
+    public boolean removeOutputVariable(OutputVariable outputVariable) {
+        return this.outputVariables.remove(outputVariable);
     }
 
     public OutputVariable removeOutputVariable(String name) {
         for (Iterator<OutputVariable> it = this.outputVariables.iterator(); it.hasNext();) {
             OutputVariable outputVariable = it.next();
-            if (name.equals(outputVariable.getName())) {
+            if (outputVariable.getName().equals(name)) {
                 it.remove();
                 return outputVariable;
             }
@@ -508,7 +554,7 @@ public class Engine implements Op.Cloneable {
 
     public boolean hasOutputVariable(String name) {
         for (OutputVariable outputVariable : this.outputVariables) {
-            if (name.equals(outputVariable.getName())) {
+            if (outputVariable.getName().equals(name)) {
                 return true;
             }
         }
@@ -532,7 +578,7 @@ public class Engine implements Op.Cloneable {
      */
     public RuleBlock getRuleBlock(String name) {
         for (RuleBlock ruleBlock : this.ruleBlocks) {
-            if (name.equals(ruleBlock.getName())) {
+            if (ruleBlock.getName().equals(name)) {
                 return ruleBlock;
             }
         }
@@ -548,14 +594,14 @@ public class Engine implements Op.Cloneable {
         this.ruleBlocks.add(ruleBlock);
     }
 
-    public RuleBlock removeRuleBlock(RuleBlock ruleBlock) {
-        return this.ruleBlocks.remove(ruleBlock) ? ruleBlock : null;
+    public boolean  removeRuleBlock(RuleBlock ruleBlock) {
+        return this.ruleBlocks.remove(ruleBlock);
     }
 
     public RuleBlock removeRuleBlock(String name) {
         for (Iterator<RuleBlock> it = this.ruleBlocks.iterator(); it.hasNext();) {
             RuleBlock ruleBlock = it.next();
-            if (name.equals(ruleBlock.getName())) {
+            if (ruleBlock.getName().equals(name)) {
                 it.remove();
                 return ruleBlock;
             }
@@ -570,7 +616,7 @@ public class Engine implements Op.Cloneable {
 
     public boolean hasRuleBlock(String name) {
         for (RuleBlock ruleBlock : this.ruleBlocks) {
-            if (name.equals(ruleBlock.getName())) {
+            if (ruleBlock.getName().equals(name)) {
                 return true;
             }
         }

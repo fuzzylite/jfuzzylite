@@ -50,8 +50,10 @@ public class FuzzyLite {
     }
     public static final String NAME = "jfuzzylite";
     public static final String VERSION = "5.0";
-    public static final String LONG_VERSION = "5.0b1412";
+    public static final String LONG_VERSION = "5.0b1504";
     public static final String AUTHOR = "Juan Rada-Vilela, Ph.D.";
+    public static final String COMPANY = "FuzzyLite Limited";
+    public static final String WEBSITE = "http://www.fuzzylite.com/";
     private static DecimalFormat DF = new FLDecimalFormat("0.000");
     private static int DECIMALS = 3;
     private static double MACHEPS = 1e-6; //Machine epsilon to differentiate numbers
@@ -91,11 +93,12 @@ public class FuzzyLite {
 
     public static void setDecimals(int decimals) {
         DECIMALS = decimals;
-        String pattern = "0.";
+        StringBuilder pattern = new StringBuilder("0.".length() + decimals);
+        pattern.append("0.");
         for (int i = 0; i < decimals; ++i) {
-            pattern += "0";
+            pattern.append('0');
         }
-        DF = new FLDecimalFormat(pattern);
+        DF = new FLDecimalFormat(pattern.toString());
     }
 
     public static double getMachEps() {

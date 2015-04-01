@@ -118,15 +118,15 @@ public class FisExporter extends Exporter {
         result.append("[System]\n");
         result.append(String.format("Name='%s'\n", engine.getName()));
         String type;
-        if (engine.type() == Engine.Type.MAMDANI || engine.type() == Engine.Type.LARSEN) {
+        if (engine.type() == Engine.Type.Mamdani || engine.type() == Engine.Type.Larsen) {
             type = "mamdani";
-        } else if (engine.type() == Engine.Type.TAKAGI_SUGENO) {
+        } else if (engine.type() == Engine.Type.TakagiSugeno) {
             type = "sugeno";
-        } else if (engine.type() == Engine.Type.TSUKAMOTO) {
+        } else if (engine.type() == Engine.Type.Tsukamoto) {
             type = "tsukamoto";
-        } else if (engine.type() == Engine.Type.INVERSE_TSUKAMOTO) {
+        } else if (engine.type() == Engine.Type.InverseTsukamoto) {
             type = "inverse tsukamoto";
-        } else if (engine.type() == Engine.Type.HYBRID) {
+        } else if (engine.type() == Engine.Type.Hybrid) {
             type = "hybrid";
         } else {
             type = "unknown";
