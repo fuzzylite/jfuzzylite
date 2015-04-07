@@ -10,7 +10,7 @@ jdk:
 
 script:
   - cd jfuzzylite
-  - mvn test
+  - mvn install
 
 notifications:
   email:
