@@ -428,8 +428,31 @@ public class Engine implements Op.Cloneable {
 
     @Override
     public Engine clone() throws CloneNotSupportedException {
-//TODO: Deep clone.
-        return (Engine) super.clone();
+        Engine result = (Engine) super.clone();
+        result.inputVariables = new ArrayList<InputVariable>(this.inputVariables.size());
+        for (InputVariable inputVariable : this.inputVariables) {
+            result.inputVariables.add(inputVariable.clone());
+        }
+        result.outputVariables = new ArrayList<OutputVariable>(this.outputVariables.size());
+        for (OutputVariable outputVariable : this.outputVariables) {
+            result.outputVariables.add(outputVariable.clone());
+        }
+        for (Variable variable : this.variables()) {
+            for (Term term : variable.getTerms()) {
+                Term.updateReference(term, this);
+            }
+        }
+        result.ruleBlocks = new ArrayList<RuleBlock>(this.ruleBlocks.size());
+        for (RuleBlock ruleBlock : this.ruleBlocks) {
+            RuleBlock ruleBlockClone = ruleBlock.clone();
+            try {
+                ruleBlockClone.loadRules(result);
+            } finally {
+                result.ruleBlocks.add(ruleBlockClone);
+            }
+        }
+
+        return result;
     }
 
     public List<Variable> variables() {
@@ -594,7 +617,7 @@ public class Engine implements Op.Cloneable {
         this.ruleBlocks.add(ruleBlock);
     }
 
-    public boolean  removeRuleBlock(RuleBlock ruleBlock) {
+    public boolean removeRuleBlock(RuleBlock ruleBlock) {
         return this.ruleBlocks.remove(ruleBlock);
     }
 

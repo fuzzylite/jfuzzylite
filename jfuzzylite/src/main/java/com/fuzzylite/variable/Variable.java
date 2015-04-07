@@ -41,7 +41,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-//TODO: Implement Collection<Term> in version 6.0
 public class Variable implements Op.Cloneable {
 
     private String name;
