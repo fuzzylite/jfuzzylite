@@ -51,6 +51,7 @@ public class FuzzyLite {
     public static final String NAME = "jfuzzylite";
     public static final String VERSION = "5.0";
     public static final String LONG_VERSION = "5.0b1504";
+    public static final String LICENSE = "GNU Lesser General Public License v3.0";
     public static final String AUTHOR = "Juan Rada-Vilela, Ph.D.";
     public static final String COMPANY = "FuzzyLite Limited";
     public static final String WEBSITE = "http://www.fuzzylite.com/";

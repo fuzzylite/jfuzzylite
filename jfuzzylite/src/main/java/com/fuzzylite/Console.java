@@ -52,11 +52,12 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
-import java.io.StringWriter;
+import java.io.IOException;
 import java.io.Writer;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -68,9 +69,11 @@ public class Console {
     public static final String KW_OUTPUT_FILE = "-o";
     public static final String KW_OUTPUT_FORMAT = "-of";
     public static final String KW_EXAMPLE = "-example";
+    public static final String KW_DECIMALS = "-decimals";
     public static final String KW_DATA_INPUT = "-d";
     public static final String KW_DATA_MAXIMUM = "-maximum";
-    public static final String KW_DECIMALS = "-decimals";
+    public static final String KW_DATA_EXPORT_HEADER = "-dheader";
+    public static final String KW_DATA_EXPORT_INPUTS = "-dinputs";
 
     static class Option {
 
@@ -93,12 +96,17 @@ public class Console {
         options.add(new Option(KW_DATA_INPUT, "datafile", "if exporting to fld, file of input values to evaluate your engine on"));
         options.add(new Option(KW_DATA_MAXIMUM, "number", "if exporting to fld without datafile, maximum number of results to export"));
         options.add(new Option(KW_DECIMALS, "number", "number of decimals to utilize"));
+        options.add(new Option(KW_DATA_EXPORT_HEADER, "boolean", "if true and exporting to fld, include headers"));
+        options.add(new Option(KW_DATA_EXPORT_INPUTS, "boolean", "if true and exporting to fld, include input values"));
 
         StringBuilder result = new StringBuilder();
+        result.append("Copyright (C) 2010-2014 FuzzyLite Limited\n");
+        result.append("All rights reserved\n");
         result.append("========================================\n");
-        result.append("fuzzylite: a fuzzy logic control library\n");
+        result.append("jfuzzylite: a fuzzy logic control library\n");
         result.append(String.format("version: %s\n", FuzzyLite.LONG_VERSION));
         result.append(String.format("author: %s\n", FuzzyLite.AUTHOR));
+        result.append(String.format("license: %s\n", FuzzyLite.LICENSE));
         result.append("========================================\n");
         result.append("usage: java -jar jfuzzylite.jar inputfile outputfile\n");
         result.append("   or: java -jar jfuzzylite.jar ");
@@ -108,11 +116,23 @@ public class Console {
         result.append("\n\nwhere:\n");
 
         for (Option option : options) {
-            result.append(String.format("%s %s \t%s.\n",
-                    option.key, option.value, option.description));
+
+            result.append(option.key);
+            int keyPad = 12 - option.key.length();
+            if (keyPad > 0) {
+                result.append(String.format("%" + keyPad + "s", " "));
+            }
+
+            result.append(option.value);
+            int valuePad = 13 - option.value.length();
+            if (valuePad > 0) {
+                result.append(String.format("%" + valuePad + "s", " "));
+            }
+            result.append(option.description).append("\n");
         }
+
         result.append("\n");
-        result.append("Visit http://www.fuzzylite.com for more information.");
+        result.append("Visit http://www.fuzzylite.com/ for more information.");
         return result.toString();
     }
 
@@ -146,7 +166,7 @@ public class Console {
             for (String option : options.keySet()) {
                 if (!validOptions.contains(option)) {
                     throw new RuntimeException(String.format(
-                            "[option error] option <%s> not supported", option));
+                            "[option error] option <%s> not recognized", option));
                 }
             }
         }
@@ -215,23 +235,22 @@ public class Console {
         }
 
         String outputFilename = options.get(KW_OUTPUT_FILE);
+        if (outputFilename == null) {
+            outputFilename = "";
+        }
         String outputFormat = options.get(KW_OUTPUT_FORMAT);
         if (outputFormat == null || outputFormat.isEmpty()) {
-            if (outputFilename == null || outputFilename.isEmpty()) {
-                throw new RuntimeException("[format error] unspecified format of output");
+            int extensionIndex = outputFilename.lastIndexOf(".");
+            if (extensionIndex >= 0) {
+                outputFormat = outputFilename.substring(extensionIndex + 1);
             } else {
-                int extensionIndex = outputFilename.lastIndexOf(".");
-                if (extensionIndex >= 0) {
-                    outputFormat = outputFilename.substring(extensionIndex + 1);
-                } else {
-                    throw new RuntimeException("[format error] unspecified format of output file");
-                }
+                throw new RuntimeException("[format error] unspecified format of output file");
             }
         }
 
         Writer writer;
-        if (outputFilename == null || outputFilename.isEmpty()) {
-            writer = new StringWriter();
+        if (outputFilename.isEmpty()) {
+            writer = System.console().writer();
         } else {
             File outputFile = new File(outputFilename);
             if (!outputFile.exists()) {
@@ -246,11 +265,7 @@ public class Console {
             throw ex;
         }
         writer.flush();
-        if (outputFilename == null || outputFilename.isEmpty()) {
-            StringWriter stringWriter = (StringWriter) writer;
-            System.out.println(stringWriter.getBuffer().toString());
-        }
-        writer.close();
+        writer.close(); //TODO: What happens if I close the Console?
     }
 
     protected static void process(String input, Writer writer,
@@ -333,6 +348,109 @@ public class Console {
             }
             writer.write(exporter.toString(engine));
         }
+    }
+
+    public void interactive(Writer writer, Engine engine) throws IOException {
+        //TODO: finish.
+        final String space = "\t";
+        List<Double> inputValues = new ArrayList<Double>(engine.numberOfInputVariables());
+        int character = 0;
+        BufferedReader reader = new BufferedReader(System.console().reader());
+        StringBuilder inputValue = new StringBuilder();
+        StringBuilder buffer = new StringBuilder();
+
+        do {
+//            writer.append(buffer.str());
+//            writer.flush();
+
+            character = reader.read();
+
+            if (Character.isWhitespace(character)) {
+                double value = engine.getInputVariable(inputValues.size()).getInputValue();
+                try {
+                    value = Op.toDouble(inputValue.toString());
+                } catch (Exception ex) {
+                    buffer.append("[").append(Op.str(value)).append("]");
+                }
+                buffer.append(space);
+                inputValue.setLength(0);
+                inputValues.add(value);
+                if (inputValues.size() == engine.getInputVariables().size()) {
+                    character = 'P'; //fall through to process
+                } else {
+                    continue;
+                }
+            }
+
+            switch (character) {
+                default:
+                    inputValue.append((char) character);
+                    buffer.append((char) character);
+                    break;
+                case 'r':
+                case 'R':
+                    engine.restart();
+                    buffer.append("#[Restart]");
+                //fall through
+                case 'd':
+                case 'D':
+                    inputValues.clear();
+                    buffer.append("#[Discard]\n>");
+                    inputValue.setLength(0);
+                    break;
+                case 'p':
+                case 'P': {
+                    inputValue.setLength(0);
+                    for (int i = 0; i < inputValues.size(); ++i) {
+                        engine.getInputVariable(i).setInputValue(inputValues.get(i));
+                    }
+                    List<Double> missingInputs = new ArrayList<Double>();
+                    for (int i = inputValues.size(); i < engine.numberOfInputVariables(); ++i) {
+                        missingInputs.add(engine.getInputVariable(i).getInputValue());
+                    }
+                    inputValues.clear();
+                    buffer.append(Op.join(missingInputs, space));
+                    if (!missingInputs.isEmpty()) {
+                        buffer.append(space);
+                    }
+                    try {
+                        engine.process();
+                        List<Double> outputValues = new LinkedList<Double>();
+                        for (OutputVariable outputVariable : engine.getOutputVariables()) {
+                            outputValues.add(outputVariable.getOutputValue());
+                        }
+                        buffer.append(Op.join(outputValues, space)).append("\n>");
+                    } catch (Exception ex) {
+                        buffer.append("#[Error: ").append(ex).append("]");
+                    }
+                    break;
+                }
+                case 'q':
+                case 'Q':
+                    buffer.append("#[Quit]\n");
+                    break;
+                case 'h':
+                case 'H':
+                    buffer.append("\n>").append(interactiveHelp()).append("\n>");
+                    inputValue.setLength(0);
+                    break;
+            }
+        } while (!(character == 'Q' || character == 'q'));
+        writer.write("\n");
+        writer.flush();
+    }
+
+    public String interactiveHelp() {
+        StringBuilder result = new StringBuilder();
+        result.append("#Special Keys\n");
+        result.append("#=============\n");
+        result.append("#\tR\tRestart engine and discard current inputs\n");
+        result.append("#\tD\tDiscard current inputs\n");
+        result.append("#\tP\tProcess engine\n");
+        result.append("#\tQ\tQuit interactive console\n");
+        result.append("#\tH\tShow this help\n");
+        result.append("#=============\n");
+        return result.toString();
     }
 
     public static Engine mamdani() {
