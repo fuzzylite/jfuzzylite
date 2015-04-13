@@ -8,8 +8,19 @@ jdk:
 
 script:
   - cd jfuzzylite
-  - mvn install
+  - if [ "$FL_BUILDER" = "mvn" ]; 
+    then
+    mvn install
+    fi
+  - if [ "$FL_BUILDER" = "ant" ]; 
+    then
+    ant -f build.xml
+    fi
 
+matrix:
+  - FL_BUILDER="mvn"
+  - FL_BUILDER="ant"
+  
 notifications:
   email:
     recipients:
