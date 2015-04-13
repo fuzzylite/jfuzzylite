@@ -215,7 +215,7 @@ public class FldExporter extends Exporter {
         while (!overflow) {
             for (int i = 0; i < engine.numberOfInputVariables(); ++i) {
                 InputVariable inputVariable = engine.getInputVariable(i);
-                inputValues.set(i, inputVariable.getMinimum()
+                inputValues.add(inputVariable.getMinimum()
                         + sampleValues[i] * inputVariable.range() / Math.max(1.0, resolution));
             }
             write(engine, writer, inputValues);

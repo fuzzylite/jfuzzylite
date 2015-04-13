@@ -61,6 +61,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.logging.Level;
 
 public class Console {
 
@@ -100,7 +101,7 @@ public class Console {
         options.add(new Option(KW_DATA_EXPORT_INPUTS, "boolean", "if true and exporting to fld, include input values"));
 
         StringBuilder result = new StringBuilder();
-        result.append("Copyright (C) 2010-2014 FuzzyLite Limited\n");
+        result.append("Copyright (C) 2010-2015 FuzzyLite Limited\n");
         result.append("All rights reserved\n");
         result.append("========================================\n");
         result.append("jfuzzylite: a fuzzy logic control library\n");
@@ -206,10 +207,7 @@ public class Console {
                 throw new RuntimeException("[option error] no input file specified");
             }
             File inputFile = new File(inputFilename);
-            if (!inputFile.exists()) {
-                inputFile.createNewFile();
-            }
-
+            
             BufferedReader reader = new BufferedReader(new FileReader(inputFile));
             try {
                 String line = reader.readLine();
@@ -351,18 +349,17 @@ public class Console {
     }
 
     public void interactive(Writer writer, Engine engine) throws IOException {
-        //TODO: finish.
-        final String space = "\t";
-        List<Double> inputValues = new ArrayList<Double>(engine.numberOfInputVariables());
-        int character = 0;
         BufferedReader reader = new BufferedReader(System.console().reader());
         StringBuilder inputValue = new StringBuilder();
-        StringBuilder buffer = new StringBuilder();
-
+        StringBuilder buffer = new StringBuilder(">");
+        List<Double> inputValues = new ArrayList<Double>(engine.numberOfInputVariables());
+        final String space = "\t";
+        int character;
         do {
-//            writer.append(buffer.str());
-//            writer.flush();
-
+            writer.append(buffer.toString());
+            writer.flush();
+            buffer.setLength(0);
+            
             character = reader.read();
 
             if (Character.isWhitespace(character)) {
@@ -720,6 +717,7 @@ public class Console {
     }
 
     public static void main(String[] args) {
+//        args = new String[]{"-i", "../examples/mamdani/SimpleDimmer.fll", "-of", "fld"};
         if (args.length == 0) {
             System.out.println(usage());
             return;
@@ -750,7 +748,7 @@ public class Console {
             Map<String, String> options = parse(args);
             process(options);
         } catch (Exception ex) {
-            FuzzyLite.log().severe(ex.toString());
+            FuzzyLite.log().log(Level.SEVERE, ex.toString(), ex);
         }
     }
 }

@@ -261,14 +261,14 @@ public class FllImporter extends Importer {
 
     protected TNorm parseTNorm(String name) {
         if ("none".equals(name)) {
-            FactoryManager.instance().tnorm().constructObject("");
+            return FactoryManager.instance().tnorm().constructObject("");
         }
         return FactoryManager.instance().tnorm().constructObject(name);
     }
 
     protected SNorm parseSNorm(String name) {
         if ("none".equals(name)) {
-            FactoryManager.instance().snorm().constructObject("");
+            return FactoryManager.instance().snorm().constructObject("");
         }
         return FactoryManager.instance().snorm().constructObject(name);
     }
