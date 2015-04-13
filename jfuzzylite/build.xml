@@ -1,54 +1,54 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project name="jfuzzylite" default="dist" basedir=".">
-  <description>Builds jfuzzylite</description>
-  <property name="src" location="src" />
-  <property name="build" location="build" />
-  <property name="dist" location="bin" />
-  <target name="init">
-    <!-- Create the time stamp -->
-    <tstamp />
-    <!-- Create the build directory structure used by compile -->
-    <mkdir dir="${build}" />
-  </target>
-  <target name="compile" depends="init" description="compile the source ">
-    <!-- Compile the java code from ${src} into ${build} -->
-    <javac srcdir="${src}" destdir="${build}" includeantruntime="false" />
-  </target>
-  <target name="dist" depends="compile" description="generate the distribution">
-    <!-- Create the distribution directory -->
-    <mkdir dir="${dist}" />
-    <jar jarfile="${dist}/${ant.project.name}.jar" basedir="${build}" compress="false">
-      <!--
+    <description>Builds jfuzzylite</description>
+    <property name="src" location="src"/>
+    <property name="build" location="build"/>
+    <property name="dist" location="bin"/>
+    <target name="init">
+        <!-- Create the time stamp -->
+        <tstamp/>
+        <!-- Create the build directory structure used by compile -->
+        <mkdir dir="${build}"/>
+    </target>
+    <target name="compile" depends="init" description="compile the source ">
+        <!-- Compile the java code from ${src} into ${build} -->
+        <javac srcdir="${src}" destdir="${build}" includeantruntime="false"/>
+    </target>
+    <target name="dist" depends="compile" description="generate the distribution">
+        <!-- Create the distribution directory -->
+        <mkdir dir="${dist}"/>
+        <jar jarfile="${dist}/${ant.project.name}.jar" basedir="${build}" compress="false">
+            <!--
               <fileset dir="${src}" includes="**/*.java"/>
       -->
-      <manifest>
-        <attribute name="Created-By" value="${user.name}" />
-        <attribute name="Vendor" value="fuzzylite" />
-        <attribute name="Title" value="jfuzzylite" />
-        <attribute name="Version" value="1.0" />
-        <attribute name="Description" value="a fuzzy logic control library in Java" />
-        <attribute name="URL" value="http://www.fuzzylite.com" />
-        <attribute name="Author" value="Juan Rada-Vilela" />
-        <attribute name="Class-Path" value="" />
-        <attribute name="Main-Class" value="com.fuzzylite.Console" />
-      </manifest>
-    </jar>
-    <jar jarfile="${dist}/${ant.project.name}-src.jar" compress="true">
-      <fileset dir="${src}" includes="**/*.java"/>
-      <manifest>
-        <attribute name="Created-By" value="${user.name}" />
-        <attribute name="Vendor" value="fuzzylite" />
-        <attribute name="Title" value="jfuzzylite" />
-        <attribute name="Version" value="1.0" />
-        <attribute name="Description" value="a fuzzy logic control library in Java" />
-        <attribute name="URL" value="http://www.fuzzylite.com" />
-        <attribute name="Author" value="Juan Rada-Vilela" />
-      </manifest>
-    </jar>
-  </target>
-  <target name="clean" description="clean up">
-    <!-- Delete the ${build} and ${dist} directory trees -->
-    <delete dir="${build}" />
-    <delete dir="${dist}" />
-  </target>
+            <manifest>
+                <attribute name="Created-By" value="${user.name}"/>
+                <attribute name="Vendor" value="fuzzylite"/>
+                <attribute name="Title" value="jfuzzylite"/>
+                <attribute name="Version" value="5.0"/>
+                <attribute name="Description" value="a fuzzy logic control library in Java"/>
+                <attribute name="URL" value="http://www.fuzzylite.com"/>
+                <attribute name="Author" value="Juan Rada-Vilela, Ph.D."/>
+                <attribute name="Class-Path" value=""/>
+                <attribute name="Main-Class" value="com.fuzzylite.Console"/>
+            </manifest>
+        </jar>
+        <jar jarfile="${dist}/${ant.project.name}-src.jar" compress="true">
+            <fileset dir="${src}" includes="**/*.java"/>
+            <manifest>
+                <attribute name="Created-By" value="${user.name}"/>
+                <attribute name="Vendor" value="fuzzylite"/>
+                <attribute name="Title" value="jfuzzylite"/>
+                <attribute name="Version" value="5.0"/>
+                <attribute name="Description" value="a fuzzy logic control library in Java"/>
+                <attribute name="URL" value="http://www.fuzzylite.com"/>
+                <attribute name="Author" value="Juan Rada-Vilela, Ph.D."/>
+            </manifest>
+        </jar>
+    </target>
+    <target name="clean" description="clean up">
+        <!-- Delete the ${build} and ${dist} directory trees -->
+        <delete dir="${build}"/>
+        <delete dir="${dist}"/>
+    </target>
 </project>
