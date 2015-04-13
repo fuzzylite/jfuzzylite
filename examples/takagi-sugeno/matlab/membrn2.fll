@@ -17,7 +17,7 @@ OutputVariable: out1
   accumulation: Maximum
   defuzzifier: WeightedAverage
   default: nan
-  lock-valid: false
+  lock-previous: false
   lock-range: false
   term: out1mf1 Linear -0.035 0.002 -0.352
   term: out1mf2 Linear 0.044 0.079 -0.028
@@ -28,7 +28,7 @@ OutputVariable: out1
   term: out1mf7 Linear 0.012 -0.012 -0.600
   term: out1mf8 Linear -0.384 0.067 10.158
   term: out1mf9 Linear -0.002 0.035 -1.402
-RuleBlock: 
+RuleBlock:
   enabled: true
   conjunction: AlgebraicProduct
   disjunction: Maximum

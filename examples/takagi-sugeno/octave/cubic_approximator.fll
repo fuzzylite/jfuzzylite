@@ -19,7 +19,7 @@ OutputVariable: ApproxXCubed
   accumulation: Maximum
   defuzzifier: WeightedAverage
   default: nan
-  lock-valid: false
+  lock-previous: false
   lock-range: false
   term: TangentatNegFive Linear 75.000 250.000
   term: TangentatNegFour Linear 48.000 128.000
@@ -32,7 +32,7 @@ OutputVariable: ApproxXCubed
   term: TangentatThree Linear 27.000 -54.000
   term: TangentatFour Linear 48.000 -128.000
   term: TangentatFive Linear 75.000 -250.000
-RuleBlock: 
+RuleBlock:
   enabled: true
   conjunction: Minimum
   disjunction: Maximum

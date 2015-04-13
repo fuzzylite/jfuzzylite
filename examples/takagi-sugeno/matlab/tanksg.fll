@@ -17,14 +17,14 @@ OutputVariable: valve
   accumulation: Maximum
   defuzzifier: WeightedAverage
   default: nan
-  lock-valid: false
+  lock-previous: false
   lock-range: false
   term: close_fast Constant -0.900
   term: close_slow Constant -0.500
   term: no_change Constant 0.000
   term: open_slow Constant 0.300
   term: open_fast Constant 0.900
-RuleBlock: 
+RuleBlock:
   enabled: true
   conjunction: AlgebraicProduct
   disjunction: AlgebraicSum

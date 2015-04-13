@@ -24,7 +24,7 @@ OutputVariable: AllOutputTerms
   accumulation: Maximum
   defuzzifier: Centroid 200
   default: nan
-  lock-valid: false
+  lock-previous: false
   lock-range: false
   term: A Sigmoid 0.500 -20.000
   term: B ZShape 0.000 1.000
@@ -42,7 +42,7 @@ OutputVariable: AllOutputTerms
   term: N Ramp 5.500 6.500
   term: O SShape 5.500 6.500
   term: P Sigmoid 6.000 20.000
-RuleBlock: 
+RuleBlock:
   enabled: true
   conjunction: Minimum
   disjunction: Maximum

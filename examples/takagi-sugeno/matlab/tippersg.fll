@@ -16,12 +16,12 @@ OutputVariable: tip
   accumulation: Maximum
   defuzzifier: WeightedAverage
   default: nan
-  lock-valid: false
+  lock-previous: false
   lock-range: false
   term: cheap Linear 0.000 0.000 5.000
   term: average Linear 0.000 0.000 15.000
   term: generous Linear 0.000 0.000 25.000
-RuleBlock: 
+RuleBlock:
   enabled: true
   conjunction: Minimum
   disjunction: Maximum
