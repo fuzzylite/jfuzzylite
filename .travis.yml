@@ -10,11 +10,11 @@ script:
   - cd jfuzzylite
   - if [ "$FL_BUILDER" = "mvn" ]; 
     then
-    mvn install
+    mvn install ;
     fi
   - if [ "$FL_BUILDER" = "ant" ]; 
     then
-    ant -f build.xml
+    ant -f build.xml ;
     fi
 
 matrix:
