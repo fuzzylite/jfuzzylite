@@ -18,9 +18,10 @@ script:
     fi
 
 matrix:
-  - FL_BUILDER="mvn"
-  - FL_BUILDER="ant"
-  
+  include:
+  - env: FL_BUILDER="mvn"
+  - env: FL_BUILDER="ant"
+
 notifications:
   email:
     recipients:
