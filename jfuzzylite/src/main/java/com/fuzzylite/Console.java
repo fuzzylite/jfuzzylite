@@ -59,11 +59,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.logging.Level;
 
 public class Console {
 
@@ -389,7 +387,7 @@ public class Console {
                     buffer.append(interactiveHelp());
                     continue;
                 } else if ("Q".equalsIgnoreCase(token)) {
-                    buffer.append("#[Quit]");
+                    buffer.append("#[Quit]\n");
                     writer.append(buffer.toString()).flush();
                     if (printToConsole) {
                         System.console().writer().append(buffer.toString()).flush();
