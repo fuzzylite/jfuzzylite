@@ -4,10 +4,10 @@ Type='sugeno'
 NumInputs=3
 NumOutputs=1
 NumRules=2
-AndMethod='prod'
-OrMethod='max'
-ImpMethod='prod'
-AggMethod='max'
+AndMethod=''
+OrMethod=''
+ImpMethod=''
+AggMethod=''
 DefuzzMethod='wtaver'
 
 [Input1]

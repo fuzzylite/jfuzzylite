@@ -4,9 +4,9 @@ Type='sugeno'
 NumInputs=1
 NumOutputs=1
 NumRules=3
-AndMethod='min'
-OrMethod='max'
-ImpMethod='prod'
+AndMethod=''
+OrMethod=''
+ImpMethod=''
 AggMethod=''
 DefuzzMethod='wtaver'
 

@@ -5,9 +5,9 @@ NumInputs=2
 NumOutputs=1
 NumRules=9
 AndMethod='prod'
-OrMethod='max'
-ImpMethod='prod'
-AggMethod='max'
+OrMethod=''
+ImpMethod=''
+AggMethod=''
 DefuzzMethod='wtaver'
 
 [Input1]

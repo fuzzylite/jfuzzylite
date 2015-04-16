@@ -14,8 +14,8 @@ InputVariable: projectAngle
 OutputVariable: theta
   enabled: true
   range: 0.000 0.000
-  accumulation: Maximum
-  defuzzifier: WeightedAverage
+  accumulation: none
+  defuzzifier: WeightedAverage TakagiSugeno
   default: nan
   lock-previous: false
   lock-range: false
@@ -28,11 +28,11 @@ OutputVariable: theta
   term: out1mf Linear -0.022 -0.500 1.256
   term: out1mf Linear -0.022 -0.500 1.256
   term: out1mf Linear -0.022 -0.500 1.256
-RuleBlock:
+RuleBlock: 
   enabled: true
   conjunction: AlgebraicProduct
-  disjunction: Maximum
-  activation: AlgebraicProduct
+  disjunction: none
+  activation: none
   rule: if xHit is in1mf1 and projectAngle is in2mf1 then theta is out1mf
   rule: if xHit is in1mf1 and projectAngle is in2mf2 then theta is out1mf
   rule: if xHit is in1mf1 and projectAngle is in2mf3 then theta is out1mf

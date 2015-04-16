@@ -6,7 +6,7 @@ NumOutputs=3
 NumRules=10
 AndMethod=''
 OrMethod=''
-ImpMethod='prod'
+ImpMethod=''
 AggMethod=''
 DefuzzMethod='wtaver'
 
