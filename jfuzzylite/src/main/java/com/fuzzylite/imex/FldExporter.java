@@ -59,9 +59,9 @@ public class FldExporter extends Exporter {
 
     public FldExporter(String separator) {
         this.separator = separator;
-        exportHeaders = true;
-        exportInputValues = true;
-        exportOutputValues = true;
+        this.exportHeaders = true;
+        this.exportInputValues = true;
+        this.exportOutputValues = true;
     }
 
     public String getSeparator() {
@@ -112,7 +112,6 @@ public class FldExporter extends Exporter {
                 }
             }
         }
-
         return String.format("#@Engine: %s;\n#", engine.getName()) + Op.join(result, separator);
     }
 
@@ -143,7 +142,7 @@ public class FldExporter extends Exporter {
     public String toString(Engine engine, String inputData) {
         StringWriter writer = new StringWriter();
         if (exportHeaders) {
-            writer.append("#").append(header(engine)).append("\n");
+            writer.append(header(engine)).append("\n");
         }
         BufferedReader reader = new BufferedReader(new StringReader(inputData));
         String line;
@@ -155,7 +154,6 @@ public class FldExporter extends Exporter {
                 }
                 List<Double> inputValues = parse(line);
                 write(engine, writer, inputValues);
-                writer.flush();
             }
         } catch (Exception ex) {
             throw new RuntimeException(ex);
@@ -216,8 +214,8 @@ public class FldExporter extends Exporter {
         engine.restart();
 
         boolean overflow = false;
-        List<Double> inputValues = new ArrayList<Double>(engine.numberOfInputVariables());
         while (!overflow) {
+            List<Double> inputValues = new ArrayList<Double>(engine.numberOfInputVariables());
             for (int i = 0; i < engine.numberOfInputVariables(); ++i) {
                 InputVariable inputVariable = engine.getInputVariable(i);
                 inputValues.add(inputVariable.getMinimum()
@@ -288,5 +286,5 @@ public class FldExporter extends Exporter {
     public FldExporter clone() throws CloneNotSupportedException {
         return (FldExporter) super.clone();
     }
-
+    
 }
