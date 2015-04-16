@@ -84,7 +84,7 @@ public class Triangle extends Term {
             return Double.NaN;
         }
 
-        if (Op.isLE(x, vertexA) || Op.isGE(x, vertexC)) {
+        if (Op.isLt(x, vertexA) || Op.isGt(x, vertexC)) {
             return 0.0;
         } else if (Op.isEq(x, vertexB)) {
             return 1.0;

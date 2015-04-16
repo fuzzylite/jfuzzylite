@@ -91,7 +91,7 @@ public class Trapezoid extends Term {
             return Double.NaN;
         }
 
-        if (Op.isLE(x, vertexA) || Op.isGE(x, vertexD)) {
+        if (Op.isLt(x, vertexA) || Op.isGt(x, vertexD)) {
             return 0.0;
         } else if (Op.isLt(x, vertexB)) {
             return Math.min(1.0, (x - vertexA) / (vertexB - vertexA));
