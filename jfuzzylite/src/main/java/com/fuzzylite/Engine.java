@@ -47,7 +47,6 @@ import com.fuzzylite.variable.Variable;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.logging.Logger;
 
 public class Engine implements Op.Cloneable {
 

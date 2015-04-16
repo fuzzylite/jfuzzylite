@@ -24,13 +24,12 @@
  */
 package com.fuzzylite.variable;
 
-import java.util.Iterator;
-
 import com.fuzzylite.Op;
 import com.fuzzylite.defuzzifier.Defuzzifier;
 import com.fuzzylite.imex.FllExporter;
 import com.fuzzylite.term.Accumulated;
 import com.fuzzylite.term.Term;
+import java.util.Iterator;
 
 public class OutputVariable extends Variable {
 

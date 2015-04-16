@@ -143,7 +143,7 @@ public class FldExporter extends Exporter {
     public String toString(Engine engine, String inputData) {
         StringWriter writer = new StringWriter();
         if (exportHeaders) {
-            writer.write("#" + header(engine) + "\n");
+            writer.append("#").append(header(engine)).append("\n");
         }
         BufferedReader reader = new BufferedReader(new StringReader(inputData));
         String line;
@@ -169,7 +169,7 @@ public class FldExporter extends Exporter {
         }
         BufferedWriter writer = new BufferedWriter(new FileWriter(file));
         if (exportHeaders) {
-            writer.write(header(engine) + "\n");
+            writer.append(header(engine)).append("\n");
         }
         BufferedReader reader = new BufferedReader(new FileReader(file));
         String line;
@@ -199,7 +199,7 @@ public class FldExporter extends Exporter {
     public void write(Engine engine, Writer writer, int maximumNumberOfResults)
             throws IOException {
         if (exportHeaders) {
-            writer.write(header(engine) + "\n");
+            writer.append(header(engine)).append("\n");
         }
         int resolution = -1 + (int) Math.max(1.0, Math.pow(
                 maximumNumberOfResults, 1.0 / engine.numberOfInputVariables()));
@@ -230,7 +230,7 @@ public class FldExporter extends Exporter {
 
     public void write(Engine engine, Writer writer, Reader reader) throws IOException {
         if (exportHeaders) {
-            writer.write(header(engine) + "\n");
+            writer.append(header(engine)).append("\n");
         }
 
         engine.restart();
@@ -251,7 +251,7 @@ public class FldExporter extends Exporter {
 
     public void write(Engine engine, Writer writer, List<Double> inputValues) throws IOException {
         if (inputValues.isEmpty()) {
-            writer.write("\n");
+            writer.append("\n");
             return;
         }
 
@@ -281,7 +281,7 @@ public class FldExporter extends Exporter {
                 values.add(outputVariable.getOutputValue());
             }
         }
-        writer.write(Op.join(values, separator));
+        writer.append(Op.join(values, separator)).append("\n");
     }
 
     @Override

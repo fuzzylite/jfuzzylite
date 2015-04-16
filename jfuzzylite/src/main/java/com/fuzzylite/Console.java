@@ -649,6 +649,7 @@ public class Console {
                 Engine engine = importer.fromString(text.toString());
 
                 for (Pair<Exporter, Importer> imex : tests) {
+                    FuzzyLite.logInfo(String.format("Converting from %s to %s", imex.getSecond(), imex.getFirst()));
                     String out = imex.getFirst().toString(engine);
                     Engine copy = imex.getSecond().fromString(out);
                     String out_copy = imex.getFirst().toString(copy);
@@ -713,6 +714,9 @@ public class Console {
     }
 
     public static void main(String[] args) {
+//        args = new String[]{
+//            "export-examples", "/Users/jcrada/Development/fl/jfuzzylite/examples/"
+//        };
         if (args.length == 0) {
             System.out.println(usage());
             return;

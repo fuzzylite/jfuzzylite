@@ -29,6 +29,7 @@ import com.fuzzylite.Op;
 import static com.fuzzylite.Op.str;
 import com.fuzzylite.defuzzifier.Defuzzifier;
 import com.fuzzylite.defuzzifier.IntegralDefuzzifier;
+import com.fuzzylite.defuzzifier.WeightedDefuzzifier;
 import com.fuzzylite.hedge.Hedge;
 import com.fuzzylite.norm.Norm;
 import com.fuzzylite.rule.Rule;
@@ -73,7 +74,9 @@ public class CppExporter extends Exporter {
     @Override
     public String toString(Engine engine) {
         StringBuilder result = new StringBuilder();
-
+        if (!prefixNamespace){
+            result.append("using namespace fl;\n\n");
+        }
         result.append(fl("Engine* ") + "engine = new " + fl("Engine;\n"));
         result.append(String.format(
                 "engine->setName(\"%s\");\n", engine.getName()));
@@ -178,7 +181,7 @@ public class CppExporter extends Exporter {
                 "%s->setActivation(%s);\n", name, toString(ruleBlock.getActivation())));
         for (Rule rule : ruleBlock.getRules()) {
             result.append(String.format("%s->addRule("
-                    + fl("Rule") + "::parse(\"%s\", engine));\n",
+                    + "fl::Rule::parse(\"%s\", engine));\n",
                     name, rule.getText()));
         }
         result.append(String.format(
@@ -243,10 +246,14 @@ public class CppExporter extends Exporter {
             return "fl::null";
         }
         if (defuzzifier instanceof IntegralDefuzzifier) {
-            IntegralDefuzzifier integralDefuzzifier = (IntegralDefuzzifier) defuzzifier;
             return String.format("new " + fl("%s(%d)"),
-                    integralDefuzzifier.getClass().getSimpleName(),
-                    integralDefuzzifier.getResolution());
+                    defuzzifier.getClass().getSimpleName(),
+                    ((IntegralDefuzzifier) defuzzifier).getResolution());
+        }
+        if (defuzzifier instanceof WeightedDefuzzifier){
+            return String.format("new " + fl("%s(\"%s\")"),
+                    defuzzifier.getClass().getSimpleName(),
+                    ((WeightedDefuzzifier) defuzzifier).getType());
         }
         return "new " + fl(defuzzifier.getClass().getSimpleName());
     }
