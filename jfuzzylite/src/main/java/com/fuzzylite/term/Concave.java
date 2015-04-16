@@ -30,8 +30,7 @@ import java.util.List;
 
 public class Concave extends Term {
 
-    private double inflection;
-    private double end;
+    private double inflection, end;
 
     public Concave() {
         this("");

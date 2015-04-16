@@ -41,7 +41,11 @@ public class ZShape extends Term {
     }
 
     public ZShape(String name, double start, double end) {
-        this.name = name;
+        this(name, start, end, 1.0);
+    }
+
+    public ZShape(String name, double start, double end, double height) {
+        super(name, height);
         this.start = start;
         this.end = end;
     }
@@ -82,13 +86,13 @@ public class ZShape extends Term {
         double difference = end - start;
 
         if (Op.isLE(x, start)) {
-            return 1.0;
+            return height * 1.0;
         } else if (Op.isLE(x, average)) {
-            return 1.0 - 2.0 * Math.pow((x - start) / difference, 2);
+            return height * (1.0 - 2.0 * Math.pow((x - start) / difference, 2));
         } else if (Op.isLt(x, end)) {
-            return 2.0 * Math.pow((x - end) / difference, 2);
+            return height * (2.0 * Math.pow((x - end) / difference, 2));
         }
-        return 0.0;
+        return height * 0.0;
     }
 
     public double getStart() {

@@ -43,7 +43,12 @@ public class PiShape extends Term {
 
     public PiShape(String name, double bottomLeft, double topLeft,
             double topRight, double bottomRight) {
-        this.name = name;
+        this(name, bottomLeft, topLeft, topRight, bottomRight, 1.0);
+    }
+
+    public PiShape(String name, double bottomLeft, double topLeft,
+            double topRight, double bottomRight, double height) {
+        super(name, height);
         this.bottomLeft = bottomLeft;
         this.topLeft = topLeft;
         this.topRight = topRight;
@@ -90,20 +95,20 @@ public class PiShape extends Term {
         double d_minus_c = bottomRight - topRight;
 
         if (Op.isLE(x, bottomLeft)) {
-            return 0.0;
+            return height * 0.0;
         } else if (Op.isLE(x, a_b_ave)) {
-            return 2.0 * Math.pow((x - bottomLeft) / b_minus_a, 2);
+            return height * 2.0 * Math.pow((x - bottomLeft) / b_minus_a, 2);
         } else if (Op.isLt(x, topLeft)) {
-            return 1.0 - 2.0 * Math.pow((x - topLeft) / b_minus_a, 2);
+            return height * (1.0 - 2.0 * Math.pow((x - topLeft) / b_minus_a, 2));
         } else if (Op.isLE(x, topRight)) {
-            return 1;
+            return height * 1;
         } else if (Op.isLE(x, c_d_ave)) {
-            return 1 - 2 * Math.pow((x - topRight) / d_minus_c, 2);
+            return height * (1 - 2 * Math.pow((x - topRight) / d_minus_c, 2));
         } else if (Op.isLt(x, bottomRight)) {
-            return 2 * Math.pow((x - bottomRight) / d_minus_c, 2);
+            return height * (2 * Math.pow((x - bottomRight) / d_minus_c, 2));
         }
 
-        return 0.0;
+        return height * 0.0;
     }
 
     public double getBottomLeft() {

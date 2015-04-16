@@ -74,7 +74,7 @@ public class CppExporter extends Exporter {
     @Override
     public String toString(Engine engine) {
         StringBuilder result = new StringBuilder();
-        if (!prefixNamespace){
+        if (!prefixNamespace) {
             result.append("using namespace fl;\n\n");
         }
         result.append(fl("Engine* ") + "engine = new " + fl("Engine;\n"));
@@ -250,7 +250,7 @@ public class CppExporter extends Exporter {
                     defuzzifier.getClass().getSimpleName(),
                     ((IntegralDefuzzifier) defuzzifier).getResolution());
         }
-        if (defuzzifier instanceof WeightedDefuzzifier){
+        if (defuzzifier instanceof WeightedDefuzzifier) {
             return String.format("new " + fl("%s(\"%s\")"),
                     defuzzifier.getClass().getSimpleName(),
                     ((WeightedDefuzzifier) defuzzifier).getType());

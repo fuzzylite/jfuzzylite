@@ -160,11 +160,11 @@ public class OutputVariable extends Variable {
     public String fuzzyOutputValue() {
         StringBuilder sb = new StringBuilder();
         Iterator<Term> it = getTerms().iterator();
-        if (it.hasNext()){
+        if (it.hasNext()) {
             Term term = it.next();
             double degree = fuzzyOutput.activationDegree(term);
             sb.append(Op.str(degree)).append("/").append(term.getName());
-            while(it.hasNext()){
+            while (it.hasNext()) {
                 term = it.next();
                 degree = fuzzyOutput.activationDegree(term);
                 if (Double.isNaN(degree) || Op.isGE(degree, 0.0)) {

@@ -41,7 +41,11 @@ public class Rectangle extends Term {
     }
 
     public Rectangle(String name, double start, double end) {
-        this.name = name;
+        this(name, start, end, 1.0);
+    }
+
+    public Rectangle(String name, double start, double end, double height) {
+        super(name, height);
         this.start = start;
         this.end = end;
     }
@@ -78,9 +82,9 @@ public class Rectangle extends Term {
             return Double.NaN;
         }
         if (Op.isLt(x, start) || Op.isGt(x, end)) {
-            return 0.0;
+            return height * 0.0;
         }
-        return 1.0;
+        return height * 1.0;
     }
 
     public double getStart() {

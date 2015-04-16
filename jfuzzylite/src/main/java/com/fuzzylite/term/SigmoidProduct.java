@@ -43,7 +43,12 @@ public class SigmoidProduct extends Term {
 
     public SigmoidProduct(String name, double left, double rising,
             double falling, double right) {
-        this.name = name;
+        this(name, left, rising, falling, right, 1.0);
+    }
+
+    public SigmoidProduct(String name, double left, double rising,
+            double falling, double right, double height) {
+        super(name, height);
         this.left = left;
         this.rising = rising;
         this.falling = falling;
@@ -85,7 +90,7 @@ public class SigmoidProduct extends Term {
         }
         double a = 1.0 / (1 + Math.exp(-rising * (x - left)));
         double b = 1.0 / (1 + Math.exp(-falling * (x - right)));
-        return a * b;
+        return height * a * b;
     }
 
     public double getLeft() {

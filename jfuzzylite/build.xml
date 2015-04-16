@@ -18,9 +18,7 @@
         <!-- Create the distribution directory -->
         <mkdir dir="${dist}"/>
         <jar jarfile="${dist}/${ant.project.name}.jar" basedir="${build}" compress="false">
-            <!--
-              <fileset dir="${src}" includes="**/*.java"/>
-      -->
+            <!-- <fileset dir="${src}" includes="**/*.java"/> -->
             <manifest>
                 <attribute name="Created-By" value="${user.name}"/>
                 <attribute name="Vendor" value="fuzzylite"/>

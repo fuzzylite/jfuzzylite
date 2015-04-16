@@ -34,8 +34,7 @@ import java.util.List;
  */
 public class Spike extends Term {
 
-    private double center;
-    private double width;
+    private double center, width;
 
     public Spike() {
         this("");

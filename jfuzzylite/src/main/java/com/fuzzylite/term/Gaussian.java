@@ -41,7 +41,11 @@ public class Gaussian extends Term {
     }
 
     public Gaussian(String name, double mean, double standardDeviation) {
-        this.name = name;
+        this(name, mean, standardDeviation, 1.0);
+    }
+
+    public Gaussian(String name, double mean, double standardDeviation, double height) {
+        super(name, height);
         this.mean = mean;
         this.standardDeviation = standardDeviation;
     }
@@ -77,7 +81,7 @@ public class Gaussian extends Term {
         if (Double.isNaN(x)) {
             return Double.NaN;
         }
-        return Math.exp((-(x - mean) * (x - mean))
+        return height * Math.exp((-(x - mean) * (x - mean))
                 / (2 * standardDeviation * standardDeviation));
     }
 

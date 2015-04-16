@@ -41,7 +41,11 @@ public class Sigmoid extends Term {
     }
 
     public Sigmoid(String name, double inflection, double slope) {
-        this.name = name;
+        this(name, inflection, slope, 1.0);
+    }
+
+    public Sigmoid(String name, double inflection, double slope, double height) {
+        super(name, height);
         this.inflection = inflection;
         this.slope = slope;
     }
@@ -77,7 +81,7 @@ public class Sigmoid extends Term {
         if (Double.isNaN(x)) {
             return Double.NaN;
         }
-        return 1.0 / (1.0 + Math.exp(-slope * (x - inflection)));
+        return height * 1.0 / (1.0 + Math.exp(-slope * (x - inflection)));
     }
 
     public double getInflection() {

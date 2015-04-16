@@ -14,14 +14,14 @@
     </licenses>
     <name>jfuzzylite</name>
     <description>
-    jfuzzylite™ is a cross-platform, free and open-source fuzzy logic control 
-    library programmed entirely in Java. Its goal is to allow you to easily 
-    create fuzzy logic controllers in a few steps utilizing object-oriented 
-    programming without requiring any third-party libraries.
+        jfuzzylite™ is a cross-platform, free and open-source fuzzy logic control 
+        library programmed entirely in Java. Its goal is to allow you to easily 
+        create fuzzy logic controllers in a few steps utilizing object-oriented 
+        programming without requiring any third-party libraries.
 
-    jfuzzylite™ is the equivalent of the fuzzylite® library for Java and 
-    Android platforms.
-  </description>
+        jfuzzylite™ is the equivalent of the fuzzylite® library for Java and 
+        Android platforms.
+    </description>
     <url>http://www.fuzzylite.com/java</url>
     <organization>
         <name>FuzzyLite Ltd</name>
@@ -52,24 +52,24 @@
         </developer>
     </developers>
     <!--
-  <repositories>
-      <repository>
-          <releases>
-              <enabled>true</enabled>
-              <updatePolicy>always</updatePolicy>
-              <checksumPolicy>fail</checksumPolicy>
-          </releases>
-          <snapshots>
-              <enabled>true</enabled>
-              <updatePolicy>never</updatePolicy>
-              <checksumPolicy>fail</checksumPolicy>
-          </snapshots>
-          <id>github</id>
-          <name>Central Repository</name>
-          <url>https://github.com/fuzzylite/jfuzzylite.git</url>
-          <layout>default</layout>
-      </repository>
-  </repositories>-->
+    <repositories>
+        <repository>
+            <releases>
+                <enabled>true</enabled>
+                <updatePolicy>always</updatePolicy>
+                <checksumPolicy>fail</checksumPolicy>
+            </releases>
+            <snapshots>
+                <enabled>true</enabled>
+                <updatePolicy>never</updatePolicy>
+                <checksumPolicy>fail</checksumPolicy>
+            </snapshots>
+            <id>github</id>
+            <name>Central Repository</name>
+            <url>https://github.com/fuzzylite/jfuzzylite.git</url>
+            <layout>default</layout>
+        </repository>
+    </repositories>-->
     <properties>
         <jdk.version>1.6</jdk.version>
         <maven.compiler.source>1.6</maven.compiler.source>

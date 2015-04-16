@@ -41,7 +41,11 @@ public class Ramp extends Term {
     }
 
     public Ramp(String name, double start, double end) {
-        this.name = name;
+        this(name, start, end, 1.0);
+    }
+
+    public Ramp(String name, double start, double end, double height) {
+        super(name, height);
         this.start = start;
         this.end = end;
     }
@@ -79,25 +83,25 @@ public class Ramp extends Term {
         }
 
         if (Op.isEq(start, end)) {
-            return 0.0;
+            return height * 0.0;
         }
 
         if (Op.isLt(start, end)) {
             if (Op.isLE(x, start)) {
-                return 0.0;
+                return height * 0.0;
             }
             if (Op.isGE(x, end)) {
-                return 1.0;
+                return height * 1.0;
             }
-            return (x - start) / (end - start);
+            return height * (x - start) / (end - start);
         } else {
             if (Op.isGE(x, start)) {
-                return 0.0;
+                return height * 0.0;
             }
             if (Op.isLE(x, end)) {
-                return 1.0;
+                return height * 1.0;
             }
-            return (start - x) / (start - end);
+            return height * (start - x) / (start - end);
         }
     }
 

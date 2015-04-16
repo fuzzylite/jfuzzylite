@@ -30,8 +30,7 @@ import java.util.List;
 
 public class Cosine extends Term {
 
-    private double center;
-    private double width;
+    private double center, width;
 
     public Cosine() {
         this("");

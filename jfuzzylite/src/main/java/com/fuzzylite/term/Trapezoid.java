@@ -41,16 +41,20 @@ public class Trapezoid extends Term {
     }
 
     public Trapezoid(String name, double vertexA, double vertexD) {
-        this.name = name;
-        double range = vertexD - vertexA;
-        this.vertexA = vertexA;
-        this.vertexD = vertexD;
-        this.vertexB = vertexA + range * 1.0 / 5.0;
-        this.vertexC = vertexA + range * 4.0 / 5.0;
+        this(name, vertexA,
+                vertexA + (vertexD - vertexA) * 1.0 / 5.0,
+                vertexA + (vertexD - vertexA) * 4.0 / 5.0,
+                vertexD);
     }
 
-    public Trapezoid(String name, double vertexA, double vertexB, double vertexC, double vertexD) {
-        this.name = name;
+    public Trapezoid(String name, double vertexA, double vertexB,
+            double vertexC, double vertexD) {
+        this(name, vertexA, vertexB, vertexC, vertexD, 1.0);
+    }
+
+    public Trapezoid(String name, double vertexA, double vertexB,
+            double vertexC, double vertexD, double height) {
+        super(name, height);
         this.vertexA = vertexA;
         this.vertexB = vertexB;
         this.vertexC = vertexC;
@@ -92,15 +96,15 @@ public class Trapezoid extends Term {
         }
 
         if (Op.isLt(x, vertexA) || Op.isGt(x, vertexD)) {
-            return 0.0;
+            return height * 0.0;
         } else if (Op.isLt(x, vertexB)) {
-            return Math.min(1.0, (x - vertexA) / (vertexB - vertexA));
+            return height * Math.min(1.0, (x - vertexA) / (vertexB - vertexA));
         } else if (Op.isLE(x, vertexC)) {
-            return 1.0;
+            return height * 1.0;
         } else if (Op.isLt(x, vertexD)) {
-            return (vertexD - x) / (vertexD - vertexC);
+            return height * (vertexD - x) / (vertexD - vertexC);
         }
-        return 0.0;
+        return height * 0.0;
     }
 
     public double getVertexA() {

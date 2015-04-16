@@ -43,7 +43,12 @@ public class GaussianProduct extends Term {
 
     public GaussianProduct(String name, double meanA, double standardDeviationA,
             double meanB, double standardDeviationB) {
-        this.name = name;
+        this(name, meanA, standardDeviationA, meanB, standardDeviationB, 1.0);
+    }
+
+    public GaussianProduct(String name, double meanA, double standardDeviationA,
+            double meanB, double standardDeviationB, double height) {
+        super(name, height);
         this.meanA = meanA;
         this.standardDeviationA = standardDeviationA;
         this.meanB = meanB;
@@ -89,7 +94,7 @@ public class GaussianProduct extends Term {
         int xGEb = Op.isGE(x, meanB) ? 1 : 0;
         double b = Math.exp((-(x - meanB) * (x - meanB)) / (2 * standardDeviationB * standardDeviationB))
                 * xGEb + (1 - xGEb);
-        return a * b;
+        return height * a * b;
     }
 
     public double getMeanA() {

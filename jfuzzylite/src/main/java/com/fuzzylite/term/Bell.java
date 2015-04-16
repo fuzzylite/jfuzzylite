@@ -41,7 +41,11 @@ public class Bell extends Term {
     }
 
     public Bell(String name, double center, double width, double slope) {
-        super.name = name;
+        this(name, center, width, slope, 1.0);
+    }
+
+    public Bell(String name, double center, double width, double slope, double height) {
+        super(name, height);
         this.center = center;
         this.width = width;
         this.slope = slope;

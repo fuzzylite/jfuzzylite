@@ -48,7 +48,7 @@ public class Linear extends Term {
     }
 
     public Linear(String name, List<Double> coefficients, Engine engine) {
-        this.name = name;
+        super(name);
         this.coefficients = coefficients;
         this.engine = engine;
     }

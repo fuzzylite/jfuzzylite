@@ -45,7 +45,11 @@ public class Triangle extends Term {
     }
 
     public Triangle(String name, double vertexA, double vertexB, double vertexC) {
-        this.name = name;
+        this(name, vertexA, vertexB, vertexC, 1.0);
+    }
+
+    public Triangle(String name, double vertexA, double vertexB, double vertexC, double height) {
+        super(name, height);
         this.vertexA = vertexA;
         this.vertexB = vertexB;
         this.vertexC = vertexC;
@@ -85,13 +89,13 @@ public class Triangle extends Term {
         }
 
         if (Op.isLt(x, vertexA) || Op.isGt(x, vertexC)) {
-            return 0.0;
+            return height * 0.0;
         } else if (Op.isEq(x, vertexB)) {
-            return 1.0;
+            return height * 1.0;
         } else if (Op.isLt(x, vertexB)) {
-            return (x - vertexA) / (vertexB - vertexA);
+            return height * (x - vertexA) / (vertexB - vertexA);
         } else {
-            return (vertexC - x) / (vertexC - vertexB);
+            return height * (vertexC - x) / (vertexC - vertexB);
         }
     }
 

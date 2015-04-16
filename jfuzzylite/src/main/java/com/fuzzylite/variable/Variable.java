@@ -26,7 +26,6 @@ package com.fuzzylite.variable;
 
 import com.fuzzylite.Op;
 
-
 import com.fuzzylite.defuzzifier.Defuzzifier;
 import com.fuzzylite.imex.FllExporter;
 import com.fuzzylite.term.Constant;
@@ -177,7 +176,6 @@ public class Variable implements Op.Cloneable {
     /*
      * Terms
      */
-
     public void addTerm(Term term) {
         this.terms.add(term);
     }
@@ -209,7 +207,7 @@ public class Variable implements Op.Cloneable {
 
     public Term removeTerm(String name) {
         Iterator<Term> it = this.terms.iterator();
-        while(it.hasNext()) {
+        while (it.hasNext()) {
             Term term = it.next();
             if (term.getName().equals(name)) {
                 it.remove();
@@ -218,7 +216,6 @@ public class Variable implements Op.Cloneable {
         }
         return null;
     }
-
 
     public int numberOfTerms() {
         return this.terms.size();

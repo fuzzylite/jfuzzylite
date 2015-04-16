@@ -404,7 +404,7 @@ public class Console {
                     double defaultValue = engine.getInputVariable(i % engine.numberOfInputVariables()).getInputValue();
                     inputValues[i] = Op.toDouble(tokens[i], defaultValue);
                 }
-                for (int i = tokens.length; i < numberOfTokens; ++i){
+                for (int i = tokens.length; i < numberOfTokens; ++i) {
                     double defaultValue = engine.getInputVariable(i % engine.numberOfInputVariables()).getInputValue();
                     inputValues[i] = defaultValue;
                 }
@@ -714,9 +714,6 @@ public class Console {
     }
 
     public static void main(String[] args) {
-//        args = new String[]{
-//            "export-examples", "/Users/jcrada/Development/fl/jfuzzylite/examples/"
-//        };
         if (args.length == 0) {
             System.out.println(usage());
             return;
@@ -731,11 +728,11 @@ public class Console {
                 //mkdir -p tmp/fl/takagi-sugeno/matlab
                 //mkdir -p tmp/fl/takagi-sugeno/octave
                 //mkdir -p tmp/fl/tsukamoto
-                exportAllExamples("fis", "fll", sourceBase, targetBase);
-                exportAllExamples("fis", "fcl", sourceBase, targetBase);
-                exportAllExamples("fis", "fis", sourceBase, targetBase);
-                exportAllExamples("fis", "cpp", sourceBase, targetBase);
-                exportAllExamples("fis", "java", sourceBase, targetBase);
+//                exportAllExamples("fis", "fll", sourceBase, targetBase);
+//                exportAllExamples("fis", "fcl", sourceBase, targetBase);
+//                exportAllExamples("fis", "fis", sourceBase, targetBase);
+//                exportAllExamples("fis", "cpp", sourceBase, targetBase);
+//                exportAllExamples("fis", "java", sourceBase, targetBase);
                 FuzzyLite.setDecimals(8);
                 exportAllExamples("fis", "fld", sourceBase, targetBase);
             } catch (Exception ex) {
