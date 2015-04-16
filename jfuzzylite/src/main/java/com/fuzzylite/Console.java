@@ -53,10 +53,12 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.Writer;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -207,7 +209,7 @@ public class Console {
                 throw new RuntimeException("[option error] no input file specified");
             }
             File inputFile = new File(inputFilename);
-            
+
             BufferedReader reader = new BufferedReader(new FileReader(inputFile));
             try {
                 String line = reader.readLine();
@@ -284,6 +286,18 @@ public class Console {
 
         if ("fld".equals(outputFormat)) {
             FldExporter fldExporter = new FldExporter();
+            fldExporter.setSeparator("\t");
+            boolean exportHeaders = true;
+            boolean exportInputValues = true;
+            if (options.containsKey(KW_DATA_EXPORT_HEADER)) {
+                exportHeaders = "true".equals(options.get(KW_DATA_EXPORT_HEADER));
+            }
+            if (options.containsKey(KW_DATA_EXPORT_INPUTS)) {
+                exportInputValues = "true".equals(options.get(KW_DATA_EXPORT_INPUTS));
+            }
+            fldExporter.setExportHeaders(exportHeaders);
+            fldExporter.setExportInputValues(exportInputValues);
+
             String filename = options.get(KW_DATA_INPUT);
             if (filename != null) {
                 File dataFile = new File(filename);
@@ -291,31 +305,12 @@ public class Console {
                     throw new RuntimeException("[export error] file <" + filename + "> "
                             + "does not exist");
                 }
-                writer.write("#" + fldExporter.header(engine) + "\n");
-                BufferedReader reader = new BufferedReader(new FileReader(dataFile));
-                int lineNumber = 0;
+                FileReader reader = new FileReader(dataFile);
                 try {
-                    String line;
-                    while ((line = reader.readLine()) != null) {
-                        ++lineNumber;
-                        List<Double> inputValues = fldExporter.parse(line.trim());
-                        if (inputValues.isEmpty()) {
-                            continue;
-                        }
-                        if (inputValues.size() != engine.numberOfInputVariables()) {
-                            throw new RuntimeException(String.format(
-                                    "[export error] engine has <%d> input variables, "
-                                    + "but input data provides <%d> at line <%d>",
-                                    engine.numberOfInputVariables(),
-                                    inputValues.size(), lineNumber));
-                        }
-                        fldExporter.write(engine, writer, inputValues);
-                        writer.write("\n");
-                        writer.flush();
-                    }
+                    fldExporter.write(engine, writer, reader);
                 } catch (Exception ex) {
                     reader.close();
-                    throw new RuntimeException("at line <" + lineNumber + ">", ex);
+                    throw ex;
                 }
 
             } else {
@@ -323,7 +318,27 @@ public class Console {
                     int maximum = Integer.parseInt(options.get(KW_DATA_MAXIMUM));
                     writer.write(fldExporter.toString(engine, maximum));
                 } else {
-                    writer.write(fldExporter.toString(engine));
+
+                    StringBuilder buffer = new StringBuilder();
+                    buffer.append("#FuzzyLite Interactive Console (press H for help)\n");
+                    buffer.append(fldExporter.header(engine)).append("\n");
+                    if (engine.getInputVariables().isEmpty()) {
+                        buffer.append("[error] the engine does not have input variables.\n");
+                    }
+                    if (engine.getOutputVariables().isEmpty()) {
+                        buffer.append("[error] the engine does not have output variables.\n");
+                    }
+                    writer.append(buffer.toString()).flush();
+
+                    boolean printToConsole = writer != System.console().writer();
+                    if (printToConsole) {
+                        System.console().writer().append(buffer.toString()).flush();
+                    }
+
+                    if (engine.getInputVariables().isEmpty() || engine.getOutputVariables().isEmpty()) {
+                        return;
+                    }
+                    interactive(writer, engine);
                 }
             }
 
@@ -335,8 +350,7 @@ public class Console {
                 exporter = new FclExporter();
             } else if ("fis".equals(outputFormat)) {
                 exporter = new FisExporter();
-            } else if ("c++".equals(outputFormat)
-                    || "cpp".equals(outputFormat)) {
+            } else if ("cpp".equals(outputFormat)) {
                 exporter = new CppExporter();
             } else if ("java".equals(outputFormat)) {
                 exporter = new JavaExporter();
@@ -348,104 +362,88 @@ public class Console {
         }
     }
 
-    public void interactive(Writer writer, Engine engine) throws IOException {
-        BufferedReader reader = new BufferedReader(System.console().reader());
-        StringBuilder inputValue = new StringBuilder();
-        StringBuilder buffer = new StringBuilder(">");
-        List<Double> inputValues = new ArrayList<Double>(engine.numberOfInputVariables());
+    public static void interactive(Writer writer, Engine engine) throws IOException {
+        BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
+        boolean printToConsole = writer != System.console().writer();
+        StringBuilder buffer = new StringBuilder();
         final String space = "\t";
-        int character;
         do {
-            writer.append(buffer.toString());
-            writer.flush();
+            buffer.append("\n> ");
+            writer.append(buffer.toString()).flush();
+            if (printToConsole) {
+                System.console().writer().append(buffer.toString()).flush();
+            }
             buffer.setLength(0);
-            
-            character = reader.read();
 
-            if (Character.isWhitespace(character)) {
-                double value = engine.getInputVariable(inputValues.size()).getInputValue();
-                try {
-                    value = Op.toDouble(inputValue.toString());
-                } catch (Exception ex) {
-                    buffer.append("[").append(Op.str(value)).append("]");
-                }
-                buffer.append(space);
-                inputValue.setLength(0);
-                inputValues.add(value);
-                if (inputValues.size() == engine.getInputVariables().size()) {
-                    character = 'P'; //fall through to process
-                } else {
-                    continue;
-                }
-            }
+            String line = reader.readLine();
 
-            switch (character) {
-                default:
-                    inputValue.append((char) character);
-                    buffer.append((char) character);
-                    break;
-                case 'r':
-                case 'R':
-                    engine.restart();
+            String[] tokens = line.split("\\s+");
+            double[] inputValues = null;
+            if (tokens.length == 1) {
+                String token = tokens[0];
+                if ("R".equalsIgnoreCase(token)) {
                     buffer.append("#[Restart]");
-                //fall through
-                case 'd':
-                case 'D':
-                    inputValues.clear();
-                    buffer.append("#[Discard]\n>");
-                    inputValue.setLength(0);
-                    break;
-                case 'p':
-                case 'P': {
-                    inputValue.setLength(0);
-                    for (int i = 0; i < inputValues.size(); ++i) {
-                        engine.getInputVariable(i).setInputValue(inputValues.get(i));
-                    }
-                    List<Double> missingInputs = new ArrayList<Double>();
-                    for (int i = inputValues.size(); i < engine.numberOfInputVariables(); ++i) {
-                        missingInputs.add(engine.getInputVariable(i).getInputValue());
-                    }
-                    inputValues.clear();
-                    buffer.append(Op.join(missingInputs, space));
-                    if (!missingInputs.isEmpty()) {
-                        buffer.append(space);
-                    }
-                    try {
-                        engine.process();
-                        List<Double> outputValues = new LinkedList<Double>();
-                        for (OutputVariable outputVariable : engine.getOutputVariables()) {
-                            outputValues.add(outputVariable.getOutputValue());
-                        }
-                        buffer.append(Op.join(outputValues, space)).append("\n>");
-                    } catch (Exception ex) {
-                        buffer.append("#[Error: ").append(ex).append("]");
+                    engine.restart();
+                    continue;
+                } else if ("H".equalsIgnoreCase(token)) {
+                    buffer.append(interactiveHelp());
+                    continue;
+                } else if ("Q".equalsIgnoreCase(token)) {
+                    buffer.append("#[Quit]");
+                    writer.append(buffer.toString()).flush();
+                    if (printToConsole) {
+                        System.console().writer().append(buffer.toString()).flush();
                     }
                     break;
                 }
-                case 'q':
-                case 'Q':
-                    buffer.append("#[Quit]\n");
-                    break;
-                case 'h':
-                case 'H':
-                    buffer.append("\n>").append(interactiveHelp()).append("\n>");
-                    inputValue.setLength(0);
-                    break;
             }
-        } while (!(character == 'Q' || character == 'q'));
-        writer.write("\n");
-        writer.flush();
+
+            if (inputValues == null) {
+                int numberOfTokens = Math.max(tokens.length, engine.numberOfInputVariables());
+                numberOfTokens += numberOfTokens % engine.numberOfInputVariables();
+                inputValues = new double[numberOfTokens];
+                for (int i = 0; i < tokens.length; ++i) {
+                    double defaultValue = engine.getInputVariable(i % engine.numberOfInputVariables()).getInputValue();
+                    inputValues[i] = Op.toDouble(tokens[i], defaultValue);
+                }
+                for (int i = tokens.length; i < numberOfTokens; ++i){
+                    double defaultValue = engine.getInputVariable(i % engine.numberOfInputVariables()).getInputValue();
+                    inputValues[i] = defaultValue;
+                }
+            }
+
+            for (int i = 0; i < inputValues.length; ++i) {
+                int index = i % engine.numberOfInputVariables();
+
+                engine.getInputVariable(index).setInputValue(inputValues[i]);
+                buffer.append(space).append(Op.str(inputValues[i]));
+
+                if ((i + 1) % engine.numberOfInputVariables() == 0) {
+                    engine.process();
+                    buffer.append(space).append("=").append(space);
+                    Iterator<OutputVariable> it = engine.getOutputVariables().iterator();
+                    while (it.hasNext()) {
+                        buffer.append(Op.str(it.next().getOutputValue()));
+                        if (it.hasNext()) {
+                            buffer.append(space);
+                        }
+                    }
+                    if (i + 1 < inputValues.length) {
+                        buffer.append("\n");
+                    }
+                }
+            }
+        } while (true);
     }
 
-    public String interactiveHelp() {
+    public static String interactiveHelp() {
         StringBuilder result = new StringBuilder();
-        result.append("#Special Keys\n");
+        result.append("#Special Keys:\n");
         result.append("#=============\n");
-        result.append("#\tR\tRestart engine and discard current inputs\n");
-        result.append("#\tD\tDiscard current inputs\n");
-        result.append("#\tP\tProcess engine\n");
-        result.append("#\tQ\tQuit interactive console\n");
-        result.append("#\tH\tShow this help\n");
+        result.append("#   [Enter]\tProcess engine\n");
+        result.append("#      R\tRestart engine\n");
+        result.append("#      Q\tQuit interactive console\n");
+        result.append("#      H\tShow this help\n");
         result.append("#=============\n");
         return result.toString();
     }
@@ -717,21 +715,20 @@ public class Console {
     }
 
     public static void main(String[] args) {
-//        args = new String[]{"-i", "../examples/mamdani/SimpleDimmer.fll", "-of", "fld"};
         if (args.length == 0) {
             System.out.println(usage());
             return;
         }
-        if (args.length == 1 && "export-examples".equals(args[0])) {
-            String sourceBase = "/home/juan/Development/fl/jfuzzylite/examples/original";
-            String targetBase = "/tmp/fl";
+        if (args.length == 2 && "export-examples".equals(args[0])) {
+            String sourceBase = args[1];
+            String targetBase = sourceBase + "/tmp/fl";
             FuzzyLite.setDecimals(3);
             try {
-                //mkdir -p /tmp/fl/mamdani/matlab
-                //mkdir -p /tmp/fl/mamdani/octave
-                //mkdir -p /tmp/fl/takagi-sugeno/matlab
-                //mkdir -p /tmp/fl/takagi-sugeno/octave
-                //mkdir -p /tmp/fl/tsukamoto
+                //mkdir -p tmp/fl/mamdani/matlab
+                //mkdir -p tmp/fl/mamdani/octave
+                //mkdir -p tmp/fl/takagi-sugeno/matlab
+                //mkdir -p tmp/fl/takagi-sugeno/octave
+                //mkdir -p tmp/fl/tsukamoto
                 exportAllExamples("fis", "fll", sourceBase, targetBase);
                 exportAllExamples("fis", "fcl", sourceBase, targetBase);
                 exportAllExamples("fis", "fis", sourceBase, targetBase);
@@ -740,7 +737,7 @@ public class Console {
                 FuzzyLite.setDecimals(8);
                 exportAllExamples("fis", "fld", sourceBase, targetBase);
             } catch (Exception ex) {
-                FuzzyLite.log().severe(ex.toString());
+                FuzzyLite.log().log(Level.SEVERE, ex.toString(), ex);
             }
             return;
         }
