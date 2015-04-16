@@ -33,19 +33,19 @@ public class Cosine extends Term {
     private double center;
     private double width;
 
-    Cosine() {
+    public Cosine() {
         this("");
     }
 
-    Cosine(String name) {
+    public Cosine(String name) {
         this(name, Double.NaN, Double.NaN);
     }
 
-    Cosine(String name, double center, double width) {
+    public Cosine(String name, double center, double width) {
         this(name, center, width, 1.0);
     }
 
-    Cosine(String name, double center, double width, double height) {
+    public Cosine(String name, double center, double width, double height) {
         super(name, height);
         this.center = center;
         this.width = width;

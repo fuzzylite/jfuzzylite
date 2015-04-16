@@ -341,7 +341,7 @@ public class Function extends Term {
         if (parameters.isEmpty()) {
             return;
         }
-        setFormula(parameters);
+        load(parameters);
     }
 
     @Override
