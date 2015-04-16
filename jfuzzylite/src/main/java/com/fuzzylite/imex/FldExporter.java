@@ -59,6 +59,9 @@ public class FldExporter extends Exporter {
 
     public FldExporter(String separator) {
         this.separator = separator;
+        exportHeaders = true;
+        exportInputValues = true;
+        exportOutputValues = true;
     }
 
     public String getSeparator() {
@@ -102,9 +105,11 @@ public class FldExporter extends Exporter {
                 }
             }
         }
-        for (OutputVariable outputVariable : engine.getOutputVariables()) {
-            if (outputVariable.isEnabled()) {
-                result.add("@OutputVariable: " + outputVariable.getName() + ";");
+        if (exportOutputValues) {
+            for (OutputVariable outputVariable : engine.getOutputVariables()) {
+                if (outputVariable.isEnabled()) {
+                    result.add("@OutputVariable: " + outputVariable.getName() + ";");
+                }
             }
         }
 
