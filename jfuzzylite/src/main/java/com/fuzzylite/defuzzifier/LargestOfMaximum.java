@@ -45,7 +45,7 @@ public class LargestOfMaximum extends IntegralDefuzzifier {
             return Double.NaN;
         }
         if (maximum - minimum > getResolution()) {
-            FuzzyLite.log().warning(String.format(
+            FuzzyLite.logWarning(String.format(
                     "[accuracy warning] resolution (%d)"
                     + "is smaller than the range (%s, %s). "
                     + "Improve the accuracy by increasing the resolution to a value "

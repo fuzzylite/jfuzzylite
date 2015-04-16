@@ -66,16 +66,16 @@ public class RuleBlock {
     }
 
     public void activate() {
-        FuzzyLite.log().finest("Activating ruleblock: " + name);
+        FuzzyLite.logDebug("Activating ruleblock: " + name);
         for (Rule rule : rules) {
             if (rule.isLoaded()) {
                 double activationDegree = rule.activationDegree(conjunction, disjunction);
-                FuzzyLite.log().finest(String.format("[degree=%s] %s", str(activationDegree), rule.toString()));
+                FuzzyLite.logDebug(String.format("[degree=%s] %s", str(activationDegree), rule.toString()));
                 if (Op.isGt(activationDegree, 0.0)) {
                     rule.activate(activationDegree, activation);
                 }
             } else {
-                FuzzyLite.log().finest("Rule not loaded: " + rule.toString());
+                FuzzyLite.logDebug("Rule not loaded: " + rule.toString());
             }
         }
     }

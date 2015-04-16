@@ -60,10 +60,10 @@ public class FuzzyLite {
     private static double MACHEPS = 1e-6; //Machine epsilon to differentiate numbers
     private static boolean debug = false;
 
-    private static final Logger LOG;
+    private static final Logger LOGGER;
 
     static {
-        LOG = Logger.getLogger("com.fuzzylite");
+        LOGGER = Logger.getLogger("com.fuzzylite");
         String configurationFile = "/logging.properties";
         final InputStream inputStream = FuzzyLite.class.getResourceAsStream(configurationFile);
         try {
@@ -72,16 +72,56 @@ public class FuzzyLite {
             System.out.println(String.format("WARNING: Could not load default %s file", configurationFile));
             System.out.println(ex);
         }
-//        FuzzyLite.log().info("info");
-//        FuzzyLite.log().warning("warning");
-//        FuzzyLite.log().severe("severe");
-//        FuzzyLite.log().fine("fine");
-//        FuzzyLite.log().finer("finer");
-//        FuzzyLite.log().finest("finest");
+//        FuzzyLite.logInfo("info");
+//        FuzzyLite.logWarning("warning");
+//        FuzzyLite.logger().severe("severe");
+//        FuzzyLite.logger().fine("fine");
+//        FuzzyLite.logger().finer("finer");
+//        FuzzyLite.logDebug("finest");
     }
 
-    public static Logger log() {
-        return LOG;
+    public static Logger logger() {
+        return LOGGER;
+    }
+
+    public static void logInfo(String message) {
+        log(Level.INFO, message);
+    }
+
+    public static void logInfo(String message, Throwable ex) {
+        log(Level.INFO, message, ex);
+    }
+
+    public static void logWarning(String message) {
+        log(Level.WARNING, message);
+    }
+
+    public static void logWarning(String message, Throwable ex) {
+        log(Level.WARNING, message, ex);
+    }
+
+    public static void logSevere(String message) {
+        log(Level.SEVERE, message);
+    }
+
+    public static void logSevere(String message, Throwable ex) {
+        log(Level.SEVERE, message, ex);
+    }
+
+    public static void logDebug(String message) {
+        log(Level.FINEST, message);
+    }
+
+    public static void logDebug(String message, Throwable ex) {
+        log(Level.FINEST, message, ex);
+    }
+
+    public static void log(Level level, String message) {
+        LOGGER.log(level, message);
+    }
+
+    public static void log(Level level, String message, Throwable ex) {
+        LOGGER.log(level, message, ex);
     }
 
     public static java.text.DecimalFormat getFormatter() {
@@ -112,20 +152,20 @@ public class FuzzyLite {
 
     public static void setLogging(boolean logging) {
         if (logging) {
-            log().setLevel(debug ? Level.FINEST : Level.INFO);
+            logger().setLevel(debug ? Level.FINEST : Level.INFO);
         } else {
-            log().setLevel(Level.OFF);
+            logger().setLevel(Level.OFF);
         }
     }
 
     public static boolean isLogging() {
-        return !(log().getLevel() == null || Level.OFF.equals(log().getLevel()));
+        return !(logger().getLevel() == null || Level.OFF.equals(logger().getLevel()));
     }
 
     public static void setDebug(boolean debug) {
         FuzzyLite.debug = debug;
         if (isLogging()) {
-            log().setLevel(debug ? Level.FINEST : Level.INFO);
+            logger().setLevel(debug ? Level.FINEST : Level.INFO);
         }
     }
 

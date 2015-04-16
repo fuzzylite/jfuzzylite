@@ -637,7 +637,7 @@ public class Console {
 
         StringBuilder errors = new StringBuilder();
         for (int i = 0; i < examples.size(); ++i) {
-            FuzzyLite.log().info("Processing " + (i + 1) + "/" + examples.size() + ": " + examples.get(i));
+            FuzzyLite.logInfo("Processing " + (i + 1) + "/" + examples.size() + ": " + examples.get(i));
             try {
                 StringBuilder text = new StringBuilder();
                 String input = sourceBase + examples.get(i) + "." + from;
@@ -669,7 +669,7 @@ public class Console {
                     try {
                         outputFile.createNewFile();
                     } catch (Exception ex) {
-                        FuzzyLite.log().severe(ex + ": " + outputFile);
+                        FuzzyLite.logSevere(ex + ": " + outputFile, ex);
                     }
                 }
                 FileWriter target = new FileWriter(outputFile);
@@ -702,14 +702,14 @@ public class Console {
                 target.close();
             } catch (Exception ex) {
                 errors.append("error at " + examples.get(i) + ":\n" + ex.toString() + "\n");
-                FuzzyLite.log().severe(ex.toString());
+                FuzzyLite.logSevere(ex.toString(), ex);
                 return;
             }
         }
         if (errors.toString().isEmpty()) {
-            FuzzyLite.log().info("No errors were found exporting files");
+            FuzzyLite.logInfo("No errors were found exporting files");
         } else {
-            FuzzyLite.log().severe("The following errors were encountered while exporting:\n"
+            FuzzyLite.logSevere("The following errors were encountered while exporting:\n"
                     + errors.toString());
         }
     }
@@ -737,7 +737,7 @@ public class Console {
                 FuzzyLite.setDecimals(8);
                 exportAllExamples("fis", "fld", sourceBase, targetBase);
             } catch (Exception ex) {
-                FuzzyLite.log().log(Level.SEVERE, ex.toString(), ex);
+                FuzzyLite.logSevere(ex.toString(), ex);
             }
             return;
         }
@@ -745,7 +745,7 @@ public class Console {
             Map<String, String> options = parse(args);
             process(options);
         } catch (Exception ex) {
-            FuzzyLite.log().log(Level.SEVERE, ex.toString(), ex);
+            FuzzyLite.logSevere(ex.toString(), ex);
         }
     }
 }

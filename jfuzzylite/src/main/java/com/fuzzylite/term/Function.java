@@ -221,7 +221,7 @@ public class Function extends Term {
             } else {
                 result = value;
             }
-            FuzzyLite.log().finest(String.format("%s = %s", toPostfix(), str(result)));
+            FuzzyLite.logDebug(String.format("%s = %s", toPostfix(), str(result)));
             return result;
         }
 
@@ -429,7 +429,7 @@ public class Function extends Term {
         for (String operator : toSpace) {
             spacedFormula = spacedFormula.replace(operator, " " + operator + " ");
         }
-        FuzzyLite.log().finest(spacedFormula);
+        FuzzyLite.logDebug(spacedFormula);
 
         //Tokenizer
         Deque<String> queue = new ArrayDeque<String>();
@@ -446,11 +446,11 @@ public class Function extends Term {
                     && !",".equals(token);
 
             if (isOperand) {
-                FuzzyLite.log().finest(token + " is operand");
+                FuzzyLite.logDebug(token + " is operand");
                 queue.offer(token);
 
             } else if (element != null && element.isFunction()) {
-                FuzzyLite.log().finest(token + " is function");
+                FuzzyLite.logDebug(token + " is function");
                 stack.push(token);
 
             } else if (",".equals(token)) {
@@ -463,7 +463,7 @@ public class Function extends Term {
                 }
 
             } else if (element != null && element.isOperator()) {
-                FuzzyLite.log().finest(token + " is operator");
+                FuzzyLite.logDebug(token + " is operator");
                 Element op1 = element;
                 for (;;) {
                     Element op2 = null;
@@ -606,16 +606,16 @@ public class Function extends Term {
 
     public static void main(String[] args) throws Exception {
         FuzzyLite.setDebug(true);
-        Logger log = FuzzyLite.log();
+        Logger log = FuzzyLite.logger();
 
         Function f = new Function();
         String text = "3+4*2/(1-5)^2^3";
         String formula = "3+4*2/2";
-//        log.info(f.toPostfix(text));
-//        log.info(f.parse(text).toInfix());
-//        log.info(Op.str(f.parse(text).evaluate(f.getVariables())));
+//        logger.info(f.toPostfix(text));
+//        logger.info(f.parse(text).toInfix());
+//        logger.info(Op.str(f.parse(text).evaluate(f.getVariables())));
 //        f.load(text);
-//        log.info(">>>" + Op.str(f.evaluate()));
+//        logger.info(">>>" + Op.str(f.evaluate()));
 
         f.getVariables().put("y", 1.0);
         text = "sin (y*x)^2/x";

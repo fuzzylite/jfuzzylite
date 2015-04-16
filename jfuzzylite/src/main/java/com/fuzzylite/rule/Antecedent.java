@@ -154,7 +154,7 @@ public class Antecedent {
     }
 
     public void load(String antecedent, Rule rule, Engine engine) {
-        FuzzyLite.log().finest("Antedecent: " + antecedent);
+        FuzzyLite.logDebug("Antedecent: " + antecedent);
         unload();
         this.text = antecedent;
         if (antecedent.trim().isEmpty()) {
@@ -195,7 +195,7 @@ public class Antecedent {
                     expressionStack.push(proposition);
 
                     state = S_IS;
-                    FuzzyLite.log().finest("Token <" + token + "> is variable");
+                    FuzzyLite.logDebug("Token <" + token + "> is variable");
                     continue;
                 }
             }
@@ -203,7 +203,7 @@ public class Antecedent {
             if ((state & S_IS) > 0) {
                 if (Rule.FL_IS.equals(token)) {
                     state = S_HEDGE | S_TERM;
-                    FuzzyLite.log().finest("Token <" + token + "> is keyword");
+                    FuzzyLite.logDebug("Token <" + token + "> is keyword");
                     continue;
                 }
             }
@@ -226,7 +226,7 @@ public class Antecedent {
                     } else {
                         state = S_HEDGE | S_TERM;
                     }
-                    FuzzyLite.log().finest("Token <" + token + "> is hedge");
+                    FuzzyLite.logDebug("Token <" + token + "> is hedge");
                     continue;
                 }
             }
@@ -235,7 +235,7 @@ public class Antecedent {
                 if (proposition.getVariable().hasTerm(token)) {
                     proposition.setTerm(proposition.getVariable().getTerm(token));
                     state = S_VARIABLE | S_AND_OR;
-                    FuzzyLite.log().finest("Token <" + token + "> is term");
+                    FuzzyLite.logDebug("Token <" + token + "> is term");
                     continue;
                 }
             }
@@ -254,7 +254,7 @@ public class Antecedent {
                     expressionStack.push(operator);
 
                     state = S_VARIABLE | S_AND_OR;
-                    FuzzyLite.log().finest(String.format("Subtree : (%s) (%s)",
+                    FuzzyLite.logDebug(String.format("Subtree : (%s) (%s)",
                             operator.getLeft(), operator.getRight()));
                     continue;
                 }
