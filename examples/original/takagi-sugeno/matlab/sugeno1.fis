@@ -7,7 +7,7 @@ NumOutputs=1
 NumRules=2
 AndMethod='prod'
 OrMethod='probor'
-ImpMethod='prod'
+ImpMethod='min'
 AggMethod='max'
 DefuzzMethod='wtaver'
 
