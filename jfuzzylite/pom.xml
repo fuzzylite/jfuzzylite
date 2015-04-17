@@ -29,10 +29,20 @@
     </organization>
     <scm>
         <connection>scm:git:git://github.com/fuzzylite/jfuzzylite.git</connection>
-        <developerConnection>scm:git:https://jcrada@github.com/fuzzylite/jfuzzylite.git</developerConnection>
-        <tag>HEAD</tag>
+        <developerConnection>scm:git:git@github.com:fuzzylite/jfuzzylite.git</developerConnection>
         <url>https://github.com/fuzzylite/jfuzzylite</url>
     </scm>
+    
+    <issueManagement>
+        <system>github</system>
+        <url>https://github.com/fuzzylite/jfuzzylite/issues</url>
+    </issueManagement>
+    
+    <ciManagement>
+        <system>travis</system>
+        <url>https://travis-ci.org/fuzzylite/jfuzzylite</url>
+    </ciManagement>
+    
     <developers>
         <developer>
             <id>jcrada</id>
@@ -106,12 +116,4 @@
             </plugin>
         </plugins>
     </build>
-    <dependencies>
-        <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <version>4.10</version>
-            <scope>test</scope>
-        </dependency>
-    </dependencies>
 </project>
