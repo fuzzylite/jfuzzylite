@@ -43,6 +43,10 @@ public class WeightedAverage extends WeightedDefuzzifier {
         super(type);
     }
 
+    public WeightedAverage(String type) {
+        super(type);
+    }
+
     @Override
     public double defuzzify(Term term, double minimum, double maximum) {
         Accumulated fuzzyOutput = (Accumulated) term;
