@@ -719,8 +719,8 @@ public class Console {
             return;
         }
         if (args.length == 2 && "export-examples".equals(args[0])) {
-            String sourceBase = args[1];
-            String targetBase = sourceBase + "/tmp/fl";
+            String sourceBase = args[1] + "/original/";
+            String targetBase = args[1] + "/tmp/fl";
             FuzzyLite.setDecimals(3);
             try {
                 //mkdir -p tmp/fl/mamdani/matlab
@@ -728,13 +728,13 @@ public class Console {
                 //mkdir -p tmp/fl/takagi-sugeno/matlab
                 //mkdir -p tmp/fl/takagi-sugeno/octave
                 //mkdir -p tmp/fl/tsukamoto
-//                exportAllExamples("fis", "fll", sourceBase, targetBase);
-//                exportAllExamples("fis", "fcl", sourceBase, targetBase);
-//                exportAllExamples("fis", "fis", sourceBase, targetBase);
-//                exportAllExamples("fis", "cpp", sourceBase, targetBase);
-//                exportAllExamples("fis", "java", sourceBase, targetBase);
+                exportAllExamples("fll", "fll", sourceBase, targetBase);
+                exportAllExamples("fll", "fcl", sourceBase, targetBase);
+                exportAllExamples("fll", "fis", sourceBase, targetBase);
+                exportAllExamples("fll", "cpp", sourceBase, targetBase);
+                exportAllExamples("fll", "java", sourceBase, targetBase);
                 FuzzyLite.setDecimals(8);
-                exportAllExamples("fis", "fld", sourceBase, targetBase);
+                exportAllExamples("fll", "fld", sourceBase, targetBase);
             } catch (Exception ex) {
                 FuzzyLite.logSevere(ex.toString(), ex);
             }
