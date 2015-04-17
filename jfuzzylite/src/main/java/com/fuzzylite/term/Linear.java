@@ -60,10 +60,10 @@ public class Linear extends Term {
 
     @Override
     public void configure(String parameters) {
+        coefficients.clear();
         if (parameters.isEmpty()) {
             return;
         }
-        coefficients.clear();
         List<String> values = Op.split(parameters, " ");
         for (String x : values) {
             coefficients.add(Op.toDouble(x));

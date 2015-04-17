@@ -84,7 +84,7 @@ public class Bell extends Term {
             return Double.NaN;
         }
         //from octave: gbellmf.m
-        return height * (1.0 / (1.0 + Math.pow(Math.abs((x - center) / width), 2 * slope)));
+        return height * 1.0 / (1.0 + Math.pow(Math.abs((x - center) / width), 2 * slope));
     }
 
     public double getCenter() {
