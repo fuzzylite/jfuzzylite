@@ -51,27 +51,6 @@
         </developer>
     </developers>
 
-
-    <repositories>
-        <repository>
-            <releases>
-                <enabled>true</enabled>
-                <updatePolicy>always</updatePolicy>
-                <checksumPolicy>fail</checksumPolicy>
-            </releases>
-            <snapshots>
-                <enabled>true</enabled>
-                <updatePolicy>never</updatePolicy>
-                <checksumPolicy>fail</checksumPolicy>
-            </snapshots>
-            <id>github</id>
-            <name>Central Repository</name>
-            <url>https://github.com/fuzzylite/jfuzzylite.git</url>
-            <layout>default</layout>
-        </repository>
-    </repositories>
-
-
     <properties>
         <jdk.version>1.6</jdk.version>
         <maven.compiler.source>1.6</maven.compiler.source>
@@ -79,8 +58,6 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     </properties>
-
-
 
     <dependencies>
         <dependency>

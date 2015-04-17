@@ -221,7 +221,7 @@ public class Function extends Term {
             } else {
                 result = value;
             }
-            FuzzyLite.logDebug(String.format("%s = %s", toPostfix(), str(result)));
+            FuzzyLite.logger().fine(String.format("%s = %s", toPostfix(), str(result)));
             return result;
         }
 
@@ -429,7 +429,7 @@ public class Function extends Term {
         for (String operator : toSpace) {
             spacedFormula = spacedFormula.replace(operator, " " + operator + " ");
         }
-        FuzzyLite.logDebug(spacedFormula);
+        FuzzyLite.logger().fine(spacedFormula);
 
         //Tokenizer
         Deque<String> queue = new ArrayDeque<String>();
@@ -446,11 +446,11 @@ public class Function extends Term {
                     && !",".equals(token);
 
             if (isOperand) {
-                FuzzyLite.logDebug(token + " is operand");
+                FuzzyLite.logger().fine(token + " is operand");
                 queue.offer(token);
 
             } else if (element != null && element.isFunction()) {
-                FuzzyLite.logDebug(token + " is function");
+                FuzzyLite.logger().fine(token + " is function");
                 stack.push(token);
 
             } else if (",".equals(token)) {
@@ -463,7 +463,7 @@ public class Function extends Term {
                 }
 
             } else if (element != null && element.isOperator()) {
-                FuzzyLite.logDebug(token + " is operator");
+                FuzzyLite.logger().fine(token + " is operator");
                 Element op1 = element;
                 for (;;) {
                     Element op2 = null;

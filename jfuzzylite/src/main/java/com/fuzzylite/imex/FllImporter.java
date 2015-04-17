@@ -226,7 +226,7 @@ public class FllImporter extends Importer {
                 try {
                     rule.load(engine);
                 } catch (Exception ex) {
-                    FuzzyLite.logWarning(ex.toString());
+                    FuzzyLite.logger().warning(ex.toString());
                 }
                 ruleBlock.addRule(rule);
             } else {

@@ -241,12 +241,12 @@ public class Engine implements Op.Cloneable {
             for (InputVariable inputVariable : this.inputVariables) {
                 double inputValue = inputVariable.getInputValue();
                 if (inputVariable.isEnabled()) {
-                    FuzzyLite.logDebug(String.format(
+                    FuzzyLite.logger().fine(String.format(
                             "%s.input = %s\n%s.fuzzy = %s",
                             inputVariable.getName(), str(inputValue),
                             inputVariable.getName(), inputVariable.fuzzify(inputValue)));
                 } else {
-                    FuzzyLite.logDebug(String.format(
+                    FuzzyLite.logger().fine(String.format(
                             "%s.enabled = false", inputVariable.getName()));
                 }
             }
@@ -271,23 +271,23 @@ public class Engine implements Op.Cloneable {
         if (FuzzyLite.debug()) {
             for (OutputVariable outputVariable : this.outputVariables) {
                 if (outputVariable.isEnabled()) {
-                    FuzzyLite.logDebug(String.format("%s.default = %s",
+                    FuzzyLite.logger().fine(String.format("%s.default = %s",
                             outputVariable.getName(), str(outputVariable.getDefaultValue())));
-                    FuzzyLite.logDebug(String.format("%s.lockValueInRange = %s",
+                    FuzzyLite.logger().fine(String.format("%s.lockValueInRange = %s",
                             outputVariable.getName(), String.valueOf(outputVariable.isLockedOutputValueInRange())));
-                    FuzzyLite.logDebug(String.format("%s.lockPreviousValue= %s",
+                    FuzzyLite.logger().fine(String.format("%s.lockPreviousValue= %s",
                             outputVariable.getName(), String.valueOf(outputVariable.isLockedPreviousOutputValue())));
 
                     //no locking is ever performed during this debugging block;
                     double outputValue = outputVariable.getOutputValue();
-                    FuzzyLite.logDebug(String.format("%s.output = %s",
+                    FuzzyLite.logger().fine(String.format("%s.output = %s",
                             outputVariable.getName(), str(outputValue)));
-                    FuzzyLite.logDebug(String.format("%s.fuzzy = %s",
+                    FuzzyLite.logger().fine(String.format("%s.fuzzy = %s",
                             outputVariable.getName(), outputVariable.fuzzify(outputValue)));
-                    FuzzyLite.logDebug(outputVariable.fuzzyOutput().toString());
-                    FuzzyLite.logDebug("==========================");
+                    FuzzyLite.logger().fine(outputVariable.fuzzyOutput().toString());
+                    FuzzyLite.logger().fine("==========================");
                 } else {
-                    FuzzyLite.logDebug(String.format("%s.enabled = false", outputVariable.getName()));
+                    FuzzyLite.logger().fine(String.format("%s.enabled = false", outputVariable.getName()));
                 }
             }
         }

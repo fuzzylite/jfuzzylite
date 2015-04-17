@@ -62,6 +62,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.logging.Level;
 
 public class Console {
 
@@ -635,7 +636,7 @@ public class Console {
 
         StringBuilder errors = new StringBuilder();
         for (int i = 0; i < examples.size(); ++i) {
-            FuzzyLite.logInfo("Processing " + (i + 1) + "/" + examples.size() + ": " + examples.get(i));
+            FuzzyLite.logger().info("Processing " + (i + 1) + "/" + examples.size() + ": " + examples.get(i));
             try {
                 StringBuilder text = new StringBuilder();
                 String input = sourceBase + examples.get(i) + "." + from;
@@ -649,7 +650,7 @@ public class Console {
                 Engine engine = importer.fromString(text.toString());
 
                 for (Pair<Exporter, Importer> imex : tests) {
-                    FuzzyLite.logInfo(String.format("Converting from %s to %s", imex.getSecond(), imex.getFirst()));
+                    FuzzyLite.logger().info(String.format("Converting from %s to %s", imex.getSecond(), imex.getFirst()));
                     String out = imex.getFirst().toString(engine);
                     Engine copy = imex.getSecond().fromString(out);
                     String out_copy = imex.getFirst().toString(copy);
@@ -668,7 +669,7 @@ public class Console {
                     try {
                         outputFile.createNewFile();
                     } catch (Exception ex) {
-                        FuzzyLite.logSevere(ex + ": " + outputFile, ex);
+                        FuzzyLite.logger().log(Level.SEVERE, ex + ": " + outputFile, ex);
                     }
                 }
                 FileWriter target = new FileWriter(outputFile);
@@ -701,14 +702,14 @@ public class Console {
                 target.close();
             } catch (Exception ex) {
                 errors.append("error at " + examples.get(i) + ":\n" + ex.toString() + "\n");
-                FuzzyLite.logSevere(ex.toString(), ex);
+                FuzzyLite.logger().log(Level.SEVERE, ex.toString(), ex);
                 return;
             }
         }
         if (errors.toString().isEmpty()) {
-            FuzzyLite.logInfo("No errors were found exporting files");
+            FuzzyLite.logger().info("No errors were found exporting files");
         } else {
-            FuzzyLite.logSevere("The following errors were encountered while exporting:\n"
+            FuzzyLite.logger().log(Level.SEVERE, "The following errors were encountered while exporting:\n"
                     + errors.toString());
         }
     }
@@ -736,7 +737,7 @@ public class Console {
                 FuzzyLite.setDecimals(8);
                 exportAllExamples("fll", "fld", sourceBase, targetBase);
             } catch (Exception ex) {
-                FuzzyLite.logSevere(ex.toString(), ex);
+                FuzzyLite.logger().log(Level.SEVERE, ex.toString(), ex);
             }
             return;
         }
@@ -744,7 +745,7 @@ public class Console {
             Map<String, String> options = parse(args);
             process(options);
         } catch (Exception ex) {
-            FuzzyLite.logSevere(ex.toString(), ex);
+            FuzzyLite.logger().log(Level.SEVERE, ex.toString(), ex);
         }
     }
 }

@@ -9,7 +9,7 @@
         <license>
             <name>GNU Lesser General Public License</name>
             <url>https://www.gnu.org/licenses/lgpl.html</url>
-            <distribution>repo</distribution>
+            <distribution>manual</distribution>
         </license>
     </licenses>
     <name>jfuzzylite</name>

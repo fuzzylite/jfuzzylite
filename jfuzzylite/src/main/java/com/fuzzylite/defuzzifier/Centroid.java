@@ -45,7 +45,7 @@ public class Centroid extends IntegralDefuzzifier {
             return Double.NaN;
         }
         if (maximum - minimum > getResolution()) {
-            FuzzyLite.logWarning(String.format(
+            FuzzyLite.logger().warning(String.format(
                     "[accuracy warning] resolution (%d)"
                     + "is smaller than the range (%s, %s). "
                     + "Improve the accuracy by increasing the resolution to a value "

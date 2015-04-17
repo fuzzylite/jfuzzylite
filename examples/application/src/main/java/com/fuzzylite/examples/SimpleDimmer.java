@@ -41,13 +41,13 @@ public class SimpleDimmer {
         try {
             engine = new FllImporter().fromFile(new File(url.toURI()));
         } catch (Exception ex) {
-            FuzzyLite.log().severe(ex.toString());
+            FuzzyLite.logger().severe(ex.toString());
         }
     }
 
     public void run() {
         FldExporter exporter = new FldExporter();
-        FuzzyLite.log().info(exporter.toString(engine, 10 * engine.getInputVariables().size()));
+        FuzzyLite.logger().info(exporter.toString(engine, 10 * engine.getInputVariables().size()));
     }
 
     public static void main(String[] args) {
