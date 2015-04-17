@@ -16,7 +16,7 @@ OutputVariable: Power
   term: LOW Triangle 0.000 0.250 0.500
   term: MEDIUM Triangle 0.250 0.500 0.750
   term: HIGH Triangle 0.500 0.750 1.000
-RuleBlock:
+RuleBlock: 
   enabled: true
   conjunction: none
   disjunction: none
