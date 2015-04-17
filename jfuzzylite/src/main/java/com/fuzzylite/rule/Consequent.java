@@ -72,7 +72,7 @@ public class Consequent {
         for (Proposition proposition : conclusions) {
             if (proposition.getVariable().isEnabled()) {
                 if (!proposition.getHedges().isEmpty()) {
-                    int lastIndex = proposition.getHedges().size() - 1;
+                    int lastIndex = proposition.getHedges().size();
                     ListIterator<Hedge> rit = proposition.getHedges().listIterator(lastIndex);
                     while (rit.hasPrevious()) {
                         activationDegree = rit.previous().hedge(activationDegree);
