@@ -162,11 +162,11 @@ public class FclExporter extends Exporter {
         }
         result.append(String.format(indent + "DEFAULT := %s",
                 str(outputVariable.getDefaultValue())));
-        if (outputVariable.isLockedPreviousOutputValue()) {
+        if (outputVariable.isLockPreviousOutputValue()) {
             result.append(" | NC");
         }
         result.append(";\n");
-        if (outputVariable.isLockedOutputValueInRange()) {
+        if (outputVariable.isLockOutputValueInRange()) {
             result.append(indent).append("LOCK : RANGE;\n");
         }
         result.append("END_DEFUZZIFY\n");

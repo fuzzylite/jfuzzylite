@@ -54,11 +54,14 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -714,10 +717,97 @@ public class Console {
         }
     }
 
+    public static void benchmarkExamples(String path, int runs) {
+        List<Op.Pair<String, Integer>> examples = new LinkedList<Op.Pair<String, Integer>>();
+        examples.add(new Op.Pair<String, Integer>("/mamdani/AllTerms", 10 ^ 4));
+        examples.add(new Op.Pair<String, Integer>("/mamdani/SimpleDimmer", 10 ^ 5));
+        examples.add(new Op.Pair<String, Integer>("/mamdani/matlab/mam21", 128));
+        examples.add(new Op.Pair<String, Integer>("/mamdani/matlab/mam22", 128));
+        examples.add(new Op.Pair<String, Integer>("/mamdani/matlab/shower", 256));
+        examples.add(new Op.Pair<String, Integer>("/mamdani/matlab/tank", 256));
+        examples.add(new Op.Pair<String, Integer>("/mamdani/matlab/tank2", 512));
+        examples.add(new Op.Pair<String, Integer>("/mamdani/matlab/tipper", 256));
+        examples.add(new Op.Pair<String, Integer>("/mamdani/matlab/tipper1", 10 ^ 5));
+        examples.add(new Op.Pair<String, Integer>("/mamdani/octave/investment_portfolio", 256));
+        examples.add(new Op.Pair<String, Integer>("/mamdani/octave/mamdani_tip_calculator", 256));
+        examples.add(new Op.Pair<String, Integer>("/takagi-sugeno/approximation", 10 ^ 6));
+        examples.add(new Op.Pair<String, Integer>("/takagi-sugeno/SimpleDimmer", 2 * 10 ^ 6));
+        examples.add(new Op.Pair<String, Integer>("/takagi-sugeno/matlab/fpeaks", 512));
+        examples.add(new Op.Pair<String, Integer>("/takagi-sugeno/matlab/invkine1", 256));
+        examples.add(new Op.Pair<String, Integer>("/takagi-sugeno/matlab/invkine2", 256));
+        examples.add(new Op.Pair<String, Integer>("/takagi-sugeno/matlab/juggler", 512));
+        examples.add(new Op.Pair<String, Integer>("/takagi-sugeno/matlab/membrn1", 1024));
+        examples.add(new Op.Pair<String, Integer>("/takagi-sugeno/matlab/membrn2", 512));
+        examples.add(new Op.Pair<String, Integer>("/takagi-sugeno/matlab/slbb", 20));
+        examples.add(new Op.Pair<String, Integer>("/takagi-sugeno/matlab/slcp", 20));
+        examples.add(new Op.Pair<String, Integer>("/takagi-sugeno/matlab/slcp1", 15));
+        examples.add(new Op.Pair<String, Integer>("/takagi-sugeno/matlab/slcpp1", 9));
+        examples.add(new Op.Pair<String, Integer>("/takagi-sugeno/matlab/sltbu_fl", 128));
+        examples.add(new Op.Pair<String, Integer>("/takagi-sugeno/matlab/sugeno1", 2 * 10 ^ 6));
+        examples.add(new Op.Pair<String, Integer>("/takagi-sugeno/matlab/tanksg", 1024));
+        examples.add(new Op.Pair<String, Integer>("/takagi-sugeno/matlab/tippersg", 1024));
+        examples.add(new Op.Pair<String, Integer>("/takagi-sugeno/octave/cubic_approximator", 2 * 10 ^ 6));
+        examples.add(new Op.Pair<String, Integer>("/takagi-sugeno/octave/heart_disease_risk", 1024));
+        examples.add(new Op.Pair<String, Integer>("/takagi-sugeno/octave/linear_tip_calculator", 1024));
+        examples.add(new Op.Pair<String, Integer>("/takagi-sugeno/octave/sugeno_tip_calculator", 512));
+        examples.add(new Op.Pair<String, Integer>("/tsukamoto/tsukamoto", 10 ^ 6));
+
+        for (Op.Pair example : examples) {
+            StringBuilder message = new StringBuilder();
+            message.append(example.getFirst()).append("\t").append(example.getSecond());
+            FuzzyLite.logger().info(message.toString());
+        }
+
+        FllImporter importer = new FllImporter();
+        FldExporter exporter = new FldExporter();
+        exporter.setExportHeaders(false);
+        exporter.setExportInputValues(false);
+        exporter.setExportOutputValues(false);
+        OutputStreamWriter nullWriter = new OutputStreamWriter(new OutputStream() {
+            @Override
+            public void write(int b) throws IOException {
+                //do nothing
+            }
+        });
+        try {
+            for (Op.Pair<String, Integer> example : examples) {
+                Engine engine = importer.fromFile(new File(path + example.getFirst() + ".fll"));
+                int results = example.getSecond() ^ engine.numberOfInputVariables();
+                double[] time = new double[runs];
+
+                for (int run = 0; run < runs; ++run) {
+                    long start = System.currentTimeMillis();
+                    exporter.write(engine, nullWriter, results);
+                    long end = System.currentTimeMillis();
+                    time[run] = (end - start) / 1e3;
+                }
+
+                double mean = Op.mean(time);
+                double stdev = Op.standardDeviation(time);
+                StringBuilder message = new StringBuilder();
+                message.append(Op.str(mean)).append("\t").append(Op.str(stdev))
+                        .append("\t").append(Op.join(time, " "))
+                        .append(" ").append(example.getFirst());
+//                FuzzyLite.logger().info(message.toString());
+                System.out.println(message.toString());
+            }
+        } catch (Exception ex) {
+            throw new RuntimeException(ex);
+        }
+    }
+
     public static void main(String[] args) {
         if (args.length == 0) {
             System.out.println(usage());
             return;
+        }
+        if (args.length >= 2 && "benchmarks".equals(args[0])) {
+            if (args.length >= 3) {
+                benchmarkExamples(args[1], Integer.parseInt(args[2]));
+            } else {
+                benchmarkExamples(args[1], 5);
+            }
+            return ;
         }
         if (args.length == 2 && "export-examples".equals(args[0])) {
             String sourceBase = args[1] + "/original/";

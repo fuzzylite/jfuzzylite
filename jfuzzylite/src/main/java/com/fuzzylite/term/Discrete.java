@@ -24,14 +24,13 @@
  */
 package com.fuzzylite.term;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import com.fuzzylite.Op;
 import com.fuzzylite.term.Discrete.Pair;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.ListIterator;
 
 public class Discrete extends Term implements List<Pair> {
@@ -256,14 +255,14 @@ public class Discrete extends Term implements List<Pair> {
 
     public static String formatXY(List<Discrete.Pair> xy,
             String prefix, String innerSeparator,
-            String postfix, String outerSeparator) {
+            String suffix, String outerSeparator) {
         StringBuilder result = new StringBuilder();
         Iterator<Pair> it = xy.iterator();
         while (it.hasNext()) {
             Pair pair = it.next();
             result.append(prefix).append(Op.str(pair.getX()))
                     .append(innerSeparator).append(Op.str(pair.getY()))
-                    .append(postfix);
+                    .append(suffix);
             if (it.hasNext()) {
                 result.append(outerSeparator);
             }

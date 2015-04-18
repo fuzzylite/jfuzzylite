@@ -123,10 +123,10 @@ public class JavaExporter extends Exporter {
                 toString(outputVariable.getDefaultValue())));
         result.append(String.format(
                 "%s.setLockPreviousOutputValue(%s);\n", name,
-                outputVariable.isLockedPreviousOutputValue()));
+                outputVariable.isLockPreviousOutputValue()));
         result.append(String.format(
                 "%s.setLockOutputValueInRange(%s);\n", name,
-                outputVariable.isLockedOutputValueInRange()));
+                outputVariable.isLockOutputValueInRange()));
         for (Term term : outputVariable.getTerms()) {
             result.append(String.format("%s.addTerm(%s);\n",
                     name, toString(term)));

@@ -276,7 +276,7 @@ public class FclImporter extends Importer {
                 Pair<Double, Boolean> defaultAndLock = parseDefaultValue(line);
                 outputVariable.setDefaultValue(defaultAndLock.getFirst());
                 outputVariable.setLockPreviousOutputValue(defaultAndLock.getSecond()
-                        || outputVariable.isLockedPreviousOutputValue());
+                        || outputVariable.isLockPreviousOutputValue());
             } else if ("RANGE".equals(firstToken)) {
                 Pair<Double, Double> range = parseRange(line);
                 outputVariable.setRange(range.getFirst(), range.getSecond());

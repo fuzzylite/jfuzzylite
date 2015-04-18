@@ -50,6 +50,10 @@ public class InputVariable extends Variable {
     public void setInputValue(double inputValue) {
         this.inputValue = inputValue;
     }
+    
+    public String fuzzyInputValue(){
+        return fuzzify(this.inputValue);
+    }
 
     @Override
     public String toString() {

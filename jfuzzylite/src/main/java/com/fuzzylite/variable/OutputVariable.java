@@ -38,7 +38,6 @@ public class OutputVariable extends Variable {
     private double outputValue;
     private double previousOutputValue;
     private double defaultValue;
-
     private boolean lockOutputValueInRange;
     private boolean lockPreviousOutputValue;
 
@@ -114,7 +113,7 @@ public class OutputVariable extends Variable {
         this.defaultValue = defaultValue;
     }
 
-    public boolean isLockedOutputValueInRange() {
+    public boolean isLockOutputValueInRange() {
         return lockOutputValueInRange;
     }
 
@@ -122,7 +121,7 @@ public class OutputVariable extends Variable {
         this.lockOutputValueInRange = lockOutputValueInRange;
     }
 
-    public boolean isLockedPreviousOutputValue() {
+    public boolean isLockPreviousOutputValue() {
         return lockPreviousOutputValue;
     }
 

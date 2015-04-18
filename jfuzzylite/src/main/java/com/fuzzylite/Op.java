@@ -64,7 +64,7 @@ public class Op {
     }
 
     public static boolean isEq(double a, double b, double macheps) {
-        return Math.abs(a - b) < macheps;
+        return a == b || Math.abs(a - b) < macheps || (Double.isNaN(a) && Double.isNaN(b));
     }
 
     public static boolean isNEq(double a, double b) {
@@ -153,6 +153,44 @@ public class Op {
         double result = (toMax - toMin) / (fromMax - fromMin) * (x - fromMin)
                 + toMin;
         return bounded ? Op.bound(x, toMin, toMax) : result;
+    }
+
+    public static double mean(double[] x) {
+        if (x.length == 0) {
+            return Double.NaN;
+        }
+        double result = 0.0;
+        for (double i : x) {
+            result += i;
+        }
+        return result / x.length;
+    }
+
+    public static double variance(double[] x) {
+        return variance(x, mean(x));
+    }
+
+    public static double variance(double[] x, double mean) {
+        if (x.length <= 1) {
+            return 0.0;
+        }
+        double result = 0.0;
+        for (double i : x) {
+            result += (i - mean) * (i - mean);
+        }
+        result /= -1 + x.length;
+        return result;
+    }
+
+    public static double standardDeviation(double[] x) {
+        return standardDeviation(x, mean(x));
+    }
+
+    public static double standardDeviation(double[] x, double mean) {
+        if (x.length <= 1) {
+            return 0.0;
+        }
+        return Math.sqrt(variance(x, mean));
     }
 
     public static List<String> split(String string, String delimiter) {

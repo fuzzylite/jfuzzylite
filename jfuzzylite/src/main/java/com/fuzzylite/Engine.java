@@ -274,9 +274,9 @@ public class Engine implements Op.Cloneable {
                     FuzzyLite.logger().fine(String.format("%s.default = %s",
                             outputVariable.getName(), str(outputVariable.getDefaultValue())));
                     FuzzyLite.logger().fine(String.format("%s.lockValueInRange = %s",
-                            outputVariable.getName(), String.valueOf(outputVariable.isLockedOutputValueInRange())));
+                            outputVariable.getName(), String.valueOf(outputVariable.isLockOutputValueInRange())));
                     FuzzyLite.logger().fine(String.format("%s.lockPreviousValue= %s",
-                            outputVariable.getName(), String.valueOf(outputVariable.isLockedPreviousOutputValue())));
+                            outputVariable.getName(), String.valueOf(outputVariable.isLockPreviousOutputValue())));
 
                     //no locking is ever performed during this debugging block;
                     double outputValue = outputVariable.getOutputValue();
