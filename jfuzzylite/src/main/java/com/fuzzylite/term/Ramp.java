@@ -30,10 +30,11 @@ import java.util.List;
 
 public class Ramp extends Term {
 
-    public enum Direction{
+    public enum Direction {
+
         POSITIVE, ZERO, NEGATIVE
     }
-    
+
     private double start, end;
 
     public Ramp() {
@@ -124,13 +125,15 @@ public class Ramp extends Term {
     public void setEnd(double end) {
         this.end = end;
     }
-    
-    public Direction direction(){
+
+    public Direction direction() {
         double range = this.end - this.start;
-        if (!Op.isFinite(range) || Op.isEq(range, 0.0)) return Direction.ZERO;
-
-        if (Op.isGt(range, 0.0)) return Direction.POSITIVE;
-
+        if (!Op.isFinite(range) || Op.isEq(range, 0.0)) {
+            return Direction.ZERO;
+        }
+        if (Op.isGt(range, 0.0)) {
+            return Direction.POSITIVE;
+        }
         return Direction.NEGATIVE;
     }
 

@@ -30,6 +30,10 @@ import java.util.List;
 
 public class Sigmoid extends Term {
 
+    public enum Direction {
+
+        POSITIVE, ZERO, NEGATIVE
+    }
     private double inflection, slope;
 
     public Sigmoid() {
@@ -98,6 +102,16 @@ public class Sigmoid extends Term {
 
     public void setSlope(double slope) {
         this.slope = slope;
+    }
+
+    public Direction direction() {
+        if (!Op.isFinite(slope) || Op.isEq(slope, 0.0)) {
+            return Direction.ZERO;
+        }
+        if (Op.isGt(slope, 0.0)) {
+            return Direction.POSITIVE;
+        }
+        return Direction.NEGATIVE;
     }
 
     @Override
