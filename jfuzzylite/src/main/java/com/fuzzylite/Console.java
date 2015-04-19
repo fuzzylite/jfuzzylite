@@ -107,12 +107,12 @@ public class Console {
         StringBuilder result = new StringBuilder();
         result.append("Copyright (C) 2010-2015 FuzzyLite Limited\n");
         result.append("All rights reserved\n");
-        result.append("========================================\n");
+        result.append("=========================================\n");
         result.append("jfuzzylite: a fuzzy logic control library\n");
         result.append(String.format("version: %s\n", FuzzyLite.LONG_VERSION));
         result.append(String.format("author: %s\n", FuzzyLite.AUTHOR));
         result.append(String.format("license: %s\n", FuzzyLite.LICENSE));
-        result.append("========================================\n");
+        result.append("=========================================\n");
         result.append("usage: java -jar jfuzzylite.jar inputfile outputfile\n");
         result.append("   or: java -jar jfuzzylite.jar ");
         for (Option option : options) {
