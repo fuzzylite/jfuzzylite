@@ -90,7 +90,7 @@ public class Accumulated extends Term {
     public double activationDegree(Term term) {
         double result = 0.0;
         for (Activated activatedTerm : this.terms) {
-            if (activatedTerm == term) {
+            if (activatedTerm.getTerm() == term) {
                 if (this.accumulation != null) {
                     result = this.accumulation.compute(result, activatedTerm.getDegree());
                 } else {

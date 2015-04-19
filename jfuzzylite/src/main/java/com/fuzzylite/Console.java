@@ -571,6 +571,8 @@ public class Console {
         List<String> examples = new ArrayList<String>();
         examples.add("/mamdani/AllTerms");
         examples.add("/mamdani/SimpleDimmer");
+//        examples.add("/mamdani/Laundry");
+//        examples.add("/mamdani/SimpleDimmerInverse");
         examples.add("/mamdani/matlab/mam21");
         examples.add("/mamdani/matlab/mam22");
         examples.add("/mamdani/matlab/shower");
@@ -721,6 +723,8 @@ public class Console {
         List<Op.Pair<String, Integer>> examples = new LinkedList<Op.Pair<String, Integer>>();
         examples.add(new Op.Pair<String, Integer>("/mamdani/AllTerms", 10 ^ 4));
         examples.add(new Op.Pair<String, Integer>("/mamdani/SimpleDimmer", 10 ^ 5));
+        examples.add(new Op.Pair<String, Integer>("/mamdani/Laundry", 10 ^ 5));
+        examples.add(new Op.Pair<String, Integer>("/mamdani/SimpleDimmerInverse", 10 ^ 5));
         examples.add(new Op.Pair<String, Integer>("/mamdani/matlab/mam21", 128));
         examples.add(new Op.Pair<String, Integer>("/mamdani/matlab/mam22", 128));
         examples.add(new Op.Pair<String, Integer>("/mamdani/matlab/shower", 256));
@@ -805,9 +809,9 @@ public class Console {
             if (args.length >= 3) {
                 benchmarkExamples(args[1], Integer.parseInt(args[2]));
             } else {
-                benchmarkExamples(args[1], 5);
+                benchmarkExamples(args[1], 30);
             }
-            return ;
+            return;
         }
         if (args.length == 2 && "export-examples".equals(args[0])) {
             String sourceBase = args[1] + "/original/";

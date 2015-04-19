@@ -630,6 +630,9 @@ public class Function extends Term {
                 + "(Temperature is Low and (Oxigen is Low or Oxigen is High))";
         log.info(f.toPostfix(text));
 
+        text = "term1 is t1 or term2 is t2 and term3 is t3";
+        log.info(f.toPostfix(text));
+        
         f.variables.put("pi", 3.14);
         text = "-5 *4/sin(-pi/2)";
         log.info(f.toPostfix(text));
