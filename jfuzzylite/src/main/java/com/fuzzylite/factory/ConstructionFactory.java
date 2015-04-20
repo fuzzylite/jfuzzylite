@@ -88,6 +88,7 @@ public class ConstructionFactory<T> implements Op.Cloneable {
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public ConstructionFactory<T> clone() throws CloneNotSupportedException {
         ConstructionFactory<T> result = (ConstructionFactory<T>) super.clone();
         result.constructors = new HashMap<String, Class<? extends T>>(this.constructors);

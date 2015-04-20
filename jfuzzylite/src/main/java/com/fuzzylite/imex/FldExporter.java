@@ -180,6 +180,7 @@ public class FldExporter extends Exporter {
             write(engine, writer, inputValues);
             writer.flush();
         }
+        reader.close();
         writer.close();
     }
 

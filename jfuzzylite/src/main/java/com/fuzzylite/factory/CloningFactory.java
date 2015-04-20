@@ -25,6 +25,7 @@
 package com.fuzzylite.factory;
 
 import com.fuzzylite.Op;
+
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -59,6 +60,7 @@ public class CloningFactory<T extends Op.Cloneable> implements Op.Cloneable {
         return null;
     }
 
+    @SuppressWarnings("unchecked")
     public T cloneObject(String key) {
         if (this.objects.containsKey(key)) {
             T object = this.objects.get(key);
@@ -88,9 +90,10 @@ public class CloningFactory<T extends Op.Cloneable> implements Op.Cloneable {
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public CloningFactory<T> clone() throws CloneNotSupportedException {
-        CloningFactory result = (CloningFactory<T>) super.clone();
-        result.objects = new HashMap<String, Op.Cloneable>(this.objects);
+        CloningFactory<T> result = (CloningFactory<T>) super.clone();
+        result.objects = new HashMap<String, T>(this.objects);
         return result;
     }
 

@@ -756,7 +756,7 @@ public class Console {
         examples.add(new Op.Pair<String, Integer>("/takagi-sugeno/octave/sugeno_tip_calculator", 512));
         examples.add(new Op.Pair<String, Integer>("/tsukamoto/tsukamoto", 10 ^ 6));
 
-        for (Op.Pair example : examples) {
+        for (Op.Pair<String, Integer> example : examples) {
             StringBuilder message = new StringBuilder();
             message.append(example.getFirst()).append("\t").append(example.getSecond());
             FuzzyLite.logger().info(message.toString());

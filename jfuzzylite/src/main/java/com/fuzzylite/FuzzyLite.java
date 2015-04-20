@@ -38,7 +38,9 @@ public class FuzzyLite {
      */
     private static class FLDecimalFormat extends DecimalFormat {
 
-        public FLDecimalFormat(String pattern) {
+		private static final long serialVersionUID = 1L;
+
+		public FLDecimalFormat(String pattern) {
             this(pattern, RoundingMode.HALF_UP);
         }
 

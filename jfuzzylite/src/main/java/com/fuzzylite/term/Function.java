@@ -610,7 +610,7 @@ public class Function extends Term {
 
         Function f = new Function();
         String text = "3+4*2/(1-5)^2^3";
-        String formula = "3+4*2/2";
+        //String formula = "3+4*2/2";
 //        logger.info(f.toPostfix(text));
 //        logger.info(f.parse(text).toInfix());
 //        logger.info(Op.str(f.parse(text).evaluate(f.getVariables())));

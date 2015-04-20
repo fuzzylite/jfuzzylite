@@ -26,7 +26,9 @@ package com.fuzzylite.defuzzifier;
 
 import com.fuzzylite.FuzzyLite;
 import com.fuzzylite.Op;
+
 import static com.fuzzylite.Op.str;
+
 import com.fuzzylite.term.Term;
 
 public class Centroid extends IntegralDefuzzifier {
@@ -55,7 +57,10 @@ public class Centroid extends IntegralDefuzzifier {
 
         double dx = (maximum - minimum) / getResolution();
         double x, y;
-        double area = 0, xcentroid = 0, ycentroid = 0;
+		double area = 0;
+        double xcentroid = 0;
+        @SuppressWarnings("unused")
+        double ycentroid = 0;
         for (int i = 0; i < getResolution(); ++i) {
             x = minimum + (i + 0.5) * dx;
             y = term.membership(x);

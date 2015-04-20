@@ -163,7 +163,7 @@ public class FunctionFactory extends CloningFactory<Function.Element> implements
     }
 
     public Set<String> availableOperators() {
-        Set<String> operators = new HashSet(this.getObjects().keySet());
+        Set<String> operators = new HashSet<String>(this.getObjects().keySet());
         Iterator<String> it = operators.iterator();
         while (it.hasNext()) {
             String key = it.next();
@@ -175,7 +175,7 @@ public class FunctionFactory extends CloningFactory<Function.Element> implements
     }
 
     public Set<String> availableFunctions() {
-        Set<String> functions = new HashSet(this.getObjects().keySet());
+        Set<String> functions = new HashSet<String>(this.getObjects().keySet());
         Iterator<String> it = functions.iterator();
         while (it.hasNext()) {
             String key = it.next();
