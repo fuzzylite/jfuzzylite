@@ -1,0 +1,31 @@
+Extracted from [README.md](/README.md)
+======================================
+
+
+### <a name="building">Building from Source</a>
+Building from source requires you to have either Ant or Maven installed.
+
+#### Ant
+```bash
+$ ant -f build.xml
+```
+
+The Ant script will create the library `bin/jfuzzylite.jar` and the library sources `bin/jfuzzylite-src.jar`.
+
+#### Maven
+```bash
+$ mvn install
+```
+
+The Maven script will create the library `target/jfuzzylite-5.0.jar` and library sources `target/jfuzzylite-5.0-sources.jar`.
+
+
+### <a name="binaries">Binaries</a>
+
+Besides the library, the binaries contain the FuzzyLite Console application. The application can be executed using the following command.
+
+```bash
+$ java -jar jfuzzylite.jar
+```
+
+In addition, the new FuzzyLite Interactive Console is activated when exporting to `fld` without providing an output file. The interactive console allows you to evaluate controllers manually providing the input values.
