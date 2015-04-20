@@ -366,8 +366,8 @@ public class Op {
         return result;
     }
 
-    // @SafeVarargs
-    public static <T> String join(String separator, T... x) {
+    @SuppressWarnings("unchecked")
+	public static <T> String join(String separator, T... x) {
         String result = "";
         for (int i = 0; i < x.length; ++i) {
             T item = x[i];
