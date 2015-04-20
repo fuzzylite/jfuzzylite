@@ -105,8 +105,6 @@ public class Console {
         options.add(new Option(KW_DATA_EXPORT_INPUTS, "boolean", "if true and exporting to fld, include input values"));
 
         StringBuilder result = new StringBuilder();
-        result.append("Copyright (C) 2010-2015 FuzzyLite Limited\n");
-        result.append("All rights reserved\n");
         result.append("=========================================\n");
         result.append("jfuzzylite: a fuzzy logic control library\n");
         result.append(String.format("version: %s\n", FuzzyLite.LONG_VERSION));
@@ -119,9 +117,8 @@ public class Console {
             result.append(String.format("[%s %s] ", option.key, option.value));
         }
         result.append("\n\nwhere:\n");
-
+        
         for (Option option : options) {
-
             result.append(option.key);
             int keyPad = 12 - option.key.length();
             if (keyPad > 0) {
@@ -137,7 +134,10 @@ public class Console {
         }
 
         result.append("\n");
-        result.append("Visit http://www.fuzzylite.com/ for more information.");
+        result.append("Visit http://www.fuzzylite.com/ for more information.\n\n");
+        result.append("Copyright (C) 2010-2015 FuzzyLite Limited\n");
+        result.append("All rights reserved");
+
         return result.toString();
     }
 
