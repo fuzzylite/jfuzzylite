@@ -1,4 +1,4 @@
-jfuzzylite &trade; [![Build Status](https://travis-ci.org/fuzzylite/jfuzzylite.svg?branch=develop)](https://travis-ci.org/fuzzylite/jfuzzylite) <img src="https://github.com/fuzzylite/jfuzzylite/raw/develop/jfuzzylite.png" align="right" alt="jfuzzylite">
+jfuzzylite &trade; [![Build Status](https://travis-ci.org/fuzzylite/jfuzzylite.svg?branch=master)](https://travis-ci.org/fuzzylite/jfuzzylite) <img src="https://github.com/fuzzylite/jfuzzylite/raw/master/jfuzzylite.png" align="right" alt="jfuzzylite">
 ==========
 
 A Fuzzy Logic Control Library in Java
