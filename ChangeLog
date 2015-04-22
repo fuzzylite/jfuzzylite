@@ -1,3 +1,7 @@
+Version 6.0
+* Changed Maven build to produce binary jar only upon package
+* Other packages can be built using `mvn clean package source:jar javadoc:jar`
+
 Version 5.0
 * Added deductive type of Engine with Engine::type()
 * Modified FclExporter and FisExporter to provide backward compatibility with FCL and FIS formats
@@ -74,7 +78,7 @@ Version 5.0
 * Added methods Discrete::toPairs(List<Double>) and Discrete::toList(List<Pair>)
 * Added method Discrete::formatXY() to get pairs (x,y) nicely formatted
 * Linear term no longer throws exception when inputVariables != |coefficients|
-* Changed visibility of Function::root to private 
+* Changed visibility of Function::root to private
 * Added method Function::getRoot() to return pointer to Function::root
 * Added option to prefix the namespace in CppExporter, by default it does not prefix
 * Added method OutputVariable::clear() to restart the output variable

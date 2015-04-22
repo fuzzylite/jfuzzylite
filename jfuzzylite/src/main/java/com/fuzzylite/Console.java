@@ -117,7 +117,7 @@ public class Console {
             result.append(String.format("[%s %s] ", option.key, option.value));
         }
         result.append("\n\nwhere:\n");
-        
+
         for (Option option : options) {
             result.append(option.key);
             int keyPad = 12 - option.key.length();
@@ -135,8 +135,8 @@ public class Console {
 
         result.append("\n");
         result.append("Visit http://www.fuzzylite.com/ for more information.\n\n");
-        result.append("Copyright (C) 2010-2015 FuzzyLite Limited\n");
-        result.append("All rights reserved");
+        result.append("Copyright (C) 2010-2015 FuzzyLite Limited.\n");
+        result.append("All rights reserved.");
 
         return result.toString();
     }
@@ -805,17 +805,25 @@ public class Console {
             System.out.println(usage());
             return;
         }
-        if (args.length >= 2 && "benchmarks".equals(args[0])) {
-            if (args.length >= 3) {
-                benchmarkExamples(args[1], Integer.parseInt(args[2]));
-            } else {
-                benchmarkExamples(args[1], 30);
+        if ("benchmarks".equals(args[0])) {
+            String path = ".";
+            if (args.length >= 2) {
+                path = args[1];
             }
+            int runs = 10;
+            if (args.length >= 3) {
+                runs = Integer.parseInt(args[2]);
+            }
+            benchmarkExamples(path, runs);
             return;
         }
-        if (args.length == 2 && "export-examples".equals(args[0])) {
-            String sourceBase = args[1] + "/original/";
-            String targetBase = args[1] + "/tmp/fl";
+        if ("export-examples".equals(args[0])) {
+            String path = ".";
+            if (args.length >= 2) {
+                path = args[1];
+            }
+            String sourceBase = path + "/original/";
+            String targetBase = path + "/tmp/fl";
             FuzzyLite.setDecimals(3);
             try {
                 //mkdir -p tmp/fl/mamdani/matlab
