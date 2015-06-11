@@ -242,9 +242,9 @@ public class Antecedent {
 
             if ((state & S_AND_OR) > 0) {
                 if (Rule.FL_AND.equals(token) || Rule.FL_OR.equals(token)) {
-                    if (expressionStack.size() != 2) {
+                    if (expressionStack.size() < 2) {
                         throw new RuntimeException(String.format(
-                                "[syntax error] logical operator <%s> expects two operands, but found <%d>",
+                                "[syntax error] logical operator <%s> expects at least two operands, but found <%d>",
                                 token, expressionStack.size()));
                     }
                     Operator operator = new Operator();
