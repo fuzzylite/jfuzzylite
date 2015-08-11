@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.fuzzylite</groupId>
     <artifactId>jfuzzylite</artifactId>
-    <version>5.0</version>
+    <version>5.0.1</version>
     <packaging>jar</packaging>
 
     <licenses>
