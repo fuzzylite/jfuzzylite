@@ -117,9 +117,9 @@ public class Example {
         engine.addOutputVariable(power);
 
         RuleBlock ruleBlock = new RuleBlock();
-        ruleBlock.addRule(Rule.parse("if Ambient is DARK then Power is HIGH", engine));
+        ruleBlock.addRule(Rule.parse("if Ambient is DARK then Power is LOW", engine));
         ruleBlock.addRule(Rule.parse("if Ambient is MEDIUM then Power is MEDIUM", engine));
-        ruleBlock.addRule(Rule.parse("if Ambient is BRIGHT then Power is LOW", engine));
+        ruleBlock.addRule(Rule.parse("if Ambient is BRIGHT then Power is HIGH", engine));
         engine.addRuleBlock(ruleBlock);
 
         engine.configure("", "", "Minimum", "Maximum", "Centroid");
