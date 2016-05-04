@@ -145,7 +145,7 @@ public class FllExporter extends Exporter {
         result.add(String.format("%srange: %s", indent,
                 Op.join(" ", outputVariable.getMinimum(), outputVariable.getMaximum())));
         result.add(String.format("%saccumulation: %s", indent,
-                toString(outputVariable.fuzzyOutput().getAccumulation())));
+                toString(outputVariable.fuzzyOutput().getAggregation())));
         result.add(String.format("%sdefuzzifier: %s", indent,
                 toString(outputVariable.getDefuzzifier())));
         result.add(String.format("%sdefault: %s", indent,
@@ -170,7 +170,7 @@ public class FllExporter extends Exporter {
         result.add(String.format("%sdisjunction: %s", indent,
                 toString(ruleBlock.getDisjunction())));
         result.add(String.format("%sactivation: %s", indent,
-                toString(ruleBlock.getActivation())));
+                toString(ruleBlock.getImplication())));
         for (Rule rule : ruleBlock.getRules()) {
             result.add(String.format("%s%s", indent, toString(rule)));
         }

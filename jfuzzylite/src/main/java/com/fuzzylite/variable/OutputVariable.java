@@ -20,13 +20,13 @@ package com.fuzzylite.variable;
 import com.fuzzylite.Op;
 import com.fuzzylite.defuzzifier.Defuzzifier;
 import com.fuzzylite.imex.FllExporter;
-import com.fuzzylite.term.Accumulated;
+import com.fuzzylite.term.Aggregated;
 import com.fuzzylite.term.Term;
 import java.util.Iterator;
 
 public class OutputVariable extends Variable {
 
-    private Accumulated fuzzyOutput;
+    private Aggregated fuzzyOutput;
     private Defuzzifier defuzzifier;
     private double outputValue;
     private double previousOutputValue;
@@ -44,7 +44,7 @@ public class OutputVariable extends Variable {
 
     public OutputVariable(String name, double minimum, double maximum) {
         super(name, minimum, maximum);
-        this.fuzzyOutput = new Accumulated("fuzzyOutput", minimum, maximum);
+        this.fuzzyOutput = new Aggregated("fuzzyOutput", minimum, maximum);
         this.outputValue = Double.NaN;
         this.previousOutputValue = Double.NaN;
         this.defaultValue = Double.NaN;
@@ -58,7 +58,7 @@ public class OutputVariable extends Variable {
         this.fuzzyOutput.setName(name);
     }
 
-    public Accumulated fuzzyOutput() {
+    public Aggregated fuzzyOutput() {
         return fuzzyOutput;
     }
 

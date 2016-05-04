@@ -34,7 +34,7 @@ public class RuleBlock {
     private List<Rule> rules;
     private TNorm conjunction;
     private SNorm disjunction;
-    private TNorm activation;
+    private TNorm implication;
     private boolean enabled;
 
     public RuleBlock() {
@@ -45,15 +45,15 @@ public class RuleBlock {
         this(name, null, null, null);
     }
 
-    public RuleBlock(TNorm conjunction, SNorm disjunction, TNorm activation) {
-        this("", conjunction, disjunction, activation);
+    public RuleBlock(TNorm conjunction, SNorm disjunction, TNorm implication) {
+        this("", conjunction, disjunction, implication);
     }
 
-    public RuleBlock(String name, TNorm conjunction, SNorm disjunction, TNorm activation) {
+    public RuleBlock(String name, TNorm conjunction, SNorm disjunction, TNorm implication) {
         this.name = name;
         this.conjunction = conjunction;
         this.disjunction = disjunction;
-        this.activation = activation;
+        this.implication = implication;
         this.rules = new ArrayList<Rule>();
         this.enabled = true;
     }
@@ -65,7 +65,7 @@ public class RuleBlock {
                 double activationDegree = rule.activationDegree(conjunction, disjunction);
                 FuzzyLite.logger().fine(String.format("[degree=%s] %s", str(activationDegree), rule.toString()));
                 if (Op.isGt(activationDegree, 0.0)) {
-                    rule.activate(activationDegree, activation);
+                    rule.activate(activationDegree, implication);
                 }
             } else {
                 FuzzyLite.logger().fine("Rule not loaded: " + rule.toString());
@@ -131,12 +131,12 @@ public class RuleBlock {
         this.disjunction = disjunction;
     }
 
-    public TNorm getActivation() {
-        return activation;
+    public TNorm getImplication() {
+        return implication;
     }
 
-    public void setActivation(TNorm activation) {
-        this.activation = activation;
+    public void setImplication(TNorm implication) {
+        this.implication = implication;
     }
 
     public boolean isEnabled() {
@@ -156,8 +156,8 @@ public class RuleBlock {
         if (this.disjunction != null) {
             result.disjunction = this.disjunction.clone();
         }
-        if (this.activation != null) {
-            result.activation = this.activation.clone();
+        if (this.implication != null) {
+            result.implication = this.implication.clone();
         }
         result.rules = new ArrayList<Rule>(this.rules.size());
         for (Rule rule : this.rules) {

@@ -17,7 +17,7 @@
 
 package com.fuzzylite.defuzzifier;
 
-import com.fuzzylite.term.Accumulated;
+import com.fuzzylite.term.Aggregated;
 import com.fuzzylite.term.Activated;
 import com.fuzzylite.term.Term;
 import java.util.ArrayList;
@@ -42,14 +42,14 @@ public class WeightedSum extends WeightedDefuzzifier {
 
     @Override
     public double defuzzify(Term term, double minimum, double maximum) {
-        Accumulated fuzzyOutput = (Accumulated) term;
+        Aggregated fuzzyOutput = (Aggregated) term;
 
         minimum = fuzzyOutput.getMinimum();
         maximum = fuzzyOutput.getMaximum();
 
         double sum = 0.0;
 
-        if (fuzzyOutput.getAccumulation() == null) {
+        if (fuzzyOutput.getAggregation() == null) {
             WeightedDefuzzifier.Type type = getType();
             for (Activated activated : fuzzyOutput.getTerms()) {
                 double w = activated.getDegree();
@@ -81,7 +81,7 @@ public class WeightedSum extends WeightedDefuzzifier {
                 Term activatedTerm = it.next();
                 double accumulatedDegree = 0.0;
                 for (Activated t : groups.get(activatedTerm)) {
-                    accumulatedDegree = fuzzyOutput.getAccumulation().compute(
+                    accumulatedDegree = fuzzyOutput.getAggregation().compute(
                             accumulatedDegree, t.getDegree());
                 }
 

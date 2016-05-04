@@ -462,7 +462,7 @@ public class Console {
         outputVariable1.setLockPreviousOutputValue(false);
         outputVariable1.setDefaultValue(Double.NaN);
         outputVariable1.setDefuzzifier(new Centroid(200));
-        outputVariable1.fuzzyOutput().setAccumulation(new Maximum());
+        outputVariable1.fuzzyOutput().setAggregation(new Maximum());
         outputVariable1.addTerm(new Triangle("LOW", 0.000, 0.500, 1.000));
         outputVariable1.addTerm(new Triangle("MEDIUM", 0.500, 1.000, 1.500));
         outputVariable1.addTerm(new Triangle("HIGH", 1.000, 1.500, 2.000));
@@ -472,7 +472,7 @@ public class Console {
         ruleBlock1.setName("");
         ruleBlock1.setConjunction(null);
         ruleBlock1.setDisjunction(null);
-        ruleBlock1.setActivation(new Minimum());
+        ruleBlock1.setImplication(new Minimum());
         ruleBlock1.addRule(Rule.parse("if Ambient is DARK then Power is HIGH", engine));
         ruleBlock1.addRule(Rule.parse("if Ambient is MEDIUM then Power is MEDIUM", engine));
         ruleBlock1.addRule(Rule.parse("if Ambient is BRIGHT then Power is LOW", engine));
@@ -506,7 +506,7 @@ public class Console {
         outputVariable1.setLockPreviousOutputValue(true);
         outputVariable1.setDefaultValue(Double.NaN);
         outputVariable1.setDefuzzifier(new WeightedAverage());
-        outputVariable1.fuzzyOutput().setAccumulation(null);
+        outputVariable1.fuzzyOutput().setAggregation(null);
         outputVariable1.addTerm(new Constant("f1", 0.840));
         outputVariable1.addTerm(new Constant("f2", 0.450));
         outputVariable1.addTerm(new Constant("f3", 0.040));
@@ -525,7 +525,7 @@ public class Console {
         outputVariable2.setLockPreviousOutputValue(true);
         outputVariable2.setDefaultValue(Double.NaN);
         outputVariable2.setDefuzzifier(new WeightedAverage());
-        outputVariable2.fuzzyOutput().setAccumulation(null);
+        outputVariable2.fuzzyOutput().setAggregation(null);
         outputVariable2.addTerm(Function.create("fx", "sin(inputX)/inputX", engine));
         engine.addOutputVariable(outputVariable2);
 
@@ -536,7 +536,7 @@ public class Console {
         outputVariable3.setLockPreviousOutputValue(false);
         outputVariable3.setDefaultValue(Double.NaN);
         outputVariable3.setDefuzzifier(new WeightedAverage());
-        outputVariable3.fuzzyOutput().setAccumulation(null);
+        outputVariable3.fuzzyOutput().setAggregation(null);
         outputVariable3.addTerm(Function.create("diff", "fabs(outputFx-trueFx)", engine));
         engine.addOutputVariable(outputVariable3);
 
@@ -544,7 +544,7 @@ public class Console {
         ruleBlock1.setName("");
         ruleBlock1.setConjunction(null);
         ruleBlock1.setDisjunction(null);
-        ruleBlock1.setActivation(new AlgebraicProduct());
+        ruleBlock1.setImplication(new AlgebraicProduct());
         ruleBlock1.addRule(Rule.parse("if inputX is NEAR_1 then outputFx = f1", engine));
         ruleBlock1.addRule(Rule.parse("if inputX is NEAR_2 then outputFx = f2", engine));
         ruleBlock1.addRule(Rule.parse("if inputX is NEAR_3 then outputFx = f3", engine));

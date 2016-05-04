@@ -264,7 +264,7 @@ public class FclImporter extends Importer {
             } else if ("METHOD".equals(firstToken)) {
                 outputVariable.setDefuzzifier(parseDefuzzifier(line));
             } else if ("ACCU".equals(firstToken)) {
-                outputVariable.fuzzyOutput().setAccumulation(parseSNorm(line));
+                outputVariable.fuzzyOutput().setAggregation(parseSNorm(line));
             } else if ("DEFAULT".equals(firstToken)) {
                 Pair<Double, Boolean> defaultAndLock = parseDefaultValue(line);
                 outputVariable.setDefaultValue(defaultAndLock.getFirst());
@@ -304,7 +304,7 @@ public class FclImporter extends Importer {
             } else if ("OR".equals(firstToken)) {
                 ruleBlock.setDisjunction(parseSNorm(line));
             } else if ("ACT".equals(firstToken)) {
-                ruleBlock.setActivation(parseTNorm(line));
+                ruleBlock.setImplication(parseTNorm(line));
             } else if ("ENABLED".equals(firstToken)) {
                 ruleBlock.setEnabled(parseEnabled(line));
             } else if ("RULE".equals(firstToken)) {

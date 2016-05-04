@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.fuzzylite</groupId>
     <artifactId>jfuzzylite</artifactId>
-    <version>5.0.1</version>
+    <version>6.0</version>
     <packaging>jar</packaging>
 
     <licenses>
@@ -56,8 +56,7 @@
             <organization>FuzzyLite Limited</organization>
             <organizationUrl>http://www.fuzzylite.com</organizationUrl>
             <roles>
-                <role>Chief Technical Officer</role>
-                <role>Software Architect</role>
+                <role>Founder</role>
                 <role>Software Engineer</role>
             </roles>
             <timezone>New Zealand/Wellington</timezone>
@@ -91,7 +90,7 @@
                             <Created-By>${user.name}</Created-By>
                             <Vendor>FuzzyLite Limited</Vendor>
                             <Title>jfuzzylite</Title>
-                            <Version>5.0.1</Version>
+                            <Version>6.0</Version>
                             <Description>a fuzzy logic control library in Java</Description>
                             <URL>http://www.fuzzylite.com</URL>
                             <Author>Juan Rada-Vilela, Ph.D.</Author>

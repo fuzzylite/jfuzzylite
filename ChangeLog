@@ -1,6 +1,9 @@
 Version 6.0
 * Changed Maven build to produce binary jar only upon package
 * Other packages can be built using `mvn clean package source:jar javadoc:jar`
+* Renamed Accumulated to Aggregated, and Accumulated::[set|get]Accumulation() to Aggregated::[set|get]Aggregation()
+* Renamed RuleBlock::[set|get]Activation() to RuleBlock::[set|get]Implication()
+
 
 Version 5.0
 * Added deductive type of Engine with Engine::type()

@@ -106,8 +106,8 @@ public class JavaExporter extends Exporter {
                 "%s.setRange(%s, %s);\n", name,
                 toString(outputVariable.getMinimum()), toString(outputVariable.getMaximum())));
         result.append(String.format(
-                "%s.fuzzyOutput().setAccumulation(%s);\n",
-                name, toString(outputVariable.fuzzyOutput().getAccumulation())));
+                "%s.fuzzyOutput().setAggregation(%s);\n",
+                name, toString(outputVariable.fuzzyOutput().getAggregation())));
         result.append(String.format(
                 "%s.setDefuzzifier(%s);\n", name,
                 toString(outputVariable.getDefuzzifier())));
@@ -145,7 +145,7 @@ public class JavaExporter extends Exporter {
         result.append(String.format(
                 "%s.setDisjunction(%s);\n", name, toString(ruleBlock.getDisjunction())));
         result.append(String.format(
-                "%s.setActivation(%s);\n", name, toString(ruleBlock.getActivation())));
+                "%s.setImplication(%s);\n", name, toString(ruleBlock.getImplication())));
         for (Rule rule : ruleBlock.getRules()) {
             result.append(String.format("%s.addRule(Rule.parse(\"%s\", engine));\n",
                     name, rule.getText()));

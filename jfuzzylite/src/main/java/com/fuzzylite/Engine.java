@@ -87,11 +87,11 @@ public class Engine implements Op.Cloneable {
             for (RuleBlock ruleblock : this.ruleBlocks) {
                 ruleblock.setConjunction(conjunction == null ? null : conjunction.clone());
                 ruleblock.setDisjunction(disjunction == null ? null : disjunction.clone());
-                ruleblock.setActivation(activation == null ? null : activation.clone());
+                ruleblock.setImplication(activation == null ? null : activation.clone());
             }
             for (OutputVariable outputVariable : this.outputVariables) {
                 outputVariable.setDefuzzifier(defuzzifier == null ? null : defuzzifier.clone());
-                outputVariable.fuzzyOutput().setAccumulation(accumulation == null ? null : accumulation.clone());
+                outputVariable.fuzzyOutput().setAggregation(accumulation == null ? null : accumulation.clone());
             }
         } catch (Exception ex) {
             throw new RuntimeException(ex);
@@ -137,7 +137,7 @@ public class Engine implements Op.Cloneable {
                             "- Output variable <%s> has no defuzzifier\n",
                             outputVariable.getName()));
                 } else if (defuzzifier instanceof IntegralDefuzzifier
-                        && outputVariable.fuzzyOutput().getAccumulation() == null) {
+                        && outputVariable.fuzzyOutput().getAggregation() == null) {
                     message.append(String.format(
                             "- Output variable <%s> has no Accumulation\n",
                             outputVariable.getName()));
@@ -203,7 +203,7 @@ public class Engine implements Op.Cloneable {
                     message.append(String.format(
                             "- Rule block <%s> has %d rules that require disjunction operator", ruleBlock.getName(), requiresDisjunction));
                 }
-                if (requiresActivation > 0 && ruleBlock.getActivation() == null) {
+                if (requiresActivation > 0 && ruleBlock.getImplication() == null) {
                     message.append(String.format(
                             "- Rule block <%s> has no activation operator\n", ruleBlock.getName()));
                     message.append(String.format(
@@ -319,7 +319,7 @@ public class Engine implements Op.Cloneable {
         //Larsen is Mamdani with AlgebraicProduct as Activation
         if (mamdani) {
             for (RuleBlock ruleBlock : ruleBlocks) {
-                larsen &= ruleBlock.getActivation() instanceof AlgebraicProduct;
+                larsen &= ruleBlock.getImplication() instanceof AlgebraicProduct;
             }
         }
         if (larsen) {

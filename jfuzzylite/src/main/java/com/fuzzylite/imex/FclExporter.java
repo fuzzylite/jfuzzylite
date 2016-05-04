@@ -149,9 +149,9 @@ public class FclExporter extends Exporter {
             result.append(String.format(indent + "METHOD : %s;\n",
                     toString(outputVariable.getDefuzzifier())));
         }
-        if (outputVariable.fuzzyOutput().getAccumulation() != null) {
+        if (outputVariable.fuzzyOutput().getAggregation() != null) {
             result.append(String.format(indent + "ACCU : %s;\n",
-                    toString(outputVariable.fuzzyOutput().getAccumulation())));
+                    toString(outputVariable.fuzzyOutput().getAggregation())));
         }
         result.append(String.format(indent + "DEFAULT := %s",
                 str(outputVariable.getDefaultValue())));
@@ -179,8 +179,8 @@ public class FclExporter extends Exporter {
         if (ruleBlock.getDisjunction() != null) {
             result.append(String.format(indent + "OR : %s;\n", toString(ruleBlock.getDisjunction())));
         }
-        if (ruleBlock.getActivation() != null) {
-            result.append(String.format(indent + "ACT : %s;\n", toString(ruleBlock.getActivation())));
+        if (ruleBlock.getImplication() != null) {
+            result.append(String.format(indent + "ACT : %s;\n", toString(ruleBlock.getImplication())));
         }
 
         int index = 1;

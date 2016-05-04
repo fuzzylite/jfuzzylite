@@ -142,7 +142,7 @@ public class FisExporter extends Exporter {
                 disjunction = ruleBlock.getDisjunction();
             }
             if (activation == null) {
-                activation = ruleBlock.getActivation();
+                activation = ruleBlock.getImplication();
             }
         }
         result.append(String.format("NumRules=%d\n", numberOfRules));
@@ -154,7 +154,7 @@ public class FisExporter extends Exporter {
         Defuzzifier defuzzifier = null;
         for (OutputVariable outputVariable : engine.getOutputVariables()) {
             if (accumulation == null) {
-                accumulation = outputVariable.fuzzyOutput().getAccumulation();
+                accumulation = outputVariable.fuzzyOutput().getAggregation();
             }
             if (defuzzifier == null) {
                 defuzzifier = outputVariable.getDefuzzifier();

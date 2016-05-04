@@ -23,31 +23,31 @@ import com.fuzzylite.norm.SNorm;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Accumulated extends Term {
+public class Aggregated extends Term {
 
     private List<Activated> terms;
     private double minimum;
     private double maximum;
-    private SNorm accumulation;
+    private SNorm aggregation;
 
-    public Accumulated() {
+    public Aggregated() {
         this("");
     }
 
-    public Accumulated(String name) {
+    public Aggregated(String name) {
         this(name, Double.NaN, Double.NaN, null);
     }
 
-    public Accumulated(String name, double minimum, double maximum) {
+    public Aggregated(String name, double minimum, double maximum) {
         this(name, minimum, maximum, null);
     }
 
-    public Accumulated(String name, double minimum, double maximum, SNorm accumulation) {
+    public Aggregated(String name, double minimum, double maximum, SNorm aggregation) {
         this.terms = new ArrayList<Activated>();
         this.name = name;
         this.minimum = minimum;
         this.maximum = maximum;
-        this.accumulation = accumulation;
+        this.aggregation = aggregation;
     }
 
     @Override
@@ -56,7 +56,7 @@ public class Accumulated extends Term {
         StringBuilder result = new StringBuilder();
         result.append(String.format("%s %s %s",
                 Op.str(minimum), Op.str(maximum),
-                exporter.toString(accumulation)));
+                exporter.toString(aggregation)));
         for (Term term : terms) {
             result.append(" ").append(exporter.toString(term));
         }
@@ -75,7 +75,7 @@ public class Accumulated extends Term {
         }
         double mu = 0.0;
         for (Activated term : this.terms) {
-            mu = this.accumulation.compute(mu, term.membership(x));
+            mu = this.aggregation.compute(mu, term.membership(x));
         }
         return mu;
     }
@@ -84,8 +84,8 @@ public class Accumulated extends Term {
         double result = 0.0;
         for (Activated activatedTerm : this.terms) {
             if (activatedTerm.getTerm() == term) {
-                if (this.accumulation != null) {
-                    result = this.accumulation.compute(result, activatedTerm.getDegree());
+                if (this.aggregation != null) {
+                    result = this.aggregation.compute(result, activatedTerm.getDegree());
                 } else {
                     result += activatedTerm.getDegree(); //Default for WeightDefuzzifier
                 }
@@ -98,7 +98,7 @@ public class Accumulated extends Term {
     public String toString() {
         return String.format("%s: %s %s[%s]",
                 this.name, getClass().getSimpleName(),
-                new FllExporter().toString(this.accumulation),
+                new FllExporter().toString(this.aggregation),
                 Op.join(terms, ","));
     }
 
@@ -135,19 +135,19 @@ public class Accumulated extends Term {
         setMaximum(maximum);
     }
 
-    public SNorm getAccumulation() {
-        return accumulation;
+    public SNorm getAggregation() {
+        return aggregation;
     }
 
-    public void setAccumulation(SNorm accumulation) {
-        this.accumulation = accumulation;
+    public void setAggregation(SNorm aggregation) {
+        this.aggregation = aggregation;
     }
 
     @Override
-    public Accumulated clone() throws CloneNotSupportedException {
-        Accumulated result = (Accumulated) super.clone();
-        if (this.accumulation != null) {
-            result.accumulation = this.accumulation.clone();
+    public Aggregated clone() throws CloneNotSupportedException {
+        Aggregated result = (Aggregated) super.clone();
+        if (this.aggregation != null) {
+            result.aggregation = this.aggregation.clone();
         }
         result.terms = new ArrayList<Activated>(this.terms.size());
         for (Activated term : this.terms) {

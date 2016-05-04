@@ -184,7 +184,7 @@ public class FllImporter extends Importer {
             } else if ("defuzzifier".equals(keyValue.getFirst())) {
                 outputVariable.setDefuzzifier(parseDefuzzifier(keyValue.getSecond()));
             } else if ("accumulation".equals(keyValue.getFirst())) {
-                outputVariable.fuzzyOutput().setAccumulation(parseSNorm(keyValue.getSecond()));
+                outputVariable.fuzzyOutput().setAggregation(parseSNorm(keyValue.getSecond()));
             } else if ("term".equals(keyValue.getFirst())) {
                 outputVariable.addTerm(parseTerm(keyValue.getSecond(), engine));
             } else {
@@ -212,7 +212,7 @@ public class FllImporter extends Importer {
             } else if ("disjunction".equals(keyValue.getFirst())) {
                 ruleBlock.setDisjunction(parseSNorm(keyValue.getSecond()));
             } else if ("activation".equals(keyValue.getFirst())) {
-                ruleBlock.setActivation(parseTNorm(keyValue.getSecond()));
+                ruleBlock.setImplication(parseTNorm(keyValue.getSecond()));
             } else if ("rule".equals(keyValue.getFirst())) {
                 Rule rule = new Rule();
                 rule.setText(keyValue.getSecond());
