@@ -94,7 +94,7 @@ public class Antecedent {
             double result = Double.NaN;
             if (proposition.getVariable() instanceof InputVariable) {
                 InputVariable inputVariable = (InputVariable) proposition.getVariable();
-                result = proposition.getTerm().membership(inputVariable.getInputValue());
+                result = proposition.getTerm().membership(inputVariable.getValue());
             } else if (proposition.getVariable() instanceof OutputVariable) {
                 OutputVariable outputVariable = (OutputVariable) proposition.getVariable();
                 result = outputVariable.fuzzyOutput().activationDegree(proposition.getTerm());

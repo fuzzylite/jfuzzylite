@@ -178,9 +178,9 @@ public class FllImporter extends Importer {
             } else if ("default".equals(keyValue.getFirst())) {
                 outputVariable.setDefaultValue(Op.toDouble(keyValue.getSecond()));
             } else if ("lock-previous".equals(keyValue.getFirst())) {
-                outputVariable.setLockPreviousOutputValue(parseBoolean(keyValue.getSecond()));
+                outputVariable.setLockPreviousValue(parseBoolean(keyValue.getSecond()));
             } else if ("lock-range".equals(keyValue.getFirst())) {
-                outputVariable.setLockOutputValueInRange(parseBoolean(keyValue.getSecond()));
+                outputVariable.setLockValueInRange(parseBoolean(keyValue.getSecond()));
             } else if ("defuzzifier".equals(keyValue.getFirst())) {
                 outputVariable.setDefuzzifier(parseDefuzzifier(keyValue.getSecond()));
             } else if ("accumulation".equals(keyValue.getFirst())) {

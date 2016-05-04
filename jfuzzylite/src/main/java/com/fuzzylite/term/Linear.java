@@ -78,7 +78,7 @@ public class Linear extends Term {
         List<InputVariable> inputVariables = engine.getInputVariables();
         for (int i = 0; i < inputVariables.size(); ++i) {
             if (i < coefficients.size()) {
-                result += coefficients.get(i) * inputVariables.get(i).getInputValue();
+                result += coefficients.get(i) * inputVariables.get(i).getValue();
             }
         }
         if (coefficients.size() > inputVariables.size()) {

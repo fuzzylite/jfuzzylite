@@ -21,8 +21,6 @@ import com.fuzzylite.imex.FllExporter;
 
 public class InputVariable extends Variable {
 
-    private double inputValue;
-
     public InputVariable() {
         this("");
     }
@@ -33,19 +31,10 @@ public class InputVariable extends Variable {
 
     public InputVariable(String name, double minimum, double maximum) {
         super(name, minimum, maximum);
-        this.inputValue = Double.NaN;
     }
 
-    public double getInputValue() {
-        return inputValue;
-    }
-
-    public void setInputValue(double inputValue) {
-        this.inputValue = inputValue;
-    }
-    
-    public String fuzzyInputValue(){
-        return fuzzify(this.inputValue);
+    public String fuzzyInputValue() {
+        return fuzzify(this.getValue());
     }
 
     @Override

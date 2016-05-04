@@ -204,11 +204,11 @@ public class FisExporter extends Exporter {
             if (!Double.isNaN(outputVariable.getDefaultValue())) {
                 result.append(String.format("Default=%s\n", str(outputVariable.getDefaultValue())));
             }
-            if (outputVariable.isLockPreviousOutputValue()) {
-                result.append(String.format("LockPrevious=%d\n", outputVariable.isLockPreviousOutputValue() ? 1 : 0));
+            if (outputVariable.isLockPreviousValue()) {
+                result.append(String.format("LockPrevious=%d\n", outputVariable.isLockPreviousValue() ? 1 : 0));
             }
-            if (outputVariable.isLockOutputValueInRange()) {
-                result.append(String.format("LockRange=%d\n", outputVariable.isLockOutputValueInRange() ? 1 : 0));
+            if (outputVariable.isLockValueInRange()) {
+                result.append(String.format("LockRange=%d\n", outputVariable.isLockValueInRange() ? 1 : 0));
             }
             result.append(String.format("NumMFs=%d\n", outputVariable.numberOfTerms()));
             for (int t = 0; t < outputVariable.numberOfTerms(); ++t) {

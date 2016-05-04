@@ -151,9 +151,9 @@ public class FllExporter extends Exporter {
         result.add(String.format("%sdefault: %s", indent,
                 Op.str(outputVariable.getDefaultValue())));
         result.add(String.format("%slock-previous: %s", indent,
-                String.valueOf(outputVariable.isLockPreviousOutputValue())));
+                String.valueOf(outputVariable.isLockPreviousValue())));
         result.add(String.format("%slock-range: %s", indent,
-                String.valueOf(outputVariable.isLockOutputValueInRange())));
+                String.valueOf(outputVariable.isLockValueInRange())));
         for (Term term : outputVariable.getTerms()) {
             result.add(String.format("%s%s", indent, toString(term)));
         }

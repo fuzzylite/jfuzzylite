@@ -258,7 +258,7 @@ public class FldExporter extends Exporter {
         for (int i = 0; i < engine.numberOfInputVariables(); ++i) {
             InputVariable inputVariable = engine.getInputVariable(i);
             double inputValue = inputVariable.isEnabled() ? inputValues.get(i) : Double.NaN;
-            inputVariable.setInputValue(inputValue);
+            inputVariable.setValue(inputValue);
             if (exportInputValues) {
                 values.add(inputValue);
             }
@@ -270,7 +270,7 @@ public class FldExporter extends Exporter {
             OutputVariable outputVariable = engine.getOutputVariable(i);
             outputVariable.defuzzify();
             if (exportOutputValues) {
-                values.add(outputVariable.getOutputValue());
+                values.add(outputVariable.getValue());
             }
         }
         writer.append(Op.join(values, separator)).append("\n");

@@ -268,9 +268,9 @@ public class FisImporter extends Importer {
             } else if ("Default".equals(key)) {
                 outputVariable.setDefaultValue(Op.toDouble(value));
             } else if ("LockPrevious".equals(key)) {
-                outputVariable.setLockPreviousOutputValue(Op.isEq(Op.toDouble(value), 1.0));
+                outputVariable.setLockPreviousValue(Op.isEq(Op.toDouble(value), 1.0));
             } else if ("LockRange".equals(key)) {
-                outputVariable.setLockOutputValueInRange(Op.isEq(Op.toDouble(value), 1.0));
+                outputVariable.setLockValueInRange(Op.isEq(Op.toDouble(value), 1.0));
             } else if ("NumMFs".equals(key)) {
                 //ignore
             } else {

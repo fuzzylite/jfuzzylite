@@ -3,6 +3,12 @@ Version 6.0
 * Other packages can be built using `mvn clean package source:jar javadoc:jar`
 * Renamed Accumulated to Aggregated, and Accumulated::[set|get]Accumulation() to Aggregated::[set|get]Aggregation()
 * Renamed RuleBlock::[set|get]Activation() to RuleBlock::[set|get]Implication()
+* Refactored [Input|Output]Variable::[get|set][Input|Output]Value() to Variable::[get|set]Value()
+* Refactored OutputVariable::[is|set]LockOutputValueInRange() to  Variable::[is|set]LockValueInRange()
+* Renamed OutputVariable::[is|set]LockPreviousOutputValue() to  OutputVariable::[is|set]LockPreviousValue()
+* Improved OutputVariable::defuzzify() to operate correctly handling locks when exceptions occur.
+* Updated [Java|Cpp][Importer|Exporter] to reflect code changes.
+ 
 
 
 Version 5.0

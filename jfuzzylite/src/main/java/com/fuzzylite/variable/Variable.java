@@ -18,6 +18,7 @@
 package com.fuzzylite.variable;
 
 import com.fuzzylite.Op;
+import com.fuzzylite.defuzzifier.Centroid;
 
 import com.fuzzylite.defuzzifier.Defuzzifier;
 import com.fuzzylite.imex.FllExporter;
@@ -26,19 +27,19 @@ import com.fuzzylite.term.Linear;
 import com.fuzzylite.term.Term;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Comparator;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
+import java.util.PriorityQueue;
 
 public class Variable implements Op.Cloneable {
 
     private String name;
-    private double minimum, maximum;
     private List<Term> terms;
+    private double value;
+    private double minimum, maximum;
     private boolean enabled;
+    private boolean lockValueInRange;
 
     public Variable(String name) {
         this(name, Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY);
@@ -46,10 +47,12 @@ public class Variable implements Op.Cloneable {
 
     public Variable(String name, double minimum, double maximum) {
         this.name = name;
+        this.terms = new ArrayList<Term>();
+        this.value = Double.NaN;
         this.minimum = minimum;
         this.maximum = maximum;
-        this.terms = new ArrayList<Term>();
         this.enabled = true;
+        this.lockValueInRange = false;
     }
 
     public String getName() {
@@ -58,6 +61,16 @@ public class Variable implements Op.Cloneable {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public double getValue() {
+        return value;
+    }
+
+    public void setValue(double value) {
+        this.value = isLockValueInRange()
+                ? Op.bound(value, getMinimum(), getMaximum())
+                : value;
     }
 
     public void setRange(double minimum, double maximum) {
@@ -93,6 +106,14 @@ public class Variable implements Op.Cloneable {
         return this.enabled;
     }
 
+    public boolean isLockValueInRange() {
+        return lockValueInRange;
+    }
+
+    public void setLockValueInRange(boolean lockValueInRange) {
+        this.lockValueInRange = lockValueInRange;
+    }
+
     @Override
     public String toString() {
         return new FllExporter().toString(this);
@@ -101,20 +122,24 @@ public class Variable implements Op.Cloneable {
     public String fuzzify(double x) {
         StringBuilder sb = new StringBuilder();
         Iterator<Term> it = getTerms().iterator();
-        if (it.hasNext()) {
+
+        while (it.hasNext()) {
             Term term = it.next();
-            double degree = term.membership(x);
-            sb.append(Op.str(degree)).append("/").append(term.getName());
-            while (it.hasNext()) {
-                term = it.next();
-                degree = term.membership(x);
-                if (Double.isNaN(degree) || Op.isGE(degree, 0.0)) {
-                    sb.append(" + ").append(Op.str(degree));
-                } else {
-                    sb.append(" - ").append(Op.str(Math.abs(degree)));
-                }
-                sb.append("/").append(term.getName());
+            double fx = Double.NaN;
+            try {
+                fx = term.membership(x);
+            } finally {
+                //ignore
             }
+
+            if (sb.length() == 0) {
+                sb.append(fx);
+            } else if (Double.isNaN(fx) || Op.isGE(fx, 0.0)) {
+                sb.append(" + ").append(fx);
+            } else {
+                sb.append(" - ").append(fx);
+            }
+            sb.append(term.getName());
         }
         return sb.toString();
     }
@@ -144,26 +169,39 @@ public class Variable implements Op.Cloneable {
         return highestMembership(x).getSecond();
     }
 
-    public void sort(Defuzzifier defuzzifier) {
-        final Map<Term, Double> map = new HashMap<Term, Double>();
+    public void sort() {
+        PriorityQueue<Op.Pair<Term, Double>> termCentroids
+                = new PriorityQueue<Op.Pair<Term, Double>>(
+                        new Comparator<Op.Pair<Term, Double>>() {
+                    @Override
+                    public int compare(Op.Pair<Term, Double> o1, Op.Pair<Term, Double> o2) {
+                        double diff = o1.getSecond() - o2.getSecond();
+                        if (Op.isEq(diff, 0.0)) {
+                            return 0;
+                        }
+                        return diff > 0 ? 1 : -1;
+                    }
+                });
+        Defuzzifier defuzzifier = new Centroid();
         for (Term term : terms) {
+            double centroid;
             try {
                 if (term instanceof Constant || term instanceof Linear) {
-                    map.put(term, term.membership(0));
+                    centroid = term.membership(0);
                 } else {
-                    map.put(term, defuzzifier.defuzzify(term, minimum, maximum));
+                    centroid = defuzzifier.defuzzify(term, getMinimum(), getMaximum());
                 }
             } catch (Exception ex) {
-                map.put(term, Double.POSITIVE_INFINITY);
+                centroid = Double.POSITIVE_INFINITY;
             }
+            termCentroids.add(new Op.Pair<Term, Double>(term, centroid));
         }
 
-        Collections.sort(terms, new Comparator<Term>() {
-            @Override
-            public int compare(Term o1, Term o2) {
-                return map.get(o1).compareTo(map.get(o2));
-            }
-        });
+        List<Term> sortedTerms = new ArrayList<Term>(terms.size());
+        while (termCentroids.size() > 0) {
+            sortedTerms.add(termCentroids.poll().getFirst());
+        }
+        setTerms(sortedTerms);
     }
 
     /*

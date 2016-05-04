@@ -28,11 +28,9 @@ public class OutputVariable extends Variable {
 
     private Aggregated fuzzyOutput;
     private Defuzzifier defuzzifier;
-    private double outputValue;
-    private double previousOutputValue;
+    private double previousValue;
     private double defaultValue;
-    private boolean lockOutputValueInRange;
-    private boolean lockPreviousOutputValue;
+    private boolean lockPreviousValue;
 
     public OutputVariable() {
         this("");
@@ -45,11 +43,10 @@ public class OutputVariable extends Variable {
     public OutputVariable(String name, double minimum, double maximum) {
         super(name, minimum, maximum);
         this.fuzzyOutput = new Aggregated("fuzzyOutput", minimum, maximum);
-        this.outputValue = Double.NaN;
-        this.previousOutputValue = Double.NaN;
+        this.defuzzifier = null;
+        this.previousValue = Double.NaN;
         this.defaultValue = Double.NaN;
-        this.lockOutputValueInRange = false;
-        this.lockPreviousOutputValue = false;
+        this.lockPreviousValue = false;
     }
 
     @Override
@@ -65,13 +62,13 @@ public class OutputVariable extends Variable {
     @Override
     public void setMinimum(double minimum) {
         super.setMinimum(minimum);
-        this.fuzzyOutput.setMinimum(minimum);
+        fuzzyOutput().setMinimum(minimum);
     }
 
     @Override
     public void setMaximum(double maximum) {
         super.setMaximum(maximum);
-        this.fuzzyOutput.setMaximum(maximum);
+        fuzzyOutput().setMaximum(maximum);
     }
 
     public Defuzzifier getDefuzzifier() {
@@ -82,20 +79,12 @@ public class OutputVariable extends Variable {
         this.defuzzifier = defuzzifier;
     }
 
-    public double getOutputValue() {
-        return outputValue;
+    public double getPreviousValue() {
+        return previousValue;
     }
 
-    public void setOutputValue(double outputValue) {
-        this.outputValue = outputValue;
-    }
-
-    public double getPreviousOutputValue() {
-        return previousOutputValue;
-    }
-
-    public void setPreviousOutputValue(double previousOutputValue) {
-        this.previousOutputValue = previousOutputValue;
+    public void setPreviousValue(double previousValue) {
+        this.previousValue = previousValue;
     }
 
     public double getDefaultValue() {
@@ -106,47 +95,63 @@ public class OutputVariable extends Variable {
         this.defaultValue = defaultValue;
     }
 
-    public boolean isLockOutputValueInRange() {
-        return lockOutputValueInRange;
+    public boolean isLockPreviousValue() {
+        return lockPreviousValue;
     }
 
-    public void setLockOutputValueInRange(boolean lockOutputValueInRange) {
-        this.lockOutputValueInRange = lockOutputValueInRange;
-    }
-
-    public boolean isLockPreviousOutputValue() {
-        return lockPreviousOutputValue;
-    }
-
-    public void setLockPreviousOutputValue(boolean lockPreviousOutputValue) {
-        this.lockPreviousOutputValue = lockPreviousOutputValue;
+    public void setLockPreviousValue(boolean lockPreviousValue) {
+        this.lockPreviousValue = lockPreviousValue;
     }
 
     public void defuzzify() {
-        if (Op.isFinite(this.outputValue)) {
-            this.previousOutputValue = this.outputValue;
+        if (!isEnabled()) {
+            return;
         }
-        double result;
-        boolean isValid = this.isEnabled() && !this.fuzzyOutput.getTerms().isEmpty();
+
+        if (Op.isFinite(getValue())) {
+            setPreviousValue(getValue());
+        }
+
+        String exception = null;
+
+        double result = Double.NaN;
+        boolean isValid = isEnabled() && !fuzzyOutput().getTerms().isEmpty();
         if (isValid) {
-            if (this.defuzzifier == null) {
-                throw new RuntimeException(String.format(
-                        "[defuzzifier error] defuzzifier needed to defuzzify output variable <%s>", getName()));
-            }
-            result = this.defuzzifier.defuzzify(fuzzyOutput, this.getMinimum(), this.getMaximum());
-        } else {
-            //if a previous defuzzification was successfully performed and
-            //and the output is supposed to not change when the output is empty
-            if (this.lockPreviousOutputValue && !Double.isNaN(this.previousOutputValue)) {
-                result = this.previousOutputValue;
+            /* Checks whether the variable can be defuzzified without exceptions.
+             * If it cannot be defuzzified, be that due to a missing defuzzifier  
+             * or aggregation operator, the expected behaviour is to leave the 
+             * variable in a state that reflects an invalid defuzzification, 
+             * that is, apply logic of default values and previous values.*/
+            isValid = false;
+            if (getDefuzzifier() != null) {
+                try {
+                    result = getDefuzzifier().defuzzify(fuzzyOutput(),
+                            getMinimum(), getMaximum());
+                    isValid = true;
+                } catch (Exception ex) {
+                    exception = ex.toString();
+                }
             } else {
-                result = this.defaultValue;
+                exception = String.format("[defuzzifier error] defuzzifier needed "
+                        + "to defuzzify output variable <%s>", getName());
             }
         }
-        if (this.lockOutputValueInRange) {
-            result = Op.bound(result, this.getMinimum(), this.getMaximum());
+
+        if (!isValid) {
+            //if a previous defuzzification was successfully performed and
+            //and the output value is supposed not to change when the output is empty
+            if (isLockPreviousValue() && !Double.isNaN(getPreviousValue())) {
+                result = getPreviousValue();
+            } else {
+                result = getDefaultValue();
+            }
         }
-        this.outputValue = result;
+
+        setValue(result);
+
+        if (exception != null) {
+            throw new RuntimeException(exception);
+        }
     }
 
     public String fuzzyOutputValue() {
@@ -171,9 +176,9 @@ public class OutputVariable extends Variable {
     }
 
     public void clear() {
-        fuzzyOutput.clear();
-        setPreviousOutputValue(Double.NaN);
-        setOutputValue(Double.NaN);
+        fuzzyOutput().clear();
+        setValue(Double.NaN);
+        setPreviousValue(Double.NaN);
     }
 
     @Override

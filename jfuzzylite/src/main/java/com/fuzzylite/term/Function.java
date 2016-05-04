@@ -345,10 +345,10 @@ public class Function extends Term {
         }
         if (this.engine != null) {
             for (InputVariable inputVariable : this.engine.getInputVariables()) {
-                this.variables.put(inputVariable.getName(), inputVariable.getInputValue());
+                this.variables.put(inputVariable.getName(), inputVariable.getValue());
             }
             for (OutputVariable outputVariable : this.engine.getOutputVariables()) {
-                this.variables.put(outputVariable.getName(), outputVariable.getOutputValue());
+                this.variables.put(outputVariable.getName(), outputVariable.getValue());
             }
         }
         this.variables.put("x", x);
