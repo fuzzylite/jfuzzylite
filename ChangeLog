@@ -1,4 +1,5 @@
 Version 6.0
+* License changed to the FuzzyLite License.
 * Changed Maven build to produce binary jar only upon package
 * Other packages can be built using `mvn clean package source:jar javadoc:jar`
 * Renamed Accumulated to Aggregated, and Accumulated::[set|get]Accumulation() to Aggregated::[set|get]Aggregation()

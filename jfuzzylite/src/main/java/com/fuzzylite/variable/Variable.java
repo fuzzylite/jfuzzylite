@@ -171,7 +171,7 @@ public class Variable implements Op.Cloneable {
 
     public void sort() {
         PriorityQueue<Op.Pair<Term, Double>> termCentroids
-                = new PriorityQueue<Op.Pair<Term, Double>>(
+                = new PriorityQueue<Op.Pair<Term, Double>>(terms.size(),
                         new Comparator<Op.Pair<Term, Double>>() {
                     @Override
                     public int compare(Op.Pair<Term, Double> o1, Op.Pair<Term, Double> o2) {
