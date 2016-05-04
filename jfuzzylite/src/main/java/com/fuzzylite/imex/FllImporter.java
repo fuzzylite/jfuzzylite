@@ -239,7 +239,7 @@ public class FllImporter extends Importer {
                     + "but found <" + text + ">");
         }
         Term term = FactoryManager.instance().term().constructObject(tokens.get(1));
-        Term.updateReference(term, engine);
+        term.updateReference(engine);
         term.setName(Op.validName(tokens.get(0)));
         StringBuilder parameters = new StringBuilder();
         for (int i = 2; i < tokens.size(); ++i) {

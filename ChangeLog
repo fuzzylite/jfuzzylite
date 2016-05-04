@@ -10,6 +10,7 @@ Version 6.0
 * Improved OutputVariable::defuzzify() to operate correctly handling locks when exceptions occur.
 * Updated [Java|Cpp][Importer|Exporter] to reflect code changes.
 * New Binary term
+* Refactored static Term::updateReference(Engine) to class method to be overriden as necessary
 
 
 

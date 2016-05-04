@@ -429,7 +429,7 @@ public class Engine implements Op.Cloneable {
         }
         for (Variable variable : this.variables()) {
             for (Term term : variable.getTerms()) {
-                Term.updateReference(term, this);
+                term.updateReference(this);
             }
         }
         result.ruleBlocks = new ArrayList<RuleBlock>(this.ruleBlocks.size());

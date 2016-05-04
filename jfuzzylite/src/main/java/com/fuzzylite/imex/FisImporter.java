@@ -14,7 +14,6 @@
  jfuzzylite™ is a trademark of FuzzyLite Limited.
 
  */
-
 package com.fuzzylite.imex;
 
 import com.fuzzylite.Engine;
@@ -126,17 +125,15 @@ public class FisImporter extends Importer {
                         || line.startsWith("[Output")
                         || line.startsWith("[Rules]")) {
                     sections.add(line);
+                } else if (!sections.isEmpty()) {
+                    int lastIndex = sections.size() - 1;
+                    String section = sections.get(lastIndex);
+                    section += "\n" + line;
+                    sections.set(lastIndex, section);
                 } else {
-                    if (!sections.isEmpty()) {
-                        int lastIndex = sections.size() - 1;
-                        String section = sections.get(lastIndex);
-                        section += "\n" + line;
-                        sections.set(lastIndex, section);
-                    } else {
-                        throw new RuntimeException(String.format(
-                                "[import error] line %d <%s> "
-                                + "does not belong to any section", lineNumber, line));
-                    }
+                    throw new RuntimeException(String.format(
+                            "[import error] line %d <%s> "
+                            + "does not belong to any section", lineNumber, line));
                 }
             }
 
@@ -625,7 +622,7 @@ public class FisImporter extends Importer {
         }
 
         Term term = FactoryManager.instance().term().constructObject(flClass);
-        Term.updateReference(term, engine);
+        term.updateReference(engine);
         term.setName(Op.validName(name));
         String separator = " ";
         if (term instanceof Function) {

@@ -450,7 +450,7 @@ public class FclImporter extends Importer {
 
         try {
             Term result = FactoryManager.instance().term().constructObject(termClass);
-            Term.updateReference(result, engine);
+            result.updateReference(engine);
             result.setName(Op.validName(name));
             String separator = " ";
             if (result instanceof Function) {

@@ -14,7 +14,6 @@
  jfuzzylite™ is a trademark of FuzzyLite Limited.
 
  */
-
 package com.fuzzylite.term;
 
 import com.fuzzylite.Engine;
@@ -113,6 +112,11 @@ public class Linear extends Term {
         Linear result = (Linear) super.clone();
         result.coefficients = new ArrayList<Double>(this.coefficients);
         return result;
+    }
+
+    @Override
+    public void updateReference(Engine engine) {
+        setEngine(engine);
     }
 
 }
