@@ -9,7 +9,8 @@ Version 6.0
 * Renamed OutputVariable::[is|set]LockPreviousOutputValue() to  OutputVariable::[is|set]LockPreviousValue()
 * Improved OutputVariable::defuzzify() to operate correctly handling locks when exceptions occur.
 * Updated [Java|Cpp][Importer|Exporter] to reflect code changes.
- 
+* New Binary term
+
 
 
 Version 5.0
