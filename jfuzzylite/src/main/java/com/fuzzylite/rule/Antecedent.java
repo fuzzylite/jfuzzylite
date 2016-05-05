@@ -14,7 +14,6 @@
  jfuzzylite™ is a trademark of FuzzyLite Limited.
 
  */
-
 package com.fuzzylite.rule;
 
 import com.fuzzylite.Engine;
@@ -27,7 +26,6 @@ import com.fuzzylite.hedge.Hedge;
 import com.fuzzylite.norm.SNorm;
 import com.fuzzylite.norm.TNorm;
 import com.fuzzylite.term.Function;
-import com.fuzzylite.variable.InputVariable;
 import com.fuzzylite.variable.OutputVariable;
 import com.fuzzylite.variable.Variable;
 import java.util.ArrayDeque;
@@ -36,6 +34,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.StringTokenizer;
+import java.util.logging.Level;
 
 public class Antecedent {
 
@@ -59,12 +58,16 @@ public class Antecedent {
         return this.expression;
     }
 
+    public void setExpression(Expression expression) {
+        this.expression = expression;
+    }
+
     public boolean isLoaded() {
-        return this.expression != null;
+        return getExpression() != null;
     }
 
     public double activationDegree(TNorm conjunction, SNorm disjunction) {
-        return this.activationDegree(conjunction, disjunction, expression);
+        return this.activationDegree(conjunction, disjunction, getExpression());
     }
 
     public double activationDegree(TNorm conjunction, SNorm disjunction, Expression node) {
@@ -72,6 +75,7 @@ public class Antecedent {
             throw new RuntimeException(String.format(
                     "[antecedent error] antecedent <%s> is not loaded", text));
         }
+        //@todo: add type to Expression
         if (node instanceof Proposition) {
             Proposition proposition = (Proposition) node;
             if (!proposition.getVariable().isEnabled()) {
@@ -91,13 +95,12 @@ public class Antecedent {
                 }
             }
 
-            double result = Double.NaN;
-            if (proposition.getVariable() instanceof InputVariable) {
-                InputVariable inputVariable = (InputVariable) proposition.getVariable();
-                result = proposition.getTerm().membership(inputVariable.getValue());
-            } else if (proposition.getVariable() instanceof OutputVariable) {
+            double result;
+            if (proposition.getVariable() instanceof OutputVariable) {
                 OutputVariable outputVariable = (OutputVariable) proposition.getVariable();
                 result = outputVariable.fuzzyOutput().activationDegree(proposition.getTerm());
+            } else {
+                result = proposition.getTerm().membership(proposition.getVariable().getValue());
             }
             int lastIndex = proposition.getHedges().size();
             ListIterator<Hedge> reverseIterator = proposition.getHedges().listIterator(lastIndex);
@@ -139,17 +142,17 @@ public class Antecedent {
     }
 
     public void unload() {
-        expression = null;
+        setExpression(null);
     }
 
-    public void load(Rule rule, Engine engine) {
-        load(text, rule, engine);
+    public void load(Engine engine) {
+        load(getText(), engine);
     }
 
-    public void load(String antecedent, Rule rule, Engine engine) {
-        FuzzyLite.logger().fine("Antedecent: " + antecedent);
+    public void load(String antecedent, Engine engine) {
+        FuzzyLite.logger().log(Level.FINE, "Antecedent: {0}", antecedent);
         unload();
-        this.text = antecedent;
+        setText(antecedent);
         if (antecedent.trim().isEmpty()) {
             throw new RuntimeException("[syntax error] antecedent is empty");
         }
@@ -164,6 +167,7 @@ public class Antecedent {
 
         Function function = new Function();
         String postfix = function.toPostfix(antecedent);
+        FuzzyLite.logger().log(Level.FINE, "Postfix {0}", postfix);
 
         final byte S_VARIABLE = 1, S_IS = 2, S_HEDGE = 4, S_TERM = 8, S_AND_OR = 16;
         byte state = S_VARIABLE;
@@ -188,7 +192,7 @@ public class Antecedent {
                     expressionStack.push(proposition);
 
                     state = S_IS;
-                    FuzzyLite.logger().fine("Token <" + token + "> is variable");
+                    FuzzyLite.logger().log(Level.FINE, "Token <{0}> is variable", token);
                     continue;
                 }
             }
@@ -196,30 +200,22 @@ public class Antecedent {
             if ((state & S_IS) > 0) {
                 if (Rule.FL_IS.equals(token)) {
                     state = S_HEDGE | S_TERM;
-                    FuzzyLite.logger().fine("Token <" + token + "> is keyword");
+                    FuzzyLite.logger().log(Level.FINE, "Token <{0}> is keyword", token);
                     continue;
                 }
             }
 
             if ((state & S_HEDGE) > 0) {
-                Hedge hedge = null;
-                if (rule.getHedges().containsKey(token)) {
-                    hedge = rule.getHedges().get(token);
-                } else {
-                    HedgeFactory hedgeFactory = FactoryManager.instance().hedge();
-                    if (hedgeFactory.hasConstructor(token)) {
-                        hedge = hedgeFactory.constructObject(token);
-                        rule.getHedges().put(token, hedge);
-                    }
-                }
-                if (hedge != null) {
+                HedgeFactory hedgeFactory = FactoryManager.instance().hedge();
+                if (hedgeFactory.hasConstructor(token)) {
+                    Hedge hedge = hedgeFactory.constructObject(token);
                     proposition.getHedges().add(hedge);
                     if (hedge instanceof Any) {
                         state = S_VARIABLE | S_AND_OR;
                     } else {
                         state = S_HEDGE | S_TERM;
                     }
-                    FuzzyLite.logger().fine("Token <" + token + "> is hedge");
+                    FuzzyLite.logger().log(Level.FINE, "Token <{0}> is hedge", token);
                     continue;
                 }
             }
@@ -228,7 +224,7 @@ public class Antecedent {
                 if (proposition.getVariable().hasTerm(token)) {
                     proposition.setTerm(proposition.getVariable().getTerm(token));
                     state = S_VARIABLE | S_AND_OR;
-                    FuzzyLite.logger().fine("Token <" + token + "> is term");
+                    FuzzyLite.logger().log(Level.FINE, "Token <{0}> is term", token);
                     continue;
                 }
             }
@@ -247,8 +243,8 @@ public class Antecedent {
                     expressionStack.push(operator);
 
                     state = S_VARIABLE | S_AND_OR;
-                    FuzzyLite.logger().fine(String.format("Subtree : (%s) (%s)",
-                            operator.getLeft(), operator.getRight()));
+                    FuzzyLite.logger().log(Level.FINE, "Subtree: ({0}) ({1})",
+                            new Object[]{operator.getLeft(), operator.getRight()});
                     continue;
                 }
             }
@@ -297,7 +293,7 @@ public class Antecedent {
                     "[syntax error] unable to parse the following expressions: <%s>",
                     Op.join(errors, " ")));
         }
-        this.expression = expressionStack.pop();
+        setExpression(expressionStack.pop());
     }
 
     @Override

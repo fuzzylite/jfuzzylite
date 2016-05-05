@@ -11,7 +11,9 @@ Version 6.0
 * Updated [Java|Cpp][Importer|Exporter] to reflect code changes.
 * New Binary term
 * Refactored static Term::updateReference(Engine) to class method to be overriden as necessary
-
+* Renamed Rule::activationDegree() to Rule::computeActivationDegree()
+* Added Rule::[get|set]activationDegree() and Rule::[is|set]Activated()
+* Created HedgeFactory and removed Hedges from Rule.
 
 
 Version 5.0

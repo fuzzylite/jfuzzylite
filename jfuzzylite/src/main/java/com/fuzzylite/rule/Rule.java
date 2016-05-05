@@ -14,18 +14,16 @@
  jfuzzylite™ is a trademark of FuzzyLite Limited.
 
  */
-
 package com.fuzzylite.rule;
 
 import com.fuzzylite.Engine;
+import com.fuzzylite.FuzzyLite;
 import com.fuzzylite.Op;
-import com.fuzzylite.hedge.Hedge;
 import com.fuzzylite.imex.FllExporter;
 import com.fuzzylite.norm.SNorm;
 import com.fuzzylite.norm.TNorm;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.StringTokenizer;
+import java.util.logging.Level;
 
 public class Rule implements Op.Cloneable {
 
@@ -40,7 +38,8 @@ public class Rule implements Op.Cloneable {
     private double weight;
     private Antecedent antecedent;
     private Consequent consequent;
-    private Map<String, Hedge> hedges;
+    private double activationDegree;
+    private boolean activated;
 
     public Rule() {
         this("");
@@ -55,7 +54,8 @@ public class Rule implements Op.Cloneable {
         this.weight = weight;
         this.antecedent = new Antecedent();
         this.consequent = new Consequent();
-        this.hedges = new HashMap<String, Hedge>();
+        this.activationDegree = 0.0;
+        this.activated = false;
     }
 
     public String getText() {
@@ -90,44 +90,75 @@ public class Rule implements Op.Cloneable {
         this.consequent = consequent;
     }
 
-    public Map<String, Hedge> getHedges() {
-        return this.hedges;
+    public double getActivationDegree() {
+        return activationDegree;
     }
 
-    public void setHedges(Map<String, Hedge> hedges) {
-        this.hedges = hedges;
+    public void setActivationDegree(double activationDegree) {
+        this.activationDegree = activationDegree;
     }
 
-    public double activationDegree(TNorm conjunction, SNorm disjunction) {
+    public boolean isActivated() {
+        return activated;
+    }
+
+    public void setActivated(boolean activated) {
+        this.activated = activated;
+    }
+
+    public double computeActivationDegree(TNorm conjunction, SNorm disjunction) {
         if (!isLoaded()) {
             throw new RuntimeException(String.format("[rule error] the following rule is not loaded: %s", text));
         }
-        return weight * this.antecedent.activationDegree(conjunction, disjunction);
+        return getWeight() * getAntecedent().activationDegree(conjunction, disjunction);
     }
 
-    public void activate(double activationDegree, TNorm activation) {
+    public void activate(double activationDegree, TNorm implication) {
+        FuzzyLite.logger().log(Level.FINE, "[activating] {0}", toString());
         if (!isLoaded()) {
             throw new RuntimeException(String.format("[rule error] the following rule is not loaded: %s", text));
         }
-        this.consequent.modify(activationDegree, activation);
+        if (Op.isGt(activationDegree, 0.0)) {
+            FuzzyLite.logger().log(Level.FINE, "[degree={0}] {1}",
+                    new String[]{Op.str(activationDegree), toString()});
+            setActivationDegree(activationDegree);
+            getConsequent().modify(activationDegree, implication);
+        }
+        setActivated(true);
+
+    }
+
+    public void deactivate() {
+        setActivated(false);
+        setActivationDegree(0.0);
+        FuzzyLite.logger().log(Level.FINE, "[deactivated] {0}", toString());
     }
 
     public boolean isLoaded() {
-        return antecedent.isLoaded() && consequent.isLoaded();
+        if (getAntecedent() != null && getConsequent() != null) {
+            return getAntecedent().isLoaded() && getConsequent().isLoaded();
+        }
+        return false;
     }
 
     public void unload() {
-        antecedent.unload();
-        consequent.unload();
-        hedges.clear();
+        deactivate();
+        if (getAntecedent() != null) {
+            getAntecedent().unload();
+        }
+        if (getConsequent() != null) {
+            getConsequent().unload();
+        }
     }
 
     public void load(Engine engine) {
-        load(text, engine);
+        load(getText(), engine);
     }
 
     public void load(String rule, Engine engine) {
-        this.text = rule;
+        setText(rule);
+        setActivated(false);
+        setActivationDegree(0.0);
         StringTokenizer tokenizer = new StringTokenizer(rule);
         String token;
         String strAntecedent = "";
@@ -193,9 +224,9 @@ public class Rule implements Op.Cloneable {
                         "[syntax error] expected a numeric value as the weight of the rule: %s",
                         rule));
             }
-            antecedent.load(strAntecedent, this, engine);
-            consequent.load(strConsequent, this, engine);
-            this.weight = ruleWeight;
+            getAntecedent().load(strAntecedent, engine);
+            getConsequent().load(strConsequent, engine);
+            setWeight(ruleWeight);
         } catch (RuntimeException ex) {
             unload();
             throw ex;
@@ -218,8 +249,7 @@ public class Rule implements Op.Cloneable {
         Rule result = (Rule) super.clone();
         result.antecedent = new Antecedent();
         result.consequent = new Consequent();
-        result.hedges = new HashMap<String, Hedge>(this.hedges);
         return result;
-
     }
+
 }

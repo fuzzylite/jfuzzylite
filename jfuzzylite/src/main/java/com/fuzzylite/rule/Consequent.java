@@ -14,7 +14,6 @@
  jfuzzylite™ is a trademark of FuzzyLite Limited.
 
  */
-
 package com.fuzzylite.rule;
 
 import com.fuzzylite.Engine;
@@ -30,6 +29,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.StringTokenizer;
+import java.util.logging.Level;
 
 public class Consequent {
 
@@ -74,26 +74,26 @@ public class Consequent {
                 Activated term = new Activated(proposition.getTerm(), activationDegree, activation);
                 OutputVariable outputVariable = (OutputVariable) proposition.getVariable();
                 outputVariable.fuzzyOutput().getTerms().add(term);
-                FuzzyLite.logger().fine(String.format("Accumulating %s", term.toString()));
+                FuzzyLite.logger().log(Level.FINE, "Aggregating {0}", term.toString());
             }
         }
     }
 
     public boolean isLoaded() {
-        return !this.conclusions.isEmpty();
+        return !getConclusions().isEmpty();
     }
 
     public void unload() {
-        this.conclusions.clear();
+        getConclusions().clear();
     }
 
-    public void load(Rule rule, Engine engine) {
-        load(text, rule, engine);
+    public void load(Engine engine) {
+        load(getText(), engine);
     }
 
-    public void load(String consequent, Rule rule, Engine engine) {
+    public void load(String consequent, Engine engine) {
         unload();
-        this.text = consequent;
+        setText(consequent);
         if (consequent.trim().isEmpty()) {
             throw new RuntimeException("[syntax error] consequent is empty");
         }
@@ -123,7 +123,7 @@ public class Consequent {
                     if (engine.hasOutputVariable(token)) {
                         proposition = new Proposition();
                         proposition.setVariable(engine.getOutputVariable(token));
-                        this.conclusions.add(proposition);
+                        getConclusions().add(proposition);
                         state = S_IS;
                         continue;
                     }
@@ -137,17 +137,9 @@ public class Consequent {
                 }
 
                 if ((state & S_HEDGE) > 0) {
-                    Hedge hedge = null;
-                    if (rule.getHedges().containsKey(token)) {
-                        hedge = rule.getHedges().get(token);
-                    } else {
-                        HedgeFactory hedgeFactory = FactoryManager.instance().hedge();
-                        if (hedgeFactory.hasConstructor(token)) {
-                            hedge = hedgeFactory.constructObject(token);
-                            rule.getHedges().put(token, hedge);
-                        }
-                    }
-                    if (hedge != null) {
+                    HedgeFactory hedgeFactory = FactoryManager.instance().hedge();
+                    if (hedgeFactory.hasConstructor(token)) {
+                        Hedge hedge = hedgeFactory.constructObject(token);
                         proposition.getHedges().add(hedge);
                         state = S_HEDGE | S_TERM;
                         continue;
