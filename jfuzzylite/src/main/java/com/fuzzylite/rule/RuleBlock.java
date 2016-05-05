@@ -14,28 +14,30 @@
  jfuzzylite™ is a trademark of FuzzyLite Limited.
 
  */
-
 package com.fuzzylite.rule;
 
 import com.fuzzylite.Engine;
 import com.fuzzylite.FuzzyLite;
 import com.fuzzylite.Op;
-import static com.fuzzylite.Op.str;
+import com.fuzzylite.activation.Activation;
+import com.fuzzylite.activation.General;
 import com.fuzzylite.imex.FllExporter;
 import com.fuzzylite.norm.SNorm;
 import com.fuzzylite.norm.TNorm;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.logging.Level;
 
 public class RuleBlock {
 
     private String name;
-    private List<Rule> rules;
     private TNorm conjunction;
     private SNorm disjunction;
     private TNorm implication;
+    private Activation activation;
     private boolean enabled;
+    private List<Rule> rules;
 
     public RuleBlock() {
         this("");
@@ -50,27 +52,26 @@ public class RuleBlock {
     }
 
     public RuleBlock(String name, TNorm conjunction, SNorm disjunction, TNorm implication) {
+        this(name, conjunction, disjunction, implication, null);
+    }
+
+    public RuleBlock(String name, TNorm conjunction, SNorm disjunction, TNorm implication, Activation activation) {
         this.name = name;
         this.conjunction = conjunction;
         this.disjunction = disjunction;
         this.implication = implication;
-        this.rules = new ArrayList<Rule>();
+        this.activation = activation;
         this.enabled = true;
+        this.rules = new ArrayList<Rule>();
     }
 
     public void activate() {
-        FuzzyLite.logger().fine("Activating ruleblock: " + name);
-        for (Rule rule : rules) {
-            if (rule.isLoaded()) {
-                double activationDegree = rule.computeActivationDegree(conjunction, disjunction);
-                FuzzyLite.logger().fine(String.format("[degree=%s] %s", str(activationDegree), rule.toString()));
-                if (Op.isGt(activationDegree, 0.0)) {
-                    rule.activate(activationDegree, implication);
-                }
-            } else {
-                FuzzyLite.logger().fine("Rule not loaded: " + rule.toString());
-            }
+        FuzzyLite.logger().log(Level.FINE, "Activating rule block {0}", getName());
+        if (getActivation() == null) {
+            setActivation(new General());
         }
+        FuzzyLite.logger().log(Level.FINE, "Activation: {0}", getActivation().getClass().getSimpleName());
+        getActivation().activate(this);
     }
 
     public void unloadRules() {
@@ -139,6 +140,14 @@ public class RuleBlock {
         this.implication = implication;
     }
 
+    public Activation getActivation() {
+        return activation;
+    }
+
+    public void setActivation(Activation activation) {
+        this.activation = activation;
+    }
+
     public boolean isEnabled() {
         return this.enabled;
     }
@@ -192,4 +201,5 @@ public class RuleBlock {
     public void setRules(List<Rule> rules) {
         this.rules = rules;
     }
+
 }

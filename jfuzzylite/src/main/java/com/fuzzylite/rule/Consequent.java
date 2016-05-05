@@ -57,7 +57,7 @@ public class Consequent {
         this.conclusions = conclusions;
     }
 
-    public void modify(double activationDegree, TNorm activation) {
+    public void modify(double activationDegree, TNorm implication) {
         if (!isLoaded()) {
             throw new RuntimeException(String.format(
                     "[consequent error] consequent <%s> is not loaded", text));
@@ -71,7 +71,7 @@ public class Consequent {
                         activationDegree = rit.previous().hedge(activationDegree);
                     }
                 }
-                Activated term = new Activated(proposition.getTerm(), activationDegree, activation);
+                Activated term = new Activated(proposition.getTerm(), activationDegree, implication);
                 OutputVariable outputVariable = (OutputVariable) proposition.getVariable();
                 outputVariable.fuzzyOutput().getTerms().add(term);
                 FuzzyLite.logger().log(Level.FINE, "Aggregating {0}", term.toString());

@@ -645,7 +645,9 @@ public class Console {
                 Engine engine = importer.fromString(text.toString());
 
                 for (Pair<Exporter, Importer> imex : tests) {
-                    FuzzyLite.logger().info(String.format("Converting from %s to %s", imex.getSecond(), imex.getFirst()));
+                    FuzzyLite.logger().info(String.format("Converting from %s to %s",
+                            imex.getSecond().getClass().getSimpleName(),
+                            imex.getFirst().getClass().getSimpleName()));
                     String out = imex.getFirst().toString(engine);
                     Engine copy = imex.getSecond().fromString(out);
                     String out_copy = imex.getFirst().toString(copy);

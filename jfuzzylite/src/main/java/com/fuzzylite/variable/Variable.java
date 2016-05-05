@@ -14,7 +14,6 @@
  jfuzzylite™ is a trademark of FuzzyLite Limited.
 
  */
-
 package com.fuzzylite.variable;
 
 import com.fuzzylite.Op;
@@ -133,13 +132,13 @@ public class Variable implements Op.Cloneable {
             }
 
             if (sb.length() == 0) {
-                sb.append(fx);
+                sb.append(Op.str(fx));
             } else if (Double.isNaN(fx) || Op.isGE(fx, 0.0)) {
-                sb.append(" + ").append(fx);
+                sb.append(" + ").append(Op.str(fx));
             } else {
-                sb.append(" - ").append(fx);
+                sb.append(" - ").append(Op.str(fx));
             }
-            sb.append(term.getName());
+            sb.append("/").append(term.getName());
         }
         return sb.toString();
     }
@@ -174,13 +173,11 @@ public class Variable implements Op.Cloneable {
                 = new PriorityQueue<Op.Pair<Term, Double>>(terms.size(),
                         new Comparator<Op.Pair<Term, Double>>() {
                     @Override
-                    public int compare(Op.Pair<Term, Double> o1, Op.Pair<Term, Double> o2) {
-                        double diff = o1.getSecond() - o2.getSecond();
-                        if (Op.isEq(diff, 0.0)) {
-                            return 0;
-                        }
-                        return diff > 0 ? 1 : -1;
+                    public int compare(Op.Pair<Term, Double> a, Op.Pair<Term, Double> b) {
+                        double result = Math.signum(a.getSecond() - b.getSecond());
+                        return Double.isNaN(result) ? -1 : (int) result;
                     }
+
                 });
         Defuzzifier defuzzifier = new Centroid();
         for (Term term : terms) {
@@ -194,7 +191,7 @@ public class Variable implements Op.Cloneable {
             } catch (Exception ex) {
                 centroid = Double.POSITIVE_INFINITY;
             }
-            termCentroids.add(new Op.Pair<Term, Double>(term, centroid));
+            termCentroids.offer(new Op.Pair<Term, Double>(term, centroid));
         }
 
         List<Term> sortedTerms = new ArrayList<Term>(terms.size());

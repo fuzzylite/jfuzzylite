@@ -19,6 +19,7 @@ package com.fuzzylite.imex;
 import com.fuzzylite.Engine;
 import com.fuzzylite.Op;
 import com.fuzzylite.Op.Pair;
+import com.fuzzylite.activation.General;
 import com.fuzzylite.defuzzifier.Bisector;
 import com.fuzzylite.defuzzifier.Centroid;
 import com.fuzzylite.defuzzifier.LargestOfMaximum;

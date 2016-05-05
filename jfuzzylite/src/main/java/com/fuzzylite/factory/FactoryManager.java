@@ -14,7 +14,6 @@
  jfuzzylite™ is a trademark of FuzzyLite Limited.
 
  */
-
 package com.fuzzylite.factory;
 
 public class FactoryManager {
@@ -27,21 +26,24 @@ public class FactoryManager {
 
     private TNormFactory tnorm;
     private SNormFactory snorm;
+    private ActivationFactory activation;
     private DefuzzifierFactory defuzzifier;
     private TermFactory term;
     private HedgeFactory hedge;
     private FunctionFactory function;
 
     private FactoryManager() {
-        this(new TNormFactory(), new SNormFactory(), new DefuzzifierFactory(),
-                new TermFactory(), new HedgeFactory(), new FunctionFactory());
+        this(new TNormFactory(), new SNormFactory(), new ActivationFactory(),
+                new DefuzzifierFactory(), new TermFactory(), new HedgeFactory(),
+                new FunctionFactory());
     }
 
     private FactoryManager(TNormFactory tnorm, SNormFactory snorm,
-            DefuzzifierFactory defuzzifier, TermFactory term, HedgeFactory hedge,
-            FunctionFactory function) {
+            ActivationFactory activation, DefuzzifierFactory defuzzifier,
+            TermFactory term, HedgeFactory hedge, FunctionFactory function) {
         this.tnorm = tnorm;
         this.snorm = snorm;
+        this.activation = activation;
         this.defuzzifier = defuzzifier;
         this.term = term;
         this.hedge = hedge;
@@ -62,6 +64,14 @@ public class FactoryManager {
 
     public void setSNorm(SNormFactory snorm) {
         this.snorm = snorm;
+    }
+
+    public ActivationFactory activation() {
+        return activation;
+    }
+
+    public void setActivation(ActivationFactory activation) {
+        this.activation = activation;
     }
 
     public DefuzzifierFactory defuzzifier() {

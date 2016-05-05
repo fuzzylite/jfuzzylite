@@ -14,17 +14,18 @@
  jfuzzylite™ is a trademark of FuzzyLite Limited.
 
  */
-
 package com.fuzzylite.imex;
 
 import com.fuzzylite.Engine;
 import com.fuzzylite.FuzzyLite;
 import com.fuzzylite.Op;
 import com.fuzzylite.Op.Pair;
+import com.fuzzylite.activation.Activation;
 import com.fuzzylite.defuzzifier.Defuzzifier;
 import com.fuzzylite.defuzzifier.IntegralDefuzzifier;
 import com.fuzzylite.defuzzifier.WeightedDefuzzifier;
 import com.fuzzylite.factory.FactoryManager;
+import com.fuzzylite.factory.TNormFactory;
 import com.fuzzylite.norm.SNorm;
 import com.fuzzylite.norm.TNorm;
 import com.fuzzylite.rule.Rule;
@@ -34,9 +35,9 @@ import com.fuzzylite.variable.InputVariable;
 import com.fuzzylite.variable.OutputVariable;
 import java.io.BufferedReader;
 import java.io.StringReader;
-import java.util.ArrayDeque;
-import java.util.Deque;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.logging.Level;
 
 public class FllImporter extends Importer {
 
@@ -59,60 +60,51 @@ public class FllImporter extends Importer {
     }
 
     @Override
-    public Engine fromString(String fll) {
+    public Engine fromString(String code) {
         Engine engine = new Engine();
 
+        final String fll = Op.join(Op.split(code, getSeparator()), "\n");
         String tag = "";
-        StringBuilder block = new StringBuilder();
-        boolean processPending;
+        List<String> block = new LinkedList<String>();
         BufferedReader reader = new BufferedReader(new StringReader(fll));
         String line = "";
-        Deque<String> queue = new ArrayDeque<String>();
-        int lineNumber = 0;
-        try {
-            while (!queue.isEmpty() || (line = reader.readLine()) != null) {
-                if (!queue.isEmpty()) {
-                    line = queue.poll();
-                } else {
-                    line = clean(line);
-                    if (line.isEmpty()) {
-                        continue;
-                    }
-                    List<String> split = Op.split(line, separator);
-                    line = clean(split.get(0));
-                    for (int i = 1; i < split.size(); ++i) {
-                        queue.offer(clean(split.get(i)));
-                    }
-                    ++lineNumber;
-                }
 
-                if (line.isEmpty()) {
-                    continue;
-                }
-                int colon = line.indexOf(':');
-                if (colon < 0) {
-                    throw new RuntimeException("[import error] "
-                            + "expected a colon at line " + lineNumber + ": " + line);
-                }
-                String key = line.substring(0, colon).trim();
-                String value = line.substring(colon + 1).trim();
-                if ("Engine".equals(key)) {
-                    engine.setName(value);
-                    continue;
-                } else {
-                    processPending = ("InputVariable".equals(key)
-                            || "OutputVariable".equals(key)
-                            || "RuleBlock".equals(key));
-                }
-                if (processPending) {
-                    process(tag, block.toString(), engine);
-                    block.setLength(0);
-                    processPending = false;
-                    tag = key;
-                }
-                block.append(String.format("%s:%s\n", key, value));
+        while (true) {
+            try {
+                line = reader.readLine();
+            } catch (Exception ex) {
+                //ignore as there will never be an exception
             }
-            process(tag, block.toString(), engine);
+            if (line == null) {
+                break;
+            }
+
+            line = Op.split(line.trim(), "#", false).get(0); //remove comments
+            int colon = line.indexOf(':');
+            if (colon < 0) {
+                throw new RuntimeException("[import error] " + "expected a colon at here: " + line);
+            }
+            String key = line.substring(0, colon).trim();
+            String value = line.substring(colon + 1).trim();
+            if ("Engine".equals(key)) {
+                engine.setName(value);
+                continue;
+            } else if ("InputVariable".equals(key)
+                    || "OutputVariable".equals(key)
+                    || "RuleBlock".equals(key)) {
+                try {
+                    process(tag, Op.join(block, "\n"), engine);
+                } catch (Exception ex) {
+                    throw new RuntimeException(ex);
+                }
+                block.clear();
+                tag = key;
+            } else if (tag.isEmpty()) {
+            }
+            block.add(key + ":" + value);
+        }
+        try {
+            process(tag, Op.join(block, "\n"), engine);
             reader.close();
         } catch (Exception ex) {
             throw new RuntimeException(ex);
@@ -150,6 +142,8 @@ public class FllImporter extends Importer {
             } else if ("range".equals(keyValue.getFirst())) {
                 Pair<Double, Double> range = parseRange(keyValue.getSecond());
                 inputVariable.setRange(range.getFirst(), range.getSecond());
+            } else if ("lock-range".equals(keyValue.getFirst())) {
+                inputVariable.setLockValueInRange(parseBoolean(keyValue.getSecond()));
             } else if ("term".equals(keyValue.getFirst())) {
                 inputVariable.addTerm(parseTerm(keyValue.getSecond(), engine));
             } else {
@@ -183,8 +177,14 @@ public class FllImporter extends Importer {
                 outputVariable.setLockValueInRange(parseBoolean(keyValue.getSecond()));
             } else if ("defuzzifier".equals(keyValue.getFirst())) {
                 outputVariable.setDefuzzifier(parseDefuzzifier(keyValue.getSecond()));
+            } else if ("aggregation".equals(keyValue.getFirst())) {
+                outputVariable.fuzzyOutput().setAggregation(parseSNorm(keyValue.getSecond()));
             } else if ("accumulation".equals(keyValue.getFirst())) {
                 outputVariable.fuzzyOutput().setAggregation(parseSNorm(keyValue.getSecond()));
+                FuzzyLite.logger().warning("[warning] obsolete usage of identifier <accumulation: SNorm> in OutputVariable");
+                FuzzyLite.logger().info("[information] from version 6.0, the identifier <aggregation: SNorm> should be used");
+                FuzzyLite.logger().log(Level.INFO, "[backward compatibility] assumed "
+                        + "<aggregation: {0}> instead of <accumulation: {0}>", keyValue.getSecond());
             } else if ("term".equals(keyValue.getFirst())) {
                 outputVariable.addTerm(parseTerm(keyValue.getSecond(), engine));
             } else {
@@ -211,8 +211,20 @@ public class FllImporter extends Importer {
                 ruleBlock.setConjunction(parseTNorm(keyValue.getSecond()));
             } else if ("disjunction".equals(keyValue.getFirst())) {
                 ruleBlock.setDisjunction(parseSNorm(keyValue.getSecond()));
-            } else if ("activation".equals(keyValue.getFirst())) {
+            } else if ("implication".equals(keyValue.getFirst())) {
                 ruleBlock.setImplication(parseTNorm(keyValue.getSecond()));
+            } else if ("activation".equals(keyValue.getFirst())) {
+                TNormFactory tnorm = FactoryManager.instance().tnorm();
+                //@todo remove backwards compatibility in version 7.0
+                if (tnorm.hasConstructor(keyValue.getSecond())) {
+                    ruleBlock.setImplication(parseTNorm(keyValue.getSecond()));
+                    FuzzyLite.logger().warning("[warning] obsolete usage of identifier <activation: TNorm> in RuleBlock");
+                    FuzzyLite.logger().info("[information] from version 6.0, the identifier <implication: TNorm> should be used");
+                    FuzzyLite.logger().log(Level.INFO, "[backward compatibility] assumed "
+                            + "<implication: {0}> instead of <activation: {0}>", keyValue.getSecond());
+                } else {
+                    ruleBlock.setActivation(parseActivation(keyValue.getSecond()));
+                }
             } else if ("rule".equals(keyValue.getFirst())) {
                 Rule rule = new Rule();
                 rule.setText(keyValue.getSecond());
@@ -250,6 +262,20 @@ public class FllImporter extends Importer {
         }
         term.configure(parameters.toString());
         return term;
+    }
+
+    protected Activation parseActivation(String name) {
+        if ("none".equals(name)) {
+            return FactoryManager.instance().activation().constructObject("");
+        }
+        List<String> tokens = Op.split(name, " ");
+        Activation result = FactoryManager.instance().activation().constructObject(tokens.get(0));
+        List<String> parameters = new LinkedList<String>();
+        for (int i = 1; i < tokens.size(); ++i) {
+            parameters.add(tokens.get(i));
+        }
+        result.configure(Op.join(parameters, " "));
+        return result;
     }
 
     protected TNorm parseTNorm(String name) {
@@ -310,33 +336,6 @@ public class FllImporter extends Importer {
         result.setFirst(text.substring(0, half));
         result.setSecond(text.substring(half + 1));
         return result;
-    }
-
-    protected String clean(String line) {
-        if (line.isEmpty()) {
-            return line;
-        }
-        if (line.length() == 1) {
-            return Character.isWhitespace(line.charAt(0)) ? "" : line;
-        }
-        int start = 0, end = line.length() - 1;
-        while (start <= end && Character.isWhitespace(line.charAt(start))) {
-            ++start;
-        }
-        int sharp = start;
-        while (sharp <= end) {
-            if (line.charAt(sharp) == '#') {
-                end = sharp - 1;
-                break;
-            }
-            ++sharp;
-        }
-        while (end >= start && (line.charAt(end) == '#'
-                || Character.isWhitespace(line.charAt(end)))) {
-            --end;
-        }
-
-        return line.substring(start, end + 1);
     }
 
     @Override

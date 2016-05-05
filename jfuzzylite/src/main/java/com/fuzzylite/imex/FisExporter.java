@@ -132,7 +132,7 @@ public class FisExporter extends Exporter {
         int numberOfRules = 0;
         TNorm conjunction = null;
         SNorm disjunction = null;
-        TNorm activation = null;
+        TNorm implication = null;
         for (RuleBlock ruleBlock : engine.getRuleBlocks()) {
             numberOfRules += ruleBlock.numberOfRules();
             if (conjunction == null) {
@@ -141,14 +141,14 @@ public class FisExporter extends Exporter {
             if (disjunction == null) {
                 disjunction = ruleBlock.getDisjunction();
             }
-            if (activation == null) {
-                activation = ruleBlock.getImplication();
+            if (implication == null) {
+                implication = ruleBlock.getImplication();
             }
         }
         result.append(String.format("NumRules=%d\n", numberOfRules));
         result.append(String.format("AndMethod='%s'\n", toString(conjunction)));
         result.append(String.format("OrMethod='%s'\n", toString(disjunction)));
-        result.append(String.format("ImpMethod='%s'\n", toString(activation)));
+        result.append(String.format("ImpMethod='%s'\n", toString(implication)));
 
         SNorm accumulation = null;
         Defuzzifier defuzzifier = null;

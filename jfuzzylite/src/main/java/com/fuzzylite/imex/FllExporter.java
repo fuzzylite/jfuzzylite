@@ -14,11 +14,11 @@
  jfuzzylite™ is a trademark of FuzzyLite Limited.
 
  */
-
 package com.fuzzylite.imex;
 
 import com.fuzzylite.Engine;
 import com.fuzzylite.Op;
+import com.fuzzylite.activation.Activation;
 import com.fuzzylite.defuzzifier.Defuzzifier;
 import com.fuzzylite.defuzzifier.IntegralDefuzzifier;
 import com.fuzzylite.defuzzifier.WeightedDefuzzifier;
@@ -118,6 +118,8 @@ public class FllExporter extends Exporter {
                 String.valueOf(variable.isEnabled())));
         result.add(String.format("%srange: %s", indent,
                 Op.join(" ", variable.getMinimum(), variable.getMaximum())));
+        result.add(String.format("%slock-range: %s", indent,
+                String.valueOf(variable.isLockValueInRange())));
         for (Term term : variable.getTerms()) {
             result.add(String.format("%s%s", indent, toString(term)));
         }
@@ -131,6 +133,8 @@ public class FllExporter extends Exporter {
                 String.valueOf(inputVariable.isEnabled())));
         result.add(String.format("%srange: %s", indent,
                 Op.join(" ", inputVariable.getMinimum(), inputVariable.getMaximum())));
+        result.add(String.format("%slock-range: %s", indent,
+                String.valueOf(inputVariable.isLockValueInRange())));
         for (Term term : inputVariable.getTerms()) {
             result.add(String.format("%s%s", indent, toString(term)));
         }
@@ -144,7 +148,9 @@ public class FllExporter extends Exporter {
                 String.valueOf(outputVariable.isEnabled())));
         result.add(String.format("%srange: %s", indent,
                 Op.join(" ", outputVariable.getMinimum(), outputVariable.getMaximum())));
-        result.add(String.format("%saccumulation: %s", indent,
+        result.add(String.format("%slock-range: %s", indent,
+                String.valueOf(outputVariable.isLockValueInRange())));
+        result.add(String.format("%saggregation: %s", indent,
                 toString(outputVariable.fuzzyOutput().getAggregation())));
         result.add(String.format("%sdefuzzifier: %s", indent,
                 toString(outputVariable.getDefuzzifier())));
@@ -152,8 +158,7 @@ public class FllExporter extends Exporter {
                 Op.str(outputVariable.getDefaultValue())));
         result.add(String.format("%slock-previous: %s", indent,
                 String.valueOf(outputVariable.isLockPreviousValue())));
-        result.add(String.format("%slock-range: %s", indent,
-                String.valueOf(outputVariable.isLockValueInRange())));
+
         for (Term term : outputVariable.getTerms()) {
             result.add(String.format("%s%s", indent, toString(term)));
         }
@@ -169,8 +174,10 @@ public class FllExporter extends Exporter {
                 toString(ruleBlock.getConjunction())));
         result.add(String.format("%sdisjunction: %s", indent,
                 toString(ruleBlock.getDisjunction())));
-        result.add(String.format("%sactivation: %s", indent,
+        result.add(String.format("%simplication: %s", indent,
                 toString(ruleBlock.getImplication())));
+        result.add(String.format("%sactivation: %s", indent,
+                toString(ruleBlock.getActivation())));
         for (Rule rule : ruleBlock.getRules()) {
             result.add(String.format("%s%s", indent, toString(rule)));
         }
@@ -192,6 +199,17 @@ public class FllExporter extends Exporter {
             return "none";
         }
         return norm.getClass().getSimpleName();
+    }
+
+    public String toString(Activation activation) {
+        if (activation == null) {
+            return "none";
+        }
+        String className = activation.getClass().getSimpleName();
+        if (activation.parameters().isEmpty()) {
+            return className;
+        }
+        return className + " " + activation.parameters();
     }
 
     public String toString(Defuzzifier defuzzifier) {

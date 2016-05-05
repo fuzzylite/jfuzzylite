@@ -25,16 +25,16 @@ public class Activated extends Term {
 
     private Term term;
     private double degree;
-    private TNorm activation;
+    private TNorm implication;
 
     public Activated() {
         this(null, 1.0, null);
     }
 
-    public Activated(Term term, double degree, TNorm activation) {
+    public Activated(Term term, double degree, TNorm implication) {
         this.term = term;
         this.degree = degree;
-        this.activation = activation;
+        this.implication = implication;
     }
 
     @Override
@@ -42,26 +42,26 @@ public class Activated extends Term {
         if (Double.isNaN(x)) {
             return Double.NaN;
         }
-        if (activation == null) {
-            throw new RuntimeException(String.format("[activation error] "
-                    + "activation operator needed to activate %s",
-                    term.toString()));
+        if (getImplication() == null) {
+            throw new RuntimeException(String.format("[implication error] "
+                    + "implication operator needed to activate %s",
+                    getTerm().toString()));
         }
-        return this.activation.compute(this.term.membership(x), this.degree);
+        return getImplication().compute(getTerm().membership(x), getDegree());
     }
 
     @Override
     public String parameters() {
         FllExporter exporter = new FllExporter();
         String result = String.format("%s %s %s", Op.str(degree),
-                exporter.toString(activation), exporter.toString(term));
+                exporter.toString(implication), exporter.toString(term));
         return result;
     }
 
     @Override
     public String toString() {
         return String.format("%s(%s,%s)",
-                new FllExporter().toString(activation),
+                new FllExporter().toString(implication),
                 Op.str(degree), term.getName());
     }
 
@@ -86,12 +86,12 @@ public class Activated extends Term {
         this.degree = degree;
     }
 
-    public TNorm getActivation() {
-        return activation;
+    public TNorm getImplication() {
+        return implication;
     }
 
-    public void setActivation(TNorm activation) {
-        this.activation = activation;
+    public void setImplication(TNorm implication) {
+        this.implication = implication;
     }
 
     @Override

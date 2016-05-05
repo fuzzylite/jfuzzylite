@@ -14,14 +14,12 @@
  jfuzzylite™ is a trademark of FuzzyLite Limited.
 
  */
-
 package com.fuzzylite;
 
 import static com.fuzzylite.Op.str;
 import com.fuzzylite.defuzzifier.Defuzzifier;
 import com.fuzzylite.defuzzifier.IntegralDefuzzifier;
 import com.fuzzylite.defuzzifier.WeightedDefuzzifier;
-import com.fuzzylite.factory.DefuzzifierFactory;
 import com.fuzzylite.factory.FactoryManager;
 import com.fuzzylite.factory.SNormFactory;
 import com.fuzzylite.factory.TNormFactory;
@@ -66,32 +64,31 @@ public class Engine implements Op.Cloneable {
     }
 
     public void configure(String conjunction, String disjunction,
-            String activation, String accumulation, String defuzzifier) {
+            String implication, String aggregation, String defuzzifier) {
         TNormFactory tnormFactory = FactoryManager.instance().tnorm();
         SNormFactory snormFactory = FactoryManager.instance().snorm();
 
         TNorm objConjunction = tnormFactory.constructObject(conjunction);
         SNorm objDisjunction = snormFactory.constructObject(disjunction);
-        TNorm objActivation = tnormFactory.constructObject(activation);
-        SNorm objAccumulation = snormFactory.constructObject(accumulation);
+        TNorm objImplication = tnormFactory.constructObject(implication);
+        SNorm objAggregation = snormFactory.constructObject(aggregation);
+        Defuzzifier objDefuzzifier = FactoryManager.instance().defuzzifier().constructObject(defuzzifier);
 
-        DefuzzifierFactory defuzzifierFactory = FactoryManager.instance().defuzzifier();
-        Defuzzifier objDefuzzifier = defuzzifierFactory.constructObject(defuzzifier);
-        configure(objConjunction, objDisjunction, objActivation, objAccumulation, objDefuzzifier);
+        configure(objConjunction, objDisjunction, objImplication, objAggregation, objDefuzzifier);
     }
 
     public void configure(TNorm conjunction, SNorm disjunction,
-            TNorm activation, SNorm accumulation,
-            Defuzzifier defuzzifier) {
+            TNorm implication, SNorm aggregation, Defuzzifier defuzzifier) {
         try {
+            //@todo Why am I cloning this?
             for (RuleBlock ruleblock : this.ruleBlocks) {
                 ruleblock.setConjunction(conjunction == null ? null : conjunction.clone());
                 ruleblock.setDisjunction(disjunction == null ? null : disjunction.clone());
-                ruleblock.setImplication(activation == null ? null : activation.clone());
+                ruleblock.setImplication(implication == null ? null : implication.clone());
             }
             for (OutputVariable outputVariable : this.outputVariables) {
                 outputVariable.setDefuzzifier(defuzzifier == null ? null : defuzzifier.clone());
-                outputVariable.fuzzyOutput().setAggregation(accumulation == null ? null : accumulation.clone());
+                outputVariable.fuzzyOutput().setAggregation(aggregation == null ? null : aggregation.clone());
             }
         } catch (Exception ex) {
             throw new RuntimeException(ex);
@@ -160,7 +157,7 @@ public class Engine implements Op.Cloneable {
                 }
                 int requiresConjunction = 0;
                 int requiresDisjunction = 0;
-                int requiresActivation = 0;
+                int requiresImplication = 0;
                 for (int r = 0; r < this.ruleBlocks.size(); ++r) {
                     Rule rule = ruleBlock.getRule(r);
                     if (rule == null) {
@@ -183,7 +180,7 @@ public class Engine implements Op.Cloneable {
                                 if (proposition.getVariable() instanceof OutputVariable) {
                                     OutputVariable outputVariable = (OutputVariable) proposition.getVariable();
                                     if (outputVariable.getDefuzzifier() instanceof IntegralDefuzzifier) {
-                                        ++requiresActivation;
+                                        ++requiresImplication;
                                         break;
                                     }
                                 }
@@ -203,11 +200,10 @@ public class Engine implements Op.Cloneable {
                     message.append(String.format(
                             "- Rule block <%s> has %d rules that require disjunction operator", ruleBlock.getName(), requiresDisjunction));
                 }
-                if (requiresActivation > 0 && ruleBlock.getImplication() == null) {
+                if (requiresImplication > 0 && ruleBlock.getImplication() == null) {
                     message.append(String.format(
-                            "- Rule block <%s> has no activation operator\n", ruleBlock.getName()));
-                    message.append(String.format(
-                            "- Rule block <%s> has %d rules that require activation operator", ruleBlock.getName(), requiresActivation));
+                            "- Rule block <%s> has no implication operator\n", ruleBlock.getName()));
+                    message.append(String.format("- Rule block <%s> has %d rules that require implication operator", ruleBlock.getName(), requiresImplication));
                 }
             }
         }
@@ -316,7 +312,7 @@ public class Engine implements Op.Cloneable {
         }
 
         boolean larsen = mamdani && !ruleBlocks.isEmpty();
-        //Larsen is Mamdani with AlgebraicProduct as Activation
+        //Larsen is Mamdani with AlgebraicProduct as Implication
         if (mamdani) {
             for (RuleBlock ruleBlock : ruleBlocks) {
                 larsen &= ruleBlock.getImplication() instanceof AlgebraicProduct;
