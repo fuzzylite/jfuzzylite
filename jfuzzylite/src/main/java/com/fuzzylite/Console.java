@@ -14,7 +14,6 @@
  jfuzzylite™ is a trademark of FuzzyLite Limited.
 
  */
-
 package com.fuzzylite;
 
 import com.fuzzylite.Op.Pair;
@@ -308,33 +307,31 @@ public class Console {
                     throw ex;
                 }
 
+            } else if (options.containsKey(KW_DATA_MAXIMUM)) {
+                int maximum = Integer.parseInt(options.get(KW_DATA_MAXIMUM));
+                writer.write(fldExporter.toString(engine, maximum));
             } else {
-                if (options.containsKey(KW_DATA_MAXIMUM)) {
-                    int maximum = Integer.parseInt(options.get(KW_DATA_MAXIMUM));
-                    writer.write(fldExporter.toString(engine, maximum));
-                } else {
 
-                    StringBuilder buffer = new StringBuilder();
-                    buffer.append("#FuzzyLite Interactive Console (press H for help)\n");
-                    buffer.append(fldExporter.header(engine)).append("\n");
-                    if (engine.getInputVariables().isEmpty()) {
-                        buffer.append("[error] the engine does not have input variables.\n");
-                    }
-                    if (engine.getOutputVariables().isEmpty()) {
-                        buffer.append("[error] the engine does not have output variables.\n");
-                    }
-                    writer.append(buffer.toString()).flush();
-
-                    boolean printToConsole = writer != System.console().writer();
-                    if (printToConsole) {
-                        System.console().writer().append(buffer.toString()).flush();
-                    }
-
-                    if (engine.getInputVariables().isEmpty() || engine.getOutputVariables().isEmpty()) {
-                        return;
-                    }
-                    interactive(writer, engine);
+                StringBuilder buffer = new StringBuilder();
+                buffer.append("#FuzzyLite Interactive Console (press H for help)\n");
+                buffer.append(fldExporter.header(engine)).append("\n");
+                if (engine.getInputVariables().isEmpty()) {
+                    buffer.append("[error] the engine does not have input variables.\n");
                 }
+                if (engine.getOutputVariables().isEmpty()) {
+                    buffer.append("[error] the engine does not have output variables.\n");
+                }
+                writer.append(buffer.toString()).flush();
+
+                boolean printToConsole = writer != System.console().writer();
+                if (printToConsole) {
+                    System.console().writer().append(buffer.toString()).flush();
+                }
+
+                if (engine.getInputVariables().isEmpty() || engine.getOutputVariables().isEmpty()) {
+                    return;
+                }
+                interactive(writer, engine);
             }
 
         } else {
@@ -632,7 +629,7 @@ public class Console {
         tests.add(new Pair<Exporter, Importer>(new FclExporter(), new FclImporter()));
         tests.add(new Pair<Exporter, Importer>(new FisExporter(), new FisImporter()));
 
-        StringBuilder errors = new StringBuilder();
+        List<String> errors = new LinkedList<String>();
         for (int i = 0; i < examples.size(); ++i) {
             FuzzyLite.logger().info("Processing " + (i + 1) + "/" + examples.size() + ": " + examples.get(i));
             try {
@@ -654,7 +651,7 @@ public class Console {
                     String out_copy = imex.getFirst().toString(copy);
 
                     if (!out.equals(out_copy)) {
-                        errors.append(String.format("[imex error] different results <%s,%s> at %s.%s",
+                        errors.add(String.format("[imex error] different results <%s,%s> at %s.%s",
                                 imex.getFirst().getClass().getSimpleName(),
                                 imex.getFirst().getClass().getSimpleName(),
                                 examples.get(i), from));
@@ -667,7 +664,9 @@ public class Console {
                     try {
                         outputFile.createNewFile();
                     } catch (Exception ex) {
-                        FuzzyLite.logger().log(Level.SEVERE, ex + ": " + outputFile, ex);
+                        errors.add(ex.toString() + ": " + output);
+                        FuzzyLite.logger().log(Level.SEVERE, ex.toString() + ": " + outputFile);
+                        continue;
                     }
                 }
                 FileWriter target = new FileWriter(outputFile);
@@ -699,36 +698,35 @@ public class Console {
                 }
                 target.close();
             } catch (Exception ex) {
-                errors.append("error at " + examples.get(i) + ":\n" + ex.toString() + "\n");
+                errors.add(ex.toString() + ": " + examples.get(i));
                 FuzzyLite.logger().log(Level.SEVERE, ex.toString(), ex);
                 return;
             }
         }
-        if (errors.toString().isEmpty()) {
+        if (errors.isEmpty()) {
             FuzzyLite.logger().info("No errors were found exporting files");
         } else {
-            FuzzyLite.logger().log(Level.SEVERE, "The following errors were encountered while exporting:\n"
-                    + errors.toString());
+            FuzzyLite.logger().log(Level.SEVERE, "Errors were encountered while exporting:\n"
+                    + Op.join(errors, "\n"));
+            throw new RuntimeException(Op.join(errors, "\n"));
         }
     }
 
     public static void benchmarkExamples(String path, int runs) {
         List<Op.Pair<String, Integer>> examples = new LinkedList<Op.Pair<String, Integer>>();
-        examples.add(new Op.Pair<String, Integer>("/mamdani/AllTerms", 10 ^ 4));
-        examples.add(new Op.Pair<String, Integer>("/mamdani/SimpleDimmer", 10 ^ 5));
-        examples.add(new Op.Pair<String, Integer>("/mamdani/Laundry", 10 ^ 5));
-        examples.add(new Op.Pair<String, Integer>("/mamdani/SimpleDimmerInverse", 10 ^ 5));
+        examples.add(new Op.Pair<String, Integer>("/mamdani/AllTerms", (int) 1e4));
+        examples.add(new Op.Pair<String, Integer>("/mamdani/SimpleDimmer", (int) 1e5));
         examples.add(new Op.Pair<String, Integer>("/mamdani/matlab/mam21", 128));
         examples.add(new Op.Pair<String, Integer>("/mamdani/matlab/mam22", 128));
         examples.add(new Op.Pair<String, Integer>("/mamdani/matlab/shower", 256));
         examples.add(new Op.Pair<String, Integer>("/mamdani/matlab/tank", 256));
         examples.add(new Op.Pair<String, Integer>("/mamdani/matlab/tank2", 512));
         examples.add(new Op.Pair<String, Integer>("/mamdani/matlab/tipper", 256));
-        examples.add(new Op.Pair<String, Integer>("/mamdani/matlab/tipper1", 10 ^ 5));
+        examples.add(new Op.Pair<String, Integer>("/mamdani/matlab/tipper1", (int) 1e5));
         examples.add(new Op.Pair<String, Integer>("/mamdani/octave/investment_portfolio", 256));
         examples.add(new Op.Pair<String, Integer>("/mamdani/octave/mamdani_tip_calculator", 256));
-        examples.add(new Op.Pair<String, Integer>("/takagi-sugeno/approximation", 10 ^ 6));
-        examples.add(new Op.Pair<String, Integer>("/takagi-sugeno/SimpleDimmer", 2 * 10 ^ 6));
+        examples.add(new Op.Pair<String, Integer>("/takagi-sugeno/approximation", (int) 1e6));
+        examples.add(new Op.Pair<String, Integer>("/takagi-sugeno/SimpleDimmer", (int) 2e6));
         examples.add(new Op.Pair<String, Integer>("/takagi-sugeno/matlab/fpeaks", 512));
         examples.add(new Op.Pair<String, Integer>("/takagi-sugeno/matlab/invkine1", 256));
         examples.add(new Op.Pair<String, Integer>("/takagi-sugeno/matlab/invkine2", 256));
@@ -740,14 +738,14 @@ public class Console {
         examples.add(new Op.Pair<String, Integer>("/takagi-sugeno/matlab/slcp1", 15));
         examples.add(new Op.Pair<String, Integer>("/takagi-sugeno/matlab/slcpp1", 9));
         examples.add(new Op.Pair<String, Integer>("/takagi-sugeno/matlab/sltbu_fl", 128));
-        examples.add(new Op.Pair<String, Integer>("/takagi-sugeno/matlab/sugeno1", 2 * 10 ^ 6));
+        examples.add(new Op.Pair<String, Integer>("/takagi-sugeno/matlab/sugeno1", (int) 2e6));
         examples.add(new Op.Pair<String, Integer>("/takagi-sugeno/matlab/tanksg", 1024));
         examples.add(new Op.Pair<String, Integer>("/takagi-sugeno/matlab/tippersg", 1024));
-        examples.add(new Op.Pair<String, Integer>("/takagi-sugeno/octave/cubic_approximator", 2 * 10 ^ 6));
+        examples.add(new Op.Pair<String, Integer>("/takagi-sugeno/octave/cubic_approximator", (int) 2e6));
         examples.add(new Op.Pair<String, Integer>("/takagi-sugeno/octave/heart_disease_risk", 1024));
         examples.add(new Op.Pair<String, Integer>("/takagi-sugeno/octave/linear_tip_calculator", 1024));
         examples.add(new Op.Pair<String, Integer>("/takagi-sugeno/octave/sugeno_tip_calculator", 512));
-        examples.add(new Op.Pair<String, Integer>("/tsukamoto/tsukamoto", 10 ^ 6));
+        examples.add(new Op.Pair<String, Integer>("/tsukamoto/tsukamoto", (int) 1e6));
 
         for (Op.Pair<String, Integer> example : examples) {
             StringBuilder message = new StringBuilder();
@@ -815,24 +813,29 @@ public class Console {
             if (args.length >= 2) {
                 path = args[1];
             }
-            String sourceBase = path + "/original/";
-            String targetBase = path + "/tmp/fl";
+            String outputPath = "/tmp/";
+            if (args.length >= 3) {
+                outputPath = args[2];
+            }
+            FuzzyLite.logger().log(Level.FINE, "Origin: {0}\nTarget: {1}",
+                    new String[]{path, outputPath});
             FuzzyLite.setDecimals(3);
             try {
-                //mkdir -p tmp/fl/mamdani/matlab
-                //mkdir -p tmp/fl/mamdani/octave
-                //mkdir -p tmp/fl/takagi-sugeno/matlab
-                //mkdir -p tmp/fl/takagi-sugeno/octave
-                //mkdir -p tmp/fl/tsukamoto
-                exportAllExamples("fll", "fll", sourceBase, targetBase);
-                exportAllExamples("fll", "fcl", sourceBase, targetBase);
-                exportAllExamples("fll", "fis", sourceBase, targetBase);
-                exportAllExamples("fll", "cpp", sourceBase, targetBase);
-                exportAllExamples("fll", "java", sourceBase, targetBase);
+                /*
+                mkdir -p fl/mamdani/matlab; mkdir -p fl/mamdani/octave; 
+                mkdir -p fl/takagi-sugeno/matlab; mkdir -p fl/takagi-sugeno/octave
+                mkdir -p fl/tsukamoto
+                 */
+                exportAllExamples("fll", "fll", path, outputPath);
+                exportAllExamples("fll", "fcl", path, outputPath);
+                exportAllExamples("fll", "fis", path, outputPath);
+                exportAllExamples("fll", "cpp", path, outputPath);
+                exportAllExamples("fll", "java", path, outputPath);
                 FuzzyLite.setDecimals(8);
-                exportAllExamples("fll", "fld", sourceBase, targetBase);
+                exportAllExamples("fll", "fld", path, outputPath);
             } catch (Exception ex) {
                 FuzzyLite.logger().log(Level.SEVERE, ex.toString(), ex);
+                throw new RuntimeException(ex);
             }
             return;
         }
