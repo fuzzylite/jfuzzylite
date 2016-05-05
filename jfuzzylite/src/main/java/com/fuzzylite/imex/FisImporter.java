@@ -19,7 +19,6 @@ package com.fuzzylite.imex;
 import com.fuzzylite.Engine;
 import com.fuzzylite.Op;
 import com.fuzzylite.Op.Pair;
-import com.fuzzylite.activation.General;
 import com.fuzzylite.defuzzifier.Bisector;
 import com.fuzzylite.defuzzifier.Centroid;
 import com.fuzzylite.defuzzifier.LargestOfMaximum;
@@ -42,6 +41,7 @@ import com.fuzzylite.norm.s.HamacherSum;
 import com.fuzzylite.norm.s.Maximum;
 import com.fuzzylite.norm.s.NilpotentMaximum;
 import com.fuzzylite.norm.s.NormalizedSum;
+import com.fuzzylite.norm.s.UnboundedSum;
 import com.fuzzylite.norm.t.AlgebraicProduct;
 import com.fuzzylite.norm.t.BoundedDifference;
 import com.fuzzylite.norm.t.DrasticProduct;
@@ -52,6 +52,7 @@ import com.fuzzylite.norm.t.NilpotentMinimum;
 import com.fuzzylite.rule.Rule;
 import com.fuzzylite.rule.RuleBlock;
 import com.fuzzylite.term.Bell;
+import com.fuzzylite.term.Binary;
 import com.fuzzylite.term.Concave;
 import com.fuzzylite.term.Constant;
 import com.fuzzylite.term.Cosine;
@@ -104,18 +105,11 @@ public class FisImporter extends Importer {
         try {
             while ((line = fisReader.readLine()) != null) {
                 ++lineNumber;
-                List<String> comments = Op.split(line, "//");
-                if (comments.size() > 1) {
-                    line = comments.get(0);
-                }
-                comments = Op.split(line, "#");
-                if (comments.size() > 1) {
-                    line = comments.get(0);
-                }
+                line = Op.split(line, "//", false).get(0);
+                line = Op.split(line, "#", false).get(0);
                 line = line.trim();
                 // (%) indicates a comment only when used at the start of line
-                if (line.isEmpty() || line.charAt(0) == '%' || line.charAt(0) == '#'
-                        || "//".equals(line.substring(0, 2))) {
+                if (line.isEmpty() || line.charAt(0) == '%') {
                     continue;
                 }
 
@@ -463,7 +457,7 @@ public class FisImporter extends Importer {
         if ("max".equals(name)) {
             return Maximum.class.getSimpleName();
         }
-        if ("sum".equals(name) || "probor".equals(name)) {
+        if ("probor".equals(name)) {
             return AlgebraicSum.class.getSimpleName();
         }
         if ("bounded_sum".equals(name)) {
@@ -483,6 +477,9 @@ public class FisImporter extends Importer {
         }
         if ("nilpotent_maximum".equals(name)) {
             return NilpotentMaximum.class.getSimpleName();
+        }
+        if ("sum".equals(name)) {
+            return UnboundedSum.class.getSimpleName();
         }
         return name;
     }
@@ -567,12 +564,13 @@ public class FisImporter extends Importer {
 
     protected Term createInstance(String mClass, String name, List<String> parameters, Engine engine) {
         Map<String, String> mapping = new HashMap<String, String>();
-        mapping.put("discretemf", Discrete.class.getSimpleName());
+        mapping.put("gbellmf", Bell.class.getSimpleName());
+        mapping.put("binarymf", Binary.class.getSimpleName());
         mapping.put("concavemf", Concave.class.getSimpleName());
         mapping.put("constant", Constant.class.getSimpleName());
         mapping.put("cosinemf", Cosine.class.getSimpleName());
         mapping.put("function", Function.class.getSimpleName());
-        mapping.put("gbellmf", Bell.class.getSimpleName());
+        mapping.put("discretemf", Discrete.class.getSimpleName());
         mapping.put("gaussmf", Gaussian.class.getSimpleName());
         mapping.put("gauss2mf", GaussianProduct.class.getSimpleName());
         mapping.put("linear", Linear.class.getSimpleName());

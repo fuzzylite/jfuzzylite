@@ -14,12 +14,12 @@
  jfuzzylite™ is a trademark of FuzzyLite Limited.
 
  */
-
 package com.fuzzylite.imex;
 
 import com.fuzzylite.Engine;
 import com.fuzzylite.Op;
 import static com.fuzzylite.Op.str;
+import com.fuzzylite.activation.Activation;
 import com.fuzzylite.defuzzifier.Defuzzifier;
 import com.fuzzylite.defuzzifier.IntegralDefuzzifier;
 import com.fuzzylite.defuzzifier.WeightedDefuzzifier;
@@ -39,13 +39,15 @@ import java.util.regex.Pattern;
 public class CppExporter extends Exporter {
 
     private boolean prefixNamespace;
+    private boolean exportVariableName;
 
     public CppExporter() {
-        this(false);
+        this(false, true);
     }
 
-    public CppExporter(boolean prefixNamespace) {
+    public CppExporter(boolean prefixNamespace, boolean exportVariableName) {
         this.prefixNamespace = prefixNamespace;
+        this.exportVariableName = exportVariableName;
     }
 
     protected String fl() {
@@ -56,18 +58,26 @@ public class CppExporter extends Exporter {
         return this.prefixNamespace ? "fl::" + clazz : clazz;
     }
 
-    public void setPrefixNamespace(boolean prefixNamespace) {
+    public void setNamespacePrefixed(boolean prefixNamespace) {
         this.prefixNamespace = prefixNamespace;
     }
 
-    public boolean isPrefixNamespace() {
+    public boolean isNamespacePrefixed() {
         return this.prefixNamespace;
+    }
+
+    public boolean isVariableNameExported() {
+        return exportVariableName;
+    }
+
+    public void setExportVariableName(boolean exportVariableName) {
+        this.exportVariableName = exportVariableName;
     }
 
     @Override
     public String toString(Engine engine) {
         StringBuilder result = new StringBuilder();
-        if (!prefixNamespace) {
+        if (!isNamespacePrefixed()) {
             result.append("using namespace fl;\n\n");
         }
         result.append(fl("Engine* ") + "engine = new " + fl("Engine;\n"));
@@ -92,9 +102,14 @@ public class CppExporter extends Exporter {
     }
 
     public String toString(InputVariable inputVariable, Engine engine) {
-        String name = "inputVariable";
-        if (engine.numberOfInputVariables() > 1) {
-            name += engine.getInputVariables().indexOf(inputVariable) + 1;
+        String name;
+        if (isVariableNameExported()) {
+            name = Op.validName(inputVariable.getName());
+        } else {
+            name = "inputVariable";
+            if (engine.numberOfInputVariables() > 1) {
+                name += engine.getInputVariables().indexOf(inputVariable) + 1;
+            }
         }
         StringBuilder result = new StringBuilder();
         result.append(String.format(
@@ -106,6 +121,8 @@ public class CppExporter extends Exporter {
         result.append(String.format(
                 "%s->setRange(%s, %s);\n", name,
                 toString(inputVariable.getMinimum()), toString(inputVariable.getMaximum())));
+        result.append(String.format(
+                "%s->setLockValueInRange(%s);\n", name, String.valueOf(inputVariable.isLockValueInRange())));
         for (Term term : inputVariable.getTerms()) {
             result.append(String.format("%s->addTerm(%s);\n",
                     name, toString(term)));
@@ -116,9 +133,14 @@ public class CppExporter extends Exporter {
     }
 
     public String toString(OutputVariable outputVariable, Engine engine) {
-        String name = "outputVariable";
-        if (engine.numberOfOutputVariables() > 1) {
-            name += engine.getOutputVariables().indexOf(outputVariable) + 1;
+        String name;
+        if (isVariableNameExported()) {
+            name = Op.validName(outputVariable.getName());
+        } else {
+            name = "outputVariable";
+            if (engine.numberOfOutputVariables() > 1) {
+                name += engine.getOutputVariables().indexOf(outputVariable) + 1;
+            }
         }
         StringBuilder result = new StringBuilder();
         result.append(String.format(
@@ -131,6 +153,8 @@ public class CppExporter extends Exporter {
                 "%s->setRange(%s, %s);\n", name,
                 toString(outputVariable.getMinimum()), toString(outputVariable.getMaximum())));
         result.append(String.format(
+                "%s->setLockValueInRange(%s);\n", name, String.valueOf(outputVariable.isLockValueInRange())));
+        result.append(String.format(
                 "%s->fuzzyOutput()->setAggregation(%s);\n",
                 name, toString(outputVariable.fuzzyOutput().getAggregation())));
         result.append(String.format(
@@ -140,11 +164,8 @@ public class CppExporter extends Exporter {
                 "%s->setDefaultValue(%s);\n", name,
                 toString(outputVariable.getDefaultValue())));
         result.append(String.format(
-                "%s->setLockPreviousOutputValue(%s);\n", name,
-                outputVariable.isLockPreviousValue()));
-        result.append(String.format(
-                "%s->setLockOutputValueInRange(%s);\n", name,
-                outputVariable.isLockValueInRange()));
+                "%s->setLockPreviousValue(%s);\n", name,
+                String.valueOf(outputVariable.isLockPreviousValue())));
         for (Term term : outputVariable.getTerms()) {
             result.append(String.format("%s->addTerm(%s);\n",
                     name, toString(term)));
@@ -172,6 +193,9 @@ public class CppExporter extends Exporter {
                 "%s->setDisjunction(%s);\n", name, toString(ruleBlock.getDisjunction())));
         result.append(String.format(
                 "%s->setImplication(%s);\n", name, toString(ruleBlock.getImplication())));
+        result.append(String.format(
+                "%s->setActivation(%s);\n", name, toString(ruleBlock.getActivation())));
+
         for (Rule rule : ruleBlock.getRules()) {
             result.append(String.format("%s->addRule("
                     + "fl::Rule::parse(\"%s\", engine));\n",
@@ -249,6 +273,18 @@ public class CppExporter extends Exporter {
                     ((WeightedDefuzzifier) defuzzifier).getType());
         }
         return "new " + fl(defuzzifier.getClass().getSimpleName());
+    }
+
+    public String toString(Activation activation) {
+        if (activation == null) {
+            return "fl:null";
+        }
+        String parameters = activation.parameters().trim();
+        if (parameters.isEmpty()) {
+            return "new " + fl(activation.getClass().getSimpleName()) + "()";
+        }
+        return "new " + fl(activation.getClass().getSimpleName())
+                + String.format("\"%s\"", parameters);
     }
 
     @Override

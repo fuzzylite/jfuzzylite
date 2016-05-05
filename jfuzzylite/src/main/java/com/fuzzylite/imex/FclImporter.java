@@ -14,7 +14,6 @@
  jfuzzylite™ is a trademark of FuzzyLite Limited.
 
  */
-
 package com.fuzzylite.imex;
 
 import com.fuzzylite.Engine;
@@ -84,22 +83,13 @@ public class FclImporter extends Importer {
         try {
             while ((line = fclReader.readLine()) != null) {
                 ++lineNumber;
-                List<String> comments = Op.split(line, "//");
-                if (comments.size() > 1) {
-                    line = comments.get(0);
-                }
-                comments = Op.split(line, "#");
-                if (comments.size() > 1) {
-                    line = comments.get(0);
-                }
-                line = line.trim();
-                // (%) indicates a comment only when used at the start of line
-                if (line.isEmpty() || line.charAt(0) == '%' || line.charAt(0) == '#'
-                        || "//".equals(line.substring(0, 2))) {
+                line = Op.split(line, "//", false).get(0);
+                line = Op.split(line, "#", false).get(0);
+                line = line.trim().replaceAll(Pattern.quote(";"), "");
+                if (line.isEmpty() || line.charAt(0) == '%') {
                     continue;
                 }
-
-                line = line.replaceAll(Pattern.quote(";"), "");
+                
                 StringTokenizer tokenizer = new StringTokenizer(line);
                 String firstToken = tokenizer.nextToken();
 

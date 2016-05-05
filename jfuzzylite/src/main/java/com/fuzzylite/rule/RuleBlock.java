@@ -52,7 +52,8 @@ public class RuleBlock {
     }
 
     public RuleBlock(String name, TNorm conjunction, SNorm disjunction, TNorm implication) {
-        this(name, conjunction, disjunction, implication, null);
+        //@todo: replace General activation to null in version 7.0
+        this(name, conjunction, disjunction, implication, new General());
     }
 
     public RuleBlock(String name, TNorm conjunction, SNorm disjunction, TNorm implication, Activation activation) {
@@ -67,6 +68,7 @@ public class RuleBlock {
 
     public void activate() {
         FuzzyLite.logger().log(Level.FINE, "Activating rule block {0}", getName());
+        //@todo: remove check in version 7.0
         if (getActivation() == null) {
             setActivation(new General());
         }

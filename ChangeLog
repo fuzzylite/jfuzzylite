@@ -13,7 +13,18 @@ Version 6.0
 * Refactored static Term::updateReference(Engine) to class method to be overriden as necessary
 * Renamed Rule::activationDegree() to Rule::computeActivationDegree()
 * Added Rule::[get|set]activationDegree() and Rule::[is|set]Activated()
-* Created HedgeFactory and removed Hedges from Rule.
+* Removed Hedges from Rule.
+* RuleBlocks utilize new Activation methods to activate rules
+* General is the traditional Activation method, but there are seven to choose from.
+* Created a ActivationFactory to automatically incorporate new Activation methods
+* Updated Fll[Importer|Exporter] to utilize the new definitions, namely Implementation (formerly Activation), Aggregation (formerly Accumulation), and Activation methods, while maintaining backward compatibility for the FLL version 5.0
+* Added UnboundedSum (a+b) SNorm to refer to [Matlab|Octave]'s "sum" aggregation operator, as opposed of the "probor" disjunction operator
+* Updated Fis[Importer|Exporter] to utilize UnboundedSum (sum) and AlgebraicSum (probor) accordingly
+* Renamed CppExporter::[set|is]PrefixNamespace() to CppExporter::[set|is]NamespacePrefixed()
+* Added [Cpp|Java]Exporter::[set|is]VariableNameExported() to export variables by name instead of generic type.
+* Updated [Fis|Fcl]Exporter to prevent from exporting incompatible keywords with their respective languages
+
+
 
 
 Version 5.0

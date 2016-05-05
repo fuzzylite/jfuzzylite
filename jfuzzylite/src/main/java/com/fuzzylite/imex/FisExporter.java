@@ -14,7 +14,6 @@
  jfuzzylite™ is a trademark of FuzzyLite Limited.
 
  */
-
 package com.fuzzylite.imex;
 
 import com.fuzzylite.Engine;
@@ -47,6 +46,7 @@ import com.fuzzylite.norm.s.HamacherSum;
 import com.fuzzylite.norm.s.Maximum;
 import com.fuzzylite.norm.s.NilpotentMaximum;
 import com.fuzzylite.norm.s.NormalizedSum;
+import com.fuzzylite.norm.s.UnboundedSum;
 import com.fuzzylite.norm.t.AlgebraicProduct;
 import com.fuzzylite.norm.t.BoundedDifference;
 import com.fuzzylite.norm.t.DrasticProduct;
@@ -60,6 +60,7 @@ import com.fuzzylite.rule.Proposition;
 import com.fuzzylite.rule.Rule;
 import com.fuzzylite.rule.RuleBlock;
 import com.fuzzylite.term.Bell;
+import com.fuzzylite.term.Binary;
 import com.fuzzylite.term.Concave;
 import com.fuzzylite.term.Constant;
 import com.fuzzylite.term.Cosine;
@@ -171,9 +172,6 @@ public class FisExporter extends Exporter {
         for (int i = 0; i < engine.numberOfInputVariables(); ++i) {
             InputVariable inputVariable = engine.getInputVariable(i);
             result.append(String.format("[Input%d]\n", (i + 1)));
-            if (!inputVariable.isEnabled()) {
-                result.append(String.format("Enabled=%d\n", inputVariable.isEnabled() ? 1 : 0));
-            }
             result.append(String.format("Name='%s'\n", inputVariable.getName()));
             result.append(String.format("Range=[%s %s]\n",
                     str(inputVariable.getMinimum()), str(inputVariable.getMaximum())));
@@ -195,21 +193,9 @@ public class FisExporter extends Exporter {
         for (int i = 0; i < engine.numberOfOutputVariables(); ++i) {
             OutputVariable outputVariable = engine.getOutputVariable(i);
             result.append(String.format("[Output%d]\n", (i + 1)));
-            if (!outputVariable.isEnabled()) {
-                result.append(String.format("Enabled=%d\n", outputVariable.isEnabled() ? 1 : 0));
-            }
             result.append(String.format("Name='%s'\n", outputVariable.getName()));
             result.append(String.format("Range=[%s %s]\n",
                     str(outputVariable.getMinimum()), str(outputVariable.getMaximum())));
-            if (!Double.isNaN(outputVariable.getDefaultValue())) {
-                result.append(String.format("Default=%s\n", str(outputVariable.getDefaultValue())));
-            }
-            if (outputVariable.isLockPreviousValue()) {
-                result.append(String.format("LockPrevious=%d\n", outputVariable.isLockPreviousValue() ? 1 : 0));
-            }
-            if (outputVariable.isLockValueInRange()) {
-                result.append(String.format("LockRange=%d\n", outputVariable.isLockValueInRange() ? 1 : 0));
-            }
             result.append(String.format("NumMFs=%d\n", outputVariable.numberOfTerms()));
             for (int t = 0; t < outputVariable.numberOfTerms(); ++t) {
                 Term term = outputVariable.getTerm(t);
@@ -384,7 +370,7 @@ public class FisExporter extends Exporter {
             return "max";
         }
         if (norm instanceof AlgebraicSum) {
-            return "sum";
+            return "probor";
         }
         if (norm instanceof NormalizedSum) {
             return "normalized_sum";
@@ -403,6 +389,9 @@ public class FisExporter extends Exporter {
         }
         if (norm instanceof NilpotentMaximum) {
             return "nilpotent_maximum";
+        }
+        if (norm instanceof UnboundedSum) {
+            return "sum";
         }
 
         return norm.getClass().getSimpleName();
@@ -442,6 +431,13 @@ public class FisExporter extends Exporter {
             return String.format("'%s':'gbellmf',[%s]", term.getName(),
                     Op.join(" ", t.getWidth(), t.getSlope(), t.getCenter()));
         }
+
+        if (term instanceof Binary) {
+            Binary t = (Binary) term;
+            return String.format("'%s':'binarymf',[%s]", term.getName(),
+                    Op.join(" ", t.getStart(), t.getDirection()));
+        }
+
         if (term instanceof Concave) {
             Concave t = (Concave) term;
             return String.format("'%s':'concavemf',[%s]", term.getName(),

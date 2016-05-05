@@ -14,12 +14,12 @@
  jfuzzylite™ is a trademark of FuzzyLite Limited.
 
  */
-
 package com.fuzzylite.imex;
 
 import com.fuzzylite.Engine;
 import com.fuzzylite.Op;
 import static com.fuzzylite.Op.str;
+import com.fuzzylite.activation.Activation;
 import com.fuzzylite.defuzzifier.Defuzzifier;
 import com.fuzzylite.defuzzifier.IntegralDefuzzifier;
 import com.fuzzylite.defuzzifier.WeightedDefuzzifier;
@@ -36,8 +36,22 @@ import java.util.regex.Pattern;
 
 public class JavaExporter extends Exporter {
 
-    public JavaExporter() {
+    private boolean exportVariableName;
 
+    public JavaExporter() {
+        this(true);
+    }
+
+    public JavaExporter(boolean exportVariableName) {
+        this.exportVariableName = exportVariableName;
+    }
+
+    public boolean isVariableNameExported() {
+        return exportVariableName;
+    }
+
+    public void setExportVariableName(boolean exportVariableName) {
+        this.exportVariableName = exportVariableName;
     }
 
     @Override
@@ -66,9 +80,14 @@ public class JavaExporter extends Exporter {
     }
 
     public String toString(InputVariable inputVariable, Engine engine) {
-        String name = "inputVariable";
-        if (engine.numberOfInputVariables() > 1) {
-            name += engine.getInputVariables().indexOf(inputVariable) + 1;
+        String name;
+        if (isVariableNameExported()) {
+            name = Op.validName(inputVariable.getName());
+        } else {
+            name = "inputVariable";
+            if (engine.numberOfInputVariables() > 1) {
+                name += engine.getInputVariables().indexOf(inputVariable) + 1;
+            }
         }
 
         StringBuilder result = new StringBuilder();
@@ -81,19 +100,24 @@ public class JavaExporter extends Exporter {
         result.append(String.format(
                 "%s.setRange(%s, %s);\n", name,
                 toString(inputVariable.getMinimum()), toString(inputVariable.getMaximum())));
-        for (Term term : inputVariable.getTerms()) {
-            result.append(String.format("%s.addTerm(%s);\n",
-                    name, toString(term)));
-        }
         result.append(String.format(
-                "engine.addInputVariable(%s);\n", name));
+                "%s.setLockValueInRange(%s);\n", name, String.valueOf(inputVariable.isLockValueInRange())));
+        for (Term term : inputVariable.getTerms()) {
+            result.append(String.format("%s.addTerm(%s);\n", name, toString(term)));
+        }
+        result.append(String.format("engine.addInputVariable(%s);\n", name));
         return result.toString();
     }
 
     public String toString(OutputVariable outputVariable, Engine engine) {
-        String name = "outputVariable";
-        if (engine.numberOfOutputVariables() > 1) {
-            name += engine.getOutputVariables().indexOf(outputVariable) + 1;
+        String name;
+        if (isVariableNameExported()) {
+            name = Op.validName(outputVariable.getName());
+        } else {
+            name = "outputVariable";
+            if (engine.numberOfOutputVariables() > 1) {
+                name += engine.getOutputVariables().indexOf(outputVariable) + 1;
+            }
         }
         StringBuilder result = new StringBuilder();
         result.append(String.format(
@@ -106,6 +130,8 @@ public class JavaExporter extends Exporter {
                 "%s.setRange(%s, %s);\n", name,
                 toString(outputVariable.getMinimum()), toString(outputVariable.getMaximum())));
         result.append(String.format(
+                "%s.setLockValueInRange(%s);\n", name, String.valueOf(outputVariable.isLockValueInRange())));
+        result.append(String.format(
                 "%s.fuzzyOutput().setAggregation(%s);\n",
                 name, toString(outputVariable.fuzzyOutput().getAggregation())));
         result.append(String.format(
@@ -115,11 +141,8 @@ public class JavaExporter extends Exporter {
                 "%s.setDefaultValue(%s);\n", name,
                 toString(outputVariable.getDefaultValue())));
         result.append(String.format(
-                "%s.setLockPreviousOutputValue(%s);\n", name,
+                "%s.setLockPreviousValue(%s);\n", name,
                 outputVariable.isLockPreviousValue()));
-        result.append(String.format(
-                "%s.setLockOutputValueInRange(%s);\n", name,
-                outputVariable.isLockValueInRange()));
         for (Term term : outputVariable.getTerms()) {
             result.append(String.format("%s.addTerm(%s);\n",
                     name, toString(term)));
@@ -146,6 +169,9 @@ public class JavaExporter extends Exporter {
                 "%s.setDisjunction(%s);\n", name, toString(ruleBlock.getDisjunction())));
         result.append(String.format(
                 "%s.setImplication(%s);\n", name, toString(ruleBlock.getImplication())));
+        result.append(String.format(
+                "%s.setActivation(%s);\n", name, toString(ruleBlock.getActivation())));
+
         for (Rule rule : ruleBlock.getRules()) {
             result.append(String.format("%s.addRule(Rule.parse(\"%s\", engine));\n",
                     name, rule.getText()));
@@ -202,6 +228,18 @@ public class JavaExporter extends Exporter {
                     ((WeightedDefuzzifier) defuzzifier).getType());
         }
         return String.format("new %s()", defuzzifier.getClass().getSimpleName());
+    }
+
+    public String toString(Activation activation) {
+        if (activation == null) {
+            return "fl:null";
+        }
+        String parameters = activation.parameters().trim();
+        if (parameters.isEmpty()) {
+            return "new " + activation.getClass().getSimpleName() + "()";
+        }
+        return "new " + activation.getClass().getSimpleName()
+                + String.format("\"%s\"", parameters);
     }
 
     public String toString(Norm norm) {
