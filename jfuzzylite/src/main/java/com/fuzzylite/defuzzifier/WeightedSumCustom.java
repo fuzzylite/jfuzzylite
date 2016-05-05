@@ -16,21 +16,23 @@
  */
 package com.fuzzylite.defuzzifier;
 
+import com.fuzzylite.norm.SNorm;
+import com.fuzzylite.norm.TNorm;
 import com.fuzzylite.term.Aggregated;
 import com.fuzzylite.term.Activated;
 import com.fuzzylite.term.Term;
 
-public class WeightedAverage extends WeightedDefuzzifier {
+public class WeightedSumCustom extends WeightedDefuzzifier {
 
-    public WeightedAverage() {
+    public WeightedSumCustom() {
         super(Type.Automatic);
     }
 
-    public WeightedAverage(Type type) {
+    public WeightedSumCustom(Type type) {
         super(type);
     }
 
-    public WeightedAverage(String type) {
+    public WeightedSumCustom(String type) {
         super(type);
     }
 
@@ -42,27 +44,33 @@ public class WeightedAverage extends WeightedDefuzzifier {
         maximum = fuzzyOutput.getMaximum();
 
         double sum = 0.0;
-        double weights = 0.0;
 
-        Type type = getType();
+        SNorm aggregation = fuzzyOutput.getAggregation();
+        WeightedDefuzzifier.Type type = getType();
         for (Activated activated : fuzzyOutput.getTerms()) {
             double w = activated.getDegree();
-            if (type == Type.Automatic) {
+            TNorm implication = activated.getImplication();
+            if (type == WeightedDefuzzifier.Type.Automatic) {
                 type = inferType(activated.getTerm());
             }
 
-            double z = (type == Type.TakagiSugeno)
+            double z = (type == WeightedDefuzzifier.Type.TakagiSugeno)
                     ? activated.getTerm().membership(w)
                     : tsukamoto(activated.getTerm(), w, minimum, maximum);
-            sum += w * z;
-            weights += w;
+
+            double wz = implication != null
+                    ? implication.compute(w, z)
+                    : w * z;
+            sum = aggregation != null
+                    ? aggregation.compute(sum, wz)
+                    : sum + wz;
         }
-        return sum / weights;
+        return sum;
     }
 
     @Override
-    public WeightedAverage clone() throws CloneNotSupportedException {
-        return (WeightedAverage) super.clone();
+    public WeightedSumCustom clone() throws CloneNotSupportedException {
+        return (WeightedSumCustom) super.clone();
     }
 
 }

@@ -268,6 +268,7 @@ public class FldExporter extends Exporter {
 
         for (int i = 0; i < engine.numberOfOutputVariables(); ++i) {
             OutputVariable outputVariable = engine.getOutputVariable(i);
+            //@todo: remove defuzzification
             outputVariable.defuzzify();
             if (exportOutputValues) {
                 values.add(outputVariable.getValue());

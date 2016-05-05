@@ -14,17 +14,11 @@
  jfuzzylite™ is a trademark of FuzzyLite Limited.
 
  */
-
 package com.fuzzylite.defuzzifier;
 
 import com.fuzzylite.term.Aggregated;
 import com.fuzzylite.term.Activated;
 import com.fuzzylite.term.Term;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
 
 public class WeightedSum extends WeightedDefuzzifier {
 
@@ -49,54 +43,18 @@ public class WeightedSum extends WeightedDefuzzifier {
 
         double sum = 0.0;
 
-        if (fuzzyOutput.getAggregation() == null) {
-            WeightedDefuzzifier.Type type = getType();
-            for (Activated activated : fuzzyOutput.getTerms()) {
-                double w = activated.getDegree();
-                if (type == WeightedDefuzzifier.Type.Automatic) {
-                    type = inferType(activated.getTerm());
-                }
-
-                double z = (type == WeightedDefuzzifier.Type.TakagiSugeno)
-                        ? activated.getTerm().membership(w)
-                        : tsukamoto(activated.getTerm(), w, minimum, maximum);
-                sum += w * z;
-            }
-        } else {
-            Map<Term, List<Activated>> groups = new HashMap<Term, List<Activated>>();
-            for (Activated value : fuzzyOutput.getTerms()) {
-                Term key = value.getTerm();
-                if (groups.containsKey(key)) {
-                    groups.get(key).add(value);
-                } else {
-                    List<Activated> list = new ArrayList<Activated>();
-                    list.add(value);
-                    groups.put(key, list);
-                }
+        WeightedDefuzzifier.Type type = getType();
+        for (Activated activated : fuzzyOutput.getTerms()) {
+            double w = activated.getDegree();
+            if (type == WeightedDefuzzifier.Type.Automatic) {
+                type = inferType(activated.getTerm());
             }
 
-            WeightedDefuzzifier.Type type = getType();
-            Iterator<Term> it = groups.keySet().iterator();
-            while (it.hasNext()) {
-                Term activatedTerm = it.next();
-                double accumulatedDegree = 0.0;
-                for (Activated t : groups.get(activatedTerm)) {
-                    accumulatedDegree = fuzzyOutput.getAggregation().compute(
-                            accumulatedDegree, t.getDegree());
-                }
-
-                if (type == WeightedDefuzzifier.Type.Automatic) {
-                    type = inferType(activatedTerm);
-                }
-
-                double z = (type == WeightedDefuzzifier.Type.TakagiSugeno)
-                        ? activatedTerm.membership(accumulatedDegree)
-                        : tsukamoto(activatedTerm, accumulatedDegree, minimum, maximum);
-
-                sum += accumulatedDegree * z;
-            }
+            double z = (type == WeightedDefuzzifier.Type.TakagiSugeno)
+                    ? activated.getTerm().membership(w)
+                    : tsukamoto(activated.getTerm(), w, minimum, maximum);
+            sum += w * z;
         }
-
         return sum;
     }
 

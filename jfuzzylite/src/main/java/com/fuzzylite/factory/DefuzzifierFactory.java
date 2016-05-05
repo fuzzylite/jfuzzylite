@@ -24,7 +24,9 @@ import com.fuzzylite.defuzzifier.LargestOfMaximum;
 import com.fuzzylite.defuzzifier.MeanOfMaximum;
 import com.fuzzylite.defuzzifier.SmallestOfMaximum;
 import com.fuzzylite.defuzzifier.WeightedAverage;
+import com.fuzzylite.defuzzifier.WeightedAverageCustom;
 import com.fuzzylite.defuzzifier.WeightedSum;
+import com.fuzzylite.defuzzifier.WeightedSumCustom;
 
 public class DefuzzifierFactory extends ConstructionFactory<Defuzzifier> {
 
@@ -35,7 +37,9 @@ public class DefuzzifierFactory extends ConstructionFactory<Defuzzifier> {
         register(MeanOfMaximum.class);
         register(SmallestOfMaximum.class);
         register(WeightedAverage.class);
+        register(WeightedAverageCustom.class);
         register(WeightedSum.class);
+        register(WeightedSumCustom.class);
     }
 
     @Override
