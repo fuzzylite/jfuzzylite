@@ -2,6 +2,7 @@ Engine: Cubic-Approximator
 InputVariable: X
   enabled: true
   range: -5.000 5.000
+  lock-range: false
   term: AboutNegFive Triangle -6.000 -5.000 -4.000
   term: AboutNegFour Triangle -5.000 -4.000 -3.000
   term: AboutNegThree Triangle -4.000 -3.000 -2.000
@@ -16,11 +17,11 @@ InputVariable: X
 OutputVariable: ApproxXCubed
   enabled: true
   range: -5.000 5.000
-  accumulation: none
+  lock-range: false
+  aggregation: none
   defuzzifier: WeightedAverage TakagiSugeno
   default: nan
   lock-previous: false
-  lock-range: false
   term: TangentatNegFive Linear 75.000 250.000
   term: TangentatNegFour Linear 48.000 128.000
   term: TangentatNegThree Linear 27.000 54.000
@@ -36,6 +37,7 @@ RuleBlock:
   enabled: true
   conjunction: none
   disjunction: none
+  implication: none
   activation: none
   rule: if X is AboutNegFive then ApproxXCubed is TangentatNegFive
   rule: if X is AboutNegFour then ApproxXCubed is TangentatNegFour
