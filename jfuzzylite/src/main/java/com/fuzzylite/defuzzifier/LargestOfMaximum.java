@@ -14,7 +14,6 @@
  jfuzzylite™ is a trademark of FuzzyLite Limited.
 
  */
-
 package com.fuzzylite.defuzzifier;
 
 import com.fuzzylite.FuzzyLite;
@@ -36,14 +35,6 @@ public class LargestOfMaximum extends IntegralDefuzzifier {
     public double defuzzify(Term term, double minimum, double maximum) {
         if (!Op.isFinite(minimum + maximum)) {
             return Double.NaN;
-        }
-        if (maximum - minimum > getResolution()) {
-            FuzzyLite.logger().warning(String.format(
-                    "[accuracy warning] resolution (%d)"
-                    + "is smaller than the range (%s, %s). "
-                    + "Improve the accuracy by increasing the resolution to a value "
-                    + "greater or equal to the range.",
-                    getResolution(), str(minimum), str(maximum)));
         }
 
         double dx = (maximum - minimum) / getResolution();
