@@ -75,7 +75,6 @@ public class Antecedent {
             throw new RuntimeException(String.format(
                     "[antecedent error] antecedent <%s> is not loaded", text));
         }
-        //@todo: add type to Expression
         if (node.type() == Expression.Type.Proposition) {
             Proposition proposition = (Proposition) node;
             if (!proposition.getVariable().isEnabled()) {

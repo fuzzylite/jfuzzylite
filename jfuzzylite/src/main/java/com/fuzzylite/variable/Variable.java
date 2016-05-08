@@ -67,8 +67,8 @@ public class Variable implements Op.Cloneable {
     }
 
     public void setValue(double value) {
-        this.value = isLockValueInRange()
-                ? Op.bound(value, getMinimum(), getMaximum())
+        this.value = lockValueInRange
+                ? Op.bound(value, minimum, maximum)
                 : value;
     }
 

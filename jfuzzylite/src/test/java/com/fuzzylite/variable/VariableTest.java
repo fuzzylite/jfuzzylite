@@ -9,9 +9,9 @@ import com.fuzzylite.term.Triangle;
 import static org.hamcrest.CoreMatchers.is;
 import org.junit.After;
 import org.junit.AfterClass;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.BeforeClass;
-import static org.junit.Assert.*;
 
 public class VariableTest {
 
@@ -46,9 +46,9 @@ public class VariableTest {
         instance.addTerm(new Triangle("DARK", 0.000, 0.250, 0.500));
         instance.sort();
 
-        assertThat("DARK is first", instance.getTerm(0).getName(), is("DARK"));
-        assertThat("MEDIUM is middle", instance.getTerm(1).getName(), is("MEDIUM"));
-        assertThat("BRIGHT is last", instance.getTerm(2).getName(), is("BRIGHT"));
+        Assert.assertThat("DARK is first", instance.getTerm(0).getName(), is("DARK"));
+        Assert.assertThat("MEDIUM is middle", instance.getTerm(1).getName(), is("MEDIUM"));
+        Assert.assertThat("BRIGHT is last", instance.getTerm(2).getName(), is("BRIGHT"));
     }
 
 }

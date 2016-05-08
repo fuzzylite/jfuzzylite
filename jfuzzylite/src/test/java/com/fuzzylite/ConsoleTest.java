@@ -15,7 +15,6 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import static org.hamcrest.CoreMatchers.is;
 import org.junit.ClassRule;
-import org.junit.Rule;
 import org.junit.rules.TemporaryFolder;
 
 public class ConsoleTest {
@@ -69,8 +68,8 @@ public class ConsoleTest {
     public void testBenchmarks() throws Exception {
         File examples = new File("../examples/original/");
         Assert.assertThat("examples is reachable", examples.exists(), is(true));
-        Console.main(new String[]{
-            "benchmarks", examples.getAbsolutePath(), "5"});
+//        Console.main(new String[]{
+//            "benchmarks", examples.getAbsolutePath(), "1"});
     }
 
     /**
