@@ -33,7 +33,11 @@ public class Last extends Activation {
     private double threshold;
 
     public Last() {
-        this(1, 0.0);
+        this(1);
+    }
+
+    public Last(int numberOfRules) {
+        this(numberOfRules, 0.0);
     }
 
     public Last(int numberOfRules, double threshold) {

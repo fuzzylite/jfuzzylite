@@ -99,7 +99,7 @@ public class Console {
         StringBuilder result = new StringBuilder();
         result.append("=========================================\n");
         result.append("jfuzzylite: a fuzzy logic control library\n");
-        result.append(String.format("version: %s\n", FuzzyLite.LONG_VERSION));
+        result.append(String.format("version: %s\n", FuzzyLite.VERSION));
         result.append(String.format("author: %s\n", FuzzyLite.AUTHOR));
         result.append(String.format("license: %s\n", FuzzyLite.LICENSE));
         result.append("=========================================\n");
@@ -126,8 +126,8 @@ public class Console {
         }
 
         result.append("\n");
-        result.append("Visit http://www.fuzzylite.com/ for more information.\n\n");
-        result.append("Copyright (C) 2010-2015 FuzzyLite Limited.\n");
+        result.append("Visit " + FuzzyLite.WEBSITE + " for more information.\n\n");
+        result.append("Copyright (C) 2010-2016 FuzzyLite Limited.\n");
         result.append("All rights reserved.");
 
         return result.toString();
@@ -769,7 +769,7 @@ public class Console {
         try {
             for (Op.Pair<String, Integer> example : examples) {
                 Engine engine = importer.fromFile(new File(path + example.getFirst() + ".fll"));
-                int results = example.getSecond() ^ engine.numberOfInputVariables();
+                int results = (int) Math.pow(example.getSecond(), engine.numberOfInputVariables());
                 double[] time = new double[runs];
 
                 for (int run = 0; run < runs; ++run) {

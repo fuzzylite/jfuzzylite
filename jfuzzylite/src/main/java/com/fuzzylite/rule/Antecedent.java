@@ -76,7 +76,7 @@ public class Antecedent {
                     "[antecedent error] antecedent <%s> is not loaded", text));
         }
         //@todo: add type to Expression
-        if (node instanceof Proposition) {
+        if (node.type() == Expression.Type.Proposition) {
             Proposition proposition = (Proposition) node;
             if (!proposition.getVariable().isEnabled()) {
                 return 0.0;
@@ -110,7 +110,7 @@ public class Antecedent {
             return result;
         }
 
-        if (node instanceof Operator) {
+        if (node.type() == Expression.Type.Operator) {
             Operator operator = (Operator) node;
             if (operator.getLeft() == null || operator.getRight() == null) {
                 throw new RuntimeException("[syntax error] left and right operators cannot be null");

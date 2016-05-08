@@ -20,10 +20,6 @@ package com.fuzzylite.norm.s;
 import com.fuzzylite.Op;
 import com.fuzzylite.norm.SNorm;
 
-/**
- *
- * @author jcrada
- */
 public class NilpotentMaximum extends SNorm {
 
     @Override

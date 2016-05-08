@@ -33,7 +33,11 @@ public class First extends Activation {
     private double threshold;
 
     public First() {
-        this(1, 0.0);
+        this(1);
+    }
+
+    public First(int numberOfRules) {
+        this(numberOfRules, 0.0);
     }
 
     public First(int numberOfRules, double threshold) {

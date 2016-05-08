@@ -14,10 +14,15 @@
  jfuzzylite™ is a trademark of FuzzyLite Limited.
 
  */
-
 package com.fuzzylite.rule;
 
 public abstract class Expression {
+
+    public enum Type {
+        Proposition, Operator
+    }
+
+    public abstract Type type();
 
     @Override
     public abstract String toString();

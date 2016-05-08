@@ -14,7 +14,6 @@
  jfuzzylite™ is a trademark of FuzzyLite Limited.
 
  */
-
 package com.fuzzylite;
 
 import java.io.InputStream;
@@ -31,9 +30,9 @@ public class FuzzyLite {
      */
     private static class FLDecimalFormat extends DecimalFormat {
 
-		private static final long serialVersionUID = 1L;
+        private static final long serialVersionUID = 1L;
 
-		public FLDecimalFormat(String pattern) {
+        public FLDecimalFormat(String pattern) {
             this(pattern, RoundingMode.HALF_UP);
         }
 
@@ -41,12 +40,11 @@ public class FuzzyLite {
             super(pattern);
             setRoundingMode(roundingMode);
         }
-
     }
+
     public static final String NAME = "jfuzzylite";
-    public static final String VERSION = "5.0";
-    public static final String LONG_VERSION = "5.0b1504";
-    public static final String LICENSE = "GNU Lesser General Public License v3.0";
+    public static final String VERSION = "6.0";
+    public static final String LICENSE = "FuzzyLite License";
     public static final String AUTHOR = "Juan Rada-Vilela, Ph.D.";
     public static final String COMPANY = "FuzzyLite Limited";
     public static final String WEBSITE = "http://www.fuzzylite.com/";

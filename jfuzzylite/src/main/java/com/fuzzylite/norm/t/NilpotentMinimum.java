@@ -20,10 +20,6 @@ package com.fuzzylite.norm.t;
 import com.fuzzylite.Op;
 import com.fuzzylite.norm.TNorm;
 
-/**
- *
- * @author jcrada
- */
 public class NilpotentMinimum extends TNorm {
 
     @Override

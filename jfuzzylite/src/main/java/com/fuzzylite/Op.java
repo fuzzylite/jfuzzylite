@@ -189,7 +189,6 @@ public class Op {
     public static List<String> split(String string, String delimiter) {
         return split(string, delimiter, true);
     }
-//TODO: Check changing return type from ArrayList to LinkedList.
 
     public static List<String> split(String str, String delimiter,
             boolean ignoreEmpty) {

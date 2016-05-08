@@ -14,7 +14,6 @@
  jfuzzylite™ is a trademark of FuzzyLite Limited.
 
  */
-
 package com.fuzzylite.rule;
 
 public class Operator extends Expression {
@@ -58,6 +57,11 @@ public class Operator extends Expression {
 
     public void setRight(Expression right) {
         this.right = right;
+    }
+
+    @Override
+    public Type type() {
+        return Type.Operator;
     }
 
     @Override

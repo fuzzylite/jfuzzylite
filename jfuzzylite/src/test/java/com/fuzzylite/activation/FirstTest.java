@@ -19,9 +19,9 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-public class HighestTest {
+public class FirstTest {
 
-    public HighestTest() {
+    public FirstTest() {
     }
 
     @BeforeClass
@@ -40,34 +40,21 @@ public class HighestTest {
     public void tearDown() {
     }
 
-    /**
-     * Test of activate method, of class Highest.
-     */
     @Test
-    public void testActivate() {
+    public void testFirst() {
         Engine engine = Console.mamdani();
         InputVariable ambient = engine.getInputVariable(0);
-        ambient.setValue(0.3);
+        ambient.setValue(0.7);
         RuleBlock ruleBlock = engine.getRuleBlock(0);
-        ruleBlock.setActivation(new Highest(1));
+        ruleBlock.setActivation(new First(1));
         engine.process();
 
         List<Rule> rules = engine.getRuleBlock(0).getRules();
-        Assert.assertThat("First rule was activated",
-                rules.get(0).isActivated(), is(true));
-        Assert.assertThat("Second rule was not activated",
-                rules.get(1).isActivated(), is(false));
-        Assert.assertThat("Third rule was not activated",
-                rules.get(2).isActivated(), is(false));
-
-        ruleBlock.setActivation(new Highest(2));
-        engine.process();
-        Assert.assertThat("First rule was activated",
-                rules.get(0).isActivated(), is(true));
+        Assert.assertThat("First rule was not activated",
+                rules.get(0).isActivated(), is(false));
         Assert.assertThat("Second rule was activated",
                 rules.get(1).isActivated(), is(true));
         Assert.assertThat("Third rule was not activated",
                 rules.get(2).isActivated(), is(false));
     }
-
 }

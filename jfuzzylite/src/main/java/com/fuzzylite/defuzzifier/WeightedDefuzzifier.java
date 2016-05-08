@@ -29,10 +29,6 @@ import com.fuzzylite.term.Sigmoid;
 import com.fuzzylite.term.Term;
 import com.fuzzylite.term.ZShape;
 
-/**
- *
- * @author jcrada
- */
 public abstract class WeightedDefuzzifier extends Defuzzifier {
 
     public enum Type {

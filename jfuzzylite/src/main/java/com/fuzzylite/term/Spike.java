@@ -21,10 +21,6 @@ import com.fuzzylite.Op;
 import java.util.Iterator;
 import java.util.List;
 
-/**
- *
- * @author jcrada
- */
 public class Spike extends Term {
 
     private double center, width;

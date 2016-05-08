@@ -36,22 +36,22 @@ import java.util.regex.Pattern;
 
 public class JavaExporter extends Exporter {
 
-    private boolean exportVariableName;
+    private boolean usingVariableNames;
 
     public JavaExporter() {
         this(true);
     }
 
-    public JavaExporter(boolean exportVariableName) {
-        this.exportVariableName = exportVariableName;
+    public JavaExporter(boolean usingVariableNames) {
+        this.usingVariableNames = usingVariableNames;
     }
 
-    public boolean isVariableNameExported() {
-        return exportVariableName;
+    public boolean isUsingVariableNames() {
+        return usingVariableNames;
     }
 
-    public void setExportVariableName(boolean exportVariableName) {
-        this.exportVariableName = exportVariableName;
+    public void setUsingVariableNames(boolean usingVariableNames) {
+        this.usingVariableNames = usingVariableNames;
     }
 
     @Override
@@ -81,7 +81,7 @@ public class JavaExporter extends Exporter {
 
     public String toString(InputVariable inputVariable, Engine engine) {
         String name;
-        if (isVariableNameExported()) {
+        if (isUsingVariableNames()) {
             name = Op.validName(inputVariable.getName());
         } else {
             name = "inputVariable";
@@ -111,7 +111,7 @@ public class JavaExporter extends Exporter {
 
     public String toString(OutputVariable outputVariable, Engine engine) {
         String name;
-        if (isVariableNameExported()) {
+        if (isUsingVariableNames()) {
             name = Op.validName(outputVariable.getName());
         } else {
             name = "outputVariable";

@@ -38,16 +38,16 @@ import java.util.regex.Pattern;
 
 public class CppExporter extends Exporter {
 
-    private boolean prefixNamespace;
-    private boolean exportVariableName;
+    private boolean usingNamespace;
+    private boolean usingVariableNames;
 
     public CppExporter() {
         this(false, true);
     }
 
-    public CppExporter(boolean prefixNamespace, boolean exportVariableName) {
-        this.prefixNamespace = prefixNamespace;
-        this.exportVariableName = exportVariableName;
+    public CppExporter(boolean prefixNamespace, boolean exportVariableNames) {
+        this.usingNamespace = prefixNamespace;
+        this.usingVariableNames = exportVariableNames;
     }
 
     protected String fl() {
@@ -55,29 +55,29 @@ public class CppExporter extends Exporter {
     }
 
     protected String fl(String clazz) {
-        return this.prefixNamespace ? "fl::" + clazz : clazz;
+        return this.usingNamespace ? "fl::" + clazz : clazz;
     }
 
-    public void setNamespacePrefixed(boolean prefixNamespace) {
-        this.prefixNamespace = prefixNamespace;
+    public void setUsingNamespace(boolean usingNamespace) {
+        this.usingNamespace = usingNamespace;
     }
 
-    public boolean isNamespacePrefixed() {
-        return this.prefixNamespace;
+    public boolean isUsingNamespace() {
+        return this.usingNamespace;
     }
 
-    public boolean isVariableNameExported() {
-        return exportVariableName;
+    public void setUsingVariableNames(boolean usingVariableNames) {
+        this.usingVariableNames = usingVariableNames;
     }
 
-    public void setExportVariableName(boolean exportVariableName) {
-        this.exportVariableName = exportVariableName;
+    public boolean isUsingVariableNames() {
+        return usingVariableNames;
     }
 
     @Override
     public String toString(Engine engine) {
         StringBuilder result = new StringBuilder();
-        if (!isNamespacePrefixed()) {
+        if (!isUsingNamespace()) {
             result.append("using namespace fl;\n\n");
         }
         result.append(fl("Engine* ") + "engine = new " + fl("Engine;\n"));
@@ -103,7 +103,7 @@ public class CppExporter extends Exporter {
 
     public String toString(InputVariable inputVariable, Engine engine) {
         String name;
-        if (isVariableNameExported()) {
+        if (isUsingVariableNames()) {
             name = Op.validName(inputVariable.getName());
         } else {
             name = "inputVariable";
@@ -134,7 +134,7 @@ public class CppExporter extends Exporter {
 
     public String toString(OutputVariable outputVariable, Engine engine) {
         String name;
-        if (isVariableNameExported()) {
+        if (isUsingVariableNames()) {
             name = Op.validName(outputVariable.getName());
         } else {
             name = "outputVariable";

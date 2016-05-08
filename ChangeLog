@@ -23,8 +23,11 @@ Version 6.0
 * Renamed CppExporter::[set|is]PrefixNamespace() to CppExporter::[set|is]NamespacePrefixed()
 * Added [Cpp|Java]Exporter::[set|is]VariableNameExported() to export variables by name instead of generic type.
 * Updated [Fis|Fcl]Exporter to prevent from exporting incompatible keywords with their respective languages
-
-
+* Simplified Weighted[Average|Sum] to perform typical Takagi-Sugeno regardless of implication and aggregation
+* Created Weighted[Average|Sum]Custom to utilize implication and aggregation as operators to compute weighted [average|sum].
+* Renamed CppExporter::[set|is]PrefixNamespace() to CppExporter::[set|is]UsingNamespace()
+* Renamed [Java|Cpp]Exporter::[set|is]VariableNamesExported() to [Java|Cpp]Exporter::[set|is]UsingVariableNames()
+* Added [Hedge|TNorm|SNorm]Function to customise them with an inner Function term.
 
 
 Version 5.0

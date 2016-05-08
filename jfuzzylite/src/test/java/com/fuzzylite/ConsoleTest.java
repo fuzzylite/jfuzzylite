@@ -18,10 +18,6 @@ import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.rules.TemporaryFolder;
 
-/**
- *
- * @author juan
- */
 public class ConsoleTest {
 
     @ClassRule
@@ -67,6 +63,14 @@ public class ConsoleTest {
         Assert.assertThat("output folder exists", flFolder.getRoot().exists(), is(true));
         Console.main(new String[]{
             "export-examples", examples.getAbsolutePath(), flFolder.getRoot().getAbsolutePath()});
+    }
+
+    @Test
+    public void testBenchmarks() throws Exception {
+        File examples = new File("../examples/original/");
+        Assert.assertThat("examples is reachable", examples.exists(), is(true));
+        Console.main(new String[]{
+            "benchmarks", examples.getAbsolutePath(), "5"});
     }
 
     /**

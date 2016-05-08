@@ -14,7 +14,6 @@
  jfuzzylite™ is a trademark of FuzzyLite Limited.
 
  */
-
 package com.fuzzylite.rule;
 
 import com.fuzzylite.hedge.Hedge;
@@ -65,6 +64,11 @@ public class Proposition extends Expression {
 
     public void setTerm(Term term) {
         this.term = term;
+    }
+
+    @Override
+    public Type type() {
+        return Type.Proposition;
     }
 
     @Override

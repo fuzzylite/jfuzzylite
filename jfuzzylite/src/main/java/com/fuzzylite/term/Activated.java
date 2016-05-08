@@ -42,12 +42,12 @@ public class Activated extends Term {
         if (Double.isNaN(x)) {
             return Double.NaN;
         }
-        if (getImplication() == null) {
+        if (implication == null) {
             throw new RuntimeException(String.format("[implication error] "
                     + "implication operator needed to activate %s",
                     getTerm().toString()));
         }
-        return getImplication().compute(getTerm().membership(x), getDegree());
+        return implication.compute(term.membership(x), degree);
     }
 
     @Override

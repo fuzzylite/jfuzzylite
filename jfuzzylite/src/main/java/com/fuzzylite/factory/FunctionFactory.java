@@ -24,10 +24,6 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 
-/**
- *
- * @author jcrada
- */
 public class FunctionFactory extends CloningFactory<Function.Element> implements Op.Cloneable {
 
     public FunctionFactory() {
