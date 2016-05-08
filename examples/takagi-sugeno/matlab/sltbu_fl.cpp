@@ -48,7 +48,7 @@ ruleBlock->setName("");
 ruleBlock->setConjunction(fl::null);
 ruleBlock->setDisjunction(fl::null);
 ruleBlock->setImplication(fl::null);
-ruleBlock->setActivation(fl:null);
+ruleBlock->setActivation(fl::null);
 ruleBlock->addRule(fl::Rule::parse("if distance is near then control is out1mf1", engine));
 ruleBlock->addRule(fl::Rule::parse("if distance is far then control is out1mf2", engine));
 engine->addRuleBlock(ruleBlock);
