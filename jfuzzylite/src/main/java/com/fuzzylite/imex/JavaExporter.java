@@ -32,6 +32,7 @@ import com.fuzzylite.term.Linear;
 import com.fuzzylite.term.Term;
 import com.fuzzylite.variable.InputVariable;
 import com.fuzzylite.variable.OutputVariable;
+import java.util.List;
 import java.util.regex.Pattern;
 
 public class JavaExporter extends Exporter {
@@ -238,8 +239,14 @@ public class JavaExporter extends Exporter {
         if (parameters.isEmpty()) {
             return "new " + activation.getClass().getSimpleName() + "()";
         }
-        return "new " + activation.getClass().getSimpleName()
-                + String.format("\"%s\"", parameters);
+        List<String> values = Op.split(parameters, " ");
+        for (int i = 0; i < values.size(); ++i) {
+            String parameter = values.get(i);
+            values.set(i, Op.isNumeric(parameter) ? parameter : "\"" + parameter + "\"");
+        }
+        return String.format("new %s(%s)", 
+                activation.getClass().getSimpleName(),
+                Op.join(values, ", "));
     }
 
     public String toString(Norm norm) {

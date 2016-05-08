@@ -45,7 +45,6 @@ public class Last extends Activation {
         this.threshold = threshold;
     }
 
-    //@todo: Last(String parameters);
     @Override
     public String parameters() {
         return Op.str(getNumberOfRules()) + " " + Op.str(getThreshold());

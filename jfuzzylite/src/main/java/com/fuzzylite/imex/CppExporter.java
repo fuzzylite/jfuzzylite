@@ -277,14 +277,20 @@ public class CppExporter extends Exporter {
 
     public String toString(Activation activation) {
         if (activation == null) {
-            return "fl:null";
+            return "fl::null";
         }
         String parameters = activation.parameters().trim();
         if (parameters.isEmpty()) {
-            return "new " + fl(activation.getClass().getSimpleName()) + "()";
+            return "new " + fl(activation.getClass().getSimpleName());
         }
-        return "new " + fl(activation.getClass().getSimpleName())
-                + String.format("\"%s\"", parameters);
+        List<String> values = Op.split(parameters, " ");
+        for (int i = 0; i < values.size(); ++i) {
+            String parameter = values.get(i);
+            values.set(i, Op.isNumeric(parameter) ? parameter : "\"" + parameter + "\"");
+        }
+        return String.format("new %s(%s)", 
+                fl(activation.getClass().getSimpleName()),
+                Op.join(values, ", "));
     }
 
     @Override

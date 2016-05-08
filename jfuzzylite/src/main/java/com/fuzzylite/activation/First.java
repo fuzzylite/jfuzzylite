@@ -45,7 +45,6 @@ public class First extends Activation {
         this.threshold = threshold;
     }
 
-    //@todo: First(String parameters);
     @Override
     public String parameters() {
         return Op.str(getNumberOfRules()) + " " + Op.str(getThreshold());

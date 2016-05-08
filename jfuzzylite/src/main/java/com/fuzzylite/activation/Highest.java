@@ -40,7 +40,6 @@ public class Highest extends Activation {
         this.numberOfRules = numberOfRules;
     }
 
-    //@todo: First(String parameters);
     @Override
     public String parameters() {
         return Op.str(getNumberOfRules());
