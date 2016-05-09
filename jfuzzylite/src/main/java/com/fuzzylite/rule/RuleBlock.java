@@ -29,7 +29,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.logging.Level;
 
-public class RuleBlock {
+public class RuleBlock implements Op.Cloneable{
 
     private String name;
     private TNorm conjunction;
