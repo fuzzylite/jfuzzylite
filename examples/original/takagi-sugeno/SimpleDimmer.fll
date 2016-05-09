@@ -8,7 +8,7 @@ InputVariable: Ambient
 OutputVariable: Power
   enabled: true
   range: 0.000 1.000
-  accumulation: none
+   aggregation: none
   defuzzifier: WeightedAverage TakagiSugeno
   default: nan
   lock-previous: false
@@ -20,7 +20,8 @@ RuleBlock:
   enabled: true
   conjunction: none
   disjunction: none
-  activation: none
+  implication: none
+  activation: General
   rule: if Ambient is DARK then Power is HIGH
   rule: if Ambient is MEDIUM then Power is MEDIUM
   rule: if Ambient is BRIGHT then Power is LOW

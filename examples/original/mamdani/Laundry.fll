@@ -12,7 +12,7 @@ InputVariable: Dirt
 OutputVariable: Detergent
   enabled: true
   range: 0.000 80.000
-  accumulation: Maximum
+  aggregation: Maximum
   defuzzifier: MeanOfMaximum 500
   default: nan
   lock-previous: false
@@ -23,7 +23,7 @@ OutputVariable: Detergent
 OutputVariable: Cycle
   enabled: true
   range: 0.000 20.000
-  accumulation: Maximum
+  aggregation: Maximum
   defuzzifier: MeanOfMaximum 500
   default: nan
   lock-previous: false
@@ -34,7 +34,8 @@ RuleBlock:
   enabled: true
   conjunction: Minimum
   disjunction: Maximum
-  activation: Minimum
+  implication: Minimum
+  activation: General
   rule: if Load is small and Dirt is not high then Detergent is less_than_usual
   rule: if Load is small and Dirt is high then  Detergent is usual
   rule: if Load is normal and Dirt is low then Detergent is less_than_usual
