@@ -83,7 +83,7 @@ public class Console {
         }
     }
 
-    public static String usage() {
+    public String usage() {
         List<Option> options = new ArrayList<Option>();
         options.add(new Option(KW_INPUT_FILE, "inputfile", "file to import your engine from"));
         options.add(new Option(KW_INPUT_FORMAT, "format", "format of the file to import (fll | fis | fcl)"));
@@ -99,9 +99,9 @@ public class Console {
         StringBuilder result = new StringBuilder();
         result.append("=========================================\n");
         result.append("jfuzzylite: a fuzzy logic control library\n");
-        result.append(String.format("version: %s\n", FuzzyLite.VERSION));
-        result.append(String.format("author: %s\n", FuzzyLite.AUTHOR));
-        result.append(String.format("license: %s\n", FuzzyLite.LICENSE));
+        result.append(String.format("version: %s%n", FuzzyLite.VERSION));
+        result.append(String.format("author: %s%n", FuzzyLite.AUTHOR));
+        result.append(String.format("license: %s%n", FuzzyLite.LICENSE));
         result.append("=========================================\n");
         result.append("usage: java -jar jfuzzylite.jar inputfile outputfile\n");
         result.append("   or: java -jar jfuzzylite.jar ");
@@ -133,7 +133,7 @@ public class Console {
         return result.toString();
     }
 
-    protected static Map<String, String> parse(String[] args) {
+    protected Map<String, String> parse(String[] args) {
         if (args.length % 2 != 0) {
             throw new RuntimeException("[option error] incomplete number of parameters [key value]");
         }
@@ -170,7 +170,7 @@ public class Console {
         return options;
     }
 
-    protected static void process(Map<String, String> options) throws Exception {
+    protected void process(Map<String, String> options) throws Exception {
         String decimals = options.get(KW_DECIMALS);
         if (decimals != null) {
             FuzzyLite.setDecimals(Integer.parseInt(decimals));
@@ -219,7 +219,7 @@ public class Console {
 
             inputFormat = options.get(KW_INPUT_FORMAT);
             if (inputFormat == null || inputFormat.isEmpty()) {
-                int extensionIndex = inputFilename.lastIndexOf(".");
+                int extensionIndex = inputFilename.lastIndexOf('.');
                 if (extensionIndex >= 0) {
                     inputFormat = inputFilename.substring(extensionIndex + 1);
                 } else {
@@ -234,7 +234,7 @@ public class Console {
         }
         String outputFormat = options.get(KW_OUTPUT_FORMAT);
         if (outputFormat == null || outputFormat.isEmpty()) {
-            int extensionIndex = outputFilename.lastIndexOf(".");
+            int extensionIndex = outputFilename.lastIndexOf('.');
             if (extensionIndex >= 0) {
                 outputFormat = outputFilename.substring(extensionIndex + 1);
             } else {
@@ -262,7 +262,7 @@ public class Console {
         writer.close(); //TODO: What happens if I close the Console?
     }
 
-    protected static void process(String input, Writer writer,
+    protected void process(String input, Writer writer,
             String inputFormat, String outputFormat, Map<String, String> options)
             throws Exception {
         Importer importer = null;
@@ -303,8 +303,9 @@ public class Console {
                 try {
                     fldExporter.write(engine, writer, reader);
                 } catch (Exception ex) {
-                    reader.close();
                     throw ex;
+                } finally {
+                    reader.close();
                 }
 
             } else if (options.containsKey(KW_DATA_MAXIMUM)) {
@@ -354,7 +355,7 @@ public class Console {
         }
     }
 
-    public static void interactive(Writer writer, Engine engine) throws IOException {
+    public void interactive(Writer writer, Engine engine) throws IOException {
         BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
         boolean printToConsole = writer != System.console().writer();
         StringBuilder buffer = new StringBuilder();
@@ -426,9 +427,10 @@ public class Console {
                 }
             }
         } while (true);
+        reader.close();
     }
 
-    public static String interactiveHelp() {
+    public String interactiveHelp() {
         StringBuilder result = new StringBuilder();
         result.append("#Special Keys:\n");
         result.append("#=============\n");
@@ -557,7 +559,7 @@ public class Console {
         return engine;
     }
 
-    public static void exportAllExamples(String from, String to, String sourceBase, String targetBase) throws Exception {
+    public void exportAllExamples(String from, String to, String sourceBase, String targetBase) throws Exception {
         List<String> examples = new ArrayList<String>();
         examples.add("/mamdani/AllTerms");
         examples.add("/mamdani/SimpleDimmer");
@@ -714,7 +716,7 @@ public class Console {
         }
     }
 
-    public static void benchmarkExamples(String path, int runs) {
+    public void benchmarkExamples(String path, int runs) {
         List<Op.Pair<String, Integer>> examples = new LinkedList<Op.Pair<String, Integer>>();
         examples.add(new Op.Pair<String, Integer>("/mamdani/AllTerms", (int) 1e4));
         examples.add(new Op.Pair<String, Integer>("/mamdani/SimpleDimmer", (int) 1e5));
@@ -791,11 +793,17 @@ public class Console {
         } catch (Exception ex) {
             throw new RuntimeException(ex);
         }
+        try {
+            nullWriter.close();
+        } catch (Exception ex) {
+
+        }
     }
 
     public static void main(String[] args) {
+        Console console = new Console();
         if (args.length == 0) {
-            System.out.println(usage());
+            System.out.println(console.usage());
             return;
         }
         if ("benchmarks".equals(args[0])) {
@@ -807,7 +815,7 @@ public class Console {
             if (args.length >= 3) {
                 runs = Integer.parseInt(args[2]);
             }
-            benchmarkExamples(path, runs);
+            console.benchmarkExamples(path, runs);
             return;
         }
         if ("export-examples".equals(args[0])) {
@@ -828,13 +836,13 @@ public class Console {
                 mkdir -p fl/takagi-sugeno/matlab; mkdir -p fl/takagi-sugeno/octave
                 mkdir -p fl/tsukamoto
                  */
-                exportAllExamples("fll", "fll", path, outputPath);
-                exportAllExamples("fll", "fcl", path, outputPath);
-                exportAllExamples("fll", "fis", path, outputPath);
-                exportAllExamples("fll", "cpp", path, outputPath);
-                exportAllExamples("fll", "java", path, outputPath);
+                console.exportAllExamples("fll", "fll", path, outputPath);
+//                exportAllExamples("fll", "fcl", path, outputPath);
+//                exportAllExamples("fll", "fis", path, outputPath);
+//                exportAllExamples("fll", "cpp", path, outputPath);
+//                exportAllExamples("fll", "java", path, outputPath);
                 FuzzyLite.setDecimals(8);
-                exportAllExamples("fll", "fld", path, outputPath);
+//                exportAllExamples("fll", "fld", path, outputPath);
             } catch (Exception ex) {
                 FuzzyLite.logger().log(Level.SEVERE, ex.toString(), ex);
                 throw new RuntimeException(ex);
@@ -842,8 +850,8 @@ public class Console {
             return;
         }
         try {
-            Map<String, String> options = parse(args);
-            process(options);
+            Map<String, String> options = console.parse(args);
+            console.process(options);
         } catch (Exception ex) {
             FuzzyLite.logger().log(Level.SEVERE, ex.toString(), ex);
         }
