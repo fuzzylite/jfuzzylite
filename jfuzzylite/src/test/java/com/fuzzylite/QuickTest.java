@@ -29,6 +29,7 @@ public class QuickTest {
 
     @Before
     public void setUp() {
+        FuzzyLite.setDecimals(3);
     }
 
     @After

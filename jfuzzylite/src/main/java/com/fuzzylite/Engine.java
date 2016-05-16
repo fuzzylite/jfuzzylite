@@ -109,10 +109,10 @@ public class Engine implements Op.Cloneable {
             if (inputVariable == null) {
                 message.append(String.format(
                         "- Engine has a null input variable at index <%d>\n", i));
-            } else if (inputVariable.getTerms().isEmpty()) {
-                //ignore because sometimes inputs can be empty: takagi-sugeno/matlab/slcpp1.fis
-                //message.append(String.format("- Input variable <%s> has no terms\n", inputVariable.getName()));
-            }
+            } //else if (inputVariable.getTerms().isEmpty()) {
+            //ignore because sometimes inputs can be empty: takagi-sugeno/matlab/slcpp1.fis
+            //message.append(String.format("- Input variable <%s> has no terms\n", inputVariable.getName()));
+            //}
         }
 
         if (this.outputVariables.isEmpty()) {
@@ -177,8 +177,9 @@ public class Engine implements Op.Cloneable {
                         if (rule.isLoaded()) {
                             Consequent consequent = rule.getConsequent();
                             for (Proposition proposition : consequent.getConclusions()) {
-                                if (proposition.getVariable() instanceof OutputVariable) {
-                                    OutputVariable outputVariable = (OutputVariable) proposition.getVariable();
+                                Variable variable = proposition.getVariable();
+                                if (variable instanceof OutputVariable) {
+                                    OutputVariable outputVariable = (OutputVariable) variable;
                                     if (outputVariable.getDefuzzifier() instanceof IntegralDefuzzifier) {
                                         ++requiresImplication;
                                         break;
@@ -340,7 +341,7 @@ public class Engine implements Op.Cloneable {
                 takagiSugeno = false;
             }
 
-            if (takagiSugeno) {
+            if (takagiSugeno && weightedDefuzzifier != null) {
                 //Takagi-Sugeno has only Constant, Linear or Function terms
                 for (Iterator<Term> it = outputVariable.getTerms().iterator();
                         takagiSugeno && it.hasNext();) {
@@ -366,7 +367,7 @@ public class Engine implements Op.Cloneable {
                 tsukamoto = false;
             }
 
-            if (tsukamoto) {
+            if (tsukamoto && weightedDefuzzifier != null) {
                 //Tsukamoto has only monotonic terms: Concave, Ramp, Sigmoid, SShape, or ZShape
                 for (Iterator<Term> it = outputVariable.getTerms().iterator();
                         tsukamoto && it.hasNext();) {

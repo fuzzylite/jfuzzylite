@@ -32,7 +32,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 import java.util.StringTokenizer;
-import java.util.logging.Logger;
 
 public class Function extends Term {
 
@@ -195,9 +194,12 @@ public class Function extends Term {
                                     + "only unary and binary elements are",
                                     element.getArity(), element.toString()));
                     }
+                } catch (RuntimeException ex) {
+                    throw ex;
                 } catch (Exception ex) {
                     throw new RuntimeException("[function error] exception thrown "
-                            + "invoking element <" + element.getName() + ">", ex);
+                            + "invoking element <" + element.getName() + ">\n\t"
+                            + ex.toString(), ex);
                 }
             } else if (variable != null && !variable.isEmpty()) {
                 if (localVariables == null) {
@@ -549,7 +551,9 @@ public class Function extends Term {
             if (element != null) {
                 if (element.getArity() > stack.size()) {
                     throw new RuntimeException(String.format("[function error] operator <%s> has arity <%d>, "
-                            + "but <%d> elements are available", element.getName(), element.getArity(), stack.size()));
+                            + "but <%d> elements are available: (%s)", 
+                            element.getName(), element.getArity(), stack.size(), 
+                            Op.join(stack,", ")));
                 }
 
                 Node node;
@@ -604,52 +608,5 @@ public class Function extends Term {
 
     public Map<String, Double> getVariables() {
         return variables;
-    }
-
-    public static void main(String[] args) throws Exception {
-        FuzzyLite.setDebug(true);
-        Logger log = FuzzyLite.logger();
-
-        Function f = new Function();
-        String text = "3+4*2/(1-5)^2^3";
-        //String formula = "3+4*2/2";
-//        logger.info(f.toPostfix(text));
-//        logger.info(f.parse(text).toInfix());
-//        logger.info(Op.str(f.parse(text).evaluate(f.getVariables())));
-//        f.load(text);
-//        logger.info(">>>" + Op.str(f.evaluate()));
-
-        f.getVariables().put("y", 1.0);
-        text = "sin (y*x)^2/x";
-        log.info("post: " + f.toPostfix(text));
-        log.info("pre: " + f.parse(text).toPrefix());
-        log.info("in: " + f.parse(text).toInfix());
-        log.info("pos: " + f.parse(text).toPostfix());
-        f.load(text);
-        log.info("Result: " + Op.str(f.membership(1)));
-
-        text = "(Temperature is High and Oxigen is Low) or "
-                + "(Temperature is Low and (Oxigen is Low or Oxigen is High))";
-        log.info(f.toPostfix(text));
-
-        text = "term1 is t1 or term2 is t2 and term3 is t3";
-        log.info(f.toPostfix(text));
-
-        f.variables.put("pi", 3.14);
-        text = "-5 *4/sin(-pi/2)";
-        log.info(f.toPostfix(text));
-        try {
-            log.info(Op.str(f.parse(text).evaluate(f.getVariables())));
-        } catch (Exception e) {
-            log.info(e.getMessage());
-        }
-
-        text = "~5 *4/sin(~pi/2)";
-        log.info(f.toPostfix(text));
-        try {
-            log.info(Op.str(f.parse(text).evaluate(f.variables)));
-        } catch (Exception e) {
-            log.info(e.getMessage());
-        }
     }
 }

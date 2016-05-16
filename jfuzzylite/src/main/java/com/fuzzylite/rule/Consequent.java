@@ -119,7 +119,7 @@ public class Consequent {
             while (tokenizer.hasMoreTokens()) {
                 token = tokenizer.nextToken();
 
-                if ((state & S_VARIABLE) > 0) {
+                if ((state & S_VARIABLE) != 0) {
                     if (engine.hasOutputVariable(token)) {
                         proposition = new Proposition();
                         proposition.setVariable(engine.getOutputVariable(token));
@@ -129,14 +129,14 @@ public class Consequent {
                     }
                 }
 
-                if ((state & S_IS) > 0) {
+                if ((state & S_IS) != 0) {
                     if (Rule.FL_IS.equals(token)) {
                         state = S_HEDGE | S_TERM;
                         continue;
                     }
                 }
 
-                if ((state & S_HEDGE) > 0) {
+                if ((state & S_HEDGE) != 0) {
                     HedgeFactory hedgeFactory = FactoryManager.instance().hedge();
                     if (hedgeFactory.hasConstructor(token)) {
                         Hedge hedge = hedgeFactory.constructObject(token);
@@ -146,7 +146,7 @@ public class Consequent {
                     }
                 }
 
-                if ((state & S_TERM) > 0) {
+                if ((state & S_TERM) != 0) {
                     if (proposition.getVariable().hasTerm(token)) {
                         proposition.setTerm(proposition.getVariable().getTerm(token));
                         state = S_AND | S_WITH;
@@ -154,7 +154,7 @@ public class Consequent {
                     }
                 }
 
-                if ((state & S_AND) > 0) {
+                if ((state & S_AND) != 0) {
                     if (Rule.FL_AND.equals(token)) {
                         state = S_VARIABLE;
                         continue;
@@ -162,22 +162,22 @@ public class Consequent {
                 }
 
                 //if reached this point, there was an error:
-                if ((state & S_VARIABLE) > 0) {
+                if ((state & S_VARIABLE) != 0) {
                     throw new RuntimeException(String.format(
                             "[syntax error] consequent expected output variable, but found <%s>",
                             token));
                 }
-                if ((state & S_IS) > 0) {
+                if ((state & S_IS) != 0) {
                     throw new RuntimeException(String.format(
                             "[syntax error] consequent expected keyword <%s>, but found <%s>",
                             Rule.FL_IS, token));
                 }
-                if ((state & S_HEDGE) > 0 || (state & S_TERM) > 0) {
+                if ((state & S_HEDGE) != 0 || (state & S_TERM) != 0) {
                     throw new RuntimeException(String.format(
                             "[syntax error] consequent expected hedge or term, but found <%s>",
                             token));
                 }
-                if ((state & S_AND) > 0 || ((state & S_WITH) > 0)) {
+                if ((state & S_AND) != 0 || ((state & S_WITH) != 0)) {
                     throw new RuntimeException(String.format(
                             "[syntax error] consequent expected operator <%s> or keyword <%s>, sbut found <%s>",
                             Rule.FL_AND, Rule.FL_WITH, token));
@@ -186,17 +186,17 @@ public class Consequent {
                         "[syntax error] unexpected token <%s>", token));
             }
 
-            if (!((state & S_AND) > 0 || ((state & S_WITH) > 0))) { //only acceptable final state
-                if ((state & S_VARIABLE) > 0) {
+            if (!((state & S_AND) != 0 || ((state & S_WITH) != 0))) { //only acceptable final state
+                if ((state & S_VARIABLE) != 0) {
                     throw new RuntimeException(String.format(
                             "[syntax error] consequent expected output variable after <%s>", token));
                 }
-                if ((state & S_IS) > 0) {
+                if ((state & S_IS) != 0) {
                     throw new RuntimeException(String.format(
                             "[syntax error] consequent expected keyword <%s> after <%s>", Rule.FL_IS, token));
                 }
 
-                if ((state & S_HEDGE) > 0 || (state & S_TERM) > 0) {
+                if ((state & S_HEDGE) != 0 || (state & S_TERM) != 0) {
                     throw new RuntimeException(String.format(
                             "[syntax error] consequent expected hedge or term after <%s>", token));
                 }

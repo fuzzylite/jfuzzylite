@@ -18,18 +18,21 @@
 package com.fuzzylite.imex;
 
 import com.fuzzylite.Engine;
+import com.fuzzylite.FuzzyLite;
 import com.fuzzylite.Op;
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileReader;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
 
 public abstract class Importer implements Op.Cloneable {
 
     public abstract Engine fromString(String text);
 
     public Engine fromFile(File file) throws IOException {
-        BufferedReader reader = new BufferedReader(new FileReader(file));
+        BufferedReader reader = new BufferedReader(new InputStreamReader(
+                    new FileInputStream(file), FuzzyLite.UTF_8));
         String line;
         StringBuilder textEngine = new StringBuilder();
         try {

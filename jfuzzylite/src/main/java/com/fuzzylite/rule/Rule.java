@@ -161,8 +161,8 @@ public class Rule implements Op.Cloneable {
         setActivationDegree(0.0);
         StringTokenizer tokenizer = new StringTokenizer(rule);
         String token;
-        String strAntecedent = "";
-        String strConsequent = "";
+        StringBuilder strAntecedent = new StringBuilder();
+        StringBuilder strConsequent = new StringBuilder();
         double ruleWeight = 1.0;
 
         final byte S_NONE = 0, S_IF = 1, S_THEN = 2, S_WITH = 3, S_END = 4;
@@ -170,7 +170,7 @@ public class Rule implements Op.Cloneable {
         try {
             while (tokenizer.hasMoreTokens()) {
                 token = tokenizer.nextToken();
-                int commentIndex = token.indexOf("#");
+                int commentIndex = token.indexOf('#');
                 if (commentIndex >= 0) {
                     token = token.substring(0, commentIndex);
                 }
@@ -188,14 +188,14 @@ public class Rule implements Op.Cloneable {
                         if (Rule.FL_THEN.equals(token)) {
                             state = S_THEN;
                         } else {
-                            strAntecedent += token + " ";
+                            strAntecedent.append(token).append(" ");
                         }
                         break;
                     case S_THEN:
                         if (Rule.FL_WITH.equals(token)) {
                             state = S_WITH;
                         } else {
-                            strConsequent += token + " ";
+                            strConsequent.append(token).append(" ");
                         }
                         break;
                     case S_WITH:
@@ -224,8 +224,8 @@ public class Rule implements Op.Cloneable {
                         "[syntax error] expected a numeric value as the weight of the rule: %s",
                         rule));
             }
-            getAntecedent().load(strAntecedent, engine);
-            getConsequent().load(strConsequent, engine);
+            getAntecedent().load(strAntecedent.toString(), engine);
+            getConsequent().load(strConsequent.toString(), engine);
             setWeight(ruleWeight);
         } catch (RuntimeException ex) {
             unload();

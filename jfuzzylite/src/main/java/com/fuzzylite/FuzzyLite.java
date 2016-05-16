@@ -18,6 +18,7 @@ package com.fuzzylite;
 
 import java.io.InputStream;
 import java.math.RoundingMode;
+import java.nio.charset.Charset;
 import java.text.DecimalFormat;
 import java.util.logging.Level;
 import java.util.logging.LogManager;
@@ -25,34 +26,23 @@ import java.util.logging.Logger;
 
 public class FuzzyLite {
 
-    /*Extended DecimalFormat to provide atomic setting of RoundingMode
-     Rounding HALF_UP to match most results from fuzzylite C++ rounding mode
-     */
-    private static class FLDecimalFormat extends DecimalFormat {
-
-        private static final long serialVersionUID = 1L;
-
-        public FLDecimalFormat(String pattern) {
-            this(pattern, RoundingMode.HALF_UP);
-        }
-
-        public FLDecimalFormat(String pattern, RoundingMode roundingMode) {
-            super(pattern);
-            setRoundingMode(roundingMode);
-        }
-    }
-
     public static final String NAME = "jfuzzylite";
     public static final String VERSION = "6.0";
     public static final String LICENSE = "FuzzyLite License";
     public static final String AUTHOR = "Juan Rada-Vilela, Ph.D.";
     public static final String COMPANY = "FuzzyLite Limited";
     public static final String WEBSITE = "http://www.fuzzylite.com/";
-    private static DecimalFormat DF = new FLDecimalFormat("0.000");
     private static int DECIMALS = 3;
     private static double MACHEPS = 1e-6; //Machine epsilon to differentiate numbers
     private static boolean debug = false;
 
+    private static DecimalFormat DF = new DecimalFormat("0.000");
+    static {
+        DF.setRoundingMode(RoundingMode.HALF_UP);
+    }
+    
+    public static final Charset UTF_8 = Charset.forName("UTF-8");
+    
     private static Logger LOGGER = Logger.getLogger("com.fuzzylite");
 
     static {
@@ -63,6 +53,12 @@ public class FuzzyLite {
         } catch (Exception ex) {
             System.out.println(String.format("WARNING: Could not load default %s file", configurationFile));
             System.out.println(ex);
+        } finally {
+            try {
+                inputStream.close();
+            } catch (Exception ex) {
+
+            }
         }
 //        FuzzyLite.logger().info("info");
 //        FuzzyLite.logger().warning("warning");
@@ -95,7 +91,8 @@ public class FuzzyLite {
         for (int i = 0; i < decimals; ++i) {
             pattern.append('0');
         }
-        DF = new FLDecimalFormat(pattern.toString());
+        DF = new DecimalFormat(pattern.toString());
+        DF.setRoundingMode(RoundingMode.HALF_UP);
     }
 
     public static double getMachEps() {

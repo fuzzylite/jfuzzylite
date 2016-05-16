@@ -18,7 +18,6 @@
 package com.fuzzylite.factory;
 
 import com.fuzzylite.Op;
-
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;

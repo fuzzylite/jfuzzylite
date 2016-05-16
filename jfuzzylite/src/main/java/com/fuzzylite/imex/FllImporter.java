@@ -99,8 +99,7 @@ public class FllImporter extends Importer {
                 }
                 block.clear();
                 tag = key;
-            } else if (tag.isEmpty()) {
-            }
+            } //else if (tag.isEmpty()) {}
             block.add(key + ":" + value);
         }
         try {

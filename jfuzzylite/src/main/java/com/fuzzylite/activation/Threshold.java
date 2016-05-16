@@ -129,22 +129,26 @@ public class Threshold extends Activation {
     }
 
     boolean activatesWith(double activationDegree) {
-        switch (getComparison()) {
-            case LessThan:
-                return Op.isLt(activationDegree, getValue());
-            case LessThanOrEqualTo:
-                return Op.isLE(activationDegree, getValue());
-            case EqualTo:
-                return Op.isEq(activationDegree, getValue());
-            case NotEqualTo:
-                return !Op.isEq(activationDegree, getValue());
-            case GreaterThanOrEqualTo:
-                return Op.isGE(activationDegree, getValue());
-            case GreaterThan:
-                return Op.isGt(activationDegree, getValue());
-            default:
-                return false;
+        //favour if-then-return over switch to avoid new file Threshold$1.class
+        if (Comparison.LessThan == this.comparison) {
+            return Op.isLt(activationDegree, getValue());
         }
+        if (Comparison.LessThanOrEqualTo == this.comparison) {
+            return Op.isLE(activationDegree, getValue());
+        }
+        if (Comparison.EqualTo == this.comparison) {
+            return Op.isEq(activationDegree, getValue());
+        }
+        if (Comparison.NotEqualTo == this.comparison) {
+            return !Op.isEq(activationDegree, getValue());
+        }
+        if (Comparison.GreaterThanOrEqualTo == this.comparison) {
+            return Op.isGE(activationDegree, getValue());
+        }
+        if (Comparison.GreaterThan == this.comparison) {
+            return Op.isGt(activationDegree, getValue());
+        }
+        return false;
     }
 
     @Override

@@ -18,13 +18,14 @@
 package com.fuzzylite.hedge;
 
 import com.fuzzylite.Op;
+import java.util.Locale;
 
 public abstract class Hedge implements Op.Cloneable {
 
     public abstract double hedge(double x);
 
     public String getName() {
-        return getClass().getSimpleName().toLowerCase();
+        return getClass().getSimpleName().toLowerCase(Locale.ROOT);
     }
 
     @Override

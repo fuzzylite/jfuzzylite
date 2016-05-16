@@ -41,9 +41,10 @@ import com.fuzzylite.term.Triangle;
 import com.fuzzylite.variable.InputVariable;
 import com.fuzzylite.variable.OutputVariable;
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileReader;
-import java.io.FileWriter;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
@@ -83,6 +84,27 @@ public class Console {
         }
     }
 
+    static class NullWriter extends OutputStreamWriter {
+
+        static class NullStream extends OutputStream {
+
+            @Override
+            public void write(int b) throws IOException {
+                //do nothing
+            }
+        }
+
+        public NullWriter() {
+            super(new NullStream(), FuzzyLite.UTF_8);
+        }
+
+        @Override
+        public void close() {
+
+        }
+
+    }
+
     public String usage() {
         List<Option> options = new ArrayList<Option>();
         options.add(new Option(KW_INPUT_FILE, "inputfile", "file to import your engine from"));
@@ -99,9 +121,9 @@ public class Console {
         StringBuilder result = new StringBuilder();
         result.append("=========================================\n");
         result.append("jfuzzylite: a fuzzy logic control library\n");
-        result.append(String.format("version: %s%n", FuzzyLite.VERSION));
-        result.append(String.format("author: %s%n", FuzzyLite.AUTHOR));
-        result.append(String.format("license: %s%n", FuzzyLite.LICENSE));
+        result.append(String.format("version: %s\n", FuzzyLite.VERSION));
+        result.append(String.format("author: %s\n", FuzzyLite.AUTHOR));
+        result.append(String.format("license: %s\n", FuzzyLite.LICENSE));
         result.append("=========================================\n");
         result.append("usage: java -jar jfuzzylite.jar inputfile outputfile\n");
         result.append("   or: java -jar jfuzzylite.jar ");
@@ -185,10 +207,10 @@ public class Console {
 
         if (isExample) {
             Engine engine;
-            if (example.equals("m") || example.equals("mamdani")) {
+            if ("m".equals(example) || "mamdani".equals(example)) {
                 engine = mamdani();
-            } else if (example.equals("t") || example.equals("ts")
-                    || example.equals("takagi-sugeno")) {
+            } else if ("t".equals(example) || "ts".equals(example)
+                    || "takagi-sugeno".equals(example)) {
                 engine = takagiSugeno();
             } else {
                 throw new RuntimeException(String.format(
@@ -204,7 +226,8 @@ public class Console {
             }
             File inputFile = new File(inputFilename);
 
-            BufferedReader reader = new BufferedReader(new FileReader(inputFile));
+            BufferedReader reader = new BufferedReader(new InputStreamReader(
+                    new FileInputStream(inputFile), FuzzyLite.UTF_8));
             try {
                 String line = reader.readLine();
                 while (line != null) {
@@ -247,19 +270,19 @@ public class Console {
             writer = System.console().writer();
         } else {
             File outputFile = new File(outputFilename);
-            if (!outputFile.exists()) {
-                outputFile.createNewFile();
+            if (!outputFile.createNewFile()) {
+                FuzzyLite.logger().log(Level.FINE, "Replacing file {0}", outputFilename);
             }
-            writer = new FileWriter(outputFile);
+            writer = new BufferedWriter(new OutputStreamWriter(
+                    new FileOutputStream(outputFile), FuzzyLite.UTF_8));
         }
         try {
             process(textEngine.toString(), writer, inputFormat, outputFormat, options);
         } catch (Exception ex) {
-            writer.close();
             throw ex;
+        } finally {
+            writer.close();
         }
-        writer.flush();
-        writer.close(); //TODO: What happens if I close the Console?
     }
 
     protected void process(String input, Writer writer,
@@ -299,7 +322,8 @@ public class Console {
                     throw new RuntimeException("[export error] file <" + filename + "> "
                             + "does not exist");
                 }
-                FileReader reader = new FileReader(dataFile);
+                InputStreamReader reader = new InputStreamReader(
+                        new FileInputStream(dataFile), FuzzyLite.UTF_8);
                 try {
                     fldExporter.write(engine, writer, reader);
                 } catch (Exception ex) {
@@ -356,7 +380,8 @@ public class Console {
     }
 
     public void interactive(Writer writer, Engine engine) throws IOException {
-        BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
+        BufferedReader reader = new BufferedReader(
+                new InputStreamReader(System.in, FuzzyLite.UTF_8));
         boolean printToConsole = writer != System.console().writer();
         StringBuilder buffer = new StringBuilder();
         final String space = "\t";
@@ -369,9 +394,11 @@ public class Console {
             buffer.setLength(0);
 
             String line = reader.readLine();
+            if (line == null) {
+                line = "Q";
+            }
 
             String[] tokens = line.split("\\s+");
-            double[] inputValues = null;
             if (tokens.length == 1) {
                 String token = tokens[0];
                 if ("R".equalsIgnoreCase(token)) {
@@ -391,18 +418,16 @@ public class Console {
                 }
             }
 
-            if (inputValues == null) {
-                int numberOfTokens = Math.max(tokens.length, engine.numberOfInputVariables());
-                numberOfTokens += numberOfTokens % engine.numberOfInputVariables();
-                inputValues = new double[numberOfTokens];
-                for (int i = 0; i < tokens.length; ++i) {
-                    double defaultValue = engine.getInputVariable(i % engine.numberOfInputVariables()).getValue();
-                    inputValues[i] = Op.toDouble(tokens[i], defaultValue);
-                }
-                for (int i = tokens.length; i < numberOfTokens; ++i) {
-                    double defaultValue = engine.getInputVariable(i % engine.numberOfInputVariables()).getValue();
-                    inputValues[i] = defaultValue;
-                }
+            int numberOfTokens = Math.max(tokens.length, engine.numberOfInputVariables());
+            numberOfTokens += numberOfTokens % engine.numberOfInputVariables();
+            double[] inputValues = new double[numberOfTokens];
+            for (int i = 0; i < tokens.length; ++i) {
+                double defaultValue = engine.getInputVariable(i % engine.numberOfInputVariables()).getValue();
+                inputValues[i] = Op.toDouble(tokens[i], defaultValue);
+            }
+            for (int i = tokens.length; i < numberOfTokens; ++i) {
+                double defaultValue = engine.getInputVariable(i % engine.numberOfInputVariables()).getValue();
+                inputValues[i] = defaultValue;
             }
 
             for (int i = 0; i < inputValues.length; ++i) {
@@ -633,19 +658,48 @@ public class Console {
 
         List<String> errors = new LinkedList<String>();
         for (int i = 0; i < examples.size(); ++i) {
-            FuzzyLite.logger().info("Processing " + (i + 1) + "/" + examples.size() + ": " + examples.get(i));
+            FuzzyLite.logger().log(Level.INFO, "Processing {0}/{1}: {2}",
+                    new Object[]{(i + 1), examples.size(), examples.get(i)});
+
+            Engine engine;
+
+            //READING
+            final String inputFile = sourceBase + examples.get(i) + "." + from;
+            BufferedReader source = new BufferedReader(new InputStreamReader(
+                    new FileInputStream(inputFile), FuzzyLite.UTF_8));
             try {
                 StringBuilder text = new StringBuilder();
-                String input = sourceBase + examples.get(i) + "." + from;
-                BufferedReader source = new BufferedReader(new FileReader(input));
                 String line;
                 while ((line = source.readLine()) != null) {
                     text.append(line).append("\n");
                 }
+                engine = importer.fromString(text.toString());
+            } catch (Exception ex) {
+                errors.add(ex.toString() + ": " + inputFile);
+                FuzzyLite.logger().log(Level.SEVERE, "{0}: {1}",
+                        new String[]{ex.toString(), inputFile});
+                continue;
+            } finally {
                 source.close();
+            }
 
-                Engine engine = importer.fromString(text.toString());
+            //WRITING
+            final String output = targetBase + examples.get(i) + "." + to;
+            File outputFile = new File(output);
+            try {
+                if (!outputFile.createNewFile()) {
+                    FuzzyLite.logger().log(Level.FINE, "Replacing file {0}", output);
+                }
+            } catch (Exception ex) {
+                errors.add(ex.toString() + ": " + output);
+                FuzzyLite.logger().log(Level.SEVERE, "{0}: {1}",
+                        new String[]{ex.toString(), output});
+                return;
+            }
 
+            BufferedWriter target = new BufferedWriter(new OutputStreamWriter(
+                    new FileOutputStream(outputFile), FuzzyLite.UTF_8));
+            try {
                 for (Pair<Exporter, Importer> imex : tests) {
                     FuzzyLite.logger().info(String.format("Converting from %s to %s",
                             imex.getSecond().getClass().getSimpleName(),
@@ -662,18 +716,6 @@ public class Console {
                     }
                 }
 
-                String output = targetBase + examples.get(i) + "." + to;
-                File outputFile = new File(output);
-                if (!outputFile.exists()) {
-                    try {
-                        outputFile.createNewFile();
-                    } catch (Exception ex) {
-                        errors.add(ex.toString() + ": " + output);
-                        FuzzyLite.logger().log(Level.SEVERE, ex.toString() + ": " + outputFile);
-                        continue;
-                    }
-                }
-                FileWriter target = new FileWriter(outputFile);
                 if ("cpp".equals(to)) {
                     target.write("#include <fl/Headers.h>\n\n"
                             + "int main(int argc, char** argv){\n"
@@ -700,18 +742,21 @@ public class Console {
                 } else {
                     target.write(exporter.toString(engine));
                 }
-                target.close();
             } catch (Exception ex) {
-                errors.add(ex.toString() + ": " + examples.get(i));
-                FuzzyLite.logger().log(Level.SEVERE, ex.toString(), ex);
-                return;
+                errors.add(ex.toString() + ": " + output);
+                FuzzyLite.logger().log(Level.SEVERE, "{0}: {1}",
+                        new String[]{ex.toString(), output});
+            } finally {
+                target.close();
             }
         }
+
         if (errors.isEmpty()) {
             FuzzyLite.logger().info("No errors were found exporting files");
         } else {
-            FuzzyLite.logger().log(Level.SEVERE, "Errors were encountered while exporting:\n"
-                    + Op.join(errors, "\n"));
+            FuzzyLite.logger().log(Level.SEVERE,
+                    "Errors were encountered while exporting:\n{0}",
+                    Op.join(errors, "\n"));
             throw new RuntimeException(Op.join(errors, "\n"));
         }
     }
@@ -762,12 +807,7 @@ public class Console {
         exporter.setExportHeaders(false);
         exporter.setExportInputValues(false);
         exporter.setExportOutputValues(false);
-        OutputStreamWriter nullWriter = new OutputStreamWriter(new OutputStream() {
-            @Override
-            public void write(int b) throws IOException {
-                //do nothing
-            }
-        });
+        NullWriter nullWriter = new NullWriter();
         try {
             for (Op.Pair<String, Integer> example : examples) {
                 Engine engine = importer.fromFile(new File(path + example.getFirst() + ".fll"));
@@ -793,11 +833,7 @@ public class Console {
         } catch (Exception ex) {
             throw new RuntimeException(ex);
         }
-        try {
-            nullWriter.close();
-        } catch (Exception ex) {
-
-        }
+        nullWriter.close();
     }
 
     public static void main(String[] args) {

@@ -14,21 +14,22 @@
  jfuzzylite™ is a trademark of FuzzyLite Limited.
 
  */
-
 package com.fuzzylite.imex;
 
 import com.fuzzylite.Engine;
+import com.fuzzylite.FuzzyLite;
 import com.fuzzylite.Op;
 import com.fuzzylite.variable.InputVariable;
 import com.fuzzylite.variable.OutputVariable;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
+import java.io.ByteArrayInputStream;
 import java.io.File;
-import java.io.FileReader;
-import java.io.FileWriter;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
 import java.io.Reader;
-import java.io.StringReader;
 import java.io.StringWriter;
 import java.io.Writer;
 import java.util.ArrayList;
@@ -127,7 +128,8 @@ public class FldExporter extends Exporter {
         if (!file.exists()) {
             file.createNewFile();
         }
-        BufferedWriter writer = new BufferedWriter(new FileWriter(file));
+        BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(
+                new FileOutputStream(file), FuzzyLite.UTF_8));
         write(engine, writer, maximumNumberOfResults);
         writer.close();
     }
@@ -137,7 +139,8 @@ public class FldExporter extends Exporter {
         if (exportHeaders) {
             writer.append(header(engine)).append("\n");
         }
-        BufferedReader reader = new BufferedReader(new StringReader(inputData));
+        BufferedReader reader = new BufferedReader(new InputStreamReader(
+                new ByteArrayInputStream(inputData.getBytes()), FuzzyLite.UTF_8));
         String line;
         try {
             while ((line = reader.readLine()) != null) {
@@ -158,23 +161,30 @@ public class FldExporter extends Exporter {
         if (!file.exists()) {
             file.createNewFile();
         }
-        BufferedWriter writer = new BufferedWriter(new FileWriter(file));
+        BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(
+                new FileOutputStream(file), FuzzyLite.UTF_8));
         if (exportHeaders) {
             writer.append(header(engine)).append("\n");
         }
-        BufferedReader reader = new BufferedReader(new FileReader(file));
-        String line;
-        while ((line = reader.readLine()) != null) {
-            line = line.trim();
-            if (!line.isEmpty() && line.charAt(0) == '#') {
-                continue;
+        BufferedReader reader = new BufferedReader(new InputStreamReader(
+                new ByteArrayInputStream(inputData.getBytes()), FuzzyLite.UTF_8));
+        try {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                line = line.trim();
+                if (!line.isEmpty() && line.charAt(0) == '#') {
+                    continue;
+                }
+                List<Double> inputValues = parse(line);
+                write(engine, writer, inputValues);
+                writer.flush();
             }
-            List<Double> inputValues = parse(line);
-            write(engine, writer, inputValues);
-            writer.flush();
+        } catch (IOException ex) {
+            throw ex;
+        } finally {
+            reader.close();
+            writer.close();
         }
-        reader.close();
-        writer.close();
     }
 
     public List<Double> parse(String values) {

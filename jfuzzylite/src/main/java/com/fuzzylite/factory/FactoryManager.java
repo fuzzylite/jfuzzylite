@@ -18,7 +18,7 @@ package com.fuzzylite.factory;
 
 public class FactoryManager {
 
-    protected static FactoryManager instance = new FactoryManager();
+    protected static final FactoryManager instance = new FactoryManager();
 
     public static FactoryManager instance() {
         return instance;

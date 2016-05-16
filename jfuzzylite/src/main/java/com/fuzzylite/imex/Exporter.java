@@ -14,28 +14,35 @@
  jfuzzylite™ is a trademark of FuzzyLite Limited.
 
  */
-
 package com.fuzzylite.imex;
 
 import com.fuzzylite.Engine;
+import com.fuzzylite.FuzzyLite;
 import com.fuzzylite.Op;
 import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileWriter;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.util.logging.Level;
 
 public abstract class Exporter implements Op.Cloneable {
 
     public abstract String toString(Engine engine);
 
     public void toFile(File file, Engine engine) throws IOException {
-        if (!file.exists()) {
-            file.createNewFile();
+        if (!file.createNewFile()) {
+            FuzzyLite.logger().log(Level.FINE, "Replacing file: {0}", file.getAbsolutePath());
         }
-        BufferedWriter writer = new BufferedWriter(new FileWriter(file));
-        writer.write(toString(engine));
-        writer.flush();
-        writer.close();
+        BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(
+                new FileOutputStream(file), FuzzyLite.UTF_8));
+        try {
+            writer.write(toString(engine));
+        } catch (IOException ex) {
+            throw ex;
+        } finally {
+            writer.close();
+        }
     }
 
     @Override

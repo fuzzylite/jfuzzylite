@@ -7,14 +7,15 @@ package com.fuzzylite;
 
 import java.io.File;
 import java.util.logging.Level;
+import static org.hamcrest.CoreMatchers.is;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.BeforeClass;
-import org.junit.Test;
-import static org.hamcrest.CoreMatchers.is;
 import org.junit.ClassRule;
+import org.junit.Ignore;
+import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
 public class ConsoleTest {
@@ -44,6 +45,7 @@ public class ConsoleTest {
 
     @Before
     public void setUp() {
+        FuzzyLite.setDecimals(3);
     }
 
     @After
@@ -62,15 +64,16 @@ public class ConsoleTest {
         Assert.assertThat("output folder exists", flFolder.getRoot().exists(), is(true));
         Console.main(new String[]{
             "export-examples", examples.getAbsolutePath(), flFolder.getRoot().getAbsolutePath()});
-        System.in.read();
+//        System.in.read();
     }
 
+    @Ignore
     @Test
     public void testBenchmarks() throws Exception {
         File examples = new File("../examples/original/");
         Assert.assertThat("examples is reachable", examples.exists(), is(true));
-//        Console.main(new String[]{
-//            "benchmarks", examples.getAbsolutePath(), "1"});
+        Console.main(new String[]{
+            "benchmarks", examples.getAbsolutePath(), "1"});
     }
 
     /**

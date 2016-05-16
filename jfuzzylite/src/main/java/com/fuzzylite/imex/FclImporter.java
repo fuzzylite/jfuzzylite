@@ -89,7 +89,7 @@ public class FclImporter extends Importer {
                 if (line.isEmpty() || line.charAt(0) == '%') {
                     continue;
                 }
-                
+
                 StringTokenizer tokenizer = new StringTokenizer(line);
                 String firstToken = tokenizer.nextToken();
 
@@ -199,6 +199,9 @@ public class FclImporter extends Importer {
     protected void processFuzzify(String block, Engine engine) throws Exception {
         BufferedReader reader = new BufferedReader(new StringReader(block));
         String line = reader.readLine();
+        if (line == null) {
+            return;
+        }
         String name;
         int index = line.indexOf(' ');
         if (index >= 0) {
@@ -232,6 +235,9 @@ public class FclImporter extends Importer {
     protected void processDefuzzify(String block, Engine engine) throws Exception {
         BufferedReader reader = new BufferedReader(new StringReader(block));
         String line = reader.readLine();
+        if (line == null) {
+            return;
+        }
         String name;
         int index = line.indexOf(' ');
         if (index >= 0) {
@@ -279,6 +285,9 @@ public class FclImporter extends Importer {
     protected void processRuleBlock(String block, Engine engine) throws Exception {
         BufferedReader reader = new BufferedReader(new StringReader(block));
         String line = reader.readLine();
+        if (line == null) {
+            return;
+        }
         String name = "";
         int index = line.indexOf(' ');
         if (index >= 0) {
@@ -376,23 +385,23 @@ public class FclImporter extends Importer {
     }
 
     protected Term parseTerm(String line, Engine engine) {
-        String spacedLine = "";
+        StringBuilder spacedLine = new StringBuilder();
         for (char c : line.toCharArray()) {
             if (c == '(' || c == ')' || c == ',') {
-                spacedLine += " " + c + " ";
+                spacedLine.append(" ").append(c).append(" ");
             } else if (c == ':') {
-                spacedLine += " :";
+                spacedLine.append(" :");
             } else if (c == '=') {
-                spacedLine += "= ";
+                spacedLine.append("= ");
             } else {
-                spacedLine += c;
+                spacedLine.append(c);
             }
         }
 
         final int S_KWTERM = 1, S_NAME = 2, S_ASSIGN = 3,
                 S_TERM_CLASS = 4, S_PARAMETERS = 5;
         int state = S_KWTERM;
-        StringTokenizer tokenizer = new StringTokenizer(spacedLine);
+        StringTokenizer tokenizer = new StringTokenizer(spacedLine.toString());
         String token, name = "", termClass = "";
         List<String> parameters = new ArrayList<String>();
         while (tokenizer.hasMoreTokens()) {
@@ -521,18 +530,18 @@ public class FclImporter extends Importer {
 
         String rangeToken = token.get(1);
 
-        String range = "";
+        StringBuilder range = new StringBuilder();
         for (char c : rangeToken.toCharArray()) {
             if (c == '(' || c == ')' || c == ' ' || c == ';') {
                 continue;
             }
-            range += c;
+            range.append(c);
         }
 
-        token = Op.split(range, "..");
+        token = Op.split(range.toString(), "..");
         if (token.size() != 2) {
             throw new RuntimeException(String.format("[syntax error] expected property of type"
-                    + " 'start .. end', but found <%s> in line: %s", range, line));
+                    + " 'start .. end', but found <%s> in line: %s", range.toString(), line));
         }
 
         double minimum, maximum;
@@ -580,7 +589,7 @@ public class FclImporter extends Importer {
         } else {
             throw new RuntimeException(String.format(
                     "[syntax error] expected locking flags <PREVIOUS|RANGE>, "
-                    + "but found <%s> in line: ", value, line));
+                    + "but found <%s> in line %s", value, line));
         }
 
         return new Pair<Boolean, Boolean>(output, range);

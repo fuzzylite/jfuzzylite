@@ -24,7 +24,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 
-public class FunctionFactory extends CloningFactory<Function.Element> implements Op.Cloneable {
+public class FunctionFactory extends CloningFactory<Function.Element> {
 
     public FunctionFactory() {
         registerOperators();

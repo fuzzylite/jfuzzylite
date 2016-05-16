@@ -17,9 +17,7 @@
 
 package com.fuzzylite.defuzzifier;
 
-import com.fuzzylite.FuzzyLite;
 import com.fuzzylite.Op;
-import static com.fuzzylite.Op.str;
 import com.fuzzylite.term.Term;
 
 public class MeanOfMaximum extends IntegralDefuzzifier {

@@ -16,8 +16,8 @@
  */
 package com.fuzzylite.defuzzifier;
 
-import com.fuzzylite.term.Aggregated;
 import com.fuzzylite.term.Activated;
+import com.fuzzylite.term.Aggregated;
 import com.fuzzylite.term.Term;
 
 public class WeightedAverage extends WeightedDefuzzifier {

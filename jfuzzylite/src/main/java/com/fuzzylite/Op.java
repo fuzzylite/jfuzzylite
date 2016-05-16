@@ -14,7 +14,6 @@
  jfuzzylite™ is a trademark of FuzzyLite Limited.
 
  */
-
 package com.fuzzylite;
 
 import java.util.ArrayList;
@@ -288,91 +287,91 @@ public class Op {
     }
 
     public static <T> String join(Collection<T> x, String separator) {
-        String result = "";
+        StringBuilder result = new StringBuilder();
         for (Iterator<T> it = x.iterator(); it.hasNext();) {
             T item = it.next();
             if (item instanceof Number) {
-                result += Op.str((Number) item);
+                result.append(Op.str((Number) item));
             } else {
-                result += item.toString();
+                result.append(item.toString());
             }
             if (it.hasNext()) {
-                result += separator;
+                result.append(separator);
             }
         }
-        return result;
+        return result.toString();
     }
 
     public static String join(long[] x, String separator) {
-        String result = "";
+        StringBuilder result = new StringBuilder();
         for (int i = 0; i < x.length; ++i) {
-            result += str(x[i]);
+            result.append(str(x[i]));
             if (i + 1 < x.length) {
-                result += separator;
+                result.append(separator);
             }
         }
-        return result;
+        return result.toString();
     }
 
     public static String join(int[] x, String separator) {
-        String result = "";
+        StringBuilder result = new StringBuilder();
         for (int i = 0; i < x.length; ++i) {
-            result += str(x[i]);
+            result.append(str(x[i]));
             if (i + 1 < x.length) {
-                result += separator;
+                result.append(separator);
             }
         }
-        return result;
+        return result.toString();
     }
 
     public static String join(double[] x, String separator) {
-        String result = "";
+        StringBuilder result = new StringBuilder();
         for (int i = 0; i < x.length; ++i) {
-            result += str(x[i]);
+            result.append(str(x[i]));
             if (i + 1 < x.length) {
-                result += separator;
+                result.append(separator);
             }
         }
-        return result;
+        return result.toString();
     }
 
     public static String join(float[] x, String separator) {
-        String result = "";
+        StringBuilder result = new StringBuilder();
         for (int i = 0; i < x.length; ++i) {
-            result += str(x[i]);
+            result.append(str(x[i]));
             if (i + 1 < x.length) {
-                result += separator;
+                result.append(separator);
             }
         }
-        return result;
+        return result.toString();
     }
 
     public static String join(String[] x, String separator) {
-        String result = "";
+        StringBuilder result = new StringBuilder();
         for (int i = 0; i < x.length; ++i) {
-            result += x[i];
+            result.append(x[i]);
             if (i + 1 < x.length) {
-                result += separator;
+                result.append(separator);
             }
         }
-        return result;
+        return result.toString();
     }
 
     @SuppressWarnings("unchecked")
-	public static <T> String join(String separator, T... x) {
-        String result = "";
+    public static <T> String join(String separator, T... x) {
+        StringBuilder result = new StringBuilder();
         for (int i = 0; i < x.length; ++i) {
             T item = x[i];
             if (item instanceof Number) {
-                result += Op.str((Number) item);
+                result.append(Op.str((Number) item));
             } else {
-                result += item.toString();
+                result.append(item.toString());
             }
             if (i + 1 < x.length) {
-                result += separator;
+                result.append(separator);
             }
         }
-        return result;
+        return result.toString();
     }
 
     public static String validName(String id) {

@@ -178,7 +178,7 @@ public class Antecedent {
 
         while (tokenizer.hasMoreTokens()) {
             token = tokenizer.nextToken();
-            if ((state & S_VARIABLE) > 0) {
+            if ((state & S_VARIABLE) != 0) {
                 Variable variable = null;
                 if (engine.hasInputVariable(token)) {
                     variable = engine.getInputVariable(token);
@@ -196,7 +196,7 @@ public class Antecedent {
                 }
             }
 
-            if ((state & S_IS) > 0) {
+            if ((state & S_IS) != 0) {
                 if (Rule.FL_IS.equals(token)) {
                     state = S_HEDGE | S_TERM;
                     FuzzyLite.logger().log(Level.FINE, "Token <{0}> is keyword", token);
@@ -204,7 +204,7 @@ public class Antecedent {
                 }
             }
 
-            if ((state & S_HEDGE) > 0) {
+            if ((state & S_HEDGE) != 0) {
                 HedgeFactory hedgeFactory = FactoryManager.instance().hedge();
                 if (hedgeFactory.hasConstructor(token)) {
                     Hedge hedge = hedgeFactory.constructObject(token);
@@ -219,7 +219,7 @@ public class Antecedent {
                 }
             }
 
-            if ((state & S_TERM) > 0) {
+            if ((state & S_TERM) != 0) {
                 if (proposition.getVariable().hasTerm(token)) {
                     proposition.setTerm(proposition.getVariable().getTerm(token));
                     state = S_VARIABLE | S_AND_OR;
@@ -228,7 +228,7 @@ public class Antecedent {
                 }
             }
 
-            if ((state & S_AND_OR) > 0) {
+            if ((state & S_AND_OR) != 0) {
                 if (Rule.FL_AND.equals(token) || Rule.FL_OR.equals(token)) {
                     if (expressionStack.size() < 2) {
                         throw new RuntimeException(String.format(
@@ -249,17 +249,17 @@ public class Antecedent {
             }
 
             //If reached this point, there was an error
-            if ((state & S_VARIABLE) > 0 || (state & S_AND_OR) > 0) {
+            if ((state & S_VARIABLE) != 0 || (state & S_AND_OR) != 0) {
                 throw new RuntimeException(String.format(
                         "[syntax error] expected variable or logical operator, but found <%s>",
                         token));
             }
-            if ((state & S_IS) > 0) {
+            if ((state & S_IS) != 0) {
                 throw new RuntimeException(String.format(
                         "[syntax error] expected keyword <%s>, but found <%s>",
                         Rule.FL_IS, token));
             }
-            if ((state & S_HEDGE) > 0 || (state & S_TERM) > 0) {
+            if ((state & S_HEDGE) != 0 || (state & S_TERM) != 0) {
                 throw new RuntimeException(String.format(
                         "[syntax error] expected hedge or term, but found <%s>",
                         token));
@@ -269,13 +269,13 @@ public class Antecedent {
                     token));
         }
 
-        if (!((state & S_VARIABLE) > 0 || (state & S_AND_OR) > 0)) { //only acceptable final state
-            if ((state & S_IS) > 0) {
+        if (!((state & S_VARIABLE) != 0 || (state & S_AND_OR) != 0)) { //only acceptable final state
+            if ((state & S_IS) != 0) {
                 throw new RuntimeException(String.format(
                         "[syntax error] expected keyword <%s> after <%s>",
                         Rule.FL_IS, token));
             }
-            if ((state & S_HEDGE) > 0 || (state & S_TERM) > 0) {
+            if ((state & S_HEDGE) != 0 || (state & S_TERM) != 0) {
                 throw new RuntimeException(String.format(
                         "[syntax error] expected hedge or term, but found <%s>",
                         token));

@@ -18,13 +18,11 @@ package com.fuzzylite.variable;
 
 import com.fuzzylite.Op;
 import com.fuzzylite.defuzzifier.Centroid;
-
 import com.fuzzylite.defuzzifier.Defuzzifier;
 import com.fuzzylite.imex.FllExporter;
 import com.fuzzylite.term.Constant;
 import com.fuzzylite.term.Linear;
 import com.fuzzylite.term.Term;
-
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Iterator;
@@ -124,7 +122,7 @@ public class Variable implements Op.Cloneable {
 
         while (it.hasNext()) {
             Term term = it.next();
-            double fx = Double.NaN;
+            double fx;
             try {
                 fx = term.membership(x);
             } finally {
@@ -168,17 +166,19 @@ public class Variable implements Op.Cloneable {
         return highestMembership(x).getSecond();
     }
 
+    static class TermCentroidComparatorAscending implements Comparator<Op.Pair<Term, Double>> {
+
+        @Override
+        public int compare(Op.Pair<Term, Double> a, Op.Pair<Term, Double> b) {
+            double result = Math.signum(a.getSecond() - b.getSecond());
+            return Double.isNaN(result) ? -1 : (int) result;
+        }
+    }
+
     public void sort() {
         PriorityQueue<Op.Pair<Term, Double>> termCentroids
-                = new PriorityQueue<Op.Pair<Term, Double>>(terms.size(),
-                        new Comparator<Op.Pair<Term, Double>>() {
-                    @Override
-                    public int compare(Op.Pair<Term, Double> a, Op.Pair<Term, Double> b) {
-                        double result = Math.signum(a.getSecond() - b.getSecond());
-                        return Double.isNaN(result) ? -1 : (int) result;
-                    }
-
-                });
+                = new PriorityQueue<Op.Pair<Term, Double>>(
+                        terms.size(), new TermCentroidComparatorAscending());
         Defuzzifier defuzzifier = new Centroid();
         for (Term term : terms) {
             double centroid;

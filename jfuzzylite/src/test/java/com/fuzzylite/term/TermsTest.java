@@ -5,6 +5,7 @@
  */
 package com.fuzzylite.term;
 
+import com.fuzzylite.FuzzyLite;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -26,6 +27,7 @@ public class TermsTest {
 
     @Before
     public void setUp() {
+        FuzzyLite.setDecimals(3);
     }
 
     @After

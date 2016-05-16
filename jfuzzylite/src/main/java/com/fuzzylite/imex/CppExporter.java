@@ -80,7 +80,7 @@ public class CppExporter extends Exporter {
         if (!isUsingNamespace()) {
             result.append("using namespace fl;\n\n");
         }
-        result.append(fl("Engine* ") + "engine = new " + fl("Engine;\n"));
+        result.append(fl("Engine* ")).append("engine = new ").append(fl("Engine;\n"));
         result.append(String.format(
                 "engine->setName(\"%s\");\n", engine.getName()));
 
@@ -288,7 +288,7 @@ public class CppExporter extends Exporter {
             String parameter = values.get(i);
             values.set(i, Op.isNumeric(parameter) ? parameter : "\"" + parameter + "\"");
         }
-        return String.format("new %s(%s)", 
+        return String.format("new %s(%s)",
                 fl(activation.getClass().getSimpleName()),
                 Op.join(values, ", "));
     }

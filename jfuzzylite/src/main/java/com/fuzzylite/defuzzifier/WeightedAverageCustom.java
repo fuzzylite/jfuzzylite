@@ -18,8 +18,8 @@ package com.fuzzylite.defuzzifier;
 
 import com.fuzzylite.norm.SNorm;
 import com.fuzzylite.norm.TNorm;
-import com.fuzzylite.term.Aggregated;
 import com.fuzzylite.term.Activated;
+import com.fuzzylite.term.Aggregated;
 import com.fuzzylite.term.Term;
 
 public class WeightedAverageCustom extends WeightedDefuzzifier {

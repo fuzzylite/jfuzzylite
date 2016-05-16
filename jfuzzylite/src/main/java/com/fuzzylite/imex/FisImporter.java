@@ -87,7 +87,7 @@ import java.util.regex.Pattern;
 
 public class FisImporter extends Importer {
 
-    protected static int and = 0, or = 1, imp = 2, agg = 3, defuzz = 4, all = 5;
+    protected static final int AND = 0, OR = 1, IMP = 2, AGG = 3, DEFUZZ = 4, ALL = 5;
 
     public FisImporter() {
 
@@ -132,7 +132,7 @@ public class FisImporter extends Importer {
                 }
             }
 
-            String[] configuration = new String[all];
+            String[] configuration = new String[ALL];
             for (String section : sections) {
                 if (section.startsWith("[System]")) {
                     importSystem(section, engine, configuration);
@@ -146,9 +146,9 @@ public class FisImporter extends Importer {
                     throw new RuntimeException(String.format(
                             "[import error] section not recognized: %s", section));
                 }
-                engine.configure(translateTNorm(configuration[and]), translateSNorm(configuration[or]),
-                        translateTNorm(configuration[imp]), translateSNorm(configuration[agg]),
-                        translateDefuzzifier(configuration[defuzz]));
+                engine.configure(translateTNorm(configuration[AND]), translateSNorm(configuration[OR]),
+                        translateTNorm(configuration[IMP]), translateSNorm(configuration[AGG]),
+                        translateDefuzzifier(configuration[DEFUZZ]));
             }
         } catch (Exception ex) {
             throw new RuntimeException(ex);
@@ -164,23 +164,24 @@ public class FisImporter extends Importer {
         while ((line = reader.readLine()) != null) {
             List<String> keyValue = Op.split(line, "=");
             String key = keyValue.get(0).trim();
-            String value = "";
+            StringBuilder valueBuilder = new StringBuilder();
             for (int i = 1; i < keyValue.size(); ++i) {
-                value += keyValue.get(i);
+                valueBuilder.append(keyValue.get(i));
             }
-            value = value.trim();
+            String value = valueBuilder.toString().trim();
+
             if ("Name".equals(key)) {
                 engine.setName(value);
             } else if ("AndMethod".equals(key)) {
-                methods[and] = value;
+                methods[AND] = value;
             } else if ("OrMethod".equals(key)) {
-                methods[or] = value;
+                methods[OR] = value;
             } else if ("ImpMethod".equals(key)) {
-                methods[imp] = value;
+                methods[IMP] = value;
             } else if ("AggMethod".equals(key)) {
-                methods[agg] = value;
+                methods[AGG] = value;
             } else if ("DefuzzMethod".equals(key)) {
-                methods[defuzz] = value;
+                methods[DEFUZZ] = value;
             } else if ("Type".equals(key) || "Version".equals(key)
                     || "NumInputs".equals(key) || "NumOutputs".equals(key)
                     || "NumRules".equals(key) || "NumMFs".equals(key)) {
@@ -367,14 +368,14 @@ public class FisImporter extends Importer {
                     ruleText.append(String.format(" %s ", Rule.FL_AND));
                 }
             }
-
-            String weightString = "";
+            StringBuilder weightBuilder = new StringBuilder();
             for (char c : weightInParenthesis.toCharArray()) {
                 if (c == '(' || c == ')' || c == ' ') {
                     continue;
                 }
-                weightString += c;
+                weightBuilder.append(c);
             }
+            String weightString = weightBuilder.toString();
             double weight = Op.toDouble(weightString);
             if (!Op.isEq(weight, 1.0)) {
                 ruleText.append(String.format(" %s %s",
@@ -530,12 +531,13 @@ public class FisImporter extends Importer {
     }
 
     protected Term parseTerm(String fis, Engine engine) {
-        String line = "";
+        StringBuilder lineBuilder = new StringBuilder();
         for (char c : fis.toCharArray()) {
             if (!(c == '[' || c == ']')) {
-                line += c;
+                lineBuilder.append(c);
             }
         }
+        String line = lineBuilder.toString();
 
         List<String> nameTerm = Op.split(line, ":");
         if (nameTerm.size() != 2) {

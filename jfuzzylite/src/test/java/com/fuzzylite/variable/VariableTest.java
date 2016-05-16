@@ -5,6 +5,7 @@
  */
 package com.fuzzylite.variable;
 
+import com.fuzzylite.FuzzyLite;
 import com.fuzzylite.term.Triangle;
 import static org.hamcrest.CoreMatchers.is;
 import org.junit.After;
@@ -28,6 +29,7 @@ public class VariableTest {
 
     @Before
     public void setUp() {
+        FuzzyLite.setDecimals(3);
     }
 
     @After

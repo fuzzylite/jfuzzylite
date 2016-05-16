@@ -73,14 +73,16 @@ public class Proposition extends Expression {
 
     @Override
     public String toString() {
-        String result = variable.getName() + " " + Rule.FL_IS + " ";
+        StringBuilder result = new StringBuilder();
+
+        result.append(variable.getName()).append(" ").append(Rule.FL_IS).append(" ");
         for (Hedge hedge : hedges) {
-            result += hedge.getName() + " ";
+            result.append(hedge.getName()).append(" ");
         }
         if (term != null) { //term is null when hedge is any
-            result += term.getName();
+            result.append(term.getName());
         }
-        return result;
+        return result.toString();
     }
 
 }

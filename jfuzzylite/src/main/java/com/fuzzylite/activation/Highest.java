@@ -61,6 +61,15 @@ public class Highest extends Activation {
         setNumberOfRules(Integer.parseInt(values.get(0)));
     }
 
+    static class RuleDegreeComparatorDescending implements Comparator<Rule> {
+
+        @Override
+        public int compare(Rule a, Rule b) {
+            double result = Math.signum(b.getActivationDegree() - a.getActivationDegree());
+            return Double.isNaN(result) ? -1 : (int) result;
+        }
+    }
+
     @Override
     public void activate(RuleBlock ruleBlock) {
         FuzzyLite.logger().log(Level.FINE, "Activation: {0} {1}",
@@ -69,15 +78,8 @@ public class Highest extends Activation {
         SNorm disjunction = ruleBlock.getDisjunction();
         TNorm implication = ruleBlock.getImplication();
 
-        PriorityQueue<Rule> rulesToActivate
-                = new PriorityQueue<Rule>(getNumberOfRules(),
-                        new Comparator<Rule>() {
-                    @Override
-                    public int compare(Rule a, Rule b) {
-                        double result = Math.signum(b.getActivationDegree() - a.getActivationDegree());
-                        return Double.isNaN(result) ? -1 : (int) result;
-                    }
-                });
+        PriorityQueue<Rule> rulesToActivate = new PriorityQueue<Rule>(
+                getNumberOfRules(), new RuleDegreeComparatorDescending());
 
         for (Rule rule : ruleBlock.getRules()) {
             rule.deactivate();

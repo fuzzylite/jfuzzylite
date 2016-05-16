@@ -7,6 +7,7 @@ package com.fuzzylite.activation;
 
 import com.fuzzylite.Console;
 import com.fuzzylite.Engine;
+import com.fuzzylite.FuzzyLite;
 import com.fuzzylite.rule.Rule;
 import com.fuzzylite.rule.RuleBlock;
 import com.fuzzylite.variable.InputVariable;
@@ -34,6 +35,7 @@ public class LowestTest {
 
     @Before
     public void setUp() {
+        FuzzyLite.setDecimals(3);
     }
 
     @After
