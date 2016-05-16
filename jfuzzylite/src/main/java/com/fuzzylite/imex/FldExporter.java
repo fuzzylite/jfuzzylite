@@ -36,6 +36,7 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.StringTokenizer;
+import java.util.logging.Level;
 
 public class FldExporter extends Exporter {
 
@@ -125,13 +126,18 @@ public class FldExporter extends Exporter {
     }
 
     public void toFile(File file, Engine engine, int maximumNumberOfResults) throws IOException {
-        if (!file.exists()) {
-            file.createNewFile();
+        if (!file.createNewFile()) {
+            FuzzyLite.logger().log(Level.FINE, "Replacing file {0}", file.getAbsolutePath());
         }
         BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(
                 new FileOutputStream(file), FuzzyLite.UTF_8));
-        write(engine, writer, maximumNumberOfResults);
-        writer.close();
+        try {
+            write(engine, writer, maximumNumberOfResults);
+        } catch (IOException ex) {
+            throw ex;
+        } finally {
+            writer.close();
+        }
     }
 
     public String toString(Engine engine, String inputData) {
@@ -140,7 +146,8 @@ public class FldExporter extends Exporter {
             writer.append(header(engine)).append("\n");
         }
         BufferedReader reader = new BufferedReader(new InputStreamReader(
-                new ByteArrayInputStream(inputData.getBytes()), FuzzyLite.UTF_8));
+                new ByteArrayInputStream(inputData.getBytes(FuzzyLite.UTF_8)),
+                FuzzyLite.UTF_8));
         String line;
         try {
             while ((line = reader.readLine()) != null) {
@@ -158,8 +165,8 @@ public class FldExporter extends Exporter {
     }
 
     public void toFile(File file, Engine engine, String inputData) throws IOException {
-        if (!file.exists()) {
-            file.createNewFile();
+        if (!file.createNewFile()) {
+            FuzzyLite.logger().log(Level.FINE, "Replacing file {0}", file.getAbsolutePath());
         }
         BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(
                 new FileOutputStream(file), FuzzyLite.UTF_8));
@@ -167,7 +174,8 @@ public class FldExporter extends Exporter {
             writer.append(header(engine)).append("\n");
         }
         BufferedReader reader = new BufferedReader(new InputStreamReader(
-                new ByteArrayInputStream(inputData.getBytes()), FuzzyLite.UTF_8));
+                new ByteArrayInputStream(inputData.getBytes(FuzzyLite.UTF_8)),
+                FuzzyLite.UTF_8));
         try {
             String line;
             while ((line = reader.readLine()) != null) {

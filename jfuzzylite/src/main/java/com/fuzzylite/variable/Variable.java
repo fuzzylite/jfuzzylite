@@ -122,12 +122,7 @@ public class Variable implements Op.Cloneable {
 
         while (it.hasNext()) {
             Term term = it.next();
-            double fx;
-            try {
-                fx = term.membership(x);
-            } finally {
-                //ignore
-            }
+            double fx = term.membership(x);
 
             if (sb.length() == 0) {
                 sb.append(Op.str(fx));
@@ -144,12 +139,7 @@ public class Variable implements Op.Cloneable {
     public Op.Pair<Double, Term> highestMembership(double x) {
         Op.Pair<Double, Term> result = new Op.Pair<Double, Term>(0.0, null);
         for (Term term : terms) {
-            double y = Double.NaN;
-            try {
-                y = term.membership(x);
-            } catch (Exception ex) {
-                // ignore
-            }
+            double y = term.membership(x);
             if (Op.isGt(y, result.getFirst())) {
                 result.setFirst(y);
                 result.setSecond(term);

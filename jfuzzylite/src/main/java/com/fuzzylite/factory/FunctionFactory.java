@@ -14,7 +14,6 @@
  jfuzzylite™ is a trademark of FuzzyLite Limited.
 
  */
-
 package com.fuzzylite.factory;
 
 import com.fuzzylite.Op;
@@ -74,8 +73,7 @@ public class FunctionFactory extends CloningFactory<Function.Element> {
             registerObject(Rule.FL_OR, new Function.Element(Rule.FL_OR, "Logical OR", Function.Element.Type.OPERATOR,
                     Op.class.getMethod("logicalOr", double.class, double.class), p));
         } catch (Exception ex) {
-            throw new RuntimeException(String.format(
-                    "[factory error] unable to register operator at level %d", p), ex);
+            throw new RuntimeException("[factory error] unable to register operator: " + ex.toString());
         }
     }
 
@@ -146,9 +144,8 @@ public class FunctionFactory extends CloningFactory<Function.Element> {
             //this.functions.put("asinh", new BuiltInFunction("asinh",  & (asinh)));
             //this.functions.put("atanh", new BuiltInFunction("atanh",  & (atanh)));
         } catch (Exception ex) {
-            throw new RuntimeException("[factory error] unable to register function", ex);
+            throw new RuntimeException("[factory error] unable to register function: " + ex.toString());
         }
-
     }
 
     public Set<String> availableOperators() {
