@@ -80,7 +80,6 @@ public class Engine implements Op.Cloneable {
     public void configure(TNorm conjunction, SNorm disjunction,
             TNorm implication, SNorm aggregation, Defuzzifier defuzzifier) {
         try {
-            //@todo Why am I cloning this?
             for (RuleBlock ruleblock : this.ruleBlocks) {
                 ruleblock.setConjunction(conjunction == null ? null : conjunction.clone());
                 ruleblock.setDisjunction(disjunction == null ? null : disjunction.clone());

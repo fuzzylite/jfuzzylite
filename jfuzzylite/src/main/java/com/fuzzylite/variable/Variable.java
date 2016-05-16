@@ -156,7 +156,8 @@ public class Variable implements Op.Cloneable {
         return highestMembership(x).getSecond();
     }
 
-    static class TermCentroidComparatorAscending implements Comparator<Op.Pair<Term, Double>> {
+    static class TermCentroidComparatorAscending
+            implements Comparator<Op.Pair<Term, Double>> {
 
         @Override
         public int compare(Op.Pair<Term, Double> a, Op.Pair<Term, Double> b) {

@@ -18,10 +18,10 @@ package com.fuzzylite.factory;
 
 public class FactoryManager {
 
-    protected static final FactoryManager instance = new FactoryManager();
+    protected static final FactoryManager INSTANCE = new FactoryManager();
 
     public static FactoryManager instance() {
-        return instance;
+        return INSTANCE;
     }
 
     private TNormFactory tnorm;

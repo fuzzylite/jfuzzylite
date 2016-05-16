@@ -94,12 +94,13 @@ public class Antecedent {
                 }
             }
 
+            Variable variable = proposition.getVariable();
             double result;
-            if (proposition.getVariable() instanceof OutputVariable) {
-                OutputVariable outputVariable = (OutputVariable) proposition.getVariable();
+            if (variable instanceof OutputVariable) {
+                OutputVariable outputVariable = (OutputVariable) variable;
                 result = outputVariable.fuzzyOutput().activationDegree(proposition.getTerm());
             } else {
-                result = proposition.getTerm().membership(proposition.getVariable().getValue());
+                result = proposition.getTerm().membership(variable.getValue());
             }
             int lastIndex = proposition.getHedges().size();
             ListIterator<Hedge> reverseIterator = proposition.getHedges().listIterator(lastIndex);

@@ -34,6 +34,7 @@ import com.fuzzylite.term.Term;
 import com.fuzzylite.variable.InputVariable;
 import com.fuzzylite.variable.OutputVariable;
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.StringReader;
 import java.util.LinkedList;
 import java.util.List;
@@ -67,13 +68,13 @@ public class FllImporter extends Importer {
         String tag = "";
         List<String> block = new LinkedList<String>();
         BufferedReader reader = new BufferedReader(new StringReader(fll));
-        String line = "";
+        String line;
 
         while (true) {
             try {
                 line = reader.readLine();
-            } catch (Exception ex) {
-                //ignore as there will never be an exception
+            } catch (IOException ex) {
+                break;
             }
             if (line == null) {
                 break;
@@ -104,9 +105,14 @@ public class FllImporter extends Importer {
         }
         try {
             process(tag, Op.join(block, "\n"), engine);
-            reader.close();
         } catch (Exception ex) {
             throw new RuntimeException(ex);
+        } finally {
+            try {
+                reader.close();
+            } catch (Exception ex) {
+
+            }
         }
         return engine;
     }
