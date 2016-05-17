@@ -7,7 +7,6 @@ package com.fuzzylite.term;
 
 import com.fuzzylite.FuzzyLite;
 import com.fuzzylite.Op;
-import java.util.logging.Logger;
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.is;
 import org.junit.After;
@@ -118,7 +117,6 @@ public class FunctionTest {
     @Test
     public void testFunctionText() {
         Function f = new Function();
-        Logger log = FuzzyLite.logger();
         String text = "(Temperature is High and Oxigen is Low) or "
                 + "(Temperature is Low and (Oxigen is Low or Oxigen is High))";
         Assert.assertThat("Postfix is correct", f.toPostfix(text),
@@ -129,5 +127,11 @@ public class FunctionTest {
         text = "term1 is t1 or term2 is t2 and term3 is t3";
         Assert.assertThat("Postfix is correct", f.toPostfix(text),
                 is("term1 is t1 term2 is t2 term3 is t3 and or"));
+    }
+    
+    @Test
+    public void testDoubleParenthesisInPostfix(){
+        new Function().toPostfix("if ((Ambient is DARK)) then Power is HIGH");
+        new Function().toPostfix("if ((((Ambient is DARK)))) then (Power is HIGH)");
     }
 }
