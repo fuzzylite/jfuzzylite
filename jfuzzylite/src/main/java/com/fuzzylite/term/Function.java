@@ -487,7 +487,7 @@ public class Function extends Term {
                 stack.push(token);
 
             } else if (")".equals(token)) {
-                while (!(stack.isEmpty() || "(".equals(stack.peek()))) {
+                while (!stack.isEmpty() && !"(".equals(stack.peek())) {
                     queue.offer(stack.pop());
                 }
                 if (stack.isEmpty() || !"(".equals(stack.peek())) {
@@ -496,10 +496,13 @@ public class Function extends Term {
                 }
                 stack.pop(); //get rid of "("
 
-                if (!stack.isEmpty() && factory.getObject(stack.peek()).isFunction()) {
+                Element top = null;
+                if (!stack.isEmpty()){
+                    top = factory.getObject(stack.peek());
+                }
+                if (top != null && top.isFunction()){
                     queue.offer(stack.pop());
                 }
-
             } else {
                 throw new RuntimeException(String.format(
                         "[parsing error] unexpected error with token <%s>", token));

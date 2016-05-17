@@ -14,7 +14,7 @@
 
     <target name="compile" depends="init" description="compile the source ">
         <!-- Compile the java code from ${src} into ${build} -->
-        <javac srcdir="${src}" destdir="${build}" includeantruntime="false" debug="true" debugLevel="lines,source,vars"/>
+        <javac srcdir="${src}" destdir="${build}" includeantruntime="false" debug="true" debugLevel="lines,source,vars"  excludes="test/"/>
     </target>
 
     <target name="dist" depends="compile" description="generate the distribution">
