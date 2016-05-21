@@ -5,8 +5,6 @@
  */
 package com.fuzzylite;
 
-import com.fuzzylite.imex.FllImporter;
-import java.io.File;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -60,12 +58,6 @@ public class QuickTest {
         do {
             FuzzyLite.logger().log(Level.INFO, "array {0}", Op.join(array, " "));
         } while (Op.increment(array, minArray, maxArray));
-    }
-
-    @Test
-    public void testEngine() throws Exception {
-        Engine engine = new FllImporter().fromFile(new File("/Users/juan/Downloads/Kleinhirninfarkt.fll"));
-        FuzzyLite.logger().log(Level.INFO, engine.toString());
     }
 
     @Test
