@@ -68,8 +68,9 @@ public class Console {
     public static final String KW_OUTPUT_FORMAT = "-of";
     public static final String KW_EXAMPLE = "-example";
     public static final String KW_DECIMALS = "-decimals";
-    public static final String KW_DATA_INPUT = "-d";
-    public static final String KW_DATA_MAXIMUM = "-maximum";
+    public static final String KW_DATA_INPUT_FILE = "-d";
+    public static final String KW_DATA_VALUES = "-values";
+    public static final String KW_DATA_VALUES_SCOPE = "-scope";
     public static final String KW_DATA_EXPORT_HEADER = "-dheader";
     public static final String KW_DATA_EXPORT_INPUTS = "-dinputs";
 
@@ -112,9 +113,10 @@ public class Console {
         options.add(new Option(KW_OUTPUT_FILE, "outputfile", "file to export your engine to"));
         options.add(new Option(KW_OUTPUT_FORMAT, "format", "format of the file to export (fll | fld | cpp | java | fis | fcl)"));
         options.add(new Option(KW_EXAMPLE, "example", "if not inputfile, built-in example to use as engine: (m)amdani or (t)akagi-sugeno"));
-        options.add(new Option(KW_DATA_INPUT, "datafile", "if exporting to fld, file of input values to evaluate your engine on"));
-        options.add(new Option(KW_DATA_MAXIMUM, "number", "if exporting to fld without datafile, maximum number of results to export"));
         options.add(new Option(KW_DECIMALS, "number", "number of decimals to utilize"));
+        options.add(new Option(KW_DATA_INPUT_FILE, "datafile", "if exporting to fld, file of input values to evaluate your engine on"));
+        options.add(new Option(KW_DATA_VALUES, "number",  "if exporting to fld without datafile, number of results to export within scope (default: EachVariable)"));
+        options.add(new Option(KW_DATA_VALUES_SCOPE, "scope", "if exporting to fld without datafile, scope of " + KW_DATA_VALUES + ": [EachVariable|AllVariables]"));
         options.add(new Option(KW_DATA_EXPORT_HEADER, "boolean", "if true and exporting to fld, include headers"));
         options.add(new Option(KW_DATA_EXPORT_INPUTS, "boolean", "if true and exporting to fld, include input values"));
 
@@ -179,8 +181,9 @@ public class Console {
             validOptions.add(KW_OUTPUT_FILE);
             validOptions.add(KW_OUTPUT_FORMAT);
             validOptions.add(KW_EXAMPLE);
-            validOptions.add(KW_DATA_INPUT);
-            validOptions.add(KW_DATA_MAXIMUM);
+            validOptions.add(KW_DATA_INPUT_FILE);
+            validOptions.add(KW_DATA_VALUES);
+            validOptions.add(KW_DATA_VALUES_SCOPE);
             validOptions.add(KW_DECIMALS);
             for (String option : options.keySet()) {
                 if (!validOptions.contains(option)) {
@@ -303,7 +306,7 @@ public class Console {
 
         if ("fld".equals(outputFormat)) {
             FldExporter fldExporter = new FldExporter();
-            fldExporter.setSeparator("\t");
+            fldExporter.setSeparator(" ");
             boolean exportHeaders = true;
             boolean exportInputValues = true;
             if (options.containsKey(KW_DATA_EXPORT_HEADER)) {
@@ -315,7 +318,7 @@ public class Console {
             fldExporter.setExportHeaders(exportHeaders);
             fldExporter.setExportInputValues(exportInputValues);
 
-            String filename = options.get(KW_DATA_INPUT);
+            String filename = options.get(KW_DATA_INPUT_FILE);
             if (filename != null) {
                 File dataFile = new File(filename);
                 if (!dataFile.exists()) {
@@ -332,9 +335,13 @@ public class Console {
                     reader.close();
                 }
 
-            } else if (options.containsKey(KW_DATA_MAXIMUM)) {
-                int maximum = Integer.parseInt(options.get(KW_DATA_MAXIMUM));
-                writer.write(fldExporter.toString(engine, maximum));
+            } else if (options.containsKey(KW_DATA_VALUES)) {
+                int values = Integer.parseInt(options.get(KW_DATA_VALUES));
+                FldExporter.ScopeOfValues scope = FldExporter.ScopeOfValues.EachVariable;
+                if (options.containsKey(KW_DATA_VALUES_SCOPE)){
+                    scope = FldExporter.ScopeOfValues.valueOf(options.get(KW_DATA_VALUES_SCOPE));
+                }
+                fldExporter.write(engine, writer, values, scope);
             } else {
 
                 StringBuilder buffer = new StringBuilder();
@@ -816,7 +823,7 @@ public class Console {
 
                 for (int run = 0; run < runs; ++run) {
                     long start = System.currentTimeMillis();
-                    exporter.write(engine, nullWriter, results);
+                    exporter.write(engine, nullWriter, results, FldExporter.ScopeOfValues.AllVariables);
                     long end = System.currentTimeMillis();
                     time[run] = (end - start) / 1e3;
                 }
