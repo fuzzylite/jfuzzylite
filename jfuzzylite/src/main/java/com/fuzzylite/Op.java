@@ -250,24 +250,23 @@ public class Op {
         return increment(array, array.length - 1, min, max);
     }
 
-    public static boolean increment(int[] array, int position, int[] min,
-            int[] max) {
-        if (position < 0) {
-            return true;
+    public static boolean increment(int[] array, int position, int[] min, int[] max) {
+        if (array.length == 0 || position < 0) {
+            return false;
         }
 
-        boolean overflow = false;
+        boolean incremented = true;
         if (array[position] < max[position]) {
             ++array[position];
         } else {
-            overflow = (position == 0);
+            incremented = !(position == 0);
             array[position] = min[position];
             --position;
             if (position >= 0) {
-                overflow = increment(array, position, min, max);
+                incremented = increment(array, position, min, max);
             }
         }
-        return overflow;
+        return incremented;
     }
 
     /*

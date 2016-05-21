@@ -40,8 +40,9 @@ import java.util.logging.Level;
 
 public class FldExporter extends Exporter {
 
-    public static final int DEFAULT_MAXIMUM = 1024;
-    public static final String DEFAULT_SEPARATOR = " ";
+    public enum ScopeOfValues {
+        EachVariable, AllVariables
+    }
 
     private String separator;
     private boolean exportHeaders;
@@ -49,7 +50,7 @@ public class FldExporter extends Exporter {
     private boolean exportOutputValues;
 
     public FldExporter() {
-        this(DEFAULT_SEPARATOR);
+        this(" ");
     }
 
     public FldExporter(String separator) {
@@ -95,44 +96,49 @@ public class FldExporter extends Exporter {
         List<String> result = new LinkedList<String>();
         if (exportInputValues) {
             for (InputVariable inputVariable : engine.getInputVariables()) {
-                if (inputVariable.isEnabled()) {
-                    result.add("@InputVariable: " + inputVariable.getName() + ";");
-                }
+                result.add(inputVariable.getName());
             }
         }
         if (exportOutputValues) {
             for (OutputVariable outputVariable : engine.getOutputVariables()) {
-                if (outputVariable.isEnabled()) {
-                    result.add("@OutputVariable: " + outputVariable.getName() + ";");
-                }
+                result.add(outputVariable.getName());
             }
         }
-        return String.format("#@Engine: %s;\n#", engine.getName()) + Op.join(result, separator);
+        return Op.join(result, separator);
     }
 
     @Override
     public String toString(Engine engine) {
-        return toString(engine, DEFAULT_MAXIMUM);
+        return toString(engine, 1024);
     }
 
-    public String toString(Engine engine, int maximumNumberOfResults) {
+    public String toString(Engine engine, int values) {
+        return toString(engine, values, ScopeOfValues.AllVariables);
+    }
+
+    public String toString(Engine engine, int values, ScopeOfValues scope) {
+        return toString(engine, values, scope, engine.getInputVariables());
+    }
+
+    public String toString(Engine engine, int values, ScopeOfValues scope,
+            List<InputVariable> activeVariables) {
         StringWriter writer = new StringWriter();
         try {
-            write(engine, writer, maximumNumberOfResults);
+            write(engine, writer, values, scope, activeVariables);
         } catch (Exception ex) {
-            throw new RuntimeException("[exporter error] an exception occurred while exporting the results", ex);
+            throw new RuntimeException("[exporter error] an exception occurred while exporting the results: " + ex);
         }
         return writer.toString();
     }
 
-    public void toFile(File file, Engine engine, int maximumNumberOfResults) throws IOException {
+    public void toFile(File file, Engine engine, int values, ScopeOfValues scope) throws IOException {
         if (!file.createNewFile()) {
             FuzzyLite.logger().log(Level.FINE, "Replacing file {0}", file.getAbsolutePath());
         }
         BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(
                 new FileOutputStream(file), FuzzyLite.UTF_8));
         try {
-            write(engine, writer, maximumNumberOfResults);
+            write(engine, writer, values, scope);
         } catch (IOException ex) {
             throw ex;
         } finally {
@@ -156,7 +162,7 @@ public class FldExporter extends Exporter {
                     continue;
                 }
                 List<Double> inputValues = parse(line);
-                write(engine, writer, inputValues);
+                write(engine, writer, inputValues, engine.getInputVariables());
             }
         } catch (Exception ex) {
             throw new RuntimeException(ex);
@@ -184,7 +190,7 @@ public class FldExporter extends Exporter {
                     continue;
                 }
                 List<Double> inputValues = parse(line);
-                write(engine, writer, inputValues);
+                write(engine, writer, inputValues, engine.getInputVariables());
                 writer.flush();
             }
         } catch (IOException ex) {
@@ -206,13 +212,31 @@ public class FldExporter extends Exporter {
         return inputValues;
     }
 
-    public void write(Engine engine, Writer writer, int maximumNumberOfResults)
+    public void write(Engine engine, Writer writer, int values, ScopeOfValues scope)
+            throws IOException {
+        write(engine, writer, values, scope, engine.getInputVariables());
+    }
+
+    public void write(Engine engine, Writer writer, int values, ScopeOfValues scope,
+            List<InputVariable> activeVariables)
             throws IOException {
         if (exportHeaders) {
             writer.append(header(engine)).append("\n");
         }
-        int resolution = -1 + (int) Math.max(1.0, Math.pow(
-                maximumNumberOfResults, 1.0 / engine.numberOfInputVariables()));
+        if (activeVariables.size() != engine.getInputVariables().size()) {
+            throw new RuntimeException("[exporter error] number of active variables "
+                    + "<" + activeVariables.size() + "> "
+                    + "must match number of input variables in the engine "
+                    + "<" + engine.getInputVariables().size() + ">");
+        }
+
+        int resolution;
+        if (scope == ScopeOfValues.AllVariables) {
+            resolution = -1 + (int) Math.max(1.0, Math.pow(
+                    values, 1.0 / engine.numberOfInputVariables()));
+        } else {//if (type == EachVariable
+            resolution = values - 1;
+        }
 
         int sampleValues[] = new int[engine.numberOfInputVariables()];
         int minSampleValues[] = new int[engine.numberOfInputVariables()];
@@ -220,30 +244,32 @@ public class FldExporter extends Exporter {
         for (int i = 0; i < engine.numberOfInputVariables(); ++i) {
             sampleValues[i] = 0;
             minSampleValues[i] = 0;
-            maxSampleValues[i] = resolution;
+            if (engine.getInputVariable(i) == activeVariables.get(i)) {
+                maxSampleValues[i] = resolution;
+            } else {
+                maxSampleValues[i] = 0;
+            }
         }
 
-        engine.restart();
-
-        boolean overflow = false;
-        while (!overflow) {
-            List<Double> inputValues = new ArrayList<Double>(engine.numberOfInputVariables());
+        List<Double> inputValues = new ArrayList<Double>(engine.numberOfInputVariables());
+        do {
             for (int i = 0; i < engine.numberOfInputVariables(); ++i) {
                 InputVariable inputVariable = engine.getInputVariable(i);
-                inputValues.add(inputVariable.getMinimum()
-                        + sampleValues[i] * inputVariable.range() / Math.max(1.0, resolution));
+                if (inputVariable == activeVariables.get(i)) {
+                    inputValues.add(inputVariable.getMinimum()
+                            + sampleValues[i] * inputVariable.range() / Math.max(1.0, resolution));
+                } else {
+                    inputValues.add(inputVariable.getValue());
+                }
             }
-            write(engine, writer, inputValues);
-            overflow = Op.increment(sampleValues, minSampleValues, maxSampleValues);
-        }
+            write(engine, writer, inputValues, activeVariables);
+        } while (Op.increment(sampleValues, minSampleValues, maxSampleValues));
     }
 
     public void write(Engine engine, Writer writer, Reader reader) throws IOException {
         if (exportHeaders) {
             writer.append(header(engine)).append("\n");
         }
-
-        engine.restart();
 
         String line;
         int lineNumber = 0;
@@ -252,14 +278,15 @@ public class FldExporter extends Exporter {
             ++lineNumber;
             List<Double> inputValues = parse(line.trim());
             try {
-                write(engine, writer, inputValues);
-            } catch (IOException ex) {
-                throw new IOException(String.format("IOException writing line <%d>", lineNumber), ex);
+                write(engine, writer, inputValues, engine.getInputVariables());
+            } catch (Exception ex) {
+                throw new RuntimeException("Exception writing line <" + lineNumber + ">:" + ex.toString());
             }
         }
     }
 
-    public void write(Engine engine, Writer writer, List<Double> inputValues) throws IOException {
+    public void write(Engine engine, Writer writer, List<Double> inputValues,
+            List<InputVariable> activeVariables) throws IOException {
         if (inputValues.isEmpty()) {
             writer.append("\n");
             return;
@@ -272,10 +299,22 @@ public class FldExporter extends Exporter {
                     engine.numberOfInputVariables(), inputValues.size()));
         }
 
+        if (activeVariables.size() != engine.getInputVariables().size()) {
+            throw new RuntimeException(String.format(
+                    "[exporter error] number of active variables <%d> "
+                    + "must match the number of input variables in the engine <%d>",
+                    activeVariables.size(), engine.getInputVariables().size()));
+        }
+
         List<Double> values = new ArrayList<Double>();
         for (int i = 0; i < engine.numberOfInputVariables(); ++i) {
             InputVariable inputVariable = engine.getInputVariable(i);
-            double inputValue = inputVariable.isEnabled() ? inputValues.get(i) : Double.NaN;
+            double inputValue;
+            if (inputVariable == activeVariables.get(i)) {
+                inputValue = inputVariable.getValue();
+            } else {
+                inputValue = inputValues.get(i);
+            }
             inputVariable.setValue(inputValue);
             if (exportInputValues) {
                 values.add(inputValue);
