@@ -25,7 +25,7 @@ public class Ramp extends Term {
 
     public enum Direction {
 
-        POSITIVE, ZERO, NEGATIVE
+        Positive, Zero, Negative
     }
 
     private double start, end;
@@ -122,12 +122,12 @@ public class Ramp extends Term {
     public Direction direction() {
         double range = this.end - this.start;
         if (!Op.isFinite(range) || Op.isEq(range, 0.0)) {
-            return Direction.ZERO;
+            return Direction.Zero;
         }
         if (Op.isGt(range, 0.0)) {
-            return Direction.POSITIVE;
+            return Direction.Positive;
         }
-        return Direction.NEGATIVE;
+        return Direction.Negative;
     }
 
     @Override

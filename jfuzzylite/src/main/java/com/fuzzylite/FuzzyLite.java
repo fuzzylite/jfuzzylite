@@ -28,6 +28,7 @@ public class FuzzyLite {
 
     public static final String NAME = "jfuzzylite";
     public static final String VERSION = "6.0";
+    public static final String LIBRARY = NAME + " v" + VERSION;
     public static final String LICENSE = "FuzzyLite License";
     public static final String AUTHOR = "Juan Rada-Vilela, Ph.D.";
     public static final String COMPANY = "FuzzyLite Limited";
@@ -37,12 +38,13 @@ public class FuzzyLite {
     private static boolean debug = false;
 
     private static DecimalFormat DF = new DecimalFormat("0.000");
+
     static {
         DF.setRoundingMode(RoundingMode.HALF_UP);
     }
-    
+
     public static final Charset UTF_8 = Charset.forName("UTF-8");
-    
+
     private static Logger LOGGER = Logger.getLogger("com.fuzzylite");
 
     static {

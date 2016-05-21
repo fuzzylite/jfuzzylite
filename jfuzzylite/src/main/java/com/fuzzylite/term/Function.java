@@ -39,7 +39,7 @@ public class Function extends Term {
 
         public enum Type {
 
-            OPERATOR, FUNCTION
+            Operator, Function
         }
         private String name;
         private String description;
@@ -107,11 +107,11 @@ public class Function extends Term {
         }
 
         public boolean isOperator() {
-            return this.type == Type.OPERATOR;
+            return this.type == Type.Operator;
         }
 
         public boolean isFunction() {
-            return this.type == Type.FUNCTION;
+            return this.type == Type.Function;
         }
 
         public int getPrecedence() {

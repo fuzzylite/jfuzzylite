@@ -14,7 +14,6 @@
  jfuzzylite™ is a trademark of FuzzyLite Limited.
 
  */
-
 package com.fuzzylite.defuzzifier;
 
 import com.fuzzylite.FuzzyLite;
@@ -32,7 +31,6 @@ import com.fuzzylite.term.ZShape;
 public abstract class WeightedDefuzzifier extends Defuzzifier {
 
     public enum Type {
-
         Automatic, TakagiSugeno, Tsukamoto
     }
 
