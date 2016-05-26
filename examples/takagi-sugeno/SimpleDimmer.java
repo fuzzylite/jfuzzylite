@@ -13,7 +13,7 @@ import com.fuzzylite.variable.*;
 public class SimpleDimmer{
 public static void main(String[] args){
 Engine engine = new Engine();
-engine.setName("simple-dimmer");
+engine.setName("SimpleDimmer");
 
 InputVariable Ambient = new InputVariable();
 Ambient.setEnabled(true);
@@ -45,7 +45,7 @@ ruleBlock.setName("");
 ruleBlock.setConjunction(null);
 ruleBlock.setDisjunction(null);
 ruleBlock.setImplication(null);
-ruleBlock.setActivation(fl:null);
+ruleBlock.setActivation(new General());
 ruleBlock.addRule(Rule.parse("if Ambient is DARK then Power is HIGH", engine));
 ruleBlock.addRule(Rule.parse("if Ambient is MEDIUM then Power is MEDIUM", engine));
 ruleBlock.addRule(Rule.parse("if Ambient is BRIGHT then Power is LOW", engine));

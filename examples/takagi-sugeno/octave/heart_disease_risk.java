@@ -13,7 +13,7 @@ import com.fuzzylite.variable.*;
 public class heart_disease_risk{
 public static void main(String[] args){
 Engine engine = new Engine();
-engine.setName("Heart-Disease-Risk");
+engine.setName("heart_disease_risk");
 
 InputVariable LDLLevel = new InputVariable();
 LDLLevel.setEnabled(true);
@@ -59,7 +59,7 @@ ruleBlock.setName("");
 ruleBlock.setConjunction(new Minimum());
 ruleBlock.setDisjunction(null);
 ruleBlock.setImplication(null);
-ruleBlock.setActivation(fl:null);
+ruleBlock.setActivation(new General());
 ruleBlock.addRule(Rule.parse("if LDLLevel is Low and HDLLevel is LowHDL then HeartDiseaseRisk is MediumRisk", engine));
 ruleBlock.addRule(Rule.parse("if LDLLevel is Low and HDLLevel is ModerateHDL then HeartDiseaseRisk is LowRisk", engine));
 ruleBlock.addRule(Rule.parse("if LDLLevel is Low and HDLLevel is HighHDL then HeartDiseaseRisk is NoRisk", engine));

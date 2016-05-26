@@ -4,7 +4,7 @@ int main(int argc, char** argv){
 using namespace fl;
 
 Engine* engine = new Engine;
-engine->setName("Heart-Disease-Risk");
+engine->setName("heart_disease_risk");
 
 InputVariable* LDLLevel = new InputVariable;
 LDLLevel->setEnabled(true);
@@ -50,7 +50,7 @@ ruleBlock->setName("");
 ruleBlock->setConjunction(new Minimum);
 ruleBlock->setDisjunction(fl::null);
 ruleBlock->setImplication(fl::null);
-ruleBlock->setActivation(fl::null);
+ruleBlock->setActivation(new General);
 ruleBlock->addRule(fl::Rule::parse("if LDLLevel is Low and HDLLevel is LowHDL then HeartDiseaseRisk is MediumRisk", engine));
 ruleBlock->addRule(fl::Rule::parse("if LDLLevel is Low and HDLLevel is ModerateHDL then HeartDiseaseRisk is LowRisk", engine));
 ruleBlock->addRule(fl::Rule::parse("if LDLLevel is Low and HDLLevel is HighHDL then HeartDiseaseRisk is NoRisk", engine));

@@ -4,7 +4,7 @@ int main(int argc, char** argv){
 using namespace fl;
 
 Engine* engine = new Engine;
-engine->setName("slcpp");
+engine->setName("slcpp1");
 
 InputVariable* in1 = new InputVariable;
 in1->setEnabled(true);
@@ -94,7 +94,7 @@ ruleBlock->setName("");
 ruleBlock->setConjunction(fl::null);
 ruleBlock->setDisjunction(fl::null);
 ruleBlock->setImplication(fl::null);
-ruleBlock->setActivation(fl::null);
+ruleBlock->setActivation(new General);
 ruleBlock->addRule(fl::Rule::parse("if pole_length is mf1 then out is outmf1", engine));
 ruleBlock->addRule(fl::Rule::parse("if pole_length is mf2 then out is outmf2", engine));
 ruleBlock->addRule(fl::Rule::parse("if pole_length is mf3 then out is outmf3", engine));

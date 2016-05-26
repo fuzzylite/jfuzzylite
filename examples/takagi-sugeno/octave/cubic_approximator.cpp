@@ -4,7 +4,7 @@ int main(int argc, char** argv){
 using namespace fl;
 
 Engine* engine = new Engine;
-engine->setName("Cubic-Approximator");
+engine->setName("cubic_approximator");
 
 InputVariable* X = new InputVariable;
 X->setEnabled(true);
@@ -52,7 +52,7 @@ ruleBlock->setName("");
 ruleBlock->setConjunction(fl::null);
 ruleBlock->setDisjunction(fl::null);
 ruleBlock->setImplication(fl::null);
-ruleBlock->setActivation(fl::null);
+ruleBlock->setActivation(new General);
 ruleBlock->addRule(fl::Rule::parse("if X is AboutNegFive then ApproxXCubed is TangentatNegFive", engine));
 ruleBlock->addRule(fl::Rule::parse("if X is AboutNegFour then ApproxXCubed is TangentatNegFour", engine));
 ruleBlock->addRule(fl::Rule::parse("if X is AboutNegThree then ApproxXCubed is TangentatNegThree", engine));

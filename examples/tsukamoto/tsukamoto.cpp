@@ -4,7 +4,7 @@ int main(int argc, char** argv){
 using namespace fl;
 
 Engine* engine = new Engine;
-engine->setName("");
+engine->setName("tsukamoto");
 
 InputVariable* X = new InputVariable;
 X->setEnabled(true);
@@ -78,7 +78,7 @@ ruleBlock->setName("");
 ruleBlock->setConjunction(fl::null);
 ruleBlock->setDisjunction(fl::null);
 ruleBlock->setImplication(fl::null);
-ruleBlock->setActivation(fl::null);
+ruleBlock->setActivation(new General);
 ruleBlock->addRule(fl::Rule::parse("if X is small then Ramps is a and Sigmoids is a and ZSShapes is a and Concaves is a", engine));
 ruleBlock->addRule(fl::Rule::parse("if X is medium then Ramps is b and Sigmoids is b and ZSShapes is b and Concaves is b", engine));
 ruleBlock->addRule(fl::Rule::parse("if X is large then Ramps is c and Sigmoids is c and ZSShapes is c and Concaves is c", engine));

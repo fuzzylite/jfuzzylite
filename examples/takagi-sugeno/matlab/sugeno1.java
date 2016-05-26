@@ -13,7 +13,7 @@ import com.fuzzylite.variable.*;
 public class sugeno1{
 public static void main(String[] args){
 Engine engine = new Engine();
-engine.setName("sugeno");
+engine.setName("sugeno1");
 
 InputVariable input = new InputVariable();
 input.setEnabled(true);
@@ -43,7 +43,7 @@ ruleBlock.setName("");
 ruleBlock.setConjunction(null);
 ruleBlock.setDisjunction(null);
 ruleBlock.setImplication(null);
-ruleBlock.setActivation(fl:null);
+ruleBlock.setActivation(new General());
 ruleBlock.addRule(Rule.parse("if input is low then output is line1", engine));
 ruleBlock.addRule(Rule.parse("if input is high then output is line2", engine));
 engine.addRuleBlock(ruleBlock);

@@ -13,7 +13,7 @@ import com.fuzzylite.variable.*;
 public class slcpp1{
 public static void main(String[] args){
 Engine engine = new Engine();
-engine.setName("slcpp");
+engine.setName("slcpp1");
 
 InputVariable in1 = new InputVariable();
 in1.setEnabled(true);
@@ -103,7 +103,7 @@ ruleBlock.setName("");
 ruleBlock.setConjunction(null);
 ruleBlock.setDisjunction(null);
 ruleBlock.setImplication(null);
-ruleBlock.setActivation(fl:null);
+ruleBlock.setActivation(new General());
 ruleBlock.addRule(Rule.parse("if pole_length is mf1 then out is outmf1", engine));
 ruleBlock.addRule(Rule.parse("if pole_length is mf2 then out is outmf2", engine));
 ruleBlock.addRule(Rule.parse("if pole_length is mf3 then out is outmf3", engine));

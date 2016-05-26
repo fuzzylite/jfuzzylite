@@ -13,7 +13,7 @@ import com.fuzzylite.variable.*;
 public class approximation{
 public static void main(String[] args){
 Engine engine = new Engine();
-engine.setName("approximation of sin(x)/x");
+engine.setName("approximation");
 
 InputVariable inputX = new InputVariable();
 inputX.setEnabled(true);
@@ -81,7 +81,7 @@ ruleBlock.setName("");
 ruleBlock.setConjunction(null);
 ruleBlock.setDisjunction(null);
 ruleBlock.setImplication(null);
-ruleBlock.setActivation(fl:null);
+ruleBlock.setActivation(new General());
 ruleBlock.addRule(Rule.parse("if inputX is NEAR_1 then outputFx is f1", engine));
 ruleBlock.addRule(Rule.parse("if inputX is NEAR_2 then outputFx is f2", engine));
 ruleBlock.addRule(Rule.parse("if inputX is NEAR_3 then outputFx is f3", engine));

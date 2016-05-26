@@ -13,7 +13,7 @@ import com.fuzzylite.variable.*;
 public class fpeaks{
 public static void main(String[] args){
 Engine engine = new Engine();
-engine.setName("peaks");
+engine.setName("fpeaks");
 
 InputVariable in1 = new InputVariable();
 in1.setEnabled(true);
@@ -70,7 +70,7 @@ ruleBlock.setName("");
 ruleBlock.setConjunction(new AlgebraicProduct());
 ruleBlock.setDisjunction(null);
 ruleBlock.setImplication(null);
-ruleBlock.setActivation(fl:null);
+ruleBlock.setActivation(new General());
 ruleBlock.addRule(Rule.parse("if in1 is in1mf1 and in2 is in1mf1 then out1 is out1mf1", engine));
 ruleBlock.addRule(Rule.parse("if in1 is in1mf1 and in2 is in1mf2 then out1 is out1mf2", engine));
 ruleBlock.addRule(Rule.parse("if in1 is in1mf1 and in2 is in1mf3 then out1 is out1mf3", engine));

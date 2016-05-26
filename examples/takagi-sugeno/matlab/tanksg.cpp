@@ -4,7 +4,7 @@ int main(int argc, char** argv){
 using namespace fl;
 
 Engine* engine = new Engine;
-engine->setName("tanksg1");
+engine->setName("tanksg");
 
 InputVariable* level = new InputVariable;
 level->setEnabled(true);
@@ -48,7 +48,7 @@ ruleBlock->setName("");
 ruleBlock->setConjunction(new AlgebraicProduct);
 ruleBlock->setDisjunction(fl::null);
 ruleBlock->setImplication(fl::null);
-ruleBlock->setActivation(fl::null);
+ruleBlock->setActivation(new General);
 ruleBlock->addRule(fl::Rule::parse("if level is okay then valve is no_change", engine));
 ruleBlock->addRule(fl::Rule::parse("if level is low then valve is open_fast", engine));
 ruleBlock->addRule(fl::Rule::parse("if level is high then valve is close_fast", engine));

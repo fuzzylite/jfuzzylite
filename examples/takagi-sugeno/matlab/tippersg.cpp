@@ -4,7 +4,7 @@ int main(int argc, char** argv){
 using namespace fl;
 
 Engine* engine = new Engine;
-engine->setName("sugeno tipper");
+engine->setName("tippersg");
 
 InputVariable* service = new InputVariable;
 service->setEnabled(true);
@@ -45,7 +45,7 @@ ruleBlock->setName("");
 ruleBlock->setConjunction(fl::null);
 ruleBlock->setDisjunction(new Maximum);
 ruleBlock->setImplication(fl::null);
-ruleBlock->setActivation(fl::null);
+ruleBlock->setActivation(new General);
 ruleBlock->addRule(fl::Rule::parse("if service is poor or food is rancid then tip is cheap", engine));
 ruleBlock->addRule(fl::Rule::parse("if service is average then tip is average", engine));
 ruleBlock->addRule(fl::Rule::parse("if service is good or food is delicious then tip is generous", engine));

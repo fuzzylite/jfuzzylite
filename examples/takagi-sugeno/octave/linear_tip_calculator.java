@@ -13,7 +13,7 @@ import com.fuzzylite.variable.*;
 public class linear_tip_calculator{
 public static void main(String[] args){
 Engine engine = new Engine();
-engine.setName("Linear-Tip-Calculator");
+engine.setName("linear_tip_calculator");
 
 InputVariable FoodQuality = new InputVariable();
 FoodQuality.setEnabled(true);
@@ -53,7 +53,7 @@ ruleBlock.setName("");
 ruleBlock.setConjunction(new Minimum());
 ruleBlock.setDisjunction(null);
 ruleBlock.setImplication(null);
-ruleBlock.setActivation(fl:null);
+ruleBlock.setActivation(new General());
 ruleBlock.addRule(Rule.parse("if FoodQuality is Bad and Service is Bad then Tip is TenPercent", engine));
 ruleBlock.addRule(Rule.parse("if FoodQuality is Bad and Service is Good then Tip is FifteenPercent", engine));
 ruleBlock.addRule(Rule.parse("if FoodQuality is Good and Service is Bad then Tip is FifteenPercent", engine));

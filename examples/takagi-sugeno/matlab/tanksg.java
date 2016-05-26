@@ -13,7 +13,7 @@ import com.fuzzylite.variable.*;
 public class tanksg{
 public static void main(String[] args){
 Engine engine = new Engine();
-engine.setName("tanksg1");
+engine.setName("tanksg");
 
 InputVariable level = new InputVariable();
 level.setEnabled(true);
@@ -57,7 +57,7 @@ ruleBlock.setName("");
 ruleBlock.setConjunction(new AlgebraicProduct());
 ruleBlock.setDisjunction(null);
 ruleBlock.setImplication(null);
-ruleBlock.setActivation(fl:null);
+ruleBlock.setActivation(new General());
 ruleBlock.addRule(Rule.parse("if level is okay then valve is no_change", engine));
 ruleBlock.addRule(Rule.parse("if level is low then valve is open_fast", engine));
 ruleBlock.addRule(Rule.parse("if level is high then valve is close_fast", engine));

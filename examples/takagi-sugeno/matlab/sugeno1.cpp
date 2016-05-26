@@ -4,7 +4,7 @@ int main(int argc, char** argv){
 using namespace fl;
 
 Engine* engine = new Engine;
-engine->setName("sugeno");
+engine->setName("sugeno1");
 
 InputVariable* input = new InputVariable;
 input->setEnabled(true);
@@ -34,7 +34,7 @@ ruleBlock->setName("");
 ruleBlock->setConjunction(fl::null);
 ruleBlock->setDisjunction(fl::null);
 ruleBlock->setImplication(fl::null);
-ruleBlock->setActivation(fl::null);
+ruleBlock->setActivation(new General);
 ruleBlock->addRule(fl::Rule::parse("if input is low then output is line1", engine));
 ruleBlock->addRule(fl::Rule::parse("if input is high then output is line2", engine));
 engine->addRuleBlock(ruleBlock);
