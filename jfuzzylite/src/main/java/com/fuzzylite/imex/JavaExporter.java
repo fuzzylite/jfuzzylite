@@ -17,6 +17,7 @@
 package com.fuzzylite.imex;
 
 import com.fuzzylite.Engine;
+import com.fuzzylite.FuzzyLite;
 import com.fuzzylite.Op;
 import static com.fuzzylite.Op.str;
 import com.fuzzylite.activation.Activation;
@@ -58,7 +59,7 @@ public class JavaExporter extends Exporter {
     @Override
     public String toString(Engine engine) {
         StringBuilder result = new StringBuilder();
-
+        result.append("//Java code generated with " + FuzzyLite.LIBRARY + ".\n\n");
         result.append("Engine engine = new Engine();\n");
         result.append(String.format(
                 "engine.setName(\"%s\");\n", engine.getName()));
@@ -244,7 +245,7 @@ public class JavaExporter extends Exporter {
             String parameter = values.get(i);
             values.set(i, Op.isNumeric(parameter) ? parameter : "\"" + parameter + "\"");
         }
-        return String.format("new %s(%s)", 
+        return String.format("new %s(%s)",
                 activation.getClass().getSimpleName(),
                 Op.join(values, ", "));
     }

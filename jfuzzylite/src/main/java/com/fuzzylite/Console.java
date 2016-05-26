@@ -30,6 +30,7 @@ import com.fuzzylite.imex.FllExporter;
 import com.fuzzylite.imex.FllImporter;
 import com.fuzzylite.imex.Importer;
 import com.fuzzylite.imex.JavaExporter;
+import com.fuzzylite.imex.RScriptExporter;
 import com.fuzzylite.norm.s.Maximum;
 import com.fuzzylite.norm.t.AlgebraicProduct;
 import com.fuzzylite.norm.t.Minimum;
@@ -49,6 +50,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
+import java.io.StringWriter;
 import java.io.Writer;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -115,7 +117,7 @@ public class Console {
         options.add(new Option(KW_EXAMPLE, "example", "if not inputfile, built-in example to use as engine: (m)amdani or (t)akagi-sugeno"));
         options.add(new Option(KW_DECIMALS, "number", "number of decimals to utilize"));
         options.add(new Option(KW_DATA_INPUT_FILE, "datafile", "if exporting to fld, file of input values to evaluate your engine on"));
-        options.add(new Option(KW_DATA_VALUES, "number",  "if exporting to fld without datafile, number of results to export within scope (default: EachVariable)"));
+        options.add(new Option(KW_DATA_VALUES, "number", "if exporting to fld without datafile, number of results to export within scope (default: EachVariable)"));
         options.add(new Option(KW_DATA_VALUES_SCOPE, "scope", "if exporting to fld without datafile, scope of " + KW_DATA_VALUES + ": [EachVariable|AllVariables]"));
         options.add(new Option(KW_DATA_EXPORT_HEADER, "boolean", "if true and exporting to fld, include headers"));
         options.add(new Option(KW_DATA_EXPORT_INPUTS, "boolean", "if true and exporting to fld, include input values"));
@@ -338,7 +340,7 @@ public class Console {
             } else if (options.containsKey(KW_DATA_VALUES)) {
                 int values = Integer.parseInt(options.get(KW_DATA_VALUES));
                 FldExporter.ScopeOfValues scope = FldExporter.ScopeOfValues.EachVariable;
-                if (options.containsKey(KW_DATA_VALUES_SCOPE)){
+                if (options.containsKey(KW_DATA_VALUES_SCOPE)) {
                     scope = FldExporter.ScopeOfValues.valueOf(options.get(KW_DATA_VALUES_SCOPE));
                 }
                 fldExporter.write(engine, writer, values, scope);
@@ -653,6 +655,8 @@ public class Console {
             exporter = new CppExporter();
         } else if ("java".equals(to)) {
             exporter = new JavaExporter();
+        } else if ("R".equals(to)) {
+            exporter = new RScriptExporter();
         } else {
             throw new RuntimeException("[examples error] unrecognized format "
                     + "<" + from + "> to export");
@@ -663,6 +667,8 @@ public class Console {
         tests.add(new Pair<Exporter, Importer>(new FclExporter(), new FclImporter()));
         tests.add(new Pair<Exporter, Importer>(new FisExporter(), new FisImporter()));
 
+        FuzzyLite.logger().log(Level.INFO, "Exporting from {0} to {1}",
+                new String[]{from, to});
         List<String> errors = new LinkedList<String>();
         for (int i = 0; i < examples.size(); ++i) {
             FuzzyLite.logger().log(Level.INFO, "Processing {0}/{1}: {2}",
@@ -672,9 +678,10 @@ public class Console {
 
             //READING
             final String inputFile = sourceBase + examples.get(i) + "." + from;
-            BufferedReader source = new BufferedReader(new InputStreamReader(
-                    new FileInputStream(inputFile), FuzzyLite.UTF_8));
+            BufferedReader source = null;
             try {
+                source = new BufferedReader(new InputStreamReader(
+                        new FileInputStream(inputFile), FuzzyLite.UTF_8));
                 StringBuilder text = new StringBuilder();
                 String line;
                 while ((line = source.readLine()) != null) {
@@ -687,7 +694,9 @@ public class Console {
                         new String[]{ex.toString(), inputFile});
                 continue;
             } finally {
-                source.close();
+                if (source != null) {
+                    source.close();
+                }
             }
 
             //WRITING
@@ -704,13 +713,11 @@ public class Console {
                 return;
             }
 
-            BufferedWriter target = new BufferedWriter(new OutputStreamWriter(
-                    new FileOutputStream(outputFile), FuzzyLite.UTF_8));
+            BufferedWriter target = null;
             try {
+                target = new BufferedWriter(new OutputStreamWriter(
+                        new FileOutputStream(outputFile), FuzzyLite.UTF_8));
                 for (Pair<Exporter, Importer> imex : tests) {
-                    FuzzyLite.logger().info(String.format("Converting from %s to %s",
-                            imex.getSecond().getClass().getSimpleName(),
-                            imex.getFirst().getClass().getSimpleName()));
                     String out = imex.getFirst().toString(engine);
                     Engine copy = imex.getSecond().fromString(out);
                     String out_copy = imex.getFirst().toString(copy);
@@ -732,6 +739,7 @@ public class Console {
                     String className = examples.get(i).substring(examples.get(i).lastIndexOf('/') + 1);
                     target.write(
                             "import com.fuzzylite.*;\n"
+                            + "import com.fuzzylite.activation.*\n"
                             + "import com.fuzzylite.defuzzifier.*;\n"
                             + "import com.fuzzylite.factory.*;\n"
                             + "import com.fuzzylite.hedge.*;\n"
@@ -746,6 +754,12 @@ public class Console {
                             + "public static void main(String[] args){\n"
                             + exporter.toString(engine)
                             + "\n}\n}\n");
+                } else if ("R".equals(to)) {
+                    RScriptExporter rScript = (RScriptExporter) exporter;
+                    InputVariable a = engine.getInputVariable(0);
+                    InputVariable b = engine.getInputVariable(1 % engine.numberOfInputVariables());
+                    String pathToDF = examples.get(i).substring(examples.get(i).lastIndexOf('/') + 1) + ".fld";
+                    rScript.writeScriptImportingDataFrame(engine, target, a, b, pathToDF, engine.getOutputVariables());
                 } else {
                     target.write(exporter.toString(engine));
                 }
@@ -754,10 +768,11 @@ public class Console {
                 FuzzyLite.logger().log(Level.SEVERE, "{0}: {1}",
                         new String[]{ex.toString(), output});
             } finally {
-                target.close();
+                if (target != null) {
+                    target.close();
+                }
             }
         }
-
         if (errors.isEmpty()) {
             FuzzyLite.logger().info("No errors were found exporting files");
         } else {
@@ -830,10 +845,9 @@ public class Console {
 
                 double mean = Op.mean(time);
                 double stdev = Op.standardDeviation(time);
-                StringBuilder message = new StringBuilder();
-                message.append(Op.str(mean)).append("\t").append(Op.str(stdev))
-                        .append("\t").append(Op.join(time, " "))
-                        .append(" ").append(example.getFirst());
+                StringWriter message = new StringWriter();
+                message.append(Op.str(mean) + "\t" + Op.str(stdev)
+                        + "\t" + Op.join(time, " ") + " " + example.getFirst());
 //                FuzzyLite.logger().info(message.toString());
                 System.out.println(message.toString());
             }
@@ -870,25 +884,27 @@ public class Console {
             if (args.length >= 3) {
                 outputPath = args[2];
             }
-            FuzzyLite.logger().log(Level.FINE, "Origin: {0}\nTarget: {1}",
-                    new String[]{path, outputPath});
             FuzzyLite.setDecimals(3);
             try {
-                /*
-                mkdir -p fl/mamdani/matlab; mkdir -p fl/mamdani/octave; 
-                mkdir -p fl/takagi-sugeno/matlab; mkdir -p fl/takagi-sugeno/octave
-                mkdir -p fl/tsukamoto
-                 */
                 console.exportAllExamples("fll", "fll", path, outputPath);
-//                exportAllExamples("fll", "fcl", path, outputPath);
-//                exportAllExamples("fll", "fis", path, outputPath);
-//                exportAllExamples("fll", "cpp", path, outputPath);
-//                exportAllExamples("fll", "java", path, outputPath);
+                console.exportAllExamples("fll", "fcl", path, outputPath);
+                console.exportAllExamples("fll", "fis", path, outputPath);
+                console.exportAllExamples("fll", "cpp", path, outputPath);
+                console.exportAllExamples("fll", "java", path, outputPath);
+                console.exportAllExamples("fll", "R", path, outputPath);
                 FuzzyLite.setDecimals(8);
-//                exportAllExamples("fll", "fld", path, outputPath);
+                FuzzyLite.setMachEps(1e-6);
+                console.exportAllExamples("fll", "fld", path, outputPath);
+                FuzzyLite.logger().log(Level.INFO, "Origin={0}", path);
+                FuzzyLite.logger().log(Level.INFO, "Target={0}", outputPath);
             } catch (Exception ex) {
                 FuzzyLite.logger().log(Level.SEVERE, ex.toString(), ex);
                 throw new RuntimeException(ex);
+            } finally {
+                System.out.println("Please, make sure the output contains the following structure:\n"
+                        + "mkdir -p mamdani/matlab; mkdir -p mamdani/octave; "
+                        + "mkdir -p takagi-sugeno/matlab; mkdir -p takagi-sugeno/octave; "
+                        + "mkdir -p tsukamoto/");
             }
             return;
         }

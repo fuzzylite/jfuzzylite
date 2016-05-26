@@ -33,7 +33,7 @@ public class QuickTest {
 
     @Before
     public void setUp() {
-        FuzzyLite.setLogging(true);
+        FuzzyLite.setLogging(false);
         FuzzyLite.setDecimals(3);
     }
 

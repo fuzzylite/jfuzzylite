@@ -17,6 +17,7 @@
 package com.fuzzylite.imex;
 
 import com.fuzzylite.Engine;
+import com.fuzzylite.FuzzyLite;
 import com.fuzzylite.Op;
 import static com.fuzzylite.Op.str;
 import com.fuzzylite.activation.Activation;
@@ -77,6 +78,7 @@ public class CppExporter extends Exporter {
     @Override
     public String toString(Engine engine) {
         StringBuilder result = new StringBuilder();
+        result.append("//C++ code generated with " + FuzzyLite.LIBRARY + ".\n\n");
         if (!isUsingNamespace()) {
             result.append("using namespace fl;\n\n");
         }

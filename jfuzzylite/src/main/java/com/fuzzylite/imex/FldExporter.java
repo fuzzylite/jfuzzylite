@@ -23,11 +23,9 @@ import com.fuzzylite.variable.InputVariable;
 import com.fuzzylite.variable.OutputVariable;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
-import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.Reader;
 import java.io.StringWriter;
@@ -131,14 +129,54 @@ public class FldExporter extends Exporter {
         return writer.toString();
     }
 
+    public String toString(Engine engine, Reader reader) throws IOException {
+        StringWriter writer = new StringWriter();
+        if (exportHeaders) {
+            writer.append(header(engine)).append("\n");
+        }
+        BufferedReader bufferedReader = new BufferedReader(reader);
+        try {
+            String line;
+            int lineNumber = 0;
+            while ((line = bufferedReader.readLine()) != null) {
+                ++lineNumber;
+                line = line.trim();
+                if (!line.isEmpty() && line.charAt(0) == '#') {
+                    continue;
+                }
+                List<Double> inputValues;
+                if (lineNumber == 1) { //automatic detection of header.
+                    try {
+                        inputValues = parse(line);
+                    } catch (Exception ex) {
+                        continue;
+                    }
+                } else {
+                    inputValues = parse(line);
+                }
+                write(engine, writer, inputValues, engine.getInputVariables());
+            }
+        } catch (IOException ex) {
+            throw ex;
+        } finally {
+            bufferedReader.close();
+        }
+        return writer.toString();
+    }
+
     public void toFile(File file, Engine engine, int values, ScopeOfValues scope) throws IOException {
+        toFile(file, engine, values, scope, engine.getInputVariables());
+    }
+
+    public void toFile(File file, Engine engine, int values, ScopeOfValues scope,
+            List<InputVariable> activeVariables) throws IOException {
         if (!file.createNewFile()) {
             FuzzyLite.logger().log(Level.FINE, "Replacing file {0}", file.getAbsolutePath());
         }
         BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(
                 new FileOutputStream(file), FuzzyLite.UTF_8));
         try {
-            write(engine, writer, values, scope);
+            write(engine, writer, values, scope, activeVariables);
         } catch (IOException ex) {
             throw ex;
         } finally {
@@ -146,31 +184,7 @@ public class FldExporter extends Exporter {
         }
     }
 
-    public String toString(Engine engine, String inputData) {
-        StringWriter writer = new StringWriter();
-        if (exportHeaders) {
-            writer.append(header(engine)).append("\n");
-        }
-        BufferedReader reader = new BufferedReader(new InputStreamReader(
-                new ByteArrayInputStream(inputData.getBytes(FuzzyLite.UTF_8)),
-                FuzzyLite.UTF_8));
-        String line;
-        try {
-            while ((line = reader.readLine()) != null) {
-                line = line.trim();
-                if (!line.isEmpty() && line.charAt(0) == '#') {
-                    continue;
-                }
-                List<Double> inputValues = parse(line);
-                write(engine, writer, inputValues, engine.getInputVariables());
-            }
-        } catch (Exception ex) {
-            throw new RuntimeException(ex);
-        }
-        return writer.toString();
-    }
-
-    public void toFile(File file, Engine engine, String inputData) throws IOException {
+    public void toFile(File file, Engine engine, Reader reader) throws IOException {
         if (!file.createNewFile()) {
             FuzzyLite.logger().log(Level.FINE, "Replacing file {0}", file.getAbsolutePath());
         }
@@ -179,24 +193,32 @@ public class FldExporter extends Exporter {
         if (exportHeaders) {
             writer.append(header(engine)).append("\n");
         }
-        BufferedReader reader = new BufferedReader(new InputStreamReader(
-                new ByteArrayInputStream(inputData.getBytes(FuzzyLite.UTF_8)),
-                FuzzyLite.UTF_8));
+        BufferedReader bufferedReader = new BufferedReader(reader);
         try {
             String line;
-            while ((line = reader.readLine()) != null) {
+            int lineNumber = 0;
+            while ((line = bufferedReader.readLine()) != null) {
+                ++lineNumber;
                 line = line.trim();
                 if (!line.isEmpty() && line.charAt(0) == '#') {
-                    continue;
+                    continue; //comments are ignored, blank lines are retained
                 }
-                List<Double> inputValues = parse(line);
+                List<Double> inputValues;
+                if (lineNumber == 1) { //automatic detection of header.
+                    try {
+                        inputValues = parse(line);
+                    } catch (Exception ex) {
+                        continue;
+                    }
+                } else {
+                    inputValues = parse(line);
+                }
                 write(engine, writer, inputValues, engine.getInputVariables());
-                writer.flush();
             }
         } catch (IOException ex) {
             throw ex;
         } finally {
-            reader.close();
+            bufferedReader.close();
             writer.close();
         }
     }
@@ -226,7 +248,7 @@ public class FldExporter extends Exporter {
         if (activeVariables.size() != engine.getInputVariables().size()) {
             throw new RuntimeException("[exporter error] number of active variables "
                     + "<" + activeVariables.size() + "> "
-                    + "must match number of input variables in the engine "
+                    + "must match the number of input variables in the engine "
                     + "<" + engine.getInputVariables().size() + ">");
         }
 
@@ -251,13 +273,13 @@ public class FldExporter extends Exporter {
             }
         }
 
-        List<Double> inputValues = new ArrayList<Double>(engine.numberOfInputVariables());
         do {
+            List<Double> inputValues = new ArrayList<Double>(engine.numberOfInputVariables());
             for (int i = 0; i < engine.numberOfInputVariables(); ++i) {
                 InputVariable inputVariable = engine.getInputVariable(i);
                 if (inputVariable == activeVariables.get(i)) {
                     inputValues.add(inputVariable.getMinimum()
-                            + sampleValues[i] * inputVariable.range() / Math.max(1.0, resolution));
+                            + sampleValues[i] * inputVariable.range() / Math.max(1, resolution));
                 } else {
                     inputValues.add(inputVariable.getValue());
                 }
@@ -274,14 +296,25 @@ public class FldExporter extends Exporter {
         String line;
         int lineNumber = 0;
         BufferedReader bufferedReader = new BufferedReader(reader);
-        while ((line = bufferedReader.readLine()) != null) {
-            ++lineNumber;
-            List<Double> inputValues = parse(line.trim());
-            try {
+        try {
+            while ((line = bufferedReader.readLine()) != null) {
+                ++lineNumber;
+                List<Double> inputValues;
+                if (lineNumber == 1) { //automatic detection of header.
+                    try {
+                        inputValues = parse(line);
+                    } catch (Exception ex) {
+                        continue;
+                    }
+                } else {
+                    inputValues = parse(line);
+                }
                 write(engine, writer, inputValues, engine.getInputVariables());
-            } catch (Exception ex) {
-                throw new RuntimeException("Exception writing line <" + lineNumber + ">:" + ex.toString());
             }
+        } catch (IOException ex) {
+            throw ex;
+        } finally {
+            bufferedReader.close();
         }
     }
 
@@ -311,9 +344,9 @@ public class FldExporter extends Exporter {
             InputVariable inputVariable = engine.getInputVariable(i);
             double inputValue;
             if (inputVariable == activeVariables.get(i)) {
-                inputValue = inputVariable.getValue();
-            } else {
                 inputValue = inputValues.get(i);
+            } else {
+                inputValue = inputVariable.getValue();
             }
             inputVariable.setValue(inputValue);
             if (exportInputValues) {
