@@ -654,7 +654,7 @@ public class Console {
             Engine engine;
 
             //READING
-            final String inputFile = sourceBase + examples.get(i) + "." + from;
+            final File inputFile = new File(sourceBase, examples.get(i) + "." + from);
             BufferedReader source = null;
             try {
                 source = new BufferedReader(new InputStreamReader(
@@ -668,7 +668,7 @@ public class Console {
             } catch (Exception ex) {
                 errors.add(ex.toString() + ": " + inputFile);
                 FuzzyLite.logger().log(Level.SEVERE, "{0}: {1}",
-                        new String[]{ex.toString(), inputFile});
+                        new String[]{ex.toString(), inputFile.toString()});
                 continue;
             } finally {
                 if (source != null) {
@@ -677,16 +677,15 @@ public class Console {
             }
 
             //WRITING
-            final String output = targetBase + examples.get(i) + "." + to;
-            File outputFile = new File(output);
+            File outputFile = new File(targetBase,  examples.get(i) + "." + to);
             try {
                 if (!outputFile.createNewFile()) {
-                    FuzzyLite.logger().log(Level.FINE, "Replacing file {0}", output);
+                    FuzzyLite.logger().log(Level.FINE, "Replacing file {0}", outputFile.toString());
                 }
             } catch (Exception ex) {
-                errors.add(ex.toString() + ": " + output);
+                errors.add(ex.toString() + ": " + outputFile.toString());
                 FuzzyLite.logger().log(Level.SEVERE, "{0}: {1}",
-                        new String[]{ex.toString(), output});
+                        new String[]{ex.toString(), outputFile.toString()});
                 return;
             }
 
@@ -747,9 +746,9 @@ public class Console {
                     target.write(exporter.toString(engine));
                 }
             } catch (Exception ex) {
-                errors.add(ex.toString() + ": " + output);
+                errors.add(ex.toString() + ": " + outputFile.toString());
                 FuzzyLite.logger().log(Level.SEVERE, "{0}: {1}",
-                        new String[]{ex.toString(), output});
+                        new String[]{ex.toString(), outputFile.toString()});
             } finally {
                 if (target != null) {
                     target.close();
@@ -808,8 +807,8 @@ public class Console {
             FuzzyLite.logger().log(Level.INFO, "Benchmark {0}/{1}: {2} ({3} values)",
                     new Object[]{i + 1, examples.size(), example.getFirst(), example.getSecond()});
 
-            Engine engine = new FllImporter().fromFile(new File(path + example.getFirst() + ".fll"));
-
+            Engine engine = new FllImporter().fromFile(new File(path, example.getFirst() + ".fll"));
+            
             Benchmark benchmark = new Benchmark(example.getFirst(), engine);
             benchmark.prepare(example.getSecond(), FldExporter.ScopeOfValues.AllVariables);
             benchmark.run(runs);
