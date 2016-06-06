@@ -35,7 +35,6 @@ import com.fuzzylite.hedge.Not;
 import com.fuzzylite.hedge.Seldom;
 import com.fuzzylite.hedge.Somewhat;
 import com.fuzzylite.hedge.Very;
-import com.fuzzylite.norm.Norm;
 import com.fuzzylite.norm.SNorm;
 import com.fuzzylite.norm.TNorm;
 import com.fuzzylite.norm.s.AlgebraicSum;
@@ -127,7 +126,7 @@ public class FisExporter extends Exporter {
             type = "unknown";
         }
         result.append(String.format("Type='%s'\n", type));
-//        result.append(String.format("Version=%s\n", FuzzyLite.VERSION));
+        result.append(String.format("Version=%s\n", FuzzyLite.VERSION));
         result.append(String.format("NumInputs=%d\n", engine.numberOfInputVariables()));
         result.append(String.format("NumOutputs=%d\n", engine.numberOfOutputVariables()));
 
@@ -339,63 +338,66 @@ public class FisExporter extends Exporter {
         return result.toString();
     }
 
-    public String toString(Norm norm) {
-        if (norm == null) {
-            return "";
-        }
-        //T-Norms
-        if (norm instanceof Minimum) {
+    public String toString(TNorm tnorm) {
+        if (tnorm == null) {
             return "min";
         }
-        if (norm instanceof AlgebraicProduct) {
+        if (tnorm instanceof Minimum) {
+            return "min";
+        }
+        if (tnorm instanceof AlgebraicProduct) {
             return "prod";
         }
-        if (norm instanceof BoundedDifference) {
+        if (tnorm instanceof BoundedDifference) {
             return "bounded_difference";
         }
-        if (norm instanceof DrasticProduct) {
+        if (tnorm instanceof DrasticProduct) {
             return "drastic_product";
         }
-        if (norm instanceof EinsteinProduct) {
+        if (tnorm instanceof EinsteinProduct) {
             return "einstein_product";
         }
-        if (norm instanceof HamacherProduct) {
+        if (tnorm instanceof HamacherProduct) {
             return "hamasher_product";
         }
-        if (norm instanceof NilpotentMinimum) {
+        if (tnorm instanceof NilpotentMinimum) {
             return "nilpotent_minimum";
         }
+        return tnorm.getClass().getSimpleName();
+    }
 
-        //S-Norms
-        if (norm instanceof Maximum) {
+    public String toString(SNorm snorm) {
+        if (snorm == null) {
             return "max";
         }
-        if (norm instanceof AlgebraicSum) {
+        if (snorm instanceof Maximum) {
+            return "max";
+        }
+        if (snorm instanceof AlgebraicSum) {
             return "probor";
         }
-        if (norm instanceof NormalizedSum) {
+        if (snorm instanceof NormalizedSum) {
             return "normalized_sum";
         }
-        if (norm instanceof BoundedSum) {
+        if (snorm instanceof BoundedSum) {
             return "bounded_sum";
         }
-        if (norm instanceof DrasticSum) {
+        if (snorm instanceof DrasticSum) {
             return "drastic_sum";
         }
-        if (norm instanceof EinsteinSum) {
+        if (snorm instanceof EinsteinSum) {
             return "einstein_sum";
         }
-        if (norm instanceof HamacherSum) {
+        if (snorm instanceof HamacherSum) {
             return "hamacher_sum";
         }
-        if (norm instanceof NilpotentMaximum) {
+        if (snorm instanceof NilpotentMaximum) {
             return "nilpotent_maximum";
         }
-        if (norm instanceof UnboundedSum) {
+        if (snorm instanceof UnboundedSum) {
             return "sum";
         }
-
-        return norm.getClass().getSimpleName();
+        return snorm.getClass().getSimpleName();
     }
 
     public String toString(Defuzzifier defuzzifier) {

@@ -14,7 +14,6 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.ClassRule;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
@@ -67,7 +66,6 @@ public class ConsoleTest {
 //        System.in.read();
     }
 
-    @Ignore
     @Test
     public void testBenchmarks() throws Exception {
         File examples = new File("../examples/original/");

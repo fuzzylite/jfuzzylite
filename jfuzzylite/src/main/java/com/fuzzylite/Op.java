@@ -147,15 +147,19 @@ public class Op {
         return bounded ? Op.bound(x, toMin, toMax) : result;
     }
 
-    public static double mean(double[] x) {
-        if (x.length == 0) {
-            return Double.NaN;
-        }
+    public static double sum(double[] x) {
         double result = 0.0;
         for (double i : x) {
             result += i;
         }
-        return result / x.length;
+        return result;
+    }
+
+    public static double mean(double[] x) {
+        if (x.length == 0) {
+            return Double.NaN;
+        }
+        return sum(x) / x.length;
     }
 
     public static double variance(double[] x) {
@@ -235,6 +239,24 @@ public class Op {
         }
 
         return Double.parseDouble(x);
+    }
+
+    public static double[] toDoubles(String x) throws NumberFormatException {
+        String[] tokens = x.split("\\s+");
+        double[] result = new double[tokens.length];
+        for (int i = 0; i < tokens.length; ++i) {
+            result[i] = Op.toDouble(tokens[i]);
+        }
+        return result;
+    }
+
+    public static double[] toDoubles(String x, double alternative) throws NumberFormatException {
+        String[] tokens = x.split("\\s+");
+        double[] result = new double[tokens.length];
+        for (int i = 0; i < tokens.length; ++i) {
+            result[i] = Op.toDouble(tokens[i], alternative);
+        }
+        return result;
     }
 
     public static boolean isNumeric(String x) {
