@@ -14,7 +14,6 @@
  jfuzzylite™ is a trademark of FuzzyLite Limited.
 
  */
-
 package com.fuzzylite.term;
 
 import com.fuzzylite.Op;
@@ -141,9 +140,21 @@ public class Discrete extends Term implements List<Pair> {
         return new Discrete(name, xyValues);
     }
 
+    public static Discrete discretize(Term term, double start, double end, int resolution) {
+        Discrete result = new Discrete(term.getName());
+        double dx = (end - start) / resolution;
+        double x, y;
+        for (int i = 0; i < resolution; ++i) {
+            x = start + (i + 0.5) * dx;
+            y = term.membership(x);
+            result.add(new Discrete.Pair(x, y));
+        }
+        return result;
+    }
+
     @Override
-    public double membership(double _x_) {
-        if (Double.isNaN(_x_)) {
+    public double membership(double x) {
+        if (Double.isNaN(x)) {
             return Double.NaN;
         }
         if (xy.isEmpty()) {
@@ -158,23 +169,23 @@ public class Discrete extends Term implements List<Pair> {
          */
         Pair first = xy.get(0);
         Pair last = xy.get(xy.size() - 1);
-        if (Op.isLE(_x_, first.getX())) {
+        if (Op.isLE(x, first.getX())) {
             return height * first.getY();
         }
-        if (Op.isGE(_x_, last.getX())) {
+        if (Op.isGE(x, last.getX())) {
             return height * last.getY();
         }
 
         int lower = -1, upper = -1;
         for (int i = 0; i < xy.size(); ++i) {
-            if (Op.isEq(xy.get(i).getX(), _x_)) {
+            if (Op.isEq(xy.get(i).getX(), x)) {
                 return height * xy.get(i).getY();
             }
             //approximate on the left
-            if (Op.isLt(xy.get(i).getX(), _x_)) {
+            if (Op.isLt(xy.get(i).getX(), x)) {
                 lower = i;
             }
-            if (Op.isGt(xy.get(i).getX(), _x_)) {
+            if (Op.isGt(xy.get(i).getX(), x)) {
                 upper = i;
                 break;
             }
@@ -186,7 +197,7 @@ public class Discrete extends Term implements List<Pair> {
         if (lower < 0) {
             lower = 0;
         }
-        return height * Op.scale(_x_, xy.get(lower).getX(), xy.get(upper).getX(),
+        return height * Op.scale(x, xy.get(lower).getX(), xy.get(upper).getX(),
                 xy.get(lower).getY(), xy.get(upper).getY());
     }
 
