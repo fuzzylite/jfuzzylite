@@ -65,5 +65,13 @@ public class QuickTest {
         List<String> x = new ArrayList<String>(10);
         Assert.assertThat("size is zero", x.size(), is(0));
     }
+    
+    @Test
+    public void testOpStr(){
+        FuzzyLite.setLogging(true);
+        FuzzyLite.setDecimals(9);
+        FuzzyLite.logger().log(Level.INFO, Op.str(1e-5));
+        FuzzyLite.logger().log(Level.INFO, Op.str(1e-5));
+    }
 
 }

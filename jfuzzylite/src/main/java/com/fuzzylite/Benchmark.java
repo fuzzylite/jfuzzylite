@@ -41,12 +41,16 @@ public class Benchmark {
         Header, Body, HeaderAndBody
     }
 
+    public enum ErrorType {
+        NonFinite, Accuracy, All
+    }
+
     private String name;
     private Engine engine;
     private List<double[]> expected;
     private List<double[]> obtained;
     private List<Long> times;
-    private double errorThreshold;
+    private double tolerance;
 
     public Benchmark() {
         this("");
@@ -57,16 +61,16 @@ public class Benchmark {
     }
 
     public Benchmark(String name, Engine engine) {
-        this(name, engine, 10 * FuzzyLite.getMachEps());
+        this(name, engine, FuzzyLite.getMachEps());
     }
 
-    public Benchmark(String name, Engine engine, double errorThreshold) {
+    public Benchmark(String name, Engine engine, double tolerance) {
         this.name = name;
         this.engine = engine;
         this.expected = new ArrayList<double[]>();
         this.obtained = new ArrayList<double[]>();
         this.times = new ArrayList<Long>();
-        this.errorThreshold = errorThreshold;
+        this.tolerance = tolerance;
     }
 
     public String getName() {
@@ -109,12 +113,12 @@ public class Benchmark {
         this.times = times;
     }
 
-    public double getErrorThreshold() {
-        return errorThreshold;
+    public double getTolerance() {
+        return tolerance;
     }
 
-    public void setErrorThreshold(double errorThreshold) {
-        this.errorThreshold = errorThreshold;
+    public void setTolerance(double tolerance) {
+        this.tolerance = tolerance;
     }
 
     public void prepare(int values, FldExporter.ScopeOfValues scope) {
@@ -233,61 +237,75 @@ public class Benchmark {
         this.times.clear();
     }
 
-    public double meanSquareError() {
-        if (expected.isEmpty() || obtained.isEmpty()
-                || expected.get(0).length != engine.variables().size()) {
+    public boolean canComputeErrors() {
+        return !(expected.isEmpty() || obtained.isEmpty()
+                || expected.size() != obtained.size()
+                || expected.get(0).length != obtained.get(0).length
+                || expected.get(0).length != engine.variables().size());
+    }
+
+    public double meanSquaredError() {
+        if (!canComputeErrors()) {
             return Double.NaN;
         }
-        double[] sumOfSquares = new double[engine.numberOfOutputVariables()];
-        for (int i = 0; i < sumOfSquares.length; ++i) {
-            sumOfSquares[i] = 0.0;
-        }
+        
+        double mse = 0.0;
+        int errors = 0;
         final int offset = engine.numberOfInputVariables();
         for (int i = 0; i < expected.size(); ++i) {
             double[] e = expected.get(i);
             double[] o = obtained.get(i);
             for (int y = 0; y < engine.numberOfOutputVariables(); ++y) {
-                double squareDifference = (e[offset + y] - o[offset + y])
-                        * (e[offset + y] - o[offset + y]);
-                if (Op.isFinite(squareDifference)) {
-                    sumOfSquares[y] += squareDifference;
+                double difference = e[offset + y] - o[offset + y];
+                if (Op.isFinite(difference)
+                        && !Op.isEq(difference, 0.0, tolerance)) {
+                    mse += difference * difference;
+                    ++errors;
                 }
             }
         }
 
-        double mse = 0.0;
-        for (double x : sumOfSquares) {
-            mse += x;
+        if (errors > 0) {
+            mse /= errors;
         }
-        mse /= (engine.numberOfOutputVariables() * expected.size());
         return mse;
     }
 
-    public int numberOfErrors() {
-        if (expected.isEmpty() || obtained.isEmpty()
-                || expected.get(0).length != engine.variables().size()) {
+    public int allErrors() {
+        return numberOfErrors(ErrorType.All);
+    }
+
+    public int nonFiniteErrors() {
+        return numberOfErrors(ErrorType.NonFinite);
+    }
+
+    public int accuracyErrors() {
+        return numberOfErrors(ErrorType.Accuracy);
+    }
+
+    public int numberOfErrors(ErrorType errorType) {
+        if (!canComputeErrors()) {
             return -1;
         }
-        int[] errors = new int[engine.numberOfOutputVariables()];
-        for (int i = 0; i < errors.length; ++i) {
-            errors[i] = 0;
-        }
+        int errors = 0;
         final int offset = engine.numberOfInputVariables();
         for (int i = 0; i < expected.size(); ++i) {
             double[] e = expected.get(i);
             double[] o = obtained.get(i);
             for (int y = 0; y < engine.numberOfOutputVariables(); ++y) {
-                if (!Op.isEq(e[y + offset], o[y + offset], errorThreshold)) {
-                    ++errors[y];
+                double difference = e[offset + y] - o[offset + y];
+                if (!Op.isEq(difference, 0.0, tolerance)) {
+                    if (errorType == ErrorType.Accuracy && Op.isFinite(difference)) {
+                        ++errors;
+                    } else if (errorType == ErrorType.NonFinite && !Op.isFinite(difference)) {
+                        ++errors;
+                    } else if (errorType == ErrorType.All) {
+                        ++errors;
+                    }
                 }
             }
         }
-
-        int result = 0;
-        for (double x : errors) {
-            result += x;
-        }
-        return result;
+        return errors;
     }
 
     public double factorOf(TimeUnit unit) {
@@ -331,8 +349,13 @@ public class Benchmark {
         result.add(new Op.Pair<String, String>("outputs", String.valueOf(engine.numberOfOutputVariables())));
         result.add(new Op.Pair<String, String>("runs", String.valueOf(times.size())));
         result.add(new Op.Pair<String, String>("evaluations", String.valueOf(expected.size())));
-        result.add(new Op.Pair<String, String>("errors", String.valueOf(numberOfErrors())));
-        result.add(new Op.Pair<String, String>("mse", Op.str(meanSquareError())));
+        if (canComputeErrors()) {
+            result.add(new Op.Pair<String, String>("errors", String.valueOf(allErrors())));
+            result.add(new Op.Pair<String, String>("nfErrors", String.valueOf(nonFiniteErrors())));
+            result.add(new Op.Pair<String, String>("accErrors", String.valueOf(accuracyErrors())));
+            result.add(new Op.Pair<String, String>("tolerance", String.format("%6.3e",getTolerance())));
+            result.add(new Op.Pair<String, String>("rmse", Op.str(Math.sqrt(meanSquaredError()))));
+        }
         result.add(new Op.Pair<String, String>("units", timeUnit.name()));
 
         if (timeUnit == TimeUnit.NanoSeconds) {
@@ -360,14 +383,14 @@ public class Benchmark {
         return result;
     }
 
-    public String format(List<Op.Pair<String, String>> results){
+    public String format(List<Op.Pair<String, String>> results) {
         return format(results, TableShape.Horizontal);
     }
-    
+
     public String format(List<Op.Pair<String, String>> results, TableShape shape) {
         return format(results, shape, TableContents.HeaderAndBody);
     }
-    
+
     public String format(List<Op.Pair<String, String>> results, TableShape shape,
             TableContents contents) {
         return format(results, shape, contents, "\t");

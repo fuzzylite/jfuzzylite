@@ -865,8 +865,7 @@ public class Console {
                 console.exportAllExamples("fll", "cpp", path, outputPath);
                 console.exportAllExamples("fll", "java", path, outputPath);
                 console.exportAllExamples("fll", "R", path, outputPath);
-                FuzzyLite.setDecimals(8);
-                FuzzyLite.setMachEps(1e-6);
+                FuzzyLite.setDecimals(9);
                 console.exportAllExamples("fll", "fld", path, outputPath);
                 FuzzyLite.logger().log(Level.INFO, "Origin={0}", path);
                 FuzzyLite.logger().log(Level.INFO, "Target={0}", outputPath);
