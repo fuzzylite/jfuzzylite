@@ -18,6 +18,7 @@ package com.fuzzylite;
 
 import com.fuzzylite.imex.FldExporter;
 import com.fuzzylite.variable.InputVariable;
+import com.fuzzylite.variable.OutputVariable;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.Reader;
@@ -245,10 +246,14 @@ public class Benchmark {
     }
 
     public double meanSquaredError() {
+        return meanSquaredError(null);
+    }
+
+    public double meanSquaredError(OutputVariable outputVariable) {
         if (!canComputeErrors()) {
             return Double.NaN;
         }
-        
+
         double mse = 0.0;
         int errors = 0;
         final int offset = engine.numberOfInputVariables();
@@ -256,11 +261,14 @@ public class Benchmark {
             double[] e = expected.get(i);
             double[] o = obtained.get(i);
             for (int y = 0; y < engine.numberOfOutputVariables(); ++y) {
-                double difference = e[offset + y] - o[offset + y];
-                if (Op.isFinite(difference)
-                        && !Op.isEq(difference, 0.0, tolerance)) {
-                    mse += difference * difference;
-                    ++errors;
+                if (outputVariable == null
+                        || outputVariable == engine.getOutputVariable(y)) {
+                    double difference = e[offset + y] - o[offset + y];
+                    if (Op.isFinite(difference)
+                            && !Op.isEq(difference, 0.0, tolerance)) {
+                        mse += difference * difference;
+                        ++errors;
+                    }
                 }
             }
         }
@@ -272,18 +280,34 @@ public class Benchmark {
     }
 
     public int allErrors() {
-        return numberOfErrors(ErrorType.All);
+        return allErrors(null);
+    }
+
+    public int allErrors(OutputVariable outputVariable) {
+        return numberOfErrors(ErrorType.All, outputVariable);
     }
 
     public int nonFiniteErrors() {
-        return numberOfErrors(ErrorType.NonFinite);
+        return nonFiniteErrors(null);
+    }
+
+    public int nonFiniteErrors(OutputVariable outputVariable) {
+        return numberOfErrors(ErrorType.NonFinite, outputVariable);
     }
 
     public int accuracyErrors() {
-        return numberOfErrors(ErrorType.Accuracy);
+        return accuracyErrors(null);
+    }
+
+    public int accuracyErrors(OutputVariable outputVariable) {
+        return numberOfErrors(ErrorType.Accuracy, outputVariable);
     }
 
     public int numberOfErrors(ErrorType errorType) {
+        return numberOfErrors(errorType, null);
+    }
+
+    public int numberOfErrors(ErrorType errorType, OutputVariable outputVariable) {
         if (!canComputeErrors()) {
             return -1;
         }
@@ -293,14 +317,18 @@ public class Benchmark {
             double[] e = expected.get(i);
             double[] o = obtained.get(i);
             for (int y = 0; y < engine.numberOfOutputVariables(); ++y) {
-                double difference = e[offset + y] - o[offset + y];
-                if (!Op.isEq(difference, 0.0, tolerance)) {
-                    if (errorType == ErrorType.Accuracy && Op.isFinite(difference)) {
-                        ++errors;
-                    } else if (errorType == ErrorType.NonFinite && !Op.isFinite(difference)) {
-                        ++errors;
-                    } else if (errorType == ErrorType.All) {
-                        ++errors;
+                if (outputVariable == null
+                        || outputVariable == engine.getOutputVariable(y)) {
+
+                    double difference = e[offset + y] - o[offset + y];
+                    if (!Op.isEq(difference, 0.0, tolerance)) {
+                        if (errorType == ErrorType.Accuracy && Op.isFinite(difference)) {
+                            ++errors;
+                        } else if (errorType == ErrorType.NonFinite && !Op.isFinite(difference)) {
+                            ++errors;
+                        } else if (errorType == ErrorType.All) {
+                            ++errors;
+                        }
                     }
                 }
             }
@@ -338,6 +366,18 @@ public class Benchmark {
     }
 
     public List<Op.Pair<String, String>> results(TimeUnit timeUnit, boolean includeTimes) {
+        return results(null, timeUnit, includeTimes);
+    }
+
+    public List<Op.Pair<String, String>> results(OutputVariable outputVariable) {
+        return results(outputVariable, TimeUnit.NanoSeconds);
+    }
+
+    public List<Op.Pair<String, String>> results(OutputVariable outputVariable, TimeUnit timeUnit) {
+        return results(outputVariable, timeUnit, true);
+    }
+
+    public List<Op.Pair<String, String>> results(OutputVariable outputVariable, TimeUnit timeUnit, boolean includeTimes) {
         double[] runtimes = new double[times.size()];
         for (int i = 0; i < times.size(); ++i) {
             runtimes[i] = times.get(i);
@@ -350,11 +390,32 @@ public class Benchmark {
         result.add(new Op.Pair<String, String>("runs", String.valueOf(times.size())));
         result.add(new Op.Pair<String, String>("evaluations", String.valueOf(expected.size())));
         if (canComputeErrors()) {
-            result.add(new Op.Pair<String, String>("errors", String.valueOf(allErrors())));
-            result.add(new Op.Pair<String, String>("nfErrors", String.valueOf(nonFiniteErrors())));
-            result.add(new Op.Pair<String, String>("accErrors", String.valueOf(accuracyErrors())));
-            result.add(new Op.Pair<String, String>("tolerance", String.format("%6.3e",getTolerance())));
-            result.add(new Op.Pair<String, String>("rmse", Op.str(Math.sqrt(meanSquaredError()))));
+            String variableNames;
+            double range = 0.0;
+            if (outputVariable != null) {
+                variableNames = outputVariable.getName();
+                range = outputVariable.range();
+            } else {
+                List<String> names = new LinkedList<String>();
+                for (OutputVariable y : engine.getOutputVariables()) {
+                    names.add(y.getName());
+                    range += y.range();
+                }
+                variableNames = "(" + Op.join(names, ",") + ")";
+                range /= engine.numberOfOutputVariables();
+            }
+
+            result.add(new Op.Pair<String, String>("outputVariable", variableNames));
+            result.add(new Op.Pair<String, String>("range", Op.str(range)));
+
+            result.add(new Op.Pair<String, String>("tolerance", String.format("%6.3e", getTolerance())));
+            result.add(new Op.Pair<String, String>("errors", String.valueOf(allErrors(outputVariable))));
+
+            result.add(new Op.Pair<String, String>("nfErrors", String.valueOf(nonFiniteErrors(outputVariable))));
+            result.add(new Op.Pair<String, String>("accErrors", String.valueOf(accuracyErrors(outputVariable))));
+            double rmse = Math.sqrt(meanSquaredError(outputVariable));
+            result.add(new Op.Pair<String, String>("rmse", String.format("%6.3e",rmse)));
+            result.add(new Op.Pair<String, String>("nrmse", String.format("%6.3e",(rmse / range))));
         }
         result.add(new Op.Pair<String, String>("units", timeUnit.name()));
 

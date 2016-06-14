@@ -91,6 +91,7 @@ public class BenchmarkTest {
         examples.add("tsukamoto/tsukamoto");
 
         StringBuilder writer = new StringBuilder();
+        int errors[] = new int[examples.size()];
         for (int i = 0; i < examples.size(); ++i) {
             String example = examples.get(i);
 
@@ -112,11 +113,15 @@ public class BenchmarkTest {
                         Benchmark.TableShape.Horizontal, Benchmark.TableContents.Body))
                         .append("\n");
             }
-
-            Assert.assertThat("benchmark " + example + " has no errors",
-                    benchmark.accuracyErrors(), is(0));
+            errors[i] = benchmark.accuracyErrors();
         }
         FuzzyLite.logger().info(writer.toString());
+        
+        for (int i = 0 ; i < examples.size(); ++i){
+            Assert.assertThat("benchmark " + examples.get(i) + " has no errors",
+                    errors[i], is(0));
+        }
+        
     }
 
     @Test
