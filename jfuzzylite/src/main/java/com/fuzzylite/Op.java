@@ -16,6 +16,7 @@
  */
 package com.fuzzylite;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
@@ -295,13 +296,17 @@ public class Op {
      * String Operations
      */
     public static <T extends Number> String str(T x) {
+        return str(x, FuzzyLite.getFormatter());
+    }
+
+    public static <T extends Number> String str(T x, DecimalFormat formatter) {
         if (Double.isNaN(x.doubleValue())) {
             return "nan";
         }
         if (Double.isInfinite(x.doubleValue())) {
             return isLt(x.doubleValue(), 0.0) ? "-inf" : "inf";
         }
-        return FuzzyLite.getFormatter().format(x);
+        return formatter.format(x);
     }
 
     public static <T> String join(Collection<T> x, String separator) {
