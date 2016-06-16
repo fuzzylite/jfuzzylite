@@ -301,9 +301,6 @@ public class Op {
         if (Double.isInfinite(x.doubleValue())) {
             return isLt(x.doubleValue(), 0.0) ? "-inf" : "inf";
         }
-        if (isEq(x.doubleValue(), 0.0)) {
-            return FuzzyLite.getFormatter().format(0.0);
-        }
         return FuzzyLite.getFormatter().format(x);
     }
 
