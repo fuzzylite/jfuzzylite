@@ -320,8 +320,8 @@ public class Benchmark {
                 if (outputVariable == null
                         || outputVariable == engine.getOutputVariable(y)) {
 
-                    double difference = e[offset + y] - o[offset + y];
-                    if (!Op.isEq(difference, 0.0, tolerance)) {
+                    if (!Op.isEq(e[offset + y], o[offset + y], tolerance)) {
+                        double difference = e[offset + y] - o[offset + y];
                         if (errorType == ErrorType.Accuracy && Op.isFinite(difference)) {
                             ++errors;
                         } else if (errorType == ErrorType.NonFinite && !Op.isFinite(difference)) {
@@ -391,31 +391,38 @@ public class Benchmark {
         result.add(new Op.Pair<String, String>("evaluations", String.valueOf(expected.size())));
         if (canComputeErrors()) {
             String variableNames;
-            double range = 0.0;
+            double meanRange = 0.0;
+            double rmse = Math.sqrt(meanSquaredError());
+            double nrmse = 0.0;
+            double weights = 0.0;
             if (outputVariable != null) {
                 variableNames = outputVariable.getName();
-                range = outputVariable.range();
+                meanRange = outputVariable.range();
+                nrmse = rmse;
             } else {
                 List<String> names = new LinkedList<String>();
                 for (OutputVariable y : engine.getOutputVariables()) {
                     names.add(y.getName());
-                    range += y.range();
+                    meanRange += y.range();
+                    nrmse += Math.sqrt(meanSquaredError(y)) * 1.0 / y.range();
+                    weights += 1.0 / y.range();
                 }
-                variableNames = "(" + Op.join(names, ",") + ")";
-                range /= engine.numberOfOutputVariables();
+                variableNames = Op.join(names, ", ");
+                meanRange /= engine.numberOfOutputVariables();
+                nrmse /= weights;
             }
 
             result.add(new Op.Pair<String, String>("outputVariable", variableNames));
-            result.add(new Op.Pair<String, String>("range", Op.str(range)));
+            result.add(new Op.Pair<String, String>("range", Op.str(meanRange)));
 
             result.add(new Op.Pair<String, String>("tolerance", String.format("%6.3e", getTolerance())));
             result.add(new Op.Pair<String, String>("errors", String.valueOf(allErrors(outputVariable))));
 
             result.add(new Op.Pair<String, String>("nfErrors", String.valueOf(nonFiniteErrors(outputVariable))));
             result.add(new Op.Pair<String, String>("accErrors", String.valueOf(accuracyErrors(outputVariable))));
-            double rmse = Math.sqrt(meanSquaredError(outputVariable));
-            result.add(new Op.Pair<String, String>("rmse", String.format("%6.3e",rmse)));
-            result.add(new Op.Pair<String, String>("nrmse", String.format("%6.3e",(rmse / range))));
+
+            result.add(new Op.Pair<String, String>("rmse", String.format("%6.3e", rmse)));
+            result.add(new Op.Pair<String, String>("nrmse", String.format("%6.3e", nrmse)));
         }
         result.add(new Op.Pair<String, String>("units", timeUnit.name()));
 
