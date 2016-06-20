@@ -157,9 +157,6 @@ public class Op {
     }
 
     public static double mean(double[] x) {
-        if (x.length == 0) {
-            return Double.NaN;
-        }
         return sum(x) / x.length;
     }
 
@@ -168,7 +165,10 @@ public class Op {
     }
 
     public static double variance(double[] x, double mean) {
-        if (x.length <= 1) {
+        if (x.length == 0) {
+            return Double.NaN;
+        }
+        if (x.length == 1) {
             return 0.0;
         }
         double result = 0.0;
@@ -184,7 +184,10 @@ public class Op {
     }
 
     public static double standardDeviation(double[] x, double mean) {
-        if (x.length <= 1) {
+        if (x.length == 0) {
+            return Double.NaN;
+        }
+        if (x.length == 1) {
             return 0.0;
         }
         return Math.sqrt(variance(x, mean));

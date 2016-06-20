@@ -46,6 +46,7 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
@@ -677,7 +678,7 @@ public class Console {
             }
 
             //WRITING
-            File outputFile = new File(targetBase,  examples.get(i) + "." + to);
+            File outputFile = new File(targetBase, examples.get(i) + "." + to);
             try {
                 if (!outputFile.createNewFile()) {
                     FuzzyLite.logger().log(Level.FINE, "Replacing file {0}", outputFile.toString());
@@ -765,10 +766,14 @@ public class Console {
         }
     }
 
-    public void benchmarkExamples(String path, int runs) throws IOException {
+    public void benchmarkExamples(String path, int runs,
+            String pathToFld, String outputFile) throws IOException {
         List<Op.Pair<String, Integer>> examples = new LinkedList<Op.Pair<String, Integer>>();
         examples.add(new Op.Pair<String, Integer>("mamdani/AllTerms", (int) 1e4));
         examples.add(new Op.Pair<String, Integer>("mamdani/SimpleDimmer", (int) 1e5));
+        examples.add(new Op.Pair<String, Integer>("mamdani/Laundry", (int) 1e5));
+        examples.add(new Op.Pair<String, Integer>("mamdani/SimpleDimmerInverse", (int) 1e5));
+
         examples.add(new Op.Pair<String, Integer>("mamdani/matlab/mam21", 128));
         examples.add(new Op.Pair<String, Integer>("mamdani/matlab/mam22", 128));
         examples.add(new Op.Pair<String, Integer>("mamdani/matlab/shower", 256));
@@ -776,6 +781,7 @@ public class Console {
         examples.add(new Op.Pair<String, Integer>("mamdani/matlab/tank2", 512));
         examples.add(new Op.Pair<String, Integer>("mamdani/matlab/tipper", 256));
         examples.add(new Op.Pair<String, Integer>("mamdani/matlab/tipper1", (int) 1e5));
+
         examples.add(new Op.Pair<String, Integer>("mamdani/octave/investment_portfolio", 256));
         examples.add(new Op.Pair<String, Integer>("mamdani/octave/mamdani_tip_calculator", 256));
         examples.add(new Op.Pair<String, Integer>("takagi-sugeno/approximation", (int) 1e6));
@@ -804,14 +810,26 @@ public class Console {
         for (int i = 0; i < examples.size(); ++i) {
             Op.Pair<String, Integer> example = examples.get(i);
 
-            FuzzyLite.logger().log(Level.INFO, "Benchmark {0}/{1}: {2} ({3} values)",
-                    new Object[]{i + 1, examples.size(), example.getFirst(), example.getSecond()});
+            FuzzyLite.logger().log(Level.INFO, "Benchmark {0}/{1}: {2}",
+                    new Object[]{i + 1, examples.size(), example.getFirst()});
 
             Engine engine = new FllImporter().fromFile(new File(path, example.getFirst() + ".fll"));
-            
+
             Benchmark benchmark = new Benchmark(example.getFirst(), engine);
-            benchmark.prepare(example.getSecond(), FldExporter.ScopeOfValues.AllVariables);
-            benchmark.run(runs);
+            if (pathToFld == null || pathToFld.isEmpty()) {
+                benchmark.prepare(example.getSecond(), FldExporter.ScopeOfValues.AllVariables);
+                FuzzyLite.logger().log(Level.INFO, "\tEvaluating on {0} generated "
+                        + "values over all variables...", example.getSecond());
+            } else {
+                File fldFile = new File(pathToFld, example.getFirst() + ".fld");
+                if (!fldFile.exists()) {
+                    throw new RuntimeException("File could not be opened: " + fldFile.getAbsolutePath());
+                }
+                benchmark.prepare(new FileReader(fldFile));
+                FuzzyLite.logger().log(Level.INFO, "\tEvaluating on {0} read values from {1} ...",
+                        new Object[]{benchmark.getExpected().size(), fldFile.getAbsolutePath()});
+            }
+            FuzzyLite.logger().log(Level.INFO, "\tMean(t)={0}", String.format("%9.9f", Op.mean(benchmark.run(runs))));
             if (i == 0) {
                 writer.append("\n")
                         .append(benchmark.format(benchmark.results(),
@@ -823,7 +841,22 @@ public class Console {
                         .append("\n");
             }
         }
-        FuzzyLite.logger().info(writer.toString());
+        if (outputFile == null || outputFile.isEmpty()) {
+            FuzzyLite.logger().info(writer.toString());
+        } else {
+            new File(outputFile).createNewFile();
+            BufferedWriter fileWriter = new BufferedWriter(new OutputStreamWriter(
+                    new FileOutputStream(outputFile), FuzzyLite.UTF_8));
+            try {
+                fileWriter.append(writer.toString());
+            } catch (RuntimeException ex) {
+                throw ex;
+            } catch (Exception ex) {
+                throw new RuntimeException(ex);
+            } finally {
+                fileWriter.close();
+            }
+        }
     }
 
     public static void main(String[] args) {
@@ -837,12 +870,20 @@ public class Console {
             if (args.length >= 2) {
                 path = args[1];
             }
-            int runs = 10;
+            String pathToFld = "";
             if (args.length >= 3) {
-                runs = Integer.parseInt(args[2]);
+                pathToFld = args[2];
+            }
+            int runs = 10;
+            if (args.length >= 4) {
+                runs = Integer.parseInt(args[3]);
+            }
+            String outputFile = "";
+            if (args.length >= 5) {
+                outputFile = args[4];
             }
             try {
-                console.benchmarkExamples(path, runs);
+                console.benchmarkExamples(path, runs, pathToFld, outputFile);
             } catch (Exception ex) {
                 FuzzyLite.logger().log(Level.SEVERE, ex.toString(), ex);
             }
