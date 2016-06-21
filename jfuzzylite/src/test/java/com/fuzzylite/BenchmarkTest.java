@@ -100,7 +100,7 @@ public class BenchmarkTest {
             Engine engine = new FllImporter().fromFile(new File(path, example + ".fll"));
 
             Benchmark benchmark = new Benchmark(example, engine, FuzzyLite.getMachEps());
-            benchmark.prepare(new FileReader(new File(path, example + ".fld")));
+            benchmark.prepare(new FileReader(new File(path, example + ".fld")), 1024);
 
             benchmark.run(1);
             if (i == 0) {

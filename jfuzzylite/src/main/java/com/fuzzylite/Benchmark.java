@@ -7,7 +7,7 @@
  jfuzzylite™ is free software: you can redistribute it and/or modify it under
  the terms of the FuzzyLite License included with the software.
 
- You should have received a copy of the FuzzyLite License along with 
+ You should have received a copy of the FuzzyLite License along with
  jfuzzylite™. If not, see <http://www.fuzzylite.com/license/>.
 
  fuzzylite® is a registered trademark of FuzzyLite Limited.
@@ -153,12 +153,17 @@ public class Benchmark {
     }
 
     public void prepare(Reader reader) throws IOException {
+        prepare(reader, -1);
+    }
+
+    public void prepare(Reader reader, long numberOfLines) throws IOException {
         this.expected = new ArrayList<double[]>();
         BufferedReader bufferedReader = new BufferedReader(reader);
         try {
             String line;
             int lineNumber = 0;
-            while ((line = bufferedReader.readLine()) != null) {
+            while (lineNumber != numberOfLines
+                    && (line = bufferedReader.readLine()) != null) {
                 ++lineNumber;
                 line = line.trim();
                 if (line.isEmpty() || line.charAt(0) == '#') {
