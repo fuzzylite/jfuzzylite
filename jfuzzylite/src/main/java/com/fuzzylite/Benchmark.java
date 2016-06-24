@@ -199,12 +199,15 @@ public class Benchmark {
         final int offset = engine.getInputVariables().size();
         for (int t = 0; t < times; ++t) {
             obtained = new ArrayList<double[]>(expected.size());
+            for (int i = 0; i < obtained.size(); ++i) {
+                obtained.add(new double[engine.variables().size()]);
+            }
             engine.restart();
             long start = System.nanoTime();
 
             for (int evaluation = 0; evaluation < expected.size(); ++evaluation) {
                 double[] expectedValues = expected.get(evaluation);
-                double[] obtainedValues = new double[engine.numberOfInputVariables() + engine.numberOfOutputVariables()];
+                double[] obtainedValues = obtained.get(evaluation);
 
                 if (expectedValues.length < engine.getInputVariables().size()) {
                     throw new RuntimeException(MessageFormat.format(
@@ -224,8 +227,6 @@ public class Benchmark {
                 for (int i = 0; i < engine.getOutputVariables().size(); ++i) {
                     obtainedValues[i + offset] = engine.getOutputVariables().get(i).getValue();
                 }
-
-                obtained.add(obtainedValues);
             }
 
             long end = System.nanoTime();
