@@ -7,7 +7,7 @@
  jfuzzylite™ is free software: you can redistribute it and/or modify it under
  the terms of the FuzzyLite License included with the software.
 
- You should have received a copy of the FuzzyLite License along with 
+ You should have received a copy of the FuzzyLite License along with
  jfuzzylite™. If not, see <http://www.fuzzylite.com/license/>.
 
  fuzzylite® is a registered trademark of FuzzyLite Limited.
@@ -29,7 +29,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.logging.Level;
 
-public class RuleBlock implements Op.Cloneable{
+public class RuleBlock implements Op.Cloneable {
 
     private String name;
     private TNorm conjunction;
@@ -67,13 +67,17 @@ public class RuleBlock implements Op.Cloneable{
     }
 
     public void activate() {
-        FuzzyLite.logger().log(Level.FINE, "Activating rule block {0}", getName());
-        //@todo: remove check in version 7.0
-        if (getActivation() == null) {
-            setActivation(new General());
+        if (FuzzyLite.isDebugging()) {
+            FuzzyLite.logger().log(Level.FINE, "Activating rule block {0}", getName());
         }
-        FuzzyLite.logger().log(Level.FINE, "Activation: {0}", getActivation().getClass().getSimpleName());
-        getActivation().activate(this);
+        //@todo: remove check in version 7.0
+        if (activation == null) {
+            activation = new General();
+        }
+        if (FuzzyLite.isDebugging()) {
+            FuzzyLite.logger().log(Level.FINE, "Activation: {0}", getActivation().getClass().getSimpleName());
+        }
+        activation.activate(this);
     }
 
     public void unloadRules() {

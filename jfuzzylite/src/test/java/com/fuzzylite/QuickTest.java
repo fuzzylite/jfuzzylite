@@ -65,13 +65,23 @@ public class QuickTest {
         List<String> x = new ArrayList<String>(10);
         Assert.assertThat("size is zero", x.size(), is(0));
     }
-    
+
     @Test
-    public void testOpStr(){
+    public void testOpStr() {
         FuzzyLite.setLogging(true);
         FuzzyLite.setDecimals(9);
         FuzzyLite.logger().log(Level.INFO, Op.str(1e-5));
         FuzzyLite.logger().log(Level.INFO, Op.str(1e-5));
+    }
+
+    @Test
+    public void testOpMinMax() {
+        FuzzyLite.setLogging(true);
+        Assert.assertThat(Op.min(Double.NaN, 0.0), is(0.0));
+        Assert.assertThat(Op.min(0.0, Double.NaN), is(0.0));
+        Assert.assertThat(Op.max(Double.NaN, 0.0), is(0.0));
+        Assert.assertThat(Op.max(0.0, Double.NaN), is(0.0));
+
     }
 
 }

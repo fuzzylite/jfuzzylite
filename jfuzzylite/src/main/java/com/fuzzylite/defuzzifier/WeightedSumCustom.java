@@ -7,7 +7,7 @@
  jfuzzylite™ is free software: you can redistribute it and/or modify it under
  the terms of the FuzzyLite License included with the software.
 
- You should have received a copy of the FuzzyLite License along with 
+ You should have received a copy of the FuzzyLite License along with
  jfuzzylite™. If not, see <http://www.fuzzylite.com/license/>.
 
  fuzzylite® is a registered trademark of FuzzyLite Limited.
@@ -39,31 +39,43 @@ public class WeightedSumCustom extends WeightedDefuzzifier {
     @Override
     public double defuzzify(Term term, double minimum, double maximum) {
         Aggregated fuzzyOutput = (Aggregated) term;
-
+        if (fuzzyOutput.getTerms().isEmpty()) {
+            return Double.NaN;
+        }
         minimum = fuzzyOutput.getMinimum();
         maximum = fuzzyOutput.getMaximum();
 
-        double sum = 0.0;
+        Type type = getType();
+        if (type == Type.Automatic) {
+            type = inferType(fuzzyOutput.getTerms().get(0));
+        }
 
         SNorm aggregation = fuzzyOutput.getAggregation();
-        WeightedDefuzzifier.Type type = getType();
-        for (Activated activated : fuzzyOutput.getTerms()) {
-            double w = activated.getDegree();
-            TNorm implication = activated.getImplication();
-            if (type == WeightedDefuzzifier.Type.Automatic) {
-                type = inferType(activated.getTerm());
+        TNorm implication = null;
+
+        double sum = 0.0;
+        if (type == Type.TakagiSugeno) {
+            double w, z, wz;
+            for (Activated activated : fuzzyOutput.getTerms()) {
+                w = activated.getDegree();
+                z = activated.getTerm().membership(w);
+                implication = activated.getImplication();
+                wz = implication != null
+                        ? implication.compute(w, z)
+                        : w * z;
+                if (aggregation != null) {
+                    sum = aggregation.compute(sum, wz);
+                } else {
+                    sum += wz;
+                }
             }
-
-            double z = (type == WeightedDefuzzifier.Type.TakagiSugeno)
-                    ? activated.getTerm().membership(w)
-                    : tsukamoto(activated.getTerm(), w, minimum, maximum);
-
-            double wz = implication != null
-                    ? implication.compute(w, z)
-                    : w * z;
-            sum = aggregation != null
-                    ? aggregation.compute(sum, wz)
-                    : sum + wz;
+        } else {
+            double w, z;
+            for (Activated activated : fuzzyOutput.getTerms()) {
+                w = activated.getDegree();
+                z = tsukamoto(activated.getTerm(), w, minimum, maximum);
+                sum += w * z;
+            }
         }
         return sum;
     }

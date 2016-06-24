@@ -7,7 +7,7 @@
  jfuzzylite™ is free software: you can redistribute it and/or modify it under
  the terms of the FuzzyLite License included with the software.
 
- You should have received a copy of the FuzzyLite License along with 
+ You should have received a copy of the FuzzyLite License along with
  jfuzzylite™. If not, see <http://www.fuzzylite.com/license/>.
 
  fuzzylite® is a registered trademark of FuzzyLite Limited.
@@ -110,35 +110,38 @@ public class Rule implements Op.Cloneable {
         if (!isLoaded()) {
             throw new RuntimeException(String.format("[rule error] the following rule is not loaded: %s", text));
         }
-        return getWeight() * getAntecedent().activationDegree(conjunction, disjunction);
+        return weight * antecedent.activationDegree(conjunction, disjunction);
     }
 
     public void activate(double activationDegree, TNorm implication) {
-        FuzzyLite.logger().log(Level.FINE, "[activating] {0}", toString());
+        if (FuzzyLite.isDebugging()) {
+            FuzzyLite.logger().log(Level.FINE, "[activating] {0}", toString());
+        }
         if (!isLoaded()) {
             throw new RuntimeException(String.format("[rule error] the following rule is not loaded: %s", text));
         }
         if (Op.isGt(activationDegree, 0.0)) {
-            FuzzyLite.logger().log(Level.FINE, "[degree={0}] {1}",
-                    new String[]{Op.str(activationDegree), toString()});
-            setActivationDegree(activationDegree);
-            getConsequent().modify(activationDegree, implication);
+            if (FuzzyLite.isDebugging()) {
+                FuzzyLite.logger().log(Level.FINE, "[degree={0}] {1}",
+                        new String[]{Op.str(activationDegree), toString()});
+            }
+            this.activationDegree = activationDegree;
+            consequent.modify(activationDegree, implication);
         }
-        setActivated(true);
-
+        this.activated = true;
     }
 
     public void deactivate() {
-        setActivated(false);
-        setActivationDegree(0.0);
-        FuzzyLite.logger().log(Level.FINE, "[deactivated] {0}", toString());
+        this.activated = false;
+        this.activationDegree = 0.0;
+        if (FuzzyLite.isDebugging()) {
+            FuzzyLite.logger().log(Level.FINE, "[deactivated] {0}", toString());
+        }
     }
 
     public boolean isLoaded() {
-        if (getAntecedent() != null && getConsequent() != null) {
-            return getAntecedent().isLoaded() && getConsequent().isLoaded();
-        }
-        return false;
+        return antecedent != null && consequent != null
+                && antecedent.isLoaded() && consequent.isLoaded();
     }
 
     public void unload() {

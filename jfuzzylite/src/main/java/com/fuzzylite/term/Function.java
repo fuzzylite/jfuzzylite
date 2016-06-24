@@ -7,7 +7,7 @@
  jfuzzylite™ is free software: you can redistribute it and/or modify it under
  the terms of the FuzzyLite License included with the software.
 
- You should have received a copy of the FuzzyLite License along with 
+ You should have received a copy of the FuzzyLite License along with
  jfuzzylite™. If not, see <http://www.fuzzylite.com/license/>.
 
  fuzzylite® is a registered trademark of FuzzyLite Limited.
@@ -215,7 +215,9 @@ public class Function extends Term {
             } else {
                 result = value;
             }
-            FuzzyLite.logger().fine(String.format("%s = %s", toPostfix(), str(result)));
+            if (FuzzyLite.isDebugging()) {
+                FuzzyLite.logger().fine(String.format("%s = %s", toPostfix(), str(result)));
+            }
             return result;
         }
 
@@ -501,10 +503,10 @@ public class Function extends Term {
                 stack.pop(); //get rid of "("
 
                 Element top = null;
-                if (!stack.isEmpty()){
+                if (!stack.isEmpty()) {
                     top = factory.getObject(stack.peek());
                 }
-                if (top != null && top.isFunction()){
+                if (top != null && top.isFunction()) {
                     queue.offer(stack.pop());
                 }
             } else {
@@ -554,9 +556,9 @@ public class Function extends Term {
             if (element != null) {
                 if (element.getArity() > stack.size()) {
                     throw new RuntimeException(String.format("[function error] operator <%s> has arity <%d>, "
-                            + "but <%d> elements are available: (%s)", 
-                            element.getName(), element.getArity(), stack.size(), 
-                            Op.join(stack,", ")));
+                            + "but <%d> elements are available: (%s)",
+                            element.getName(), element.getArity(), stack.size(),
+                            Op.join(stack, ", ")));
                 }
 
                 Node node;

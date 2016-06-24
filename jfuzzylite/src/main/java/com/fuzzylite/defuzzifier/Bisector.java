@@ -7,7 +7,7 @@
  jfuzzylite™ is free software: you can redistribute it and/or modify it under
  the terms of the FuzzyLite License included with the software.
 
- You should have received a copy of the FuzzyLite License along with 
+ You should have received a copy of the FuzzyLite License along with
  jfuzzylite™. If not, see <http://www.fuzzylite.com/license/>.
 
  fuzzylite® is a registered trademark of FuzzyLite Limited.
@@ -34,8 +34,7 @@ public class Bisector extends IntegralDefuzzifier {
         if (!Op.isFinite(minimum + maximum)) {
             return Double.NaN;
         }
-        double dx = (maximum - minimum) / getResolution();
-
+        final double dx = (maximum - minimum) / getResolution();
         int counter = getResolution();
         int left = 0, right = 0;
         double leftArea = 0, rightArea = 0;
@@ -51,10 +50,8 @@ public class Bisector extends IntegralDefuzzifier {
                 right++;
             }
         }
-
         //Inverse weighted average to compensate
-        double bisector = (leftArea * xRight + rightArea * xLeft) / (leftArea + rightArea);
-        return bisector;
+        return (leftArea * xRight + rightArea * xLeft) / (leftArea + rightArea);
     }
 
     @Override

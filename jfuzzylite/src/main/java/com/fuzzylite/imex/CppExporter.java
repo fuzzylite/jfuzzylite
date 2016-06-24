@@ -7,7 +7,7 @@
  jfuzzylite™ is free software: you can redistribute it and/or modify it under
  the terms of the FuzzyLite License included with the software.
 
- You should have received a copy of the FuzzyLite License along with 
+ You should have received a copy of the FuzzyLite License along with
  jfuzzylite™. If not, see <http://www.fuzzylite.com/license/>.
 
  fuzzylite® is a registered trademark of FuzzyLite Limited.
@@ -200,7 +200,7 @@ public class CppExporter extends Exporter {
 
         for (Rule rule : ruleBlock.getRules()) {
             result.append(String.format("%s->addRule("
-                    + "fl::Rule::parse(\"%s\", engine));\n",
+                    + fl("Rule") + "::parse(\"%s\", engine));\n",
                     name, rule.getText()));
         }
         result.append(String.format(

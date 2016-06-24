@@ -7,7 +7,7 @@
  jfuzzylite™ is free software: you can redistribute it and/or modify it under
  the terms of the FuzzyLite License included with the software.
 
- You should have received a copy of the FuzzyLite License along with 
+ You should have received a copy of the FuzzyLite License along with
  jfuzzylite™. If not, see <http://www.fuzzylite.com/license/>.
 
  fuzzylite® is a registered trademark of FuzzyLite Limited.
@@ -75,13 +75,15 @@ public class Linear extends Term {
     public double membership(double x) {
         double result = 0;
         List<InputVariable> inputVariables = engine.getInputVariables();
-        for (int i = 0; i < inputVariables.size(); ++i) {
-            if (i < coefficients.size()) {
+        final int numberOfVariables = inputVariables.size();
+        final int numberOfCoefficients = coefficients.size();
+        for (int i = 0; i < numberOfVariables; ++i) {
+            if (i < numberOfCoefficients) {
                 result += coefficients.get(i) * inputVariables.get(i).getValue();
             }
         }
-        if (coefficients.size() > inputVariables.size()) {
-            result += coefficients.get(coefficients.size() - 1);
+        if (numberOfCoefficients > numberOfVariables) {
+            result += coefficients.get(numberOfCoefficients - 1);
         }
         return result;
     }

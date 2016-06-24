@@ -7,7 +7,7 @@
  jfuzzylite™ is free software: you can redistribute it and/or modify it under
  the terms of the FuzzyLite License included with the software.
 
- You should have received a copy of the FuzzyLite License along with 
+ You should have received a copy of the FuzzyLite License along with
  jfuzzylite™. If not, see <http://www.fuzzylite.com/license/>.
 
  fuzzylite® is a registered trademark of FuzzyLite Limited.
@@ -72,8 +72,10 @@ public class Lowest extends Activation {
 
     @Override
     public void activate(RuleBlock ruleBlock) {
-        FuzzyLite.logger().log(Level.FINE, "Activation: {0} {1}",
-                new String[]{getClass().getName(), parameters()});
+        if (FuzzyLite.isDebugging()) {
+            FuzzyLite.logger().log(Level.FINE, "Activation: {0} {1}",
+                    new String[]{getClass().getName(), parameters()});
+        }
         TNorm conjunction = ruleBlock.getConjunction();
         SNorm disjunction = ruleBlock.getDisjunction();
         TNorm implication = ruleBlock.getImplication();

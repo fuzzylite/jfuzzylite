@@ -7,7 +7,7 @@
  jfuzzylite™ is free software: you can redistribute it and/or modify it under
  the terms of the FuzzyLite License included with the software.
 
- You should have received a copy of the FuzzyLite License along with 
+ You should have received a copy of the FuzzyLite License along with
  jfuzzylite™. If not, see <http://www.fuzzylite.com/license/>.
 
  fuzzylite® is a registered trademark of FuzzyLite Limited.
@@ -34,8 +34,8 @@ public class FuzzyLite {
     public static final String COMPANY = "FuzzyLite Limited";
     public static final String WEBSITE = "http://www.fuzzylite.com/";
     private static int DECIMALS = 3;
-    private static double MACHEPS = 1e-6; //Machine epsilon to differentiate numbers
-    private static boolean debug = false;
+    protected static double MACHEPS = 1e-6; //Machine epsilon to differentiate numbers
+    private static boolean debugging = false;
 
     private static DecimalFormat DF = new DecimalFormat("0.000");
 
@@ -107,25 +107,25 @@ public class FuzzyLite {
 
     public static void setLogging(boolean logging) {
         if (logging) {
-            logger().setLevel(debug ? Level.FINE : Level.INFO);
+            LOGGER.setLevel(debugging ? Level.FINE : Level.INFO);
         } else {
-            logger().setLevel(Level.OFF);
+            LOGGER.setLevel(Level.OFF);
         }
     }
 
     public static boolean isLogging() {
-        return !(logger().getLevel() == null || Level.OFF.equals(logger().getLevel()));
+        return !(LOGGER.getLevel() == null || Level.OFF.equals(LOGGER.getLevel()));
     }
 
-    public static void setDebug(boolean debug) {
-        FuzzyLite.debug = debug;
+    public static void setDebugging(boolean debugging) {
+        FuzzyLite.debugging = debugging;
         if (isLogging()) {
-            logger().setLevel(debug ? Level.FINE : Level.INFO);
+            LOGGER.setLevel(debugging ? Level.FINE : Level.INFO);
         }
     }
 
-    public static boolean debug() {
-        return FuzzyLite.debug;
+    public static boolean isDebugging() {
+        return FuzzyLite.debugging;
     }
 
 }

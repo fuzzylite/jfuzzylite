@@ -7,7 +7,7 @@
  jfuzzylite™ is free software: you can redistribute it and/or modify it under
  the terms of the FuzzyLite License included with the software.
 
- You should have received a copy of the FuzzyLite License along with 
+ You should have received a copy of the FuzzyLite License along with
  jfuzzylite™. If not, see <http://www.fuzzylite.com/license/>.
 
  fuzzylite® is a registered trademark of FuzzyLite Limited.
@@ -24,11 +24,31 @@ import java.util.List;
 
 public class Op {
 
+    public static double min(double a, double b) {
+        if (Double.isNaN(a)) {
+            return b;
+        }
+        if (Double.isNaN(b)) {
+            return a;
+        }
+        return a < b ? a : b;
+    }
+
+    public static double max(double a, double b) {
+        if (Double.isNaN(a)) {
+            return b;
+        }
+        if (Double.isNaN(b)) {
+            return a;
+        }
+        return a > b ? a : b;
+    }
+
     public static double bound(double x, double min, double max) {
-        if (isGt(x, max)) {
+        if (x > max) {
             return max;
         }
-        if (isLt(x, min)) {
+        if (x < min) {
             return min;
         }
         return x;
@@ -53,7 +73,7 @@ public class Op {
      * Math Operations
      */
     public static boolean isEq(double a, double b) {
-        return isEq(a, b, FuzzyLite.getMachEps());
+        return a == b || Math.abs(a - b) < FuzzyLite.MACHEPS || (Double.isNaN(a) && Double.isNaN(b));
     }
 
     public static boolean isEq(double a, double b, double macheps) {
@@ -61,43 +81,51 @@ public class Op {
     }
 
     public static boolean isNEq(double a, double b) {
-        return isNEq(a, b, FuzzyLite.getMachEps());
+        return !(a == b || Math.abs(a - b) < FuzzyLite.MACHEPS || (Double.isNaN(a) && Double.isNaN(b)));
     }
 
     public static boolean isNEq(double a, double b, double macheps) {
-        return !isEq(a, b, macheps);
+        return !(a == b || Math.abs(a - b) < macheps || (Double.isNaN(a) && Double.isNaN(b)));
     }
 
     public static boolean isLt(double a, double b) {
-        return isLt(a, b, FuzzyLite.getMachEps());
+        return !(a == b || Math.abs(a - b) < FuzzyLite.MACHEPS || (Double.isNaN(a) && Double.isNaN(b)))
+                && a < b;
     }
 
     public static boolean isLt(double a, double b, double macheps) {
-        return !isEq(a, b, macheps) && a < b;
+        return !(a == b || Math.abs(a - b) < macheps || (Double.isNaN(a) && Double.isNaN(b)))
+                && a < b;
     }
 
     public static boolean isLE(double a, double b) {
-        return isLE(a, b, FuzzyLite.getMachEps());
+        return a == b || Math.abs(a - b) < FuzzyLite.MACHEPS || (Double.isNaN(a) && Double.isNaN(b))
+                || a < b;
     }
 
     public static boolean isLE(double a, double b, double macheps) {
-        return isEq(a, b, macheps) || a < b;
+        return a == b || Math.abs(a - b) < macheps || (Double.isNaN(a) && Double.isNaN(b))
+                || a < b;
     }
 
     public static boolean isGt(double a, double b) {
-        return isGt(a, b, FuzzyLite.getMachEps());
+        return !(a == b || Math.abs(a - b) < FuzzyLite.MACHEPS || (Double.isNaN(a) && Double.isNaN(b)))
+                && a > b;
     }
 
     public static boolean isGt(double a, double b, double macheps) {
-        return !isEq(a, b, macheps) && a > b;
+        return !(a == b || Math.abs(a - b) < macheps || (Double.isNaN(a) && Double.isNaN(b)))
+                && a > b;
     }
 
     public static boolean isGE(double a, double b) {
-        return isGE(a, b, FuzzyLite.getMachEps());
+        return a == b || Math.abs(a - b) < FuzzyLite.MACHEPS || (Double.isNaN(a) && Double.isNaN(b))
+                || a > b;
     }
 
     public static boolean isGE(double a, double b, double macheps) {
-        return isEq(a, b, macheps) || a > b;
+        return a == b || Math.abs(a - b) < macheps || (Double.isNaN(a) && Double.isNaN(b))
+                || a > b;
     }
 
     public static double add(double a, double b) {

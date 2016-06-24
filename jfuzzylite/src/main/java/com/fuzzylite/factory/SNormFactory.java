@@ -7,7 +7,7 @@
  jfuzzylite™ is free software: you can redistribute it and/or modify it under
  the terms of the FuzzyLite License included with the software.
 
- You should have received a copy of the FuzzyLite License along with 
+ You should have received a copy of the FuzzyLite License along with
  jfuzzylite™. If not, see <http://www.fuzzylite.com/license/>.
 
  fuzzylite® is a registered trademark of FuzzyLite Limited.
@@ -26,6 +26,7 @@ import com.fuzzylite.norm.s.HamacherSum;
 import com.fuzzylite.norm.s.Maximum;
 import com.fuzzylite.norm.s.NilpotentMaximum;
 import com.fuzzylite.norm.s.NormalizedSum;
+import com.fuzzylite.norm.s.UnboundedSum;
 
 public class SNormFactory extends ConstructionFactory<SNorm> {
 
@@ -39,6 +40,7 @@ public class SNormFactory extends ConstructionFactory<SNorm> {
         register(Maximum.class);
         register(NilpotentMaximum.class);
         register(NormalizedSum.class);
+        register(UnboundedSum.class);
     }
 
     @Override

@@ -7,7 +7,7 @@
  jfuzzylite™ is free software: you can redistribute it and/or modify it under
  the terms of the FuzzyLite License included with the software.
 
- You should have received a copy of the FuzzyLite License along with 
+ You should have received a copy of the FuzzyLite License along with
  jfuzzylite™. If not, see <http://www.fuzzylite.com/license/>.
 
  fuzzylite® is a registered trademark of FuzzyLite Limited.
@@ -141,13 +141,15 @@ public abstract class WeightedDefuzzifier extends Defuzzifier {
         if (isTsukamoto) {
             double fz = monotonic.membership(z);
             //Compare difference between estimated and true value
-            if (!Op.isEq(w, fz, 1e-2)) {
-                FuzzyLite.logger().fine(String.format(
-                        "[tsukamoto warning] difference <%s> might suggest an inaccurate "
-                        + "computation of z because it is expected w=f(z) in %s term <%s>, "
-                        + "but w=%s f(z)=%s and z=%s", Op.str(Math.abs(w - fz)),
-                        monotonic.getClass().getSimpleName(), monotonic.getName(),
-                        Op.str(w), Op.str(fz), Op.str(z)));
+            if (FuzzyLite.isDebugging()) {
+                if (!Op.isEq(w, fz, 1e-2)) {
+                    FuzzyLite.logger().fine(String.format(
+                            "[tsukamoto warning] difference <%s> might suggest an inaccurate "
+                            + "computation of z because it is expected w=f(z) in %s term <%s>, "
+                            + "but w=%s f(z)=%s and z=%s", Op.str(Math.abs(w - fz)),
+                            monotonic.getClass().getSimpleName(), monotonic.getName(),
+                            Op.str(w), Op.str(fz), Op.str(z)));
+                }
             }
         } else {
             // else fallback to the regular Takagi-Sugeno or inverse Tsukamoto (according to term)

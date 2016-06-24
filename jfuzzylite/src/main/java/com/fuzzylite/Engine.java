@@ -7,7 +7,7 @@
  jfuzzylite™ is free software: you can redistribute it and/or modify it under
  the terms of the FuzzyLite License included with the software.
 
- You should have received a copy of the FuzzyLite License along with 
+ You should have received a copy of the FuzzyLite License along with
  jfuzzylite™. If not, see <http://www.fuzzylite.com/license/>.
 
  fuzzylite® is a registered trademark of FuzzyLite Limited.
@@ -226,7 +226,7 @@ public class Engine implements Op.Cloneable {
         /*
          * BEGIN: Debug information
          */
-        if (FuzzyLite.debug()) {
+        if (FuzzyLite.isDebugging()) {
             for (InputVariable inputVariable : this.inputVariables) {
                 double inputValue = inputVariable.getValue();
                 if (inputVariable.isEnabled()) {
@@ -243,7 +243,7 @@ public class Engine implements Op.Cloneable {
         /*
          * END: Debug information
          */
-
+ 
         for (RuleBlock ruleBlock : this.ruleBlocks) {
             if (ruleBlock.isEnabled()) {
                 ruleBlock.activate();
@@ -257,7 +257,7 @@ public class Engine implements Op.Cloneable {
         /*
          * BEGIN: Debug information
          */
-        if (FuzzyLite.debug()) {
+        if (FuzzyLite.isDebugging()) {
             for (OutputVariable outputVariable : this.outputVariables) {
                 if (outputVariable.isEnabled()) {
                     FuzzyLite.logger().fine(String.format("%s.default = %s",

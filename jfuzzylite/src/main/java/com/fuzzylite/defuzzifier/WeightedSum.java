@@ -7,7 +7,7 @@
  jfuzzylite™ is free software: you can redistribute it and/or modify it under
  the terms of the FuzzyLite License included with the software.
 
- You should have received a copy of the FuzzyLite License along with 
+ You should have received a copy of the FuzzyLite License along with
  jfuzzylite™. If not, see <http://www.fuzzylite.com/license/>.
 
  fuzzylite® is a registered trademark of FuzzyLite Limited.
@@ -37,23 +37,32 @@ public class WeightedSum extends WeightedDefuzzifier {
     @Override
     public double defuzzify(Term term, double minimum, double maximum) {
         Aggregated fuzzyOutput = (Aggregated) term;
-
+        if (fuzzyOutput.getTerms().isEmpty()) {
+            return Double.NaN;
+        }
         minimum = fuzzyOutput.getMinimum();
         maximum = fuzzyOutput.getMaximum();
 
+        Type type = getType();
+        if (type == Type.Automatic) {
+            type = inferType(fuzzyOutput.getTerms().get(0));
+        }
+
         double sum = 0.0;
-
-        WeightedDefuzzifier.Type type = getType();
-        for (Activated activated : fuzzyOutput.getTerms()) {
-            double w = activated.getDegree();
-            if (type == WeightedDefuzzifier.Type.Automatic) {
-                type = inferType(activated.getTerm());
+        if (type == Type.TakagiSugeno) {
+            double w, z;
+            for (Activated activated : fuzzyOutput.getTerms()) {
+                w = activated.getDegree();
+                z = activated.getTerm().membership(w);
+                sum += w * z;
             }
-
-            double z = (type == WeightedDefuzzifier.Type.TakagiSugeno)
-                    ? activated.getTerm().membership(w)
-                    : tsukamoto(activated.getTerm(), w, minimum, maximum);
-            sum += w * z;
+        } else {
+            double w, z;
+            for (Activated activated : fuzzyOutput.getTerms()) {
+                w = activated.getDegree();
+                z = tsukamoto(activated.getTerm(), w, minimum, maximum);
+                sum += w * z;
+            }
         }
         return sum;
     }

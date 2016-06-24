@@ -7,7 +7,7 @@
  jfuzzylite™ is free software: you can redistribute it and/or modify it under
  the terms of the FuzzyLite License included with the software.
 
- You should have received a copy of the FuzzyLite License along with 
+ You should have received a copy of the FuzzyLite License along with
  jfuzzylite™. If not, see <http://www.fuzzylite.com/license/>.
 
  fuzzylite® is a registered trademark of FuzzyLite Limited.
@@ -35,24 +35,26 @@ public class Centroid extends IntegralDefuzzifier {
             return Double.NaN;
         }
 
-        double dx = (maximum - minimum) / getResolution();
+        final int resolution = getResolution();
+        final double dx = (maximum - minimum) / resolution;
         double x, y;
         double area = 0;
         double xcentroid = 0;
-        @SuppressWarnings("unused")
-        double ycentroid = 0;
-        for (int i = 0; i < getResolution(); ++i) {
+//        @SuppressWarnings("unused")
+//        double ycentroid = 0;
+        for (int i = 0; i < resolution; ++i) {
             x = minimum + (i + 0.5) * dx;
             y = term.membership(x);
 
             xcentroid += y * x;
-            ycentroid += y * y;
+//            ycentroid += y * y;
             area += y;
         }
-        xcentroid /= area;
-        ycentroid /= 2 * area;
-        area *= dx; //total area... unused, but for future reference.
-        return xcentroid;
+        //Final results not computed for efficiency
+        //xcentroid /= area;
+        //ycentroid /= 2 * area;
+        //area *= dx;
+        return xcentroid / area;
     }
 
     @Override
