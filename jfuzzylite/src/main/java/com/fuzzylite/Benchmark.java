@@ -199,7 +199,7 @@ public class Benchmark {
         final int offset = engine.getInputVariables().size();
         for (int t = 0; t < times; ++t) {
             obtained = new ArrayList<double[]>(expected.size());
-            for (int i = 0; i < obtained.size(); ++i) {
+            for (int i = 0; i < expected.size(); ++i) {
                 obtained.add(new double[engine.variables().size()]);
             }
             engine.restart();

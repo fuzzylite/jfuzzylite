@@ -57,7 +57,7 @@ public class ConsoleTest {
      */
     @Test
     public void testExportAllExamples() throws Exception {
-        File examples = new File("../examples/original/");
+        File examples = new File("../examples/");
         Assert.assertThat("examples is reachable", examples.exists(), is(true));
         FuzzyLite.logger().log(Level.INFO, "Examples: {0}\nOutput: {1}",
                 new String[]{examples.getAbsolutePath(), flFolder.getRoot().getAbsolutePath()});
@@ -70,7 +70,7 @@ public class ConsoleTest {
     @Ignore
     @Test
     public void testBenchmarks() throws Exception {
-        File examples = new File("../examples/original/");
+        File examples = new File("../examples/");
         Assert.assertThat("examples is reachable", examples.exists(), is(true));
         Console.main(new String[]{
             "benchmarks", examples.getAbsolutePath(), "1"});
