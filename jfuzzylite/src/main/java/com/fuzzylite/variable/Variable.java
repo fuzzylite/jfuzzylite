@@ -7,7 +7,7 @@
  jfuzzylite™ is free software: you can redistribute it and/or modify it under
  the terms of the FuzzyLite License included with the software.
 
- You should have received a copy of the FuzzyLite License along with 
+ You should have received a copy of the FuzzyLite License along with
  jfuzzylite™. If not, see <http://www.fuzzylite.com/license/>.
 
  fuzzylite® is a registered trademark of FuzzyLite Limited.
@@ -31,6 +31,9 @@ import java.util.PriorityQueue;
 
 public class Variable implements Op.Cloneable {
 
+    public enum Type{
+        None, InputVariable, OutputVariable
+    }
     private String name;
     private List<Term> terms;
     private double value;
@@ -109,6 +112,10 @@ public class Variable implements Op.Cloneable {
 
     public void setLockValueInRange(boolean lockValueInRange) {
         this.lockValueInRange = lockValueInRange;
+    }
+
+    public Type type(){
+        return Type.None;
     }
 
     @Override

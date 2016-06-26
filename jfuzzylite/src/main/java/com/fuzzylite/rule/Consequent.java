@@ -65,15 +65,14 @@ public class Consequent {
         for (Proposition proposition : conclusions) {
             if (proposition.getVariable().isEnabled()) {
                 if (!proposition.getHedges().isEmpty()) {
-                    int lastIndex = proposition.getHedges().size();
+                    final int lastIndex = proposition.getHedges().size();
                     ListIterator<Hedge> rit = proposition.getHedges().listIterator(lastIndex);
                     while (rit.hasPrevious()) {
                         activationDegree = rit.previous().hedge(activationDegree);
                     }
                 }
                 Activated term = new Activated(proposition.getTerm(), activationDegree, implication);
-                OutputVariable outputVariable = (OutputVariable) proposition.getVariable();
-                outputVariable.fuzzyOutput().getTerms().add(term);
+                ((OutputVariable) proposition.getVariable()).fuzzyOutput().getTerms().add(term);
                 if (FuzzyLite.isDebugging()) {
                     FuzzyLite.logger().log(Level.FINE, "Aggregating {0}", term.toString());
                 }
@@ -82,11 +81,11 @@ public class Consequent {
     }
 
     public boolean isLoaded() {
-        return !getConclusions().isEmpty();
+        return !conclusions.isEmpty();
     }
 
     public void unload() {
-        getConclusions().clear();
+        conclusions.clear();
     }
 
     public void load(Engine engine) {

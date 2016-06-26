@@ -7,14 +7,13 @@
  jfuzzylite™ is free software: you can redistribute it and/or modify it under
  the terms of the FuzzyLite License included with the software.
 
- You should have received a copy of the FuzzyLite License along with 
+ You should have received a copy of the FuzzyLite License along with
  jfuzzylite™. If not, see <http://www.fuzzylite.com/license/>.
 
  fuzzylite® is a registered trademark of FuzzyLite Limited.
  jfuzzylite™ is a trademark of FuzzyLite Limited.
 
  */
-
 package com.fuzzylite.variable;
 
 import com.fuzzylite.Op;
@@ -118,9 +117,9 @@ public class OutputVariable extends Variable {
         boolean isValid = isEnabled() && !fuzzyOutput().getTerms().isEmpty();
         if (isValid) {
             /* Checks whether the variable can be defuzzified without exceptions.
-             * If it cannot be defuzzified, be that due to a missing defuzzifier  
-             * or aggregation operator, the expected behaviour is to leave the 
-             * variable in a state that reflects an invalid defuzzification, 
+             * If it cannot be defuzzified, be that due to a missing defuzzifier
+             * or aggregation operator, the expected behaviour is to leave the
+             * variable in a state that reflects an invalid defuzzification,
              * that is, apply logic of default values and previous values.*/
             isValid = false;
             if (getDefuzzifier() != null) {
@@ -179,6 +178,11 @@ public class OutputVariable extends Variable {
         fuzzyOutput().clear();
         setValue(Double.NaN);
         setPreviousValue(Double.NaN);
+    }
+
+    @Override
+    public Type type() {
+        return Type.OutputVariable;
     }
 
     @Override

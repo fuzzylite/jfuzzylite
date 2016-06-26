@@ -47,13 +47,19 @@ public class RuleBlock implements Op.Cloneable {
         this(name, null, null, null);
     }
 
+    @Deprecated
     public RuleBlock(TNorm conjunction, SNorm disjunction, TNorm implication) {
         this("", conjunction, disjunction, implication);
     }
 
+    @Deprecated
     public RuleBlock(String name, TNorm conjunction, SNorm disjunction, TNorm implication) {
         //@todo: replace General activation to null in version 7.0
         this(name, conjunction, disjunction, implication, new General());
+    }
+
+    public RuleBlock(TNorm conjunction, SNorm disjunction, TNorm implication, Activation activation) {
+        this("", conjunction, disjunction, implication, activation);
     }
 
     public RuleBlock(String name, TNorm conjunction, SNorm disjunction, TNorm implication, Activation activation) {

@@ -200,7 +200,8 @@ public class Benchmark {
         for (int t = 0; t < times; ++t) {
             obtained = new ArrayList<double[]>(expected.size());
             for (int i = 0; i < expected.size(); ++i) {
-                obtained.add(new double[engine.variables().size()]);
+                obtained.add(new double[engine.numberOfInputVariables()
+                        + engine.numberOfOutputVariables()]);
             }
             engine.restart();
             long start = System.nanoTime();

@@ -67,7 +67,7 @@ public class Antecedent {
     }
 
     public double activationDegree(TNorm conjunction, SNorm disjunction) {
-        return this.activationDegree(conjunction, disjunction, getExpression());
+        return this.activationDegree(conjunction, disjunction, expression);
     }
 
     public double activationDegree(TNorm conjunction, SNorm disjunction, Expression node) {
@@ -75,13 +75,14 @@ public class Antecedent {
             throw new RuntimeException(String.format(
                     "[antecedent error] antecedent <%s> is not loaded", text));
         }
-        if (node.type() == Expression.Type.Proposition) {
+        final Expression.Type expression = node.type();
+        if (expression == Expression.Type.Proposition) {
             Proposition proposition = (Proposition) node;
             if (!proposition.getVariable().isEnabled()) {
                 return 0.0;
             }
             if (!proposition.getHedges().isEmpty()) {
-                int lastIndex = proposition.getHedges().size();
+                final int lastIndex = proposition.getHedges().size();
                 ListIterator<Hedge> rit = proposition.getHedges().listIterator(lastIndex);
                 Hedge any = rit.previous();
                 //if last hedge is "Any", apply hedges in reverse order and return degree
@@ -95,12 +96,12 @@ public class Antecedent {
             }
 
             Variable variable = proposition.getVariable();
-            double result;
-            if (variable instanceof OutputVariable) {
-                OutputVariable outputVariable = (OutputVariable) variable;
-                result = outputVariable.fuzzyOutput().activationDegree(proposition.getTerm());
-            } else {
+            double result = Double.NaN;
+            Variable.Type variableType = variable.type();
+            if (variableType == Variable.Type.InputVariable) {
                 result = proposition.getTerm().membership(variable.getValue());
+            } else if (variableType == Variable.Type.OutputVariable) {
+                result = ((OutputVariable) variable).fuzzyOutput().activationDegree(proposition.getTerm());
             }
             int lastIndex = proposition.getHedges().size();
             ListIterator<Hedge> reverseIterator = proposition.getHedges().listIterator(lastIndex);
@@ -110,7 +111,7 @@ public class Antecedent {
             return result;
         }
 
-        if (node.type() == Expression.Type.Operator) {
+        if (expression == Expression.Type.Operator) {
             Operator operator = (Operator) node;
             if (operator.getLeft() == null || operator.getRight() == null) {
                 throw new RuntimeException("[syntax error] left and right operators cannot be null");
