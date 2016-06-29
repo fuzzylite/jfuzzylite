@@ -159,7 +159,7 @@ public class Discrete extends Term implements List<Pair> {
         return result;
     }
 
-    private static class Ascendently implements Comparator<Discrete.Pair> {
+    public static class Ascendantly implements Comparator<Discrete.Pair> {
 
         @Override
         public int compare(Pair o1, Pair o2) {
@@ -173,14 +173,14 @@ public class Discrete extends Term implements List<Pair> {
         }
     }
 
-    static final Ascendently ASCENDENTLY = new Ascendently();
+    public static final Ascendantly ASCENDANTLY = new Ascendantly();
 
     public void sort() {
-        sort(ASCENDENTLY);
+        sort(ASCENDANTLY);
     }
 
     public static void sort(List<Discrete.Pair> pairs) {
-        Collections.sort(pairs, ASCENDENTLY);
+        Collections.sort(pairs, ASCENDANTLY);
     }
 
     @Override
@@ -208,7 +208,7 @@ public class Discrete extends Term implements List<Pair> {
         }
         Discrete.Pair value = new Discrete.Pair(x, Double.NaN);
         //Binary search will find a number greater than or equal to x
-        int upper = Collections.binarySearch(xy, value, ASCENDENTLY);
+        int upper = Collections.binarySearch(xy, value, ASCENDANTLY);
         //if the upper bound is equal to x
         if (upper >= 0) {
             return height * xy.get(upper).y;

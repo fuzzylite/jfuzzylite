@@ -113,7 +113,7 @@ public class DiscreteTest {
         Assert.assertThat("jUnit correctly compares instances of lists", sortedX, not(is(discrete.x())));
 
         FuzzyLite.logger().log(Level.INFO, "Shuffle: {0}", discrete.toString());
-        Collections.sort(discrete, Discrete.ASCENDENTLY);
+        Collections.sort(discrete, Discrete.ASCENDANTLY);
         FuzzyLite.logger().log(Level.INFO, "LowerBound: {0}", discrete.toString());
 
         Assert.assertThat("lower bound sorts correctly", sortedX, is(discrete.x()));
