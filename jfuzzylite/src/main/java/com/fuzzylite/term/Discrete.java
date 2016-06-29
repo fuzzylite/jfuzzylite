@@ -131,14 +131,14 @@ public class Discrete extends Term implements List<Pair> {
     }
 
     public static Discrete create(String name, double... xy) {
-        if (xy.length < 2 || xy.length % 2 != 0) {
-            throw new RuntimeException(String.format("[discrete term] "
-                    + "expected an even number of parameters "
-                    + "matching (x,y)+, but passed <%d>", xy.length));
-        }
+        final int mod2 = xy.length % 2;
         List<Pair> xyValues = new ArrayList<Pair>(xy.length / 2);
-        for (int i = 0; i < xy.length; i += 2) {
+        for (int i = 0; i < xy.length - mod2; i += 2) {
             xyValues.add(new Pair(xy[i], xy[i + 1]));
+        }
+        Discrete result = new Discrete(name, xyValues);
+        if (mod2 != 0) {
+            result.setHeight(xy[xy.length - 1]);
         }
         return new Discrete(name, xyValues);
     }
