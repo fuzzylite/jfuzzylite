@@ -1,7 +1,18 @@
 /*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+ Copyright (C) 2010-2016 by FuzzyLite Limited.
+ All rights reserved.
+
+ This file is part of jfuzzylite(TM).
+
+ jfuzzylite is free software: you can redistribute it and/or modify it under
+ the terms of the FuzzyLite License included with the software.
+
+ You should have received a copy of the FuzzyLite License along with
+ jfuzzylite. If not, see <http://www.fuzzylite.com/license/>.
+
+ fuzzylite(R) is a registered trademark of FuzzyLite Limited.
+ jfuzzylite(TM) is a trademark of FuzzyLite Limited.
+
  */
 package com.fuzzylite.term;
 
@@ -128,9 +139,9 @@ public class FunctionTest {
         Assert.assertThat("Postfix is correct", f.toPostfix(text),
                 is("term1 is t1 term2 is t2 term3 is t3 and or"));
     }
-    
+
     @Test
-    public void testDoubleParenthesisInPostfix(){
+    public void testDoubleParenthesisInPostfix() {
         new Function().toPostfix("if ((Ambient is DARK)) then Power is HIGH");
         new Function().toPostfix("if ((((Ambient is DARK)))) then (Power is HIGH)");
     }

@@ -1,7 +1,18 @@
 /*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+ Copyright (C) 2010-2016 by FuzzyLite Limited.
+ All rights reserved.
+
+ This file is part of jfuzzylite(TM).
+
+ jfuzzylite is free software: you can redistribute it and/or modify it under
+ the terms of the FuzzyLite License included with the software.
+
+ You should have received a copy of the FuzzyLite License along with
+ jfuzzylite. If not, see <http://www.fuzzylite.com/license/>.
+
+ fuzzylite(R) is a registered trademark of FuzzyLite Limited.
+ jfuzzylite(TM) is a trademark of FuzzyLite Limited.
+
  */
 package com.fuzzylite.imex;
 
@@ -42,7 +53,7 @@ public class RExporterTest {
     public void quickTest() {
         Engine mamdani = Console.mamdani();
         RScriptExporter exporter = new RScriptExporter();
-//        exporter.toString(mamdani, 
+//        exporter.toString(mamdani,
 //                mamdani.getInputVariable(0),
 //                mamdani.getInputVariable(1));
     }
