@@ -176,7 +176,7 @@ public class Discrete extends Term implements List<Pair> {
     public static final Ascendantly ASCENDANTLY = new Ascendantly();
 
     public void sort() {
-        sort(ASCENDANTLY);
+        Collections.sort(this, ASCENDANTLY);
     }
 
     public static void sort(List<Discrete.Pair> pairs) {
