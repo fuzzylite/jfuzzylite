@@ -7,7 +7,7 @@
  jfuzzylite™ is free software: you can redistribute it and/or modify it under
  the terms of the FuzzyLite License included with the software.
 
- You should have received a copy of the FuzzyLite License along with 
+ You should have received a copy of the FuzzyLite License along with
  jfuzzylite™. If not, see <http://www.fuzzylite.com/license/>.
 
  fuzzylite® is a registered trademark of FuzzyLite Limited.
@@ -17,9 +17,12 @@
 package com.fuzzylite.term;
 
 import com.fuzzylite.Op;
+import com.fuzzylite.defuzzifier.IntegralDefuzzifier;
 import com.fuzzylite.term.Discrete.Pair;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -140,18 +143,87 @@ public class Discrete extends Term implements List<Pair> {
         return new Discrete(name, xyValues);
     }
 
+    public static Discrete discretize(Term term, double start, double end) {
+        return discretize(term, start, end, IntegralDefuzzifier.getDefaultResolution());
+    }
+
     public static Discrete discretize(Term term, double start, double end, int resolution) {
         Discrete result = new Discrete(term.getName());
         double dx = (end - start) / resolution;
         double x, y;
-        for (int i = 0; i < resolution; ++i) {
-            x = start + (i + 0.5) * dx;
+        for (int i = 0; i <= resolution; ++i) {
+            x = start + i * dx;
             y = term.membership(x);
             result.add(new Discrete.Pair(x, y));
         }
         return result;
     }
 
+    private static class Ascendently implements Comparator<Discrete.Pair> {
+
+        @Override
+        public int compare(Pair o1, Pair o2) {
+            if (o1.x < o2.x) {
+                return -1;
+            }
+            if (o1.x > o2.x) {
+                return 1;
+            }
+            return 0;
+        }
+    }
+
+    static final Ascendently ASCENDENTLY = new Ascendently();
+
+    public void sort() {
+        sort(ASCENDENTLY);
+    }
+
+    public static void sort(List<Discrete.Pair> pairs) {
+        Collections.sort(pairs, ASCENDENTLY);
+    }
+
+    @Override
+    public double membership(double x) {
+        if (Double.isNaN(x)) {
+            return Double.NaN;
+        }
+        if (xy.isEmpty()) {
+            throw new RuntimeException("[discrete error] term is empty");
+        }
+
+        //                ______________________
+        //               /                      \
+        //              /                        \
+        // ____________/                          \____________
+        //            x[0]                      x[n-1]
+        //
+        Pair first = xy.get(0);
+        Pair last = xy.get(xy.size() - 1);
+        if (Op.isLE(x, first.getX())) {
+            return height * first.getY();
+        }
+        if (Op.isGE(x, last.getX())) {
+            return height * last.getY();
+        }
+        Discrete.Pair value = new Discrete.Pair(x, Double.NaN);
+        //Binary search will find a number greater than or equal to x
+        int upper = Collections.binarySearch(xy, value, ASCENDENTLY);
+        //if the upper bound is equal to x
+        if (upper >= 0) {
+            return height * xy.get(upper).y;
+        }
+        //if the upper bound is not x, then binary search returns (-insertionPoint - 1)
+        upper = Math.abs(upper + 1);
+        //and the lower bound
+        int lower = upper - 1;
+
+        //FuzzyLite.logger().log(Level.INFO, "x={0}\t[{1} , {2}]", new Object[]{x, lower, upper});
+        return height * Op.scale(x, xy.get(lower).getX(), xy.get(upper).getX(),
+                xy.get(lower).getY(), xy.get(upper).getY());
+    }
+
+    /*Membership function without binary search
     @Override
     public double membership(double x) {
         if (Double.isNaN(x)) {
@@ -161,12 +233,12 @@ public class Discrete extends Term implements List<Pair> {
             return height * 0.0;
         }
 
-        /*                ______________________
-         *               /                      \
-         *              /                        \
-         * ____________/                          \____________
-         *            x[0]                      x[n-1]
-         */
+        //                ______________________
+        //               /                      \
+        //              /                        \
+        // ____________/                          \____________
+        //            x[0]                      x[n-1]
+        //
         Pair first = xy.get(0);
         Pair last = xy.get(xy.size() - 1);
         if (Op.isLE(x, first.getX())) {
@@ -200,13 +272,29 @@ public class Discrete extends Term implements List<Pair> {
         return height * Op.scale(x, xy.get(lower).getX(), xy.get(upper).getX(),
                 xy.get(lower).getY(), xy.get(upper).getY());
     }
-
+     */
     public List<Pair> getXY() {
         return xy;
     }
 
     public void setXY(List<Pair> xy) {
         this.xy = xy;
+    }
+
+    public List<Double> x() {
+        List<Double> result = new ArrayList<Double>(xy.size());
+        for (Discrete.Pair pair : xy) {
+            result.add(pair.x);
+        }
+        return result;
+    }
+
+    public List<Double> y() {
+        List<Double> result = new ArrayList<Double>(xy.size());
+        for (Discrete.Pair pair : xy) {
+            result.add(pair.y);
+        }
+        return result;
     }
 
     @Override
