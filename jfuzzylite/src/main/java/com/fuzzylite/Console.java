@@ -50,7 +50,9 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
+import java.io.Reader;
 import java.io.Writer;
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -108,6 +110,8 @@ public class Console {
         result.append(String.format("license: %s\n", FuzzyLite.LICENSE));
         result.append("=========================================\n");
         result.append("usage: java -jar jfuzzylite.jar inputfile outputfile\n");
+        result.append("   or: java -jar jfuzzylite.jar benchmark engine.fll input.fld runs [output.tsv]\n");
+        result.append("   or: java -jar jfuzzylite.jar benchmark fllFiles.txt fldFiles.txt runs [output.tsv]\n");
         result.append("   or: java -jar jfuzzylite.jar ");
         for (Option option : options) {
             result.append(String.format("[%s %s] ", option.key, option.value));
@@ -859,34 +863,115 @@ public class Console {
         }
     }
 
+    public void benchmark(File fllFile, File fldFile, int runs, Writer writer)
+            throws Exception {
+        Engine engine = new FllImporter().fromFile(fllFile);
+        Reader reader = new InputStreamReader(new FileInputStream(fldFile), FuzzyLite.UTF_8);
+
+        try {
+            Benchmark benchmark = new Benchmark(engine.getName(), engine);
+            benchmark.prepare(reader);
+            if (writer != null) {
+                FuzzyLite.logger().log(Level.INFO, "\tEvaluating on {0} read values from {1}",
+                        new Object[]{benchmark.getExpected().size(), fldFile.getAbsolutePath()});
+            }
+            for (int i = 0; i < runs; ++i) {
+                benchmark.runOnce();
+            }
+
+            String results = benchmark.format(benchmark.results(),
+                    Benchmark.TableShape.Horizontal,
+                    Benchmark.TableContents.Body) + "\n";
+            if (writer != null) {
+                double[] times = new double[benchmark.getTimes().size()];
+                for (int i = 0; i < benchmark.getTimes().size(); ++i) {
+                    times[i] = benchmark.getTimes().get(i);
+                }
+                FuzzyLite.logger().log(Level.INFO, "\tMean(t)={0}",
+                        Op.str(Op.mean(times)));
+                writer.write(results);
+                writer.flush();
+            } else {
+                System.out.println(results);
+            }
+
+        } catch (Exception ex) {
+            throw ex;
+        } finally {
+            reader.close();
+        }
+    }
+
+    public void benchmarks(File fllFileList, File fldFileList, int runs, Writer writer) throws Exception {
+        List<String> fllFiles = new ArrayList<String>();
+        {
+            BufferedReader reader = new BufferedReader(
+                    new InputStreamReader(new FileInputStream(fllFileList), FuzzyLite.UTF_8));
+            try {
+                String line;
+                while ((line = reader.readLine()) != null) {
+                    line = line.trim();
+                    if (!line.isEmpty()) {
+                        fllFiles.add(line);
+                    }
+                }
+            } catch (Exception ex) {
+                throw ex;
+            } finally {
+                reader.close();
+            }
+        }
+
+        List<String> fldFiles = new ArrayList<String>();
+        {
+            BufferedReader reader = new BufferedReader(
+                    new InputStreamReader(new FileInputStream(fldFileList), FuzzyLite.UTF_8));
+            try {
+                String line;
+                while ((line = reader.readLine()) != null) {
+                    line = line.trim();
+                    if (!line.isEmpty()) {
+                        fldFiles.add(line);
+                    }
+                }
+            } catch (Exception ex) {
+                throw ex;
+            } finally {
+                reader.close();
+            }
+        }
+
+        if (fllFiles.size() != fldFiles.size()) {
+            throw new RuntimeException(MessageFormat.format(
+                    "[error] number of FLL files <{0}> in <{1}> "
+                    + "must match the number of FLD files <{2}> in <{3}>",
+                    fllFiles.size(), fllFileList.getAbsolutePath(),
+                    fldFiles.size(), fldFileList.getAbsolutePath()));
+        }
+
+        if (writer != null) {
+            writer.write(Op.join(new Benchmark().header(runs, true), "\t") + "\n");
+            writer.flush();
+        } else {
+            System.out.println(Op.join(new Benchmark().header(runs, true), "\t"));
+        }
+
+        for (int i = 0; i < fllFiles.size(); ++i) {
+            if (writer != null) {
+                FuzzyLite.logger().log(Level.INFO, "Benchmark {0}/{1}: {2}",
+                        new Object[]{(i + 1), fllFiles.size(), fllFiles.get(i)});
+            }
+            benchmark(new File(fllFiles.get(i)), new File(fldFiles.get(i)), runs, writer);
+        }
+    }
+
     public static void main(String[] args) {
+        FuzzyLite.setLogging(true);
+
         Console console = new Console();
         if (args.length == 0) {
             System.out.println(console.usage());
-            return;
-        }
-        if ("benchmarks".equals(args[0])) {
-            String path = ".";
-            if (args.length >= 2) {
-                path = args[1];
-            }
-            String pathToFld = "";
-            if (args.length >= 3) {
-                pathToFld = args[2];
-            }
-            int runs = 10;
-            if (args.length >= 4) {
-                runs = Integer.parseInt(args[3]);
-            }
-            String outputFile = "";
-            if (args.length >= 5) {
-                outputFile = args[4];
-            }
-            try {
-                console.benchmarkExamples(path, runs, pathToFld, outputFile);
-            } catch (Exception ex) {
-                FuzzyLite.logger().log(Level.SEVERE, ex.toString(), ex);
-            }
+            System.exit(0);
             return;
         }
         if ("export-examples".equals(args[0])) {
@@ -911,21 +996,108 @@ public class Console {
                 FuzzyLite.logger().log(Level.INFO, "Origin={0}", path);
                 FuzzyLite.logger().log(Level.INFO, "Target={0}", outputPath);
             } catch (Exception ex) {
-                FuzzyLite.logger().log(Level.SEVERE, ex.toString(), ex);
-                throw new RuntimeException(ex);
+                ex.printStackTrace(System.console().writer());
+                System.exit(1);
+                return;
             } finally {
                 System.out.println("Please, make sure the output contains the following structure:\n"
                         + "mkdir -p mamdani/matlab; mkdir -p mamdani/octave; "
                         + "mkdir -p takagi-sugeno/matlab; mkdir -p takagi-sugeno/octave; "
                         + "mkdir -p tsukamoto/");
             }
+            System.exit(0);
             return;
         }
+
+        if ("benchmark".equals(args[0])) {
+            if (args.length < 4) {
+                System.out.println("[error] not enough arguments");
+                System.exit(1);
+                return;
+            }
+            File fllFile = new File(args[1]);
+            File fldFile = new File(args[2]);
+            int runs = Integer.valueOf(args[3]);
+
+            Writer writer = null;
+            if (args.length > 4) {
+                try {
+                    File outputFile = new File(args[4]);
+                    outputFile.createNewFile();
+                    writer = new BufferedWriter(new OutputStreamWriter(
+                            new FileOutputStream(outputFile), FuzzyLite.UTF_8));
+                } catch (Exception ex) {
+                    ex.printStackTrace(System.console().writer());
+                    System.exit(1);
+                    return;
+                }
+            }
+
+            try {
+                if (writer != null) {
+                    writer.write(Op.join(new Benchmark().header(runs, true), "\t"));
+                } else {
+                    System.out.println(Op.join(new Benchmark().header(runs, true), "\t"));
+                }
+                console.benchmark(fllFile, fldFile, runs, writer);
+                if (writer != null) {
+                    writer.close();
+                }
+            } catch (Exception ex) {
+                ex.printStackTrace(System.console().writer());
+                System.exit(1);
+                return;
+            }
+            System.exit(0);
+            return;
+        }
+
+        if ("benchmarks".equals(args[0])) {
+            if (args.length < 4) {
+                System.out.println("[error] not enough arguments");
+                System.exit(1);
+                return;
+            }
+            File fllFiles = new File(args[1]);
+            File fldFiles = new File(args[2]);
+            int runs = Integer.valueOf(args[3]);
+
+            Writer writer = null;
+            if (args.length > 4) {
+                try {
+                    File outputFile = new File(args[4]);
+                    outputFile.createNewFile();
+                    writer = new BufferedWriter(new OutputStreamWriter(
+                            new FileOutputStream(outputFile), FuzzyLite.UTF_8));
+                } catch (Exception ex) {
+                    ex.printStackTrace(System.console().writer());
+                    System.exit(1);
+                    return;
+                }
+            }
+
+            try {
+                console.benchmarks(fllFiles, fldFiles, runs, writer);
+                if (writer != null) {
+                    writer.close();
+                }
+            } catch (Exception ex) {
+                ex.printStackTrace(System.console().writer());
+                System.exit(1);
+                return;
+            }
+            System.exit(0);
+            return;
+        }
+
         try {
             Map<String, String> options = console.parse(args);
             console.process(options);
         } catch (Exception ex) {
-            FuzzyLite.logger().log(Level.SEVERE, ex.toString(), ex);
+            ex.printStackTrace(System.console().writer());
+            System.exit(1);
+            return;
         }
+        System.exit(0);
     }
 }
