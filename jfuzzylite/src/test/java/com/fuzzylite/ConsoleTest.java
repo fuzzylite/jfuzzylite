@@ -26,13 +26,18 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.ClassRule;
 import org.junit.Ignore;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.contrib.java.lang.system.ExpectedSystemExit;
 import org.junit.rules.TemporaryFolder;
 
 public class ConsoleTest {
 
     @ClassRule
     public static TemporaryFolder flFolder = new TemporaryFolder();
+
+    @Rule
+    public final ExpectedSystemExit exit = ExpectedSystemExit.none();
 
     public ConsoleTest() {
     }
@@ -68,6 +73,8 @@ public class ConsoleTest {
      */
     @Test
     public void testExportAllExamples() throws Exception {
+        exit.expectSystemExitWithStatus(0);
+
         File examples = new File("../examples/");
         Assert.assertThat("examples is reachable", examples.exists(), is(true));
         FuzzyLite.logger().log(Level.INFO, "Examples: {0}\nOutput: {1}",

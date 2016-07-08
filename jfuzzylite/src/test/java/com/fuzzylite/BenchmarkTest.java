@@ -148,9 +148,9 @@ public class BenchmarkTest {
     }
 
     @Test
-    public void testHeaders(){
+    public void testHeaders() {
         Benchmark benchmark = new Benchmark();
-        System.out.println(benchmark.header(10, true));
-        System.out.println(benchmark.header(10, false));
+        Assert.assertThat(benchmark.header(10, true).size(), is(30));
+        Assert.assertThat(benchmark.header(10, false).size(), is(30 - 8));
     }
 }
