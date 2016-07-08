@@ -146,4 +146,11 @@ public class BenchmarkTest {
                 Benchmark.TableShape.Vertical, Benchmark.TableContents.HeaderAndBody,
                 ": "));
     }
+
+    @Test
+    public void testHeaders(){
+        Benchmark benchmark = new Benchmark();
+        System.out.println(benchmark.header(10, true));
+        System.out.println(benchmark.header(10, false));
+    }
 }

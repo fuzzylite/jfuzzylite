@@ -17,6 +17,7 @@
 package com.fuzzylite;
 
 import com.fuzzylite.imex.FldExporter;
+import com.fuzzylite.rule.RuleBlock;
 import com.fuzzylite.variable.InputVariable;
 import com.fuzzylite.variable.OutputVariable;
 import java.io.BufferedReader;
@@ -25,8 +26,13 @@ import java.io.Reader;
 import java.io.StringWriter;
 import java.text.MessageFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 public class Benchmark {
 
@@ -123,6 +129,10 @@ public class Benchmark {
     }
 
     public void prepare(int values, FldExporter.ScopeOfValues scope) {
+        if (engine == null) {
+            throw new RuntimeException("[benchmark error] engine not set before "
+                    + "preparing for values and scope");
+        }
         int resolution;
         if (scope == FldExporter.ScopeOfValues.AllVariables) {
             resolution = -1 + (int) Math.max(1.0, Math.pow(
@@ -194,8 +204,11 @@ public class Benchmark {
     }
 
     public double[] run(int times) {
-        double[] runtimes = new double[times];
+        if (engine == null) {
+            throw new RuntimeException("[benchmark error] engine not set for benchmark");
+        }
 
+        double[] runtimes = new double[times];
         final int offset = engine.getInputVariables().size();
         for (int t = 0; t < times; ++t) {
             obtained = new ArrayList<double[]>(expected.size());
@@ -246,7 +259,7 @@ public class Benchmark {
     }
 
     public boolean canComputeErrors() {
-        return !(expected.isEmpty() || obtained.isEmpty()
+        return !(engine == null || expected.isEmpty() || obtained.isEmpty()
                 || expected.size() != obtained.size()
                 || expected.get(0).length != obtained.get(0).length
                 || expected.get(0).length != engine.variables().size());
@@ -364,38 +377,71 @@ public class Benchmark {
         return x * factorOf(to) / factorOf(from);
     }
 
-    public List<Op.Pair<String, String>> results() {
+    public Set<String> header(int runs, boolean includeErrors) {
+        Benchmark result = new Benchmark();
+
+        Engine dummy = new Engine();
+        dummy.addOutputVariable(new OutputVariable());
+        result.setEngine(dummy);
+
+        Double[] dummyTimes = new Double[runs];
+        Arrays.fill(dummyTimes, Double.NaN);
+        result.setTimes(Arrays.asList(dummyTimes));
+
+        if (includeErrors) {
+            double[] dummyArray = new double[1];
+            List<double[]> dummyList = new ArrayList<double[]>();
+            dummyList.add(dummyArray);
+            result.setExpected(dummyList);
+            result.setObtained(dummyList);
+        }
+
+        return result.results().keySet();
+    }
+
+    public Map<String, String> results() {
         return results(TimeUnit.NanoSeconds);
     }
 
-    public List<Op.Pair<String, String>> results(TimeUnit timeUnit) {
+    public Map<String, String> results(TimeUnit timeUnit) {
         return results(timeUnit, true);
     }
 
-    public List<Op.Pair<String, String>> results(TimeUnit timeUnit, boolean includeTimes) {
+    public Map<String, String> results(TimeUnit timeUnit, boolean includeTimes) {
         return results(null, timeUnit, includeTimes);
     }
 
-    public List<Op.Pair<String, String>> results(OutputVariable outputVariable) {
+    public Map<String, String> results(OutputVariable outputVariable) {
         return results(outputVariable, TimeUnit.NanoSeconds);
     }
 
-    public List<Op.Pair<String, String>> results(OutputVariable outputVariable, TimeUnit timeUnit) {
+    public Map<String, String> results(OutputVariable outputVariable, TimeUnit timeUnit) {
         return results(outputVariable, timeUnit, true);
     }
 
-    public List<Op.Pair<String, String>> results(OutputVariable outputVariable, TimeUnit timeUnit, boolean includeTimes) {
+    public Map<String, String> results(OutputVariable outputVariable, TimeUnit timeUnit, boolean includeTimes) {
+        if (engine == null) {
+            throw new RuntimeException("[benchmark error] engine not set for benchmark");
+        }
+
         double[] runtimes = new double[times.size()];
         for (int i = 0; i < times.size(); ++i) {
             runtimes[i] = times.get(i);
         }
-        List<Op.Pair<String, String>> result = new LinkedList<Op.Pair<String, String>>();
-        result.add(new Op.Pair<String, String>("library", FuzzyLite.LIBRARY));
-        result.add(new Op.Pair<String, String>("name", name));
-        result.add(new Op.Pair<String, String>("inputs", String.valueOf(engine.numberOfInputVariables())));
-        result.add(new Op.Pair<String, String>("outputs", String.valueOf(engine.numberOfOutputVariables())));
-        result.add(new Op.Pair<String, String>("runs", String.valueOf(times.size())));
-        result.add(new Op.Pair<String, String>("evaluations", String.valueOf(expected.size())));
+
+        Map<String, String> result = new LinkedHashMap<String, String>();
+        result.put("library", FuzzyLite.LIBRARY);
+        result.put("name", name);
+        result.put("inputs", String.valueOf(engine.numberOfInputVariables()));
+        result.put("outputs", String.valueOf(engine.numberOfOutputVariables()));
+        result.put("ruleBlocks", String.valueOf(engine.numberOfRuleBlocks()));
+        int rules = 0;
+        for (RuleBlock ruleBlock : engine.getRuleBlocks()) {
+            rules += ruleBlock.numberOfRules();
+        }
+        result.put("rules", String.valueOf(rules));
+        result.put("runs", String.valueOf(times.size()));
+        result.put("evaluations", String.valueOf(expected.size()));
         if (canComputeErrors()) {
             List<String> names = new LinkedList<String>();
             double meanRange = 0.0;
@@ -413,66 +459,67 @@ public class Benchmark {
             meanRange /= names.size();
             nrmse /= weights;
 
-            result.add(new Op.Pair<String, String>("outputVariable", Op.join(names, ",")));
-            result.add(new Op.Pair<String, String>("range", Op.str(meanRange)));
+            result.put("outputVariable", Op.join(names, ","));
+            result.put("range", Op.str(meanRange));
 
-            result.add(new Op.Pair<String, String>("tolerance", String.format("%6.3e", getTolerance())));
-            result.add(new Op.Pair<String, String>("errors", String.valueOf(allErrors(outputVariable))));
+            result.put("tolerance", String.format("%6.3e", getTolerance()));
+            result.put("errors", String.valueOf(allErrors(outputVariable)));
 
-            result.add(new Op.Pair<String, String>("nfErrors", String.valueOf(nonFiniteErrors(outputVariable))));
-            result.add(new Op.Pair<String, String>("accErrors", String.valueOf(accuracyErrors(outputVariable))));
+            result.put("nfErrors", String.valueOf(nonFiniteErrors(outputVariable)));
+            result.put("accErrors", String.valueOf(accuracyErrors(outputVariable)));
 
-            result.add(new Op.Pair<String, String>("rmse", String.format("%6.6e", rmse)));
-            result.add(new Op.Pair<String, String>("nrmse", String.format("%6.6e", nrmse)));
+            result.put("rmse", String.format("%6.6e", rmse));
+            result.put("nrmse", String.format("%6.6e", nrmse));
         }
-        result.add(new Op.Pair<String, String>("units", timeUnit.name().toLowerCase()));
+        result.put("units", timeUnit.name().toLowerCase());
 
-        result.add(new Op.Pair<String, String>("sum(t)",
-                String.valueOf(convert(Op.sum(runtimes), TimeUnit.NanoSeconds, timeUnit))));
-        result.add(new Op.Pair<String, String>("mean(t)",
-                String.valueOf(convert(Op.mean(runtimes), TimeUnit.NanoSeconds, timeUnit))));
-        result.add(new Op.Pair<String, String>("sd(t)",
-                String.valueOf(convert(Op.standardDeviation(runtimes), TimeUnit.NanoSeconds, timeUnit))));
+        result.put("sum(t)", String.valueOf(
+                convert(Op.sum(runtimes), TimeUnit.NanoSeconds, timeUnit)));
+        result.put("mean(t)", String.valueOf(
+                convert(Op.mean(runtimes), TimeUnit.NanoSeconds, timeUnit)));
+        result.put("sd(t)", String.valueOf(
+                convert(Op.standardDeviation(runtimes), TimeUnit.NanoSeconds, timeUnit)));
 
         if (includeTimes) {
             for (int i = 0; i < runtimes.length; ++i) {
-                result.add(new Op.Pair<String, String>("t" + (i + 1),
-                        String.valueOf(convert(runtimes[i], TimeUnit.NanoSeconds, timeUnit))));
+                result.put("t" + (i + 1), String.valueOf(
+                        convert(runtimes[i], TimeUnit.NanoSeconds, timeUnit)));
             }
         }
         return result;
     }
 
-    public String format(List<Op.Pair<String, String>> results) {
+    public String format(Map<String, String> results) {
         return format(results, TableShape.Horizontal);
     }
 
-    public String format(List<Op.Pair<String, String>> results, TableShape shape) {
+    public String format(Map<String, String> results, TableShape shape) {
         return format(results, shape, TableContents.HeaderAndBody);
     }
 
-    public String format(List<Op.Pair<String, String>> results, TableShape shape,
+    public String format(Map<String, String> results, TableShape shape,
             TableContents contents) {
         return format(results, shape, contents, "\t");
     }
 
-    public String format(List<Op.Pair<String, String>> results, TableShape shape,
+    public String format(Map<String, String> results, TableShape shape,
             TableContents contents, String delimiter) {
         StringWriter writer = new StringWriter();
 
         if (shape == TableShape.Vertical) {
-            for (int i = 0; i < results.size(); ++i) {
-                Op.Pair<String, String> pair = results.get(i);
+            Iterator<Map.Entry<String, String>> it = results.entrySet().iterator();
+            while (it.hasNext()) {
+                Map.Entry<String, String> pair = it.next();
                 if (contents == TableContents.Header || contents == TableContents.HeaderAndBody) {
-                    writer.append(pair.getFirst());
+                    writer.append(pair.getKey());
                 }
                 if (contents == TableContents.HeaderAndBody) {
                     writer.append(delimiter);
                 }
                 if (contents == TableContents.Body || contents == TableContents.HeaderAndBody) {
-                    writer.append(pair.getSecond());
+                    writer.append(pair.getValue());
                 }
-                if (i + 1 < results.size()) {
+                if (it.hasNext()) {
                     writer.append("\n");
                 }
             }
@@ -480,17 +527,18 @@ public class Benchmark {
         } else if (shape == TableShape.Horizontal) {
             StringWriter header = new StringWriter();
             StringWriter body = new StringWriter();
-            for (int i = 0; i < results.size(); ++i) {
-                Op.Pair<String, String> pair = results.get(i);
+            Iterator<Map.Entry<String, String>> it = results.entrySet().iterator();
+            while (it.hasNext()) {
+                Map.Entry<String, String> pair = it.next();
                 if (contents == TableContents.Header || contents == TableContents.HeaderAndBody) {
-                    header.append(pair.getFirst());
-                    if (i + 1 < results.size()) {
+                    header.append(pair.getKey());
+                    if (it.hasNext()) {
                         header.append(delimiter);
                     }
                 }
                 if (contents == TableContents.Body || contents == TableContents.HeaderAndBody) {
-                    body.append(pair.getSecond());
-                    if (i + 1 < results.size()) {
+                    body.append(pair.getValue());
+                    if (it.hasNext()) {
                         body.append(delimiter);
                     }
                 }
