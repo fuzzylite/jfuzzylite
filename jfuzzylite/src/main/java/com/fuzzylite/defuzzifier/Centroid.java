@@ -40,14 +40,14 @@ public class Centroid extends IntegralDefuzzifier {
         double x, y;
         double area = 0;
         double xcentroid = 0;
-//        @SuppressWarnings("unused")
-//        double ycentroid = 0;
+        //@SuppressWarnings("unused")
+        //double ycentroid = 0;
         for (int i = 0; i < resolution; ++i) {
             x = minimum + (i + 0.5) * dx;
             y = term.membership(x);
 
             xcentroid += y * x;
-//            ycentroid += y * y;
+            //ycentroid += y * y;
             area += y;
         }
         //Final results not computed for efficiency
