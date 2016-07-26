@@ -80,12 +80,15 @@ public class GaussianProduct extends Term {
         if (Double.isNaN(x)) {
             return Double.NaN;
         }
-        int xLEa = Op.isLE(x, meanA) ? 1 : 0;
-        double a = Math.exp((-(x - meanA) * (x - meanA)) / (2 * standardDeviationA * standardDeviationA))
-                * xLEa + (1 - xLEa);
-        int xGEb = Op.isGE(x, meanB) ? 1 : 0;
-        double b = Math.exp((-(x - meanB) * (x - meanB)) / (2 * standardDeviationB * standardDeviationB))
-                * xGEb + (1 - xGEb);
+        double a = 1.0, b = 1.0;
+        if (Op.isLt(x, meanA)) {
+            a = Math.exp((-(x - meanA) * (x - meanA)) /
+                    (2.0 * standardDeviationA * standardDeviationA));
+        }
+        if (Op.isGt(x, meanB)) {
+            b = Math.exp((-(x - meanB) * (x - meanB)) /
+                    (2.0 * standardDeviationB * standardDeviationB));
+        }
         return height * a * b;
     }
 

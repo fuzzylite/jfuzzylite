@@ -93,11 +93,11 @@ public class PiShape extends Term {
         } else if (Op.isLt(x, topLeft)) {
             return height * (1.0 - 2.0 * Math.pow((x - topLeft) / b_minus_a, 2));
         } else if (Op.isLE(x, topRight)) {
-            return height * 1;
+            return height * 1.0;
         } else if (Op.isLE(x, c_d_ave)) {
-            return height * (1 - 2 * Math.pow((x - topRight) / d_minus_c, 2));
+            return height * (1.0 - 2.0 * Math.pow((x - topRight) / d_minus_c, 2));
         } else if (Op.isLt(x, bottomRight)) {
-            return height * (2 * Math.pow((x - bottomRight) / d_minus_c, 2));
+            return height * (2.0 * Math.pow((x - bottomRight) / d_minus_c, 2));
         }
 
         return height * 0.0;

@@ -80,9 +80,9 @@ public class SigmoidProduct extends Term {
         if (Double.isNaN(x)) {
             return Double.NaN;
         }
-        double a = 1.0 / (1 + Math.exp(-rising * (x - left)));
-        double b = 1.0 / (1 + Math.exp(-falling * (x - right)));
-        return height * a * b;
+        double a = 1.0 + Math.exp(-rising * (x - left));
+        double b = 1.0 + Math.exp(-falling * (x - right));
+        return height * 1.0 / (a * b);
     }
 
     public double getLeft() {

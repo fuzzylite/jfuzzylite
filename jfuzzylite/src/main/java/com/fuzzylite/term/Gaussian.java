@@ -74,7 +74,7 @@ public class Gaussian extends Term {
             return Double.NaN;
         }
         return height * Math.exp((-(x - mean) * (x - mean))
-                / (2 * standardDeviation * standardDeviation));
+                / (2.0 * standardDeviation * standardDeviation));
     }
 
     public double getMean() {

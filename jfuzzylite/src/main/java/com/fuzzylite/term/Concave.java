@@ -75,10 +75,10 @@ public class Concave extends Term {
         }
         if (Op.isLE(inflection, end)) { //Concave increasing
             if (Op.isLt(x, end)) {
-                return height * (end - inflection) / (2 * end - inflection - x);
+                return height * (end - inflection) / (2.0 * end - inflection - x);
             }
         } else if (Op.isGt(x, end)) { //Concave decreasing
-            return height * (inflection - end) / (inflection - 2 * end + x);
+            return height * (inflection - end) / (inflection - 2.0 * end + x);
         }
         return height * 1.0;
     }

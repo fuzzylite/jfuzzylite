@@ -81,8 +81,8 @@ public class SigmoidDifference extends Term {
         if (Double.isNaN(x)) {
             return Double.NaN;
         }
-        double a = 1.0 / (1 + Math.exp(-rising * (x - left)));
-        double b = 1.0 / (1 + Math.exp(-falling * (x - right)));
+        double a = 1.0 / (1.0 + Math.exp(-rising * (x - left)));
+        double b = 1.0 / (1.0 + Math.exp(-falling * (x - right)));
         return height * Math.abs(a - b);
     }
 

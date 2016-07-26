@@ -73,16 +73,13 @@ public class SShape extends Term {
         if (Double.isNaN(x)) {
             return Double.NaN;
         }
-        //from Octave smf.m
-        double average = (start + end) / 2;
-        double difference = end - start;
 
         if (Op.isLE(x, start)) {
             return height * 0.0;
-        } else if (Op.isLE(x, average)) {
-            return height * 2 * Math.pow((x - start) / difference, 2);
+        } else if (Op.isLE(x, 0.5 * (start + end))) {
+            return height * 2.0 * Math.pow((x - start) / (end - start), 2);
         } else if (Op.isLt(x, end)) {
-            return height * (1.0 - 2.0 * Math.pow((x - end) / difference, 2));
+            return height * (1.0 - 2.0 * Math.pow((x - end) / (end - start), 2));
         }
 
         return height * 1.0;

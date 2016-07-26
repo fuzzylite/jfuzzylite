@@ -95,7 +95,7 @@ public class Function extends Term {
         }
 
         public int getArity() {
-            return method.getParameterTypes().length;
+            return method.getParameters().length;
         }
 
         public Type getType() {
