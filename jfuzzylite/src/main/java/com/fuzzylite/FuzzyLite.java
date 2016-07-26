@@ -114,7 +114,7 @@ public class FuzzyLite {
     }
 
     public static boolean isLogging() {
-        return !(LOGGER.getLevel() == null || Level.OFF.equals(LOGGER.getLevel()));
+        return LOGGER.getLevel() != null && !LOGGER.getLevel().equals(Level.OFF);
     }
 
     public static void setDebugging(boolean debugging) {
