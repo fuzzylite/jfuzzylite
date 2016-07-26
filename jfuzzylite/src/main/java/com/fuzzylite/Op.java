@@ -128,6 +128,30 @@ public class Op {
                 || a > b;
     }
 
+    public static double eq(double a, double b) {
+        return isEq(a, b) ? 1.0 : 0.0;
+    }
+
+    public static double neq(double a, double b) {
+        return isNEq(a, b) ? 1.0 : 0.0;
+    }
+
+    public static double lt(double a, double b) {
+        return isLt(a, b) ? 1.0 : 0.0;
+    }
+
+    public static double le(double a, double b) {
+        return isLE(a, b) ? 1.0 : 0.0;
+    }
+
+    public static double gt(double a, double b) {
+        return isGt(a, b) ? 1.0 : 0.0;
+    }
+
+    public static double ge(double a, double b) {
+        return isGE(a, b) ? 1.0 : 0.0;
+    }
+
     public static double add(double a, double b) {
         return a + b;
     }

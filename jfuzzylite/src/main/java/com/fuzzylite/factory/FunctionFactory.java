@@ -80,17 +80,17 @@ public class FunctionFactory extends CloningFactory<Function.Element> {
     private void registerFunctions() {
         try {
             registerObject("gt", new Function.Element("gt", "Greater than (>)", Function.Element.Type.Function,
-                    Op.class.getMethod("isGt", double.class, double.class)));
+                    Op.class.getMethod("gt", double.class, double.class)));
             registerObject("ge", new Function.Element("ge", "Greater than or equal to (>=)", Function.Element.Type.Function,
-                    Op.class.getMethod("isGE", double.class, double.class)));
+                    Op.class.getMethod("ge", double.class, double.class)));
             registerObject("eq", new Function.Element("eq", "Equal to (==)", Function.Element.Type.Function,
-                    Op.class.getMethod("isEq", double.class, double.class)));
+                    Op.class.getMethod("eq", double.class, double.class)));
             registerObject("neq", new Function.Element("neq", "Not equal to (!=)", Function.Element.Type.Function,
-                    Op.class.getMethod("isNEq", double.class, double.class)));
+                    Op.class.getMethod("neq", double.class, double.class)));
             registerObject("le", new Function.Element("le", "Less than or equal to (<=)", Function.Element.Type.Function,
-                    Op.class.getMethod("isLE", double.class, double.class)));
+                    Op.class.getMethod("le", double.class, double.class)));
             registerObject("lt", new Function.Element("lt", "Less than (<)", Function.Element.Type.Function,
-                    Op.class.getMethod("isLt", double.class, double.class)));
+                    Op.class.getMethod("lt", double.class, double.class)));
 
             registerObject("acos", new Function.Element("acos", "Inverse cosine", Function.Element.Type.Function,
                     Math.class.getMethod("acos", double.class)));

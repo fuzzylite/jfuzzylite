@@ -17,6 +17,7 @@
 package com.fuzzylite.factory;
 
 import com.fuzzylite.term.Bell;
+import com.fuzzylite.term.Binary;
 import com.fuzzylite.term.Concave;
 import com.fuzzylite.term.Constant;
 import com.fuzzylite.term.Cosine;
@@ -43,6 +44,7 @@ public class TermFactory extends ConstructionFactory<Term> {
     public TermFactory() {
         register("", null);
         register(Bell.class);
+        register(Binary.class);
         register(Concave.class);
         register(Constant.class);
         register(Cosine.class);
