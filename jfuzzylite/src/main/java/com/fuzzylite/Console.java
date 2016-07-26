@@ -52,7 +52,6 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.Reader;
 import java.io.Writer;
-import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -830,7 +829,7 @@ public class Console {
                     throw new RuntimeException("File could not be opened: " + fldFile.getAbsolutePath());
                 }
                 benchmark.prepare(new FileReader(fldFile));
-                FuzzyLite.logger().log(Level.INFO, "\tEvaluating on {0} read values from {1} ...",
+                FuzzyLite.logger().log(Level.INFO, "\tEvaluating on {0} values read from {1} ...",
                         new Object[]{benchmark.getExpected().size(), fldFile.getAbsolutePath()});
             }
             FuzzyLite.logger().log(Level.INFO, "\tMean(t)={0}", String.format("%9.9f", Op.mean(benchmark.run(runs))));
@@ -872,7 +871,7 @@ public class Console {
             Benchmark benchmark = new Benchmark(engine.getName(), engine);
             benchmark.prepare(reader);
             if (writer != null) {
-                FuzzyLite.logger().log(Level.INFO, "\tEvaluating on {0} read values from {1}",
+                FuzzyLite.logger().log(Level.INFO, "\tEvaluating on {0} values read from {1}",
                         new Object[]{benchmark.getExpected().size(), fldFile.getAbsolutePath()});
             }
             for (int i = 0; i < runs; ++i) {
@@ -904,49 +903,30 @@ public class Console {
 
     public void benchmarks(File fllFileList, File fldFileList, int runs, Writer writer) throws Exception {
         List<String> fllFiles = new ArrayList<String>();
-        {
-            BufferedReader reader = new BufferedReader(
-                    new InputStreamReader(new FileInputStream(fllFileList), FuzzyLite.UTF_8));
-            try {
-                String line;
-                while ((line = reader.readLine()) != null) {
-                    line = line.trim();
-                    if (!line.isEmpty()) {
-                        fllFiles.add(line);
-                    }
-                }
-            } catch (Exception ex) {
-                throw ex;
-            } finally {
-                reader.close();
-            }
-        }
-
         List<String> fldFiles = new ArrayList<String>();
         {
-            BufferedReader reader = new BufferedReader(
+            BufferedReader fllReader = new BufferedReader(
+                    new InputStreamReader(new FileInputStream(fllFileList), FuzzyLite.UTF_8));
+            BufferedReader fldReader = new BufferedReader(
                     new InputStreamReader(new FileInputStream(fldFileList), FuzzyLite.UTF_8));
             try {
-                String line;
-                while ((line = reader.readLine()) != null) {
-                    line = line.trim();
-                    if (!line.isEmpty()) {
-                        fldFiles.add(line);
+                String fllLine, fldLine;
+                while ((fllLine = fllReader.readLine()) != null
+                        && (fldLine = fldReader.readLine()) != null) {
+                    fllLine = fllLine.trim();
+                    fldLine = fldLine.trim();
+                    if (fllLine.isEmpty() || fllLine.charAt(0) == '#') {
+                        continue;
                     }
+                    fllFiles.add(fllLine);
+                    fldFiles.add(fldLine);
                 }
             } catch (Exception ex) {
                 throw ex;
             } finally {
-                reader.close();
+                fllReader.close();
+                fldReader.close();
             }
-        }
-
-        if (fllFiles.size() != fldFiles.size()) {
-            throw new RuntimeException(MessageFormat.format(
-                    "[error] number of FLL files <{0}> in <{1}> "
-                    + "must match the number of FLD files <{2}> in <{3}>",
-                    fllFiles.size(), fllFileList.getAbsolutePath(),
-                    fldFiles.size(), fldFileList.getAbsolutePath()));
         }
 
         if (writer != null) {
