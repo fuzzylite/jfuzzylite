@@ -73,10 +73,10 @@ public class Rectangle extends Term {
         if (Double.isNaN(x)) {
             return Double.NaN;
         }
-        if (Op.isLt(x, start) || Op.isGt(x, end)) {
-            return height * 0.0;
+        if (Op.isGE(x, start) && Op.isLE(x, end)) {
+            return height * 1.0;
         }
-        return height * 1.0;
+        return height * 0.0;
     }
 
     public double getStart() {

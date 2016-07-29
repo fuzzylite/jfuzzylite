@@ -80,27 +80,25 @@ public class PiShape extends Term {
         if (Double.isNaN(x)) {
             return Double.NaN;
         }
-        //from Octave smf.m
-        double a_b_ave = (bottomLeft + topLeft) / 2.0;
-        double b_minus_a = topLeft - bottomLeft;
-        double c_d_ave = (topRight + bottomRight) / 2.0;
-        double d_minus_c = bottomRight - topRight;
+        double sshape;
+        if (Op.isLE(x, bottomLeft))
+            sshape = 0.0;
+        else if (Op.isLE(x, 0.5 * (bottomLeft + topLeft)))
+            sshape = 2.0 * Math.pow((x - bottomLeft) / (topLeft - bottomLeft), 2);
+        else if (Op.isLt(x, topLeft))
+            sshape = 1.0 - 2.0 * Math.pow((x - topLeft) / (topLeft - bottomLeft), 2);
+        else sshape = 1.0;
 
-        if (Op.isLE(x, bottomLeft)) {
-            return height * 0.0;
-        } else if (Op.isLE(x, a_b_ave)) {
-            return height * 2.0 * Math.pow((x - bottomLeft) / b_minus_a, 2);
-        } else if (Op.isLt(x, topLeft)) {
-            return height * (1.0 - 2.0 * Math.pow((x - topLeft) / b_minus_a, 2));
-        } else if (Op.isLE(x, topRight)) {
-            return height * 1.0;
-        } else if (Op.isLE(x, c_d_ave)) {
-            return height * (1.0 - 2.0 * Math.pow((x - topRight) / d_minus_c, 2));
-        } else if (Op.isLt(x, bottomRight)) {
-            return height * (2.0 * Math.pow((x - bottomRight) / d_minus_c, 2));
-        }
+        double zshape;
+        if (Op.isLE(x, topRight))
+            zshape = 1.0;
+        else if (Op.isLE(x, 0.5 * (topRight + bottomRight)))
+            zshape = 1.0 - 2.0 * Math.pow((x - topRight) / (bottomRight - topRight), 2);
+        else if (Op.isLt(x, bottomRight))
+            zshape = 2.0 * Math.pow((x - bottomRight) / (bottomRight - topRight), 2);
+        else zshape = 0.0;
 
-        return height * 0.0;
+        return height * sshape * zshape;
     }
 
     public double getBottomLeft() {
