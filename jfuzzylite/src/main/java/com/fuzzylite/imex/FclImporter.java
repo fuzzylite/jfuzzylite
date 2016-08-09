@@ -149,6 +149,8 @@ public class FclImporter extends Importer {
                     throw new RuntimeException(error);
                 }
             }
+        } catch (RuntimeException ex) {
+            throw ex;
         } catch (Exception ex) {
             throw new RuntimeException(ex);
         }
@@ -457,6 +459,8 @@ public class FclImporter extends Importer {
             }
             result.configure(Op.join(parameters, separator));
             return result;
+        } catch (RuntimeException ex) {
+            throw ex;
         } catch (Exception ex) {
             throw new RuntimeException(ex);
         }

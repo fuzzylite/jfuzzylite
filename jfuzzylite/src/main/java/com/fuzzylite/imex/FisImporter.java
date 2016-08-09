@@ -150,6 +150,8 @@ public class FisImporter extends Importer {
                         translateTNorm(configuration[IMP]), translateSNorm(configuration[AGG]),
                         translateDefuzzifier(configuration[DEFUZZ]));
             }
+        } catch (RuntimeException ex) {
+            throw ex;
         } catch (Exception ex) {
             throw new RuntimeException(ex);
         }

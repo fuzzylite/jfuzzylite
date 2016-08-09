@@ -87,6 +87,8 @@ public class RScriptExporter extends Exporter {
         StringWriter writer = new StringWriter();
         try {
             writeScriptExportingDataFrame(engine, writer, a, b, values, scope, outputVariables);
+        } catch (RuntimeException ex) {
+            throw ex;
         } catch (Exception ex) {
             throw new RuntimeException(ex);
         }
@@ -98,6 +100,8 @@ public class RScriptExporter extends Exporter {
         StringWriter writer = new StringWriter();
         try {
             writeScriptExportingDataFrame(engine, writer, a, b, reader, outputVariables);
+        } catch (RuntimeException ex) {
+            throw ex;
         } catch (Exception ex) {
             throw new RuntimeException(ex);
         }
@@ -126,6 +130,8 @@ public class RScriptExporter extends Exporter {
                 new FileOutputStream(file), FuzzyLite.UTF_8));
         try {
             writeScriptExportingDataFrame(engine, writer, a, b, values, scope, outputVariables);
+        } catch (RuntimeException ex) {
+            throw ex;
         } catch (IOException ex) {
             throw ex;
         } finally {
@@ -140,6 +146,8 @@ public class RScriptExporter extends Exporter {
                 new FileOutputStream(file), FuzzyLite.UTF_8));
         try {
             writeScriptExportingDataFrame(engine, writer, a, b, reader, outputVariables);
+        } catch (RuntimeException ex) {
+            throw ex;
         } catch (IOException ex) {
             throw ex;
         } finally {

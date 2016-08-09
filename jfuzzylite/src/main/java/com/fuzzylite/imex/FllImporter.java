@@ -95,6 +95,8 @@ public class FllImporter extends Importer {
                     || "RuleBlock".equals(key)) {
                 try {
                     process(tag, Op.join(block, "\n"), engine);
+                } catch (RuntimeException ex) {
+                    throw ex;
                 } catch (Exception ex) {
                     throw new RuntimeException(ex);
                 }
@@ -105,6 +107,8 @@ public class FllImporter extends Importer {
         }
         try {
             process(tag, Op.join(block, "\n"), engine);
+        } catch (RuntimeException ex) {
+            throw ex;
         } catch (Exception ex) {
             throw new RuntimeException(ex);
         } finally {

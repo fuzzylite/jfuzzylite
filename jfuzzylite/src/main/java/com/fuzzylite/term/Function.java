@@ -304,7 +304,7 @@ public class Function extends Term {
     }
 
     /**
-     * Function term
+     Function term
      */
     private Node root;
     private String formula;
@@ -373,6 +373,8 @@ public class Function extends Term {
         Function result = new Function(name);
         try {
             result.load(formula, engine);
+        } catch (RuntimeException ex) {
+            throw ex;
         } catch (Exception ex) {
             throw new RuntimeException(ex);
         }

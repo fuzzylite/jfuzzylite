@@ -123,6 +123,8 @@ public class FldExporter extends Exporter {
         StringWriter writer = new StringWriter();
         try {
             write(engine, writer, values, scope, activeVariables);
+        } catch (RuntimeException ex) {
+            throw ex;
         } catch (Exception ex) {
             throw new RuntimeException("[exporter error] an exception occurred while exporting the results: " + ex);
         }
@@ -156,6 +158,8 @@ public class FldExporter extends Exporter {
                 }
                 write(engine, writer, inputValues, engine.getInputVariables());
             }
+        } catch (RuntimeException ex) {
+            throw ex;
         } catch (IOException ex) {
             throw ex;
         } finally {
@@ -177,6 +181,8 @@ public class FldExporter extends Exporter {
                 new FileOutputStream(file), FuzzyLite.UTF_8));
         try {
             write(engine, writer, values, scope, activeVariables);
+        } catch (RuntimeException ex) {
+            throw ex;
         } catch (IOException ex) {
             throw ex;
         } finally {
@@ -215,6 +221,8 @@ public class FldExporter extends Exporter {
                 }
                 write(engine, writer, inputValues, engine.getInputVariables());
             }
+        } catch (RuntimeException ex) {
+            throw ex;
         } catch (IOException ex) {
             throw ex;
         } finally {
@@ -311,6 +319,8 @@ public class FldExporter extends Exporter {
                 }
                 write(engine, writer, inputValues, engine.getInputVariables());
             }
+        } catch (RuntimeException ex) {
+            throw ex;
         } catch (IOException ex) {
             throw ex;
         } finally {
