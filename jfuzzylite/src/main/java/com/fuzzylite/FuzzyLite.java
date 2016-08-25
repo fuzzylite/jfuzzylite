@@ -40,6 +40,7 @@ public class FuzzyLite {
     private static DecimalFormat DF = new DecimalFormat("0.000");
 
     static {
+        //To get the same results as fuzzylite C++
         DF.setRoundingMode(RoundingMode.HALF_UP);
     }
 
@@ -70,22 +71,51 @@ public class FuzzyLite {
 //        FuzzyLite.logger().finest("finest");
     }
 
+    /**
+     Gets the default logger of the jfuzzylite library
+
+     @return the default logger of the jfuzzylite library
+     */
     public static Logger logger() {
         return LOGGER;
     }
 
+    /**
+     Sets the default logger of the jfuzzylite library
+
+     @param logger is the default logger of the jfuzzylite library
+     */
     public static void setLogger(Logger logger) {
         LOGGER = logger;
     }
 
+    /**
+     Gets the default formatter that is utilized when formatting any
+     floating-point value using Op.str().
+
+     @return the default formatter that is utilized when formatting any
+     floating-point value using Op.str().
+     */
     public static java.text.DecimalFormat getFormatter() {
         return DF;
     }
 
+    /**
+     Returns the number of decimals utilized when formatting scalar values
+
+     @return the number of decimals utilized when formatting scalar values
+     (default is 3)
+     */
     public static int getDecimals() {
         return DECIMALS;
     }
 
+    /**
+     Sets the number of decimals utilized when formatting scalar values
+
+     @param decimals is the number of decimals utilized when formatting scalar
+     values
+     */
     public static void setDecimals(int decimals) {
         DECIMALS = decimals;
         StringBuilder pattern = new StringBuilder("0.".length() + decimals);
@@ -97,14 +127,33 @@ public class FuzzyLite {
         DF.setRoundingMode(RoundingMode.HALF_UP);
     }
 
+    /**
+     Returns the minimum difference at which two floating-point values are
+     considered equivalent
+
+     @return the minimum difference at which two floating-point values are
+     considered equivalent (default is 1e-6)
+     */
     public static double getMachEps() {
         return MACHEPS;
     }
 
+    /**
+     Sets the minimum difference at which two floating-point values are
+     considered equivalent
+
+     @param macheps is the minimum difference at which two floating-point values
+     are considered equivalent (default is 1e-6)
+     */
     public static void setMachEps(double macheps) {
         MACHEPS = macheps;
     }
 
+    /**
+     Sets whether the library is set to log information
+
+     @param logging indicates whether the library is set to log information
+     */
     public static void setLogging(boolean logging) {
         if (logging) {
             LOGGER.setLevel(debugging ? Level.FINE : Level.INFO);
@@ -113,10 +162,20 @@ public class FuzzyLite {
         }
     }
 
+    /**
+     Returns whether the library is logging information
+
+     @return whether the library is logging information
+     */
     public static boolean isLogging() {
         return LOGGER.getLevel() != null && !LOGGER.getLevel().equals(Level.OFF);
     }
 
+    /**
+     Sets whether the library is set to run in debug mode
+
+     @param debugging indicates whether the library is set to run in debug mode
+     */
     public static void setDebugging(boolean debugging) {
         FuzzyLite.debugging = debugging;
         if (isLogging()) {
@@ -124,6 +183,12 @@ public class FuzzyLite {
         }
     }
 
+    /**
+     Indicates whether the library is running in debug mode
+
+     @return `true` if the library is running in debug mode, and `false` if it
+     is running in release mode
+     */
     public static boolean isDebugging() {
         return FuzzyLite.debugging;
     }

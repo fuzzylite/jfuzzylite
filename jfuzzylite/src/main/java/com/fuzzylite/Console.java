@@ -62,20 +62,18 @@ import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
 
+/**
+ The Console class is a command-line tool that helps to utilize the `fuzzylite`
+ library.
+
+ @author Juan Rada-Vilela, Ph.D.
+ @since 4.0
+ */
 public class Console {
 
-    public static final String KW_INPUT_FILE = "-i";
-    public static final String KW_INPUT_FORMAT = "-if";
-    public static final String KW_OUTPUT_FILE = "-o";
-    public static final String KW_OUTPUT_FORMAT = "-of";
-    public static final String KW_EXAMPLE = "-example";
-    public static final String KW_DECIMALS = "-decimals";
-    public static final String KW_DATA_INPUT_FILE = "-d";
-    public static final String KW_DATA_VALUES = "-values";
-    public static final String KW_DATA_VALUES_SCOPE = "-scope";
-    public static final String KW_DATA_EXPORT_HEADER = "-dheader";
-    public static final String KW_DATA_EXPORT_INPUTS = "-dinputs";
-
+    /**
+     A command-line option given by key, value and description
+     */
     static class Option {
 
         public String key, value, description;
@@ -87,6 +85,34 @@ public class Console {
         }
     }
 
+    /*Keyword for input file*/
+    public static final String KW_INPUT_FILE = "-i";
+    /*Keyword for input file format*/
+    public static final String KW_INPUT_FORMAT = "-if";
+    /*Keyword for output file*/
+    public static final String KW_OUTPUT_FILE = "-o";
+    /*Keyword for output file format*/
+    public static final String KW_OUTPUT_FORMAT = "-of";
+    /*Keyword for built-in example*/
+    public static final String KW_EXAMPLE = "-example";
+    /*Keyword for number of decimals*/
+    public static final String KW_DECIMALS = "-decimals";
+    /*Keyword for file containing input data*/
+    public static final String KW_DATA_INPUT_FILE = "-d";
+    /*Keyword for number of values to generate*/
+    public static final String KW_DATA_VALUES = "-values";
+    /*Keyword for the scope of the number of values to generate*/
+    public static final String KW_DATA_VALUES_SCOPE = "-scope";
+    /*Keyword for exporting headers in FLD*/
+    public static final String KW_DATA_EXPORT_HEADER = "-dheader";
+    /*Keyword for exporting input values in FLD*/
+    public static final String KW_DATA_EXPORT_INPUTS = "-dinputs";
+
+    /**
+     Returns a string representation of the usage of the command-line tool
+
+     @return a string representation of the usage of the command-line tool
+     */
     public String usage() {
         List<Option> options = new ArrayList<Option>();
         options.add(new Option(KW_INPUT_FILE, "inputfile", "file to import your engine from"));
@@ -457,6 +483,11 @@ public class Console {
         return result.toString();
     }
 
+    /**
+     Creates a new Mamdani Engine based on the SimpleDimmer example
+
+     @return a new Mamdani Engine based on the SimpleDimmer example
+     */
     public static Engine mamdani() {
         Engine engine = new Engine();
         engine.setName("simple-dimmer");
@@ -495,6 +526,14 @@ public class Console {
         return engine;
     }
 
+    /**
+     Creates a new TakagiSugeno Engine based on the Approximation example of
+
+     @f$sin(x)/x@f$
+
+     @return a new TakagiSugeno Engine based on the Approximation example of
+     @f$sin(x)/x@f$
+     */
     public static Engine takagiSugeno() {
         Engine engine = new Engine();
         engine.setName("approximation of sin(x)/x");
@@ -769,99 +808,17 @@ public class Console {
         }
     }
 
-    public void benchmarkExamples(String path, int runs,
-            String pathToFld, String outputFile) throws IOException {
-        List<Op.Pair<String, Integer>> examples = new LinkedList<Op.Pair<String, Integer>>();
-        examples.add(new Op.Pair<String, Integer>("mamdani/AllTerms", (int) 1e4));
-        examples.add(new Op.Pair<String, Integer>("mamdani/SimpleDimmer", (int) 1e5));
-        examples.add(new Op.Pair<String, Integer>("mamdani/Laundry", (int) 1e5));
-        examples.add(new Op.Pair<String, Integer>("mamdani/SimpleDimmerInverse", (int) 1e5));
+    /**
+     Benchmarks the engine described in the FLL file against the dataset
+     contained in the FLD file.
 
-        examples.add(new Op.Pair<String, Integer>("mamdani/matlab/mam21", 128));
-        examples.add(new Op.Pair<String, Integer>("mamdani/matlab/mam22", 128));
-        examples.add(new Op.Pair<String, Integer>("mamdani/matlab/shower", 256));
-        examples.add(new Op.Pair<String, Integer>("mamdani/matlab/tank", 256));
-        examples.add(new Op.Pair<String, Integer>("mamdani/matlab/tank2", 512));
-        examples.add(new Op.Pair<String, Integer>("mamdani/matlab/tipper", 256));
-        examples.add(new Op.Pair<String, Integer>("mamdani/matlab/tipper1", (int) 1e5));
-
-        examples.add(new Op.Pair<String, Integer>("mamdani/octave/investment_portfolio", 256));
-        examples.add(new Op.Pair<String, Integer>("mamdani/octave/mamdani_tip_calculator", 256));
-        examples.add(new Op.Pair<String, Integer>("takagi-sugeno/approximation", (int) 1e6));
-        examples.add(new Op.Pair<String, Integer>("takagi-sugeno/SimpleDimmer", (int) 2e6));
-        examples.add(new Op.Pair<String, Integer>("takagi-sugeno/matlab/fpeaks", 512));
-        examples.add(new Op.Pair<String, Integer>("takagi-sugeno/matlab/invkine1", 256));
-        examples.add(new Op.Pair<String, Integer>("takagi-sugeno/matlab/invkine2", 256));
-        examples.add(new Op.Pair<String, Integer>("takagi-sugeno/matlab/juggler", 512));
-        examples.add(new Op.Pair<String, Integer>("takagi-sugeno/matlab/membrn1", 1024));
-        examples.add(new Op.Pair<String, Integer>("takagi-sugeno/matlab/membrn2", 512));
-        examples.add(new Op.Pair<String, Integer>("takagi-sugeno/matlab/slbb", 20));
-        examples.add(new Op.Pair<String, Integer>("takagi-sugeno/matlab/slcp", 20));
-        examples.add(new Op.Pair<String, Integer>("takagi-sugeno/matlab/slcp1", 15));
-        examples.add(new Op.Pair<String, Integer>("takagi-sugeno/matlab/slcpp1", 9));
-        examples.add(new Op.Pair<String, Integer>("takagi-sugeno/matlab/sltbu_fl", 128));
-        examples.add(new Op.Pair<String, Integer>("takagi-sugeno/matlab/sugeno1", (int) 2e6));
-        examples.add(new Op.Pair<String, Integer>("takagi-sugeno/matlab/tanksg", 1024));
-        examples.add(new Op.Pair<String, Integer>("takagi-sugeno/matlab/tippersg", 1024));
-        examples.add(new Op.Pair<String, Integer>("takagi-sugeno/octave/cubic_approximator", (int) 2e6));
-        examples.add(new Op.Pair<String, Integer>("takagi-sugeno/octave/heart_disease_risk", 1024));
-        examples.add(new Op.Pair<String, Integer>("takagi-sugeno/octave/linear_tip_calculator", 1024));
-        examples.add(new Op.Pair<String, Integer>("takagi-sugeno/octave/sugeno_tip_calculator", 512));
-        examples.add(new Op.Pair<String, Integer>("tsukamoto/tsukamoto", (int) 1e6));
-
-        StringBuilder writer = new StringBuilder();
-        for (int i = 0; i < examples.size(); ++i) {
-            Op.Pair<String, Integer> example = examples.get(i);
-
-            FuzzyLite.logger().log(Level.INFO, "Benchmark {0}/{1}: {2}",
-                    new Object[]{i + 1, examples.size(), example.getFirst()});
-
-            Engine engine = new FllImporter().fromFile(new File(path, example.getFirst() + ".fll"));
-
-            Benchmark benchmark = new Benchmark(example.getFirst(), engine);
-            if (pathToFld == null || pathToFld.isEmpty()) {
-                benchmark.prepare(example.getSecond(), FldExporter.ScopeOfValues.AllVariables);
-                FuzzyLite.logger().log(Level.INFO, "\tEvaluating on {0} generated "
-                        + "values over all variables...", example.getSecond());
-            } else {
-                File fldFile = new File(pathToFld, example.getFirst() + ".fld");
-                if (!fldFile.exists()) {
-                    throw new RuntimeException("File could not be opened: " + fldFile.getAbsolutePath());
-                }
-                benchmark.prepare(new FileReader(fldFile));
-                FuzzyLite.logger().log(Level.INFO, "\tEvaluating on {0} values read from {1} ...",
-                        new Object[]{benchmark.getExpected().size(), fldFile.getAbsolutePath()});
-            }
-            FuzzyLite.logger().log(Level.INFO, "\tMean(t)={0}", String.format("%9.9f", Op.mean(benchmark.run(runs))));
-            if (i == 0) {
-                writer.append("\n")
-                        .append(benchmark.format(benchmark.results(),
-                                Benchmark.TableShape.Horizontal, Benchmark.TableContents.HeaderAndBody))
-                        .append("\n");
-            } else {
-                writer.append(benchmark.format(benchmark.results(),
-                        Benchmark.TableShape.Horizontal, Benchmark.TableContents.Body))
-                        .append("\n");
-            }
-        }
-        if (outputFile == null || outputFile.isEmpty()) {
-            FuzzyLite.logger().info(writer.toString());
-        } else {
-            new File(outputFile).createNewFile();
-            BufferedWriter fileWriter = new BufferedWriter(new OutputStreamWriter(
-                    new FileOutputStream(outputFile), FuzzyLite.UTF_8));
-            try {
-                fileWriter.append(writer.toString());
-            } catch (RuntimeException ex) {
-                throw ex;
-            } catch (Exception ex) {
-                throw new RuntimeException(ex);
-            } finally {
-                fileWriter.close();
-            }
-        }
-    }
-
+     @param fllFile is the file describing the engine in FLL format
+     @param fldFile is the file containing the dataset in FLD format
+     @param runs is the number of runs to evaluate the benchmarks
+     @param writer is the output where the results will be written to
+     @throws Exception if something goes wrong reading the files, importing the
+     engines or evaluating the benchmark
+     */
     public void benchmark(File fllFile, File fldFile, int runs, Writer writer)
             throws Exception {
         Engine engine = new FllImporter().fromFile(fllFile);
@@ -901,6 +858,19 @@ public class Console {
         }
     }
 
+    /**
+     Benchmarks the list of engines against the list of datasets, both described
+     as absolute or relative paths
+
+     @param fllFileList is the file containing the list of paths of engines in
+     FLL format
+     @param fldFileList is the file containing the list of paths of datasets in
+     FLD format
+     @param runs is the number of runs to evaluate the benchmarks
+     @param writer is the output where the results will be written to
+     @throws Exception if something goes wrong reading the files, importing the
+     engines or evaluating the benchmark
+     */
     public void benchmarks(File fllFileList, File fldFileList, int runs, Writer writer) throws Exception {
         List<String> fllFiles = new ArrayList<String>();
         List<String> fldFiles = new ArrayList<String>();

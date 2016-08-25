@@ -34,20 +34,39 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+/**
+ The Benchmark class is designed to evaluate the performance of an Engine.
+
+ @author Juan Rada-Vilela, Ph.D.
+ @see Engine
+ @since 6.0
+ */
 public class Benchmark {
 
+    /**
+     Unit of time to utilize in the results
+     */
     public enum TimeUnit {
         NanoSeconds, MicroSeconds, MilliSeconds, Seconds, Minutes, Hours
     }
 
+    /**
+     Shape of the table of results
+     */
     public enum TableShape {
         Horizontal, Vertical
     }
 
+    /**
+     Contents of the table of results
+     */
     public enum TableContents {
         Header, Body, HeaderAndBody
     }
 
+    /**
+     Type of error between expected and obtained values
+     */
     public enum ErrorType {
         NonFinite, Accuracy, All
     }
@@ -80,54 +99,133 @@ public class Benchmark {
         this.tolerance = tolerance;
     }
 
+    /**
+     Gets the name of the benchmark
+
+     @return name is the name of the benchmark
+     */
     public String getName() {
         return name;
     }
 
+    /**
+     Sets the name of the benchmark
+
+     @param name is the name of the benchmark
+     */
     public void setName(String name) {
         this.name = name;
     }
 
+    /**
+     Gets the engine to benchmark
+
+     @return the engine to benchmark
+     */
     public Engine getEngine() {
         return engine;
     }
 
+    /**
+     Sets the engine to benchmark
+
+     @param engine is the engine to benchmark
+     */
     public void setEngine(Engine engine) {
         this.engine = engine;
     }
 
+    /**
+     Gets the set of expected values from the engine, where the inner vector
+     contains the input values and output values
+
+     @return the set of expected values from the engine
+     */
     public List<double[]> getExpected() {
         return expected;
     }
 
+    /**
+     Sets the set of expected values from the engine, where the inner vector
+     contains the input values and output values
+
+     @param expected is the set of expected values from the engine
+     */
     public void setExpected(List<double[]> expected) {
         this.expected = expected;
     }
 
+    /**
+     Gets the set of obtained values from the engine, where the inner vector
+     contains the input values and output values
+
+     @return the set of obtained values from the engine
+     */
     public List<double[]> getObtained() {
         return obtained;
     }
 
+    /**
+     Sets the set of obtained values from the engine, where the inner vector
+     contains the input values and output values
+
+     @param obtained is the set of obtained values from the engine
+     */
     public void setObtained(List<double[]> obtained) {
         this.obtained = obtained;
     }
 
+    /**
+     Gets the vector of nanoseconds taken to produce the set of obtained values
+     from the set of expected input values
+
+     @return the vector of nanoseconds taken to produce the set of obtained
+     values from the set of expected input values
+     */
     public List<Double> getTimes() {
         return times;
     }
 
+    /**
+     Sets the vector of nanoseconds taken to produce the set of obtained values
+     from the set of expected input values
+
+     @param times is the vector of nanoseconds taken to produce the set of
+     obtained values from the set of expected input values
+     */
     public void setTimes(List<Double> times) {
         this.times = times;
     }
 
+    /**
+     Gets the tolerance above which the difference between an expected and
+     obtained value from the engine is considered an error
+
+     @return the tolerance above which the difference between an expected and
+     obtained value from the engine is considered an error
+     */
     public double getTolerance() {
         return tolerance;
     }
 
+    /**
+     Sets the tolerance above which the difference between an expected and
+     obtained value from the engine is considered an error
+
+     @param tolerance is the tolerance above which the difference between an
+     expected and obtained value from the engine is considered an error
+     */
     public void setTolerance(double tolerance) {
         this.tolerance = tolerance;
     }
 
+    /**
+     Produces and loads into memory the set of expected values from the engine
+
+     @param values is the number of values to evaluate the engine upon
+     @param scope is the scope of the values to generate
+     @throws RuntimeException if the engine is not set
+     */
     public void prepare(int values, FldExporter.ScopeOfValues scope) {
         if (engine == null) {
             throw new RuntimeException("[benchmark error] engine not set before "
@@ -162,10 +260,26 @@ public class Benchmark {
         } while (Op.increment(sampleValues, minSampleValues, maxSampleValues));
     }
 
+    /**
+     Reads and loads into memory the set of expected values from the engine
+
+     @param reader is the reader of a set of lines containing space-separated
+     values
+     @throws IOException if the reader cannot be read
+     */
     public void prepare(Reader reader) throws IOException {
         prepare(reader, -1);
     }
 
+    /**
+     Reads and loads into memory the set of expected values from the engine
+
+     @param reader is the reader of a set of lines containing space-separated
+     values
+     @param numberOfLines is the maximum number of lines to read from the
+     reader, and a value $f@n=(\infty, -1]$f@ reads the entire file.
+     @throws IOException if the reader cannot be read
+     */
     public void prepare(Reader reader, long numberOfLines) throws IOException {
         this.expected = new ArrayList<double[]>();
         BufferedReader bufferedReader = new BufferedReader(reader);
@@ -199,10 +313,23 @@ public class Benchmark {
         }
     }
 
+    /**
+     Runs the benchmark on the engine only once
+
+     @return the time in nanoseconds required by the run, which is also appended
+     to the times stored in Benchmark::getTimes()
+     */
     public double runOnce() {
         return run(1)[0];
     }
 
+    /**
+     Runs the benchmark on the engine multiple times
+
+     @param times is the number of times to run the benchmark on the engine
+     @return vector of the time in nanoseconds required by each run, which is
+     also appended to the times stored in Benchmark::getTimes()
+     */
     public double[] run(int times) {
         if (engine == null) {
             throw new RuntimeException("[benchmark error] engine not set for benchmark");
@@ -253,11 +380,24 @@ public class Benchmark {
         return runtimes;
     }
 
+    /**
+     Resets the benchmark to be ready to run again
+     */
     public void reset() {
         this.obtained.clear();
         this.times.clear();
     }
 
+    /**
+     Indicates whether errors can be computed based on the expected and obtained
+     values from the benchmark. If the benchmark was prepared from a file reader
+     and the file included columns of expected output values and the benchmark
+     has been run at least once, then the benchmark can automatically compute
+     the errors and will automatically include them in the results.
+
+     @return whether errors can be computed based on the expected and obtained
+     values from the benchmark
+     */
     public boolean canComputeErrors() {
         return !(engine == null || expected.isEmpty() || obtained.isEmpty()
                 || expected.size() != obtained.size()
@@ -265,10 +405,25 @@ public class Benchmark {
                 || expected.get(0).length != engine.variables().size());
     }
 
+    /**
+     Computes the mean squared error over all output variables considering only
+     those cases where there is an accuracy error as defined in
+     Benchmark::accuracyErrors().
+
+     @return the mean squared error over all the output variables.
+     */
     public double meanSquaredError() {
         return meanSquaredError(null);
     }
 
+    /**
+     Computes the mean squared error of the given output variable considering
+     only those cases where there is an accuracy error as defined in
+     Benchmark::accuracyErrors().
+
+     @param outputVariable is the output variable to compute the errors for
+     @return the mean squared error over the given output variable.
+     */
     public double meanSquaredError(OutputVariable outputVariable) {
         if (!canComputeErrors()) {
             return Double.NaN;
@@ -299,34 +454,120 @@ public class Benchmark {
         return mse;
     }
 
+    /**
+     Computes the number of errors over all the output variables caused by
+     non-finite differences or accuracy differences. An error is counted when
+     the difference between the expected and obtained values is not finite, or
+     the absolute difference between the expected and obtained values is not
+     smaller than the tolerance.
+
+     @return the number of errors over all the output variables caused by
+     non-finite differences or accuracy differences
+     */
     public int allErrors() {
         return allErrors(null);
     }
 
+    /**
+     Computes the number of errors of the given output variable caused by
+     non-finite differences or accuracy differences. An error is counted when
+     the difference between the expected and obtained values is not finite, or
+     the absolute difference between the expected and obtained values is not
+     smaller than the tolerance.
+
+     @param outputVariable is the output variable to account the errors for
+     @return the number of errors of the given output variable caused by
+     non-finite differences or accuracy differences
+     */
     public int allErrors(OutputVariable outputVariable) {
         return numberOfErrors(ErrorType.All, outputVariable);
     }
 
+    /**
+     Computes the number of errors over all the output variables caused by
+     non-finite differences (ie, infinity and NaN). An error is counted when the
+     difference between the expected and obtained values is not finite.
+
+     @return the number of errors over all the output variables caused by
+     non-finite differences
+     */
     public int nonFiniteErrors() {
         return nonFiniteErrors(null);
     }
 
+    /**
+     Computes the number of errors of the given output variable caused by
+     non-finite differences (ie, infinity and NaN). An error is counted when the
+     difference between the expected and obtained values is not finite.
+
+     @param outputVariable is the output variable to account the errors for
+     @return the number of errors of the given output variable caused by
+     non-finite differences
+     */
     public int nonFiniteErrors(OutputVariable outputVariable) {
         return numberOfErrors(ErrorType.NonFinite, outputVariable);
     }
 
+    /**
+     Computes the number of errors over all the output variables caused by a
+     significant difference in accuracy. An error is counted when the absolute
+     difference between the expected and obtained values is not smaller than the
+     tolerance.
+
+     @f$\text{E} = \sum_y \sum_i \epsilon_i^y, \text{where } \epsilon_i^y =
+     \begin{cases} 0 & \text{if} |e_i^y - o^y_i| < \theta\\ 1 & \text{otherwise}
+     \end{cases} @f$, @f$y@f$ is the set of output variable s , @f$e@f$ is the
+     set of expected output values, @f$o@f$ is the set of obtained output
+     values, and @f$\theta@f$ is the tolerance
+
+     @return the number of errors over all the output variables caused by a
+     significant difference in accuracy
+     */
     public int accuracyErrors() {
         return accuracyErrors(null);
     }
 
+    /**
+     Computes the number of errors over the given output variable caused by a
+     significant difference in accuracy. An error is counted when the absolute
+     difference between the expected and obtained values is not smaller than the
+     tolerance.
+
+     @f$\text{E} = \sum_i \epsilon_i, \text{where } \epsilon_i = \begin{cases} 0
+     & \text{if} |e_i - o_i| < \theta\\ 1 & \text{otherwise} \end{cases} @f$,
+     @f$e@f$ is the set of expected output
+     v
+     alues,
+     @f$o@f$ is the set of obtained output values, and @f$\theta@f$ is the
+     tolerance
+
+     @param outputVariable is the output variable to account the errors for
+     @return the number of errors of the given output variable caused by a
+     significant difference in accuracy
+     */
     public int accuracyErrors(OutputVariable outputVariable) {
         return numberOfErrors(ErrorType.Accuracy, outputVariable);
     }
 
+    /**
+     Computes the number of errors of the given type over all the output
+     variables.
+
+     @param errorType is type of error to account for
+     @return the number of errors over all the output variables
+     */
     public int numberOfErrors(ErrorType errorType) {
         return numberOfErrors(errorType, null);
     }
 
+    /**
+     Computes the number of errors of the given type over the given output
+     variable.
+
+     @param errorType is type of error to account for
+     @param outputVariable is output variable to account the errors for
+     @return the number of errors over the given output variable
+     */
     public int numberOfErrors(ErrorType errorType, OutputVariable outputVariable) {
         if (!canComputeErrors()) {
             return -1;
@@ -356,6 +597,12 @@ public class Benchmark {
         return errors;
     }
 
+    /**
+     Returns the factor of the given unit from NanoSeconds
+
+     @param unit is the unit of time
+     @return the factor of the given unit from NanoSeconds
+     */
     public double factorOf(TimeUnit unit) {
         if (unit == TimeUnit.NanoSeconds) {
             return 1.0;
@@ -373,10 +620,27 @@ public class Benchmark {
         return Double.NaN;
     }
 
-    public double convert(double x, TimeUnit from, TimeUnit to) {
-        return x * factorOf(to) / factorOf(from);
+    /**
+     Converts the time to different scales
+
+     @param time is the time to convert
+     @param from is the units of the time to convert from
+     @param to is the units of the time to convert to
+     @return the time in the units specified
+     */
+    public double convert(double time, TimeUnit from, TimeUnit to) {
+        return time * factorOf(to) / factorOf(from);
     }
 
+    /**
+     Returns the header of a horizontal table of results
+
+     @param runs is the number of times the benchmark will be run, hence
+     producing the relevant number of columns for each run
+     @param includeErrors indicates whether to include columns for computing the
+     errors
+     @return the header of a horizontal table of results
+     */
     public Set<String> header(int runs, boolean includeErrors) {
         Benchmark result = new Benchmark();
 
@@ -399,26 +663,71 @@ public class Benchmark {
         return result.results().keySet();
     }
 
+    /**
+     Computes and returns the results from the benchmark aggregating the
+     statistics of all the output variables
+
+     @return the results from the benchmark
+     */
     public Map<String, String> results() {
         return results(TimeUnit.NanoSeconds);
     }
 
+    /**
+     Computes and returns the results from the benchmark aggregating the
+     statistics of all the output variables
+
+     @param timeUnit is the unit of time of the results
+     @return the results from the benchmark
+     */
     public Map<String, String> results(TimeUnit timeUnit) {
         return results(timeUnit, true);
     }
 
+    /**
+     Computes and returns the results from the benchmark aggregating the
+     statistics of all the output variables
+
+     @param timeUnit is the unit of time of the results
+     @param includeTimes indicates whether to include the times of each run
+     @return the results from the benchmark
+     */
     public Map<String, String> results(TimeUnit timeUnit, boolean includeTimes) {
         return results(null, timeUnit, includeTimes);
     }
 
+    /**
+     Computes and returns the results from the benchmark for the given output
+     variable
+
+     @param outputVariable is the output variable to compute the statistics for
+     @return the results from the benchmark
+     */
     public Map<String, String> results(OutputVariable outputVariable) {
         return results(outputVariable, TimeUnit.NanoSeconds);
     }
 
+    /**
+     Computes and returns the results from the benchmark for the given output
+     variable
+
+     @param outputVariable is the output variable to compute the statistics for
+     @param timeUnit is the unit of time of the results
+     @return the results from the benchmark
+     */
     public Map<String, String> results(OutputVariable outputVariable, TimeUnit timeUnit) {
         return results(outputVariable, timeUnit, true);
     }
 
+    /**
+     Computes and returns the results from the benchmark for the given output
+     variable
+
+     @param outputVariable is the output variable to compute the statistics for
+     @param timeUnit is the unit of time of the results
+     @param includeTimes indicates whether to include the times of each run
+     @return the results from the benchmark
+     */
     public Map<String, String> results(OutputVariable outputVariable, TimeUnit timeUnit, boolean includeTimes) {
         if (engine == null) {
             throw new RuntimeException("[benchmark error] engine not set for benchmark");
@@ -489,19 +798,51 @@ public class Benchmark {
         return result;
     }
 
+    /**
+     Formats the results
+
+     @param results is the vector of results
+     @return the formatted results from the benchmark
+     */
     public String format(Map<String, String> results) {
         return format(results, TableShape.Horizontal);
     }
 
+    /**
+     Formats the results
+
+     @param results is the vector of results
+     @param shape is the shape to present the table of results
+     @return the formatted results from the benchmark
+     */
     public String format(Map<String, String> results, TableShape shape) {
         return format(results, shape, TableContents.HeaderAndBody);
     }
 
+    /**
+     Formats the results
+
+     @param results is the vector of results
+     @param shape is the shape to present the table of results
+     @param contents indicates the information to include in the table of
+     results
+     @return the formatted results from the benchmark
+     */
     public String format(Map<String, String> results, TableShape shape,
             TableContents contents) {
         return format(results, shape, contents, "\t");
     }
 
+    /**
+     Formats the results
+
+     @param results is the vector of results
+     @param shape is the shape to present the table of results
+     @param contents indicates the information to include in the table of
+     results
+     @param delimiter is the delimiter of the table of results
+     @return the formatted results from the benchmark
+     */
     public String format(Map<String, String> results, TableShape shape,
             TableContents contents, String delimiter) {
         StringWriter writer = new StringWriter();
@@ -556,5 +897,4 @@ public class Benchmark {
 
         return writer.toString();
     }
-
 }

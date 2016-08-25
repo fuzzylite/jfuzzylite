@@ -39,6 +39,16 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+/**
+ The Engine class is the core class of the library as it groups the necessary
+ components of a fuzzy logic controller.
+
+ @author Juan Rada-Vilela, Ph.D.
+ @see InputVariable
+ @see OutputVariable
+ @see RuleBlock
+ @since 4.0
+ */
 public class Engine implements Op.Cloneable {
 
     private String name;
@@ -47,9 +57,41 @@ public class Engine implements Op.Cloneable {
     private List<RuleBlock> ruleBlocks;
 
     public enum Type {
-
-        Mamdani, Larsen, TakagiSugeno, Tsukamoto, InverseTsukamoto,
-        Hybrid, Unknown;
+        /**
+         Mamdani: When the output variables have IntegralDefuzzifier%s
+         */
+        Mamdani,
+        /**
+         Larsen: When Mamdani and AlgebraicProduct is the implication operator
+         of the rule blocks
+         */
+        Larsen,
+        /**
+         TakagiSugeno: When output variables have WeightedDefuzzifier%s of type
+         TakagiSugeno and the output variables have Constant, Linear, or
+         Function terms
+         */
+        TakagiSugeno,
+        /**
+         Tsukamoto: When output variables have WeightedDefuzzifier%s of type
+         Tsukamoto and the output variables only have monotonic terms (Concave,
+         Ramp, Sigmoid, SShape, and ZShape)
+         */
+        Tsukamoto,
+        /**
+         InverseTsukamoto: When output variables have WeightedDefuzzifier%s of
+         type TakagiSugeno and the output variables do not only have Constant,
+         Linear or Function terms
+         */
+        InverseTsukamoto,
+        /**
+         Hybrid: When output variables have different defuzzifiers
+         */
+        Hybrid,
+        /**
+         Unknown: When output variables have no defuzzifiers
+         */
+        Unknown;
     };
 
     public Engine() {
@@ -63,20 +105,44 @@ public class Engine implements Op.Cloneable {
         this.ruleBlocks = new ArrayList<RuleBlock>();
     }
 
+    /**
+     Configures the engine with the given operators
+
+     @param conjunction is a TNorm registered in the TNormFactory
+     @param disjunction is an SNorm registered in the SNormFactory
+     @param implication is an TNorm registered in the TNormFactory
+     @param aggregation is an SNorm registered in the SNormFactory
+     @param defuzzifier is a defuzzifier registered in the DefuzzifierFactory
+     */
     public void configure(String conjunction, String disjunction,
             String implication, String aggregation, String defuzzifier) {
         TNormFactory tnormFactory = FactoryManager.instance().tnorm();
         SNormFactory snormFactory = FactoryManager.instance().snorm();
 
-        TNorm objConjunction = tnormFactory.constructObject(conjunction);
-        SNorm objDisjunction = snormFactory.constructObject(disjunction);
-        TNorm objImplication = tnormFactory.constructObject(implication);
-        SNorm objAggregation = snormFactory.constructObject(aggregation);
-        Defuzzifier objDefuzzifier = FactoryManager.instance().defuzzifier().constructObject(defuzzifier);
+        TNorm conjunctionObject = tnormFactory.constructObject(conjunction);
+        SNorm disjunctionObject = snormFactory.constructObject(disjunction);
+        TNorm implicationObject = tnormFactory.constructObject(implication);
+        SNorm aggregationObject = snormFactory.constructObject(aggregation);
+        Defuzzifier defuzzifierObject = FactoryManager.instance().defuzzifier().constructObject(defuzzifier);
 
-        configure(objConjunction, objDisjunction, objImplication, objAggregation, objDefuzzifier);
+        configure(conjunctionObject, disjunctionObject,
+                implicationObject, aggregationObject, defuzzifierObject);
     }
 
+    /**
+     Configures the engine with clones of the given operators.
+
+     @param conjunction is the operator to process the propositions joined by
+     `and` in the antecedent of the rules
+     @param disjunction is the operator to process the propositions joined by
+     `or` in the antecedent of the rules
+     @param implication is the operator to modify the consequents of the rules
+     based on the activation degree of the antecedents of the rules
+     @param aggregation is the operator to aggregate the resulting implications
+     of the rules
+     @param defuzzifier is the operator to transform the aggregated implications
+     into a single scalar value
+     */
     public void configure(TNorm conjunction, SNorm disjunction,
             TNorm implication, SNorm aggregation, Defuzzifier defuzzifier) {
         try {
@@ -94,10 +160,26 @@ public class Engine implements Op.Cloneable {
         }
     }
 
+    /**
+     Indicates whether the engine has been configured correctly and is ready for
+     operation. In more advanced engines, the result of this method should be
+     taken as a suggestion and not as a prerequisite to operate the engine.
+
+     @return whether the engine is ready to operate
+     */
     public boolean isReady() {
         return isReady(new StringBuilder());
     }
 
+    /**
+     Indicates whether the engine has been configured correctly and is ready for
+     operation. In more advanced engines, the result of this method should be
+     taken as a suggestion and not as a prerequisite to operate the engine.
+
+     @param message (if not null) contains the configuration errors of the
+     engine
+     @return whether the engine is ready to operate
+     */
     public boolean isReady(StringBuilder message) {
         message.setLength(0);
         if (this.inputVariables.isEmpty()) {
@@ -108,10 +190,11 @@ public class Engine implements Op.Cloneable {
             if (inputVariable == null) {
                 message.append(String.format(
                         "- Engine has a null input variable at index <%d>\n", i));
-            } //else if (inputVariable.getTerms().isEmpty()) {
-            //ignore because sometimes inputs can be empty: takagi-sugeno/matlab/slcpp1.fis
-            //message.append(String.format("- Input variable <%s> has no terms\n", inputVariable.getName()));
-            //}
+            }
+            /*else if (inputVariable.getTerms().isEmpty()) {
+            ignore because sometimes inputs can be empty: takagi-sugeno/matlab/slcpp1.fis
+            message.append(String.format("- Input variable <%s> has no terms\n", inputVariable.getName()));
+            }*/
         }
 
         if (this.outputVariables.isEmpty()) {
@@ -210,6 +293,13 @@ public class Engine implements Op.Cloneable {
         return message.length() == 0;
     }
 
+    /**
+     Restarts the engine by setting the values of the input variables to fl::nan
+     and clearing the output variables
+
+     @see Variable::setValue()
+     @see OutputVariable::clear()
+     */
     public void restart() {
         for (InputVariable inputVariable : this.inputVariables) {
             inputVariable.setValue(Double.NaN);
@@ -219,6 +309,15 @@ public class Engine implements Op.Cloneable {
         }
     }
 
+    /**
+     Processes the engine in its current state as follows: (a) Clears the
+     aggregated fuzzy output variables, (b) Activates the rule blocks, and (c)
+     Defuzzifies the output variables
+
+     @see Aggregated::clear()
+     @see RuleBlock::activate()
+     @see OutputVariable::defuzzify()
+     */
     public void process() {
         for (OutputVariable outputVariable : outputVariables) {
             outputVariable.fuzzyOutput().clear();
@@ -285,19 +384,41 @@ public class Engine implements Op.Cloneable {
          */
     }
 
+    /**
+     Gets the name of the engine
+
+     @return the name of the engine
+     */
     public String getName() {
         return name;
     }
 
+    /**
+     Sets the name of the engine
+
+     @param name is the name of the engine
+     */
     public void setName(String name) {
         this.name = name;
     }
 
+    /**
+     Returns a string representation of the engine in the FuzzyLite Language
+
+     @return a string representation of the engine in the FuzzyLite Language
+     */
     @Override
     public String toString() {
         return new FllExporter().toString(this);
     }
 
+    /**
+     Infers the type of the engine based on its current configuration
+
+     @param reason stores a string representation explaining the reasons for the
+     inferred type (if the pointer passed is not `fl::null`)
+     @return the inferred type of the engine based on its current configuration
+     */
     public Type type(StringBuilder reason) {
         reason.setLength(0);
         if (outputVariables.isEmpty()) {
@@ -408,10 +529,20 @@ public class Engine implements Op.Cloneable {
         return Type.Unknown;
     }
 
+    /**
+     Infers the type of the engine based on its current configuration
+
+     @return the inferred type of the engine based on its current configuration
+     */
     public Type type() {
         return type(new StringBuilder());
     }
 
+    /**
+     Creates a clone of the engine
+
+     @return a clone of the engine
+     */
     @Override
     public Engine clone() throws CloneNotSupportedException {
         Engine result = (Engine) super.clone();
@@ -441,6 +572,13 @@ public class Engine implements Op.Cloneable {
         return result;
     }
 
+    /**
+     Returns a list that contains the input variables followed by the output
+     variables in the order of insertion
+
+     @return a list that contains the input variables followed by the output
+     variables in the order of insertion
+     */
     public List<Variable> variables() {
         List<Variable> result = new ArrayList<Variable>(inputVariables.size() + outputVariables.size());
         result.addAll(inputVariables);
@@ -448,14 +586,29 @@ public class Engine implements Op.Cloneable {
         return result;
     }
 
-    /*
-     * InputVariables
+    /**
+     Sets the value of the given input variable. The cost of this method is
+     O(n), where n is the number of input variables in the engine. For
+     performance, please get the variables by index.
+
+     @param name is the name of the input variable
+     @param value is the value for the input variable
      */
     public void setInputValue(String name, double value) {
         InputVariable inputVariable = getInputVariable(name);
         inputVariable.setValue(value);
     }
 
+    /**
+     Gets the input variable of the given name after iterating the input
+     variables. The cost of this method is O(n), where n is the number of input
+     variables in the engine. For performance, please get the variables by
+     index.
+
+     @param name is the name of the input variable
+     @return input variable of the given name
+     @throws RuntimeException if there is no variable with the given name
+     */
     public InputVariable getInputVariable(String name) {
         for (InputVariable inputVariable : this.inputVariables) {
             if (name.equals(inputVariable.getName())) {
@@ -466,18 +619,43 @@ public class Engine implements Op.Cloneable {
                 "[engine error] no input variable by name <%s>", name));
     }
 
+    /**
+     Gets the input variable at the given index
+
+     @param index is the given index
+     @return the input variable at the given index
+     */
     public InputVariable getInputVariable(int index) {
         return this.inputVariables.get(index);
     }
 
+    /**
+     Adds the input variable
+
+     @param inputVariable is the input variable
+     */
     public void addInputVariable(InputVariable inputVariable) {
         this.inputVariables.add(inputVariable);
     }
 
+    /**
+     Removes the given input variable from the list of input variables.
+
+     @param inputVariable is the input variable to remove
+     @return whether the input variable was contained in the list of input
+     variables
+     */
     public boolean removeInputVariable(InputVariable inputVariable) {
         return this.inputVariables.remove(inputVariable);
     }
 
+    /**
+     Removes the given input variable from the list of input variables.
+
+     @param name is the name of the input variable
+     @return the input variable of the given name
+     @throws RuntimeException if there is no variable with the given name
+     */
     public InputVariable removeInputVariable(String name) {
         for (Iterator<InputVariable> it = this.inputVariables.iterator(); it.hasNext();) {
             InputVariable inputVariable = it.next();
@@ -490,11 +668,24 @@ public class Engine implements Op.Cloneable {
                 "[engine error] no input variable by name <%s>", name));
     }
 
+    /**
+     Removes the input variable at the given index.
+
+     @param index is the given index
+     @return the input variable at the given index
+     */
     public InputVariable removeInputVariable(int index) {
         return this.inputVariables.remove(index);
 
     }
 
+    /**
+     Indicates whether an input variable of the given name is in the input
+     variables
+
+     @param name is the name of the input variable
+     @return whether an input variable is registered with the given name
+     */
     public boolean hasInputVariable(String name) {
         for (InputVariable inputVariable : this.inputVariables) {
             if (inputVariable.getName().equals(name)) {
@@ -504,25 +695,55 @@ public class Engine implements Op.Cloneable {
         return false;
     }
 
+    /**
+     Returns the number of input variables added to the engine
+
+     @return the number of input variables added to the engine
+     */
     public int numberOfInputVariables() {
         return this.inputVariables.size();
     }
 
+    /**
+     Returns a mutable list of input variables
+
+     @return a mutable list of input variables
+     */
     public List<InputVariable> getInputVariables() {
         return this.inputVariables;
     }
 
+    /**
+     Sets the list of input variables
+
+     @param inputVariables is the list of input variables
+     */
     public void setInputVariables(List<InputVariable> inputVariables) {
         this.inputVariables = inputVariables;
     }
 
-    /*
-     * OutputVariables
+    /**
+     Gets the value of the given output variable. The cost of this method is
+     O(n), where n is the number of output variables in the engine. For
+     performance, please get the variables by index.
+
+     @param name is the name of the output variable
+     @return the value of the given output variable
      */
     public double getOutputValue(String name) {
         return getOutputVariable(name).getValue();
     }
 
+    /**
+     Gets the output variable of the given name after iterating the output
+     variables. The cost of this method is O(n), where n is the number of output
+     variables in the engine. For performance, please get the variables by
+     index.
+
+     @param name is the name of the output variable
+     @return output variable of the given name
+     @throws RuntimeException if there is no variable with the given name
+     */
     public OutputVariable getOutputVariable(String name) {
         for (OutputVariable outputVariable : this.outputVariables) {
             if (outputVariable.getName().equals(name)) {
@@ -533,18 +754,43 @@ public class Engine implements Op.Cloneable {
                 "[engine error] no output variable by name <%s>", name));
     }
 
+    /**
+     Gets the output variable at the given index
+
+     @param index is the given index
+     @return the output variable at the given index
+     */
     public OutputVariable getOutputVariable(int index) {
         return this.outputVariables.get(index);
     }
 
+    /**
+     Adds the output variable
+
+     @param outputVariable is the output variable
+     */
     public void addOutputVariable(OutputVariable outputVariable) {
         this.outputVariables.add(outputVariable);
     }
 
+    /**
+     Removes the given output variable
+
+     @param outputVariable is the output variable
+     @return whether the output variable was contained in the list of output
+     variables
+     */
     public boolean removeOutputVariable(OutputVariable outputVariable) {
         return this.outputVariables.remove(outputVariable);
     }
 
+    /**
+     Removes the output variable of the given name.
+
+     @param name is the name of the output variable
+     @return the output variable of the given name
+     @throws RuntimeException if there is no variable with the given name
+     */
     public OutputVariable removeOutputVariable(String name) {
         for (Iterator<OutputVariable> it = this.outputVariables.iterator(); it.hasNext();) {
             OutputVariable outputVariable = it.next();
@@ -557,10 +803,23 @@ public class Engine implements Op.Cloneable {
                 "[engine error] no output variable by name <%s>", name));
     }
 
+    /**
+     Removes the output variable at the given index
+
+     @param index is the given index
+     @return the output variable at the given index
+     */
     public OutputVariable removeOutputVariable(int index) {
         return this.outputVariables.remove(index);
     }
 
+    /**
+     Indicates whether an output variable of the given name is in the output
+     variables
+
+     @param name is the name of the output variable
+     @return whether an output variable is registered with the given name
+     */
     public boolean hasOutputVariable(String name) {
         for (OutputVariable outputVariable : this.outputVariables) {
             if (outputVariable.getName().equals(name)) {
@@ -570,20 +829,41 @@ public class Engine implements Op.Cloneable {
         return false;
     }
 
+    /**
+     Returns the number of output variables added to the engine
+
+     @return the number of output variables added to the engine
+     */
     public int numberOfOutputVariables() {
         return this.outputVariables.size();
     }
 
+    /**
+     Returns a mutable vector of output variables
+
+     @return a mutable vector of output variables
+     */
     public List<OutputVariable> getOutputVariables() {
         return this.outputVariables;
     }
 
+    /**
+     Sets the vector of output variables
+
+     @param outputVariables is the vector of output variables
+     */
     public void setOutputVariables(List<OutputVariable> outputVariables) {
         this.outputVariables = outputVariables;
     }
 
-    /*
-     * RuleBlocks
+    /**
+     Gets the rule block of the given name after iterating the rule blocks. The
+     cost of this method is O(n), where n is the number of rule blocks in the
+     engine. For performance, please get the rule blocks by index.
+
+     @param name is the name of the rule block
+     @return rule block of the given name
+     @throws RuntimeException if there is no block with the given name
      */
     public RuleBlock getRuleBlock(String name) {
         for (RuleBlock ruleBlock : this.ruleBlocks) {
@@ -595,18 +875,42 @@ public class Engine implements Op.Cloneable {
                 "[engine error] no rule block by name <%s>", name));
     }
 
+    /**
+     Gets the rule block at the given index
+
+     @param index is the given index
+     @return the rule block at the given index
+     */
     public RuleBlock getRuleBlock(int index) {
         return this.ruleBlocks.get(index);
     }
 
+    /**
+     Adds the rule block
+
+     @param ruleBlock is the rule block
+     */
     public void addRuleBlock(RuleBlock ruleBlock) {
         this.ruleBlocks.add(ruleBlock);
     }
 
+    /**
+     Removes the given rule block.
+
+     @param ruleBlock is the rule block
+     @return whether the rule block was contained in the list of rule blocks
+     */
     public boolean removeRuleBlock(RuleBlock ruleBlock) {
         return this.ruleBlocks.remove(ruleBlock);
     }
 
+    /**
+     Removes the rule block of the given name.
+
+     @param name is the name of the rule block
+     @return the rule block of the given name
+     @throws RuntimeException if there is no rule block with the given name
+     */
     public RuleBlock removeRuleBlock(String name) {
         for (Iterator<RuleBlock> it = this.ruleBlocks.iterator(); it.hasNext();) {
             RuleBlock ruleBlock = it.next();
@@ -619,10 +923,23 @@ public class Engine implements Op.Cloneable {
                 "[engine error] no rule block by name <%s>", name));
     }
 
+    /**
+     Removes the rule block at the given index.
+
+     @param index is the given index
+     @return the rule block at the given index
+     */
     public RuleBlock removeRuleBlock(int index) {
         return this.ruleBlocks.remove(index);
     }
 
+    /**
+     Removes the rule block of the given name.
+
+     @param name is the name of the rule block
+     @return the rule block of the given name
+     @throws RuntimeException if there is no block with the given name
+     */
     public boolean hasRuleBlock(String name) {
         for (RuleBlock ruleBlock : this.ruleBlocks) {
             if (ruleBlock.getName().equals(name)) {
@@ -632,14 +949,29 @@ public class Engine implements Op.Cloneable {
         return false;
     }
 
+    /**
+     Returns the number of rule blocks added to the engine
+
+     @return the number of rule blocks added to the engine
+     */
     public int numberOfRuleBlocks() {
         return this.ruleBlocks.size();
     }
 
+    /**
+     Returns a mutable list of rule blocks
+
+     @return a mutable list of rule blocks
+     */
     public List<RuleBlock> getRuleBlocks() {
         return this.ruleBlocks;
     }
 
+    /**
+     Sets the list of rule blocks
+
+     @param ruleBlocks is the list of rule blocks
+     */
     public void setRuleBlocks(List<RuleBlock> ruleBlocks) {
         this.ruleBlocks = ruleBlocks;
     }
