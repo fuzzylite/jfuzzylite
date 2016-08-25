@@ -16,10 +16,12 @@
  */
 package com.fuzzylite;
 
+import java.text.DecimalFormat;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Random;
 import java.util.logging.Level;
 import static org.hamcrest.CoreMatchers.is;
 import org.junit.After;
@@ -92,7 +94,53 @@ public class QuickTest {
         Assert.assertThat(Op.min(0.0, Double.NaN), is(0.0));
         Assert.assertThat(Op.max(Double.NaN, 0.0), is(0.0));
         Assert.assertThat(Op.max(0.0, Double.NaN), is(0.0));
+    }
 
+    @Test
+    public void testOpStrInMultipleThreads() {
+        FuzzyLite.setLogging(true);
+        Thread[] threads = new Thread[4];
+        for (int i = 0; i < threads.length; i++) {
+            final int decimals = i;
+            threads[i] = new Thread() {
+                @Override
+                public void run() {
+                    FuzzyLite.setDecimals(decimals);
+                    DecimalFormat formatter = FuzzyLite.getFormatter();
+                    Random random = new Random(decimals);
+
+                    for (int times = 0; times < 10; times++) {
+                        try {
+                            Thread.sleep(200);
+                        } catch (Exception ex) {
+                            throw new RuntimeException(ex);
+                        }
+                        double example = (random.nextInt() % 100) / 100.0;
+                        FuzzyLite.logger().info(String.format(
+                                "I am printing %s decimals like this: %s",
+                                decimals, Op.str(example)));
+                        String obtained = Op.str(example);
+                        int obtainedDecimals
+                                = obtained.substring(
+                                        1 + obtained.lastIndexOf(
+                                                formatter.getDecimalFormatSymbols().getDecimalSeparator()))
+                                .length();
+
+                        Assert.assertThat(obtainedDecimals, is(decimals));
+                    }
+                }
+            };
+        }
+        for (Thread t : threads) {
+            t.start();
+        }
+        for (Thread t : threads) {
+            try {
+                t.join();
+            } catch (Exception ex) {
+                ex.printStackTrace(System.out);
+            }
+        }
     }
 
 }

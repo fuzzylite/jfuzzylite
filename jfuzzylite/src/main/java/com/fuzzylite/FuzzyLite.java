@@ -37,25 +37,30 @@ public class FuzzyLite {
     protected static double MACHEPS = 1e-6; //Machine epsilon to differentiate numbers
     private static boolean debugging = false;
 
-    private static DecimalFormat DF = new DecimalFormat("0.000");
+    public static class ThreadSafeDecimalFormat extends ThreadLocal<DecimalFormat> {
 
-    static {
-        //To get the same results as fuzzylite C++
-        DF.setRoundingMode(RoundingMode.HALF_UP);
+        @Override
+        protected DecimalFormat initialValue() {
+            DecimalFormat result = new DecimalFormat("0.000");
+            result.setRoundingMode(RoundingMode.HALF_UP);
+            return result;
+        }
     }
+
+    private static final ThreadSafeDecimalFormat FORMATTER = new ThreadSafeDecimalFormat();
 
     public static final Charset UTF_8 = Charset.forName("UTF-8");
 
     private static Logger LOGGER = Logger.getLogger("com.fuzzylite");
 
     static {
-        String configurationFile = "/logging.properties";
+        final String configurationFile = "/logging.properties";
         final InputStream inputStream = FuzzyLite.class.getResourceAsStream(configurationFile);
         try {
             LogManager.getLogManager().readConfiguration(inputStream);
         } catch (Exception ex) {
             System.out.println(String.format("WARNING: Could not load default %s file", configurationFile));
-            System.out.println(ex);
+            ex.printStackTrace(System.out);
         } finally {
             try {
                 inputStream.close();
@@ -97,7 +102,7 @@ public class FuzzyLite {
      floating-point value using Op.str().
      */
     public static java.text.DecimalFormat getFormatter() {
-        return DF;
+        return FORMATTER.get();
     }
 
     /**
@@ -123,8 +128,9 @@ public class FuzzyLite {
         for (int i = 0; i < decimals; ++i) {
             pattern.append('0');
         }
-        DF = new DecimalFormat(pattern.toString());
-        DF.setRoundingMode(RoundingMode.HALF_UP);
+        DecimalFormat formatter = new DecimalFormat(pattern.toString());
+        formatter.setRoundingMode(RoundingMode.HALF_UP);
+        FORMATTER.set(formatter);
     }
 
     /**
