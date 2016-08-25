@@ -28,10 +28,33 @@ import com.fuzzylite.term.Sigmoid;
 import com.fuzzylite.term.Term;
 import com.fuzzylite.term.ZShape;
 
+/**
+ The WeightedDefuzzifier class is the base class for defuzzifiers which compute
+ a weighted function on the fuzzy set without requiring to integrate over the
+ fuzzy set.
+
+ @author Juan Rada-Vilela, Ph.D.
+ @since 5.0
+ */
 public abstract class WeightedDefuzzifier extends Defuzzifier {
 
+    /**
+     The Type enum indicates the type of the WeightedDefuzzifier based the terms
+     included in the fuzzy set.
+     */
     public enum Type {
-        Automatic, TakagiSugeno, Tsukamoto
+        /**
+         Automatic: Automatically inferred from the terms
+         */
+        Automatic,
+        /**
+         TakagiSugeno: Manually set to TakagiSugeno (or Inverse Tsukamoto)
+         */
+        TakagiSugeno,
+        /**
+         Tsukamoto: Manually set to Tsukamoto
+         */
+        Tsukamoto
     }
 
     private Type type;
@@ -48,14 +71,32 @@ public abstract class WeightedDefuzzifier extends Defuzzifier {
         this.type = type;
     }
 
+    /**
+     Gets the type of the weighted defuzzifier
+
+     @return the type of the weighted defuzzifier
+     */
     public Type getType() {
         return type;
     }
 
+    /**
+     Sets the type of the weighted defuzzifier
+
+     @param type is the type of the weighted defuzzifier
+     */
     public void setType(Type type) {
         this.type = type;
     }
 
+    /**
+     Infers the type of the defuzzifier based on the given term. If the given
+     term is Constant, Linear or Function, then the type is TakagiSugeno;
+     otherwise, the type is Tsukamoto
+
+     @param term is the given term
+     @return the inferred type of the defuzzifier based on the given term
+     */
     public Type inferType(Term term) {
         if (term instanceof Constant || term instanceof Linear || term instanceof Function) {
             return Type.TakagiSugeno;
@@ -63,6 +104,12 @@ public abstract class WeightedDefuzzifier extends Defuzzifier {
         return Type.Tsukamoto;
     }
 
+    /**
+     Indicates if the given term is monotonic
+
+     @param term is the given term
+     @return whether the given term is monotonic
+     */
     public boolean isMonotonic(Term term) {
         return term instanceof Concave
                 || term instanceof Ramp
@@ -71,6 +118,20 @@ public abstract class WeightedDefuzzifier extends Defuzzifier {
                 || term instanceof ZShape;
     }
 
+    /**
+     Computes the Tsukamoto @f$z@f$-value for the given monotonic term. If the
+     term is not monotonic, then the TakagiSugeno (or InverseTsukamoto)
+
+     @f$z@f$-value is computed.
+
+     @param monotonic is the monotonic term
+     @param activationDegree is the activation degree for the term
+     @param minimum is the minimum value of the range of the term
+     @param maximum is the maximum value of the range of the term
+     @return the Tsukamoto @f$z@f$-value for the given monotonic term, or the
+     TakagiSugeno (or InverseTsukamoto) @f$z@f$-value if the term is not
+     monotonic.
+     */
     public double tsukamoto(Term monotonic, double activationDegree,
             double minimum, double maximum) {
         double w = activationDegree;

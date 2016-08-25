@@ -22,6 +22,19 @@ import com.fuzzylite.term.Activated;
 import com.fuzzylite.term.Aggregated;
 import com.fuzzylite.term.Term;
 
+/**
+ The WeightedSumCustom class is a WeightedDefuzzifier that computes the weighted
+ sum of a fuzzy set represented in an Aggregated Term utilizing the fuzzy
+ operators for implication and aggregation to compute the weighted sum.
+
+ @author Juan Rada-Vilela, Ph.D.
+ @see WeightedSum
+ @see WeightedAverage
+ @see WeightedAverageCustom
+ @see WeightedDefuzzifier
+ @see Defuzzifier
+ @since 4.0
+ */
 public class WeightedSumCustom extends WeightedDefuzzifier {
 
     public WeightedSumCustom() {
@@ -36,6 +49,22 @@ public class WeightedSumCustom extends WeightedDefuzzifier {
         super(type);
     }
 
+    /**
+     Computes the weighted sum of the given fuzzy set represented in an
+     Aggregated Term as @f$y = \sum_i{w_iz_i} @f$, where @f$w_i@f$ is the
+     activation degree of term @f$i@f$, and @f$z_i = \mu_i(w_i) @f$.
+
+     If the implication and aggregation operators are set to fl::null (or set to
+     AlgebraicProduct and UnboundedSum, respectively), then the operation of
+     WeightedAverageCustom is the same as the WeightedAverage. Otherwise, the
+     implication and aggregation operators are utilized to compute the
+     multiplications and sums in @f$y@f$, respectively.
+
+     @param term is the fuzzy set represented as an AggregatedTerm
+     @param minimum is the minimum value of the range (only used for Tsukamoto)
+     @param maximum is the maximum value of the range (only used for Tsukamoto)
+     @return the weighted sum of the given fuzzy set
+     */
     @Override
     public double defuzzify(Term term, double minimum, double maximum) {
         Aggregated fuzzyOutput = (Aggregated) term;

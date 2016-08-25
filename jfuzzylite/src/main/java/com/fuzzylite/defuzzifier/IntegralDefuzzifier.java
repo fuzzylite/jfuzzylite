@@ -16,6 +16,13 @@
  */
 package com.fuzzylite.defuzzifier;
 
+/**
+ The IntegralDefuzzifier class is the base class for defuzzifiers which
+ integrate over the fuzzy set.
+
+ @author Juan Rada-Vilela, Ph.D.
+ @since 4.0
+ */
 public abstract class IntegralDefuzzifier extends Defuzzifier {
 
     private static int DEFAULT_RESOLUTION = 100;
@@ -28,18 +35,43 @@ public abstract class IntegralDefuzzifier extends Defuzzifier {
         this.resolution = resolution;
     }
 
+    /**
+     Gets the resolution of the defuzzifier. The resolution refers to the number
+     of divisions in which the range `[minimum,maximum]` is divided in order to
+     integrate the area under the curve
+
+     @return the resolution of the defuzzifier
+     */
     public int getResolution() {
         return resolution;
     }
 
+    /**
+     Sets the resolution of the defuzzifier. The resolution refers to the number
+     of divisions in which the range `[minimum,maximum]` is divided in order to
+     integrate the area under the curve
+
+     @param resolution is the resolution of the defuzzifier
+     */
     public void setResolution(int resolution) {
         this.resolution = resolution;
     }
 
+    /**
+     Sets the default resolution for integral-based defuzzifiers
+
+     @param defaultResolution is the default resolution for integral-based
+     defuzzifiers
+     */
     public static void setDefaultResolution(int defaultResolution) {
         IntegralDefuzzifier.DEFAULT_RESOLUTION = defaultResolution;
     }
 
+    /**
+     Gets the default resolution for integral-based defuzzifiers
+
+     @return the default resolution for integral-based defuzzifiers
+     */
     public static int getDefaultResolution() {
         return IntegralDefuzzifier.DEFAULT_RESOLUTION;
     }

@@ -19,6 +19,17 @@ package com.fuzzylite.defuzzifier;
 import com.fuzzylite.Op;
 import com.fuzzylite.term.Term;
 
+/**
+ The LargestOfMaximum class is an IntegralDefuzzifier that computes the largest
+ value of the maximum membership function of a fuzzy set represented in a Term.
+
+ @author Juan Rada-Vilela, Ph.D.
+ @see SmallestOfMaximum
+ @see MeanOfMaximum
+ @see IntegralDefuzzifier
+ @see Defuzzifier
+ @since 4.0
+ */
 public class LargestOfMaximum extends IntegralDefuzzifier {
 
     public LargestOfMaximum() {
@@ -29,6 +40,18 @@ public class LargestOfMaximum extends IntegralDefuzzifier {
         super(resolution);
     }
 
+    /**
+     Computes the largest value of the maximum membership function of a fuzzy
+     set. The largest value is computed by integrating over the fuzzy set. The
+     integration algorithm is the midpoint rectangle method
+     (https://en.wikipedia.org/wiki/Rectangle_method).
+
+     @param term is the fuzzy set
+     @param minimum is the minimum value of the fuzzy set
+     @param maximum is the maximum value of the fuzzy set
+     @return the largest @f$x@f$-coordinate of the maximum membership function
+     value in the fuzzy set
+     */
     @Override
     public double defuzzify(Term term, double minimum, double maximum) {
         if (!Op.isFinite(minimum + maximum)) {
