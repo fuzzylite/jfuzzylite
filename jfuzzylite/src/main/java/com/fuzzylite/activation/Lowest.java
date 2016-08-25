@@ -28,6 +28,17 @@ import java.util.List;
 import java.util.PriorityQueue;
 import java.util.logging.Level;
 
+/**
+ The Lowest class is a RuleBlock Activation method that activates a given number
+ of rules with lowest activation degrees in ascending order
+
+ @author Juan Rada-Vilela, Ph.D.
+ @see Highest
+ @see Rule
+ @see RuleBlock
+ @see ActivationFactory
+ @since 6.0
+ */
 public class Lowest extends Activation {
 
     private int numberOfRules;
@@ -40,11 +51,21 @@ public class Lowest extends Activation {
         this.numberOfRules = numberOfRules;
     }
 
+    /**
+     Returns the number of rules to activate
+
+     @return number of rules to activate
+     */
     @Override
     public String parameters() {
         return Op.str(getNumberOfRules());
     }
 
+    /**
+     Configures the activation method with the number of rules to activate
+
+     @param parameters contains the number of rules to activate
+     */
     @Override
     public void configure(String parameters) {
         if (parameters.isEmpty()) {
@@ -61,7 +82,7 @@ public class Lowest extends Activation {
         setNumberOfRules(Integer.parseInt(values.get(0)));
     }
 
-    static class RuleDegreeComparatorAscending implements Comparator<Rule> {
+    static class Ascendantly implements Comparator<Rule> {
 
         @Override
         public int compare(Rule a, Rule b) {
@@ -70,6 +91,12 @@ public class Lowest extends Activation {
         }
     }
 
+    /**
+     Activates the rules with the lowest activation degrees in the given rule
+     block
+
+     @param ruleBlock is the rule block to activate
+     */
     @Override
     public void activate(RuleBlock ruleBlock) {
         if (FuzzyLite.isDebugging()) {
@@ -81,7 +108,7 @@ public class Lowest extends Activation {
         TNorm implication = ruleBlock.getImplication();
 
         PriorityQueue<Rule> rulesToActivate = new PriorityQueue<Rule>(
-                getNumberOfRules(), new RuleDegreeComparatorAscending());
+                getNumberOfRules(), new Ascendantly());
 
         for (Rule rule : ruleBlock.getRules()) {
             rule.deactivate();
@@ -102,10 +129,20 @@ public class Lowest extends Activation {
         }
     }
 
+    /**
+     Returns the number of rules to activate
+
+     @return the number of rules to activate
+     */
     public int getNumberOfRules() {
         return numberOfRules;
     }
 
+    /**
+     Sets the number of rules to activate
+
+     @param numberOfRules is the number of rules to activate
+     */
     public void setNumberOfRules(int numberOfRules) {
         this.numberOfRules = numberOfRules;
     }

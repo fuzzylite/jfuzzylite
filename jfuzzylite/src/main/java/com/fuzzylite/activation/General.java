@@ -23,21 +23,47 @@ import com.fuzzylite.rule.Rule;
 import com.fuzzylite.rule.RuleBlock;
 import java.util.logging.Level;
 
+/**
+ The General class is a RuleBlock Activation method that activates every rule
+ following the order in which the rules were added to the rule block.
+
+ @author Juan Rada-Vilela, Ph.D.
+ @see Rule
+ @see RuleBlock
+ @see ActivationFactory
+ @since 6.0
+ */
 public class General extends Activation {
 
     public General() {
     }
 
+    /**
+     No parameters are required to configure the activation method.
+
+     @return an empty string
+     */
     @Override
     public String parameters() {
         return "";
     }
 
+    /**
+     No parameters are required to configure the activation method.
+
+     @param parameters is an empty string
+     */
     @Override
     public void configure(String parameters) {
         //do nothing...
     }
 
+    /**
+     Activates every rule in the given rule block following the order in which
+     the rules were added.
+
+     @param ruleBlock is the rule block to activate
+     */
     @Override
     public void activate(RuleBlock ruleBlock) {
         if (FuzzyLite.isDebugging()) {

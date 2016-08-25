@@ -27,6 +27,20 @@ import java.util.List;
 import java.util.ListIterator;
 import java.util.logging.Level;
 
+/**
+ The Last class is a RuleBlock Activation method that activates the last
+
+ @f$n@f$ rules whose activation degrees are greater than or equal to the given
+ threshold. The rules are iterated in the reverse order in which they were added
+ to the rule block.
+
+ @author Juan Rada-Vilela, Ph.D.
+ @see First
+ @see Rule
+ @see RuleBlock
+ @see ActivationFactory
+ @since 6.0
+ */
 public class Last extends Activation {
 
     private int numberOfRules;
@@ -45,11 +59,22 @@ public class Last extends Activation {
         this.threshold = threshold;
     }
 
+    /**
+     Returns the number of rules and the threshold of the activation method
+
+     @return "numberOfRules threshold"
+     */
     @Override
     public String parameters() {
         return Op.str(getNumberOfRules()) + " " + Op.str(getThreshold());
     }
 
+    /**
+     Configures the activation method with the given number of rules and
+     threshold
+
+     @param parameters as "numberOfRules threshold"
+     */
     @Override
     public void configure(String parameters) {
         if (parameters.isEmpty()) {
@@ -67,6 +92,13 @@ public class Last extends Activation {
         setThreshold(Op.toDouble(values.get(1)));
     }
 
+    /**
+     Activates the last @f$n@f$ rules whose activation degrees are greater than
+     the given threshold. The rules are iterated in the reverse order that the
+     rules were added to the rule block.
+
+     @param ruleBlock is the rule block to activate
+     */
     @Override
     public void activate(RuleBlock ruleBlock) {
         if (FuzzyLite.isDebugging()) {
@@ -97,18 +129,38 @@ public class Last extends Activation {
         }
     }
 
+    /**
+     Gets the number of rules for the activation degree
+
+     @return the number of rules for the activation degree
+     */
     public int getNumberOfRules() {
         return numberOfRules;
     }
 
+    /**
+     Sets the number of rules for the activation degree
+
+     @param numberOfRules is the number of rules for the activation degree
+     */
     public void setNumberOfRules(int numberOfRules) {
         this.numberOfRules = numberOfRules;
     }
 
+    /**
+     Gets the threshold for the activation degree
+
+     @return the threshold for the activation degree
+     */
     public double getThreshold() {
         return threshold;
     }
 
+    /**
+     Sets the threshold for the activation degree
+
+     @param threshold is the threshold for the activation degree
+     */
     public void setThreshold(double threshold) {
         this.threshold = threshold;
     }
