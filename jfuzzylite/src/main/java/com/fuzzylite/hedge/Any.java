@@ -16,8 +16,27 @@
  */
 package com.fuzzylite.hedge;
 
+/**
+ The Any class is a special Hedge that always returns `1.0`. Its position with
+ respect to the other hedges is last in the ordered set (Not, Seldom, Somewhat,
+ Very, Extremely, Any). The Antecedent of a Rule considers Any to be a
+ syntactically special hedge because it is not followed by a Term (e.g., `if
+ Variable is any then...`). Amongst hedges, only Any has virtual methods to be
+ overriden due to its particular case.
+
+ @author Juan Rada-Vilela, Ph.D.
+ @see Hedge
+ @see HedgeFactory
+ @since 4.0
+ */
 public class Any extends Hedge {
 
+    /**
+     Computes the hedge for the given value
+
+     @param x is irrelevant
+     @return `1.0`
+     */
     @Override
     public double hedge(double x) {
         return 1.0;

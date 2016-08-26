@@ -16,8 +16,23 @@
  */
 package com.fuzzylite.hedge;
 
+/**
+ The Somewhat class is a Hedge located third in the ordered set (Not, Seldom,
+ Somewhat, Very, Extremely, Any).
+
+ @author Juan Rada-Vilela, Ph.D.
+ @see Hedge
+ @see HedgeFactory
+ @since 4.0
+ */
 public class Somewhat extends Hedge {
 
+    /**
+     Computes the hedge for the membership function value @f$x@f$
+
+     @param x is a membership function value
+     @return @f$\sqrt{x}@f$
+     */
     @Override
     public double hedge(double x) {
         return Math.sqrt(x);

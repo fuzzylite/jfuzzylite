@@ -16,8 +16,23 @@
  */
 package com.fuzzylite.hedge;
 
+/**
+ The Very class is a Hedge located fourth in the ordered set (Not, Seldom,
+ Somewhat, Very, Extremely, Any).
+
+ @author Juan Rada-Vilela, Ph.D.
+ @see Hedge
+ @see HedgeFactory
+ @since 4.0
+ */
 public class Very extends Hedge {
 
+    /**
+     Computes the hedge for the membership function value @f$x@f$
+
+     @param x is a membership function value
+     @return @f$x^2@f$
+     */
     @Override
     public double hedge(double x) {
         return x * x;

@@ -18,6 +18,19 @@ package com.fuzzylite.hedge;
 
 import com.fuzzylite.term.Function;
 
+/**
+ The HedgeFunction class is a customizable Hedge via Function, which computes
+ any function based on the @f$x@f$ value. This hedge is not registered with the
+ HedgeFactory due to issues configuring the formula within. To register the
+ hedge, a static method with the constructor needs to be manually created and
+ registered.
+
+ @author Juan Rada-Vilela, Ph.D.
+ @see Function
+ @see Hedge
+ @see HedgeFactory
+ @since 6.0
+ */
 public class HedgeFunction extends Hedge {
 
     private Function function;
@@ -34,18 +47,40 @@ public class HedgeFunction extends Hedge {
         }
     }
 
+    /**
+     Returns the reference to the Function
+
+     @return the reference to the Function
+     */
     public Function function() {
         return this.function;
     }
 
+    /**
+     Loads the function with the given formula
+
+     @param formula is a valid formula in infix notation
+     */
     public void setFormula(String formula) {
-        this.function.setFormula(formula);
+        this.function.load(formula);
     }
 
+    /**
+     Returns the formula loaded into the function
+
+     @return the formula loaded into the function
+     */
     public String getFormula() {
         return this.function.getFormula();
     }
 
+    /**
+     Computes the hedge for the membership function value @f$x@f$ utilizing the
+     given function via HedgeFunction::setFormula()
+
+     @param x is a membership function value
+     @return the evaluation of the function
+     */
     @Override
     public double hedge(double x) {
         return this.function.membership(x);
@@ -56,11 +91,6 @@ public class HedgeFunction extends Hedge {
         HedgeFunction result = (HedgeFunction) super.clone();
         if (this.function != null) {
             result.function = this.function.clone();
-            try {
-                result.function.load(this.function.getFormula());
-            } catch (Exception ex) {
-                //ignore...
-            }
         }
         return result;
     }
