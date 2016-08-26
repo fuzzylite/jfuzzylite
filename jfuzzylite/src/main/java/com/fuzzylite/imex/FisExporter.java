@@ -89,6 +89,15 @@ import java.util.Deque;
 import java.util.List;
 import java.util.logging.Level;
 
+/**
+ The FisExporter class is an Exporter that translates an Engine and its
+ components into the Fuzzy Inference System format for Matlab or Octave.
+
+ @author Juan Rada-Vilela, Ph.D.
+ @see FisImporter
+ @see Exporter
+ @since 4.0
+ */
 public class FisExporter extends Exporter {
 
     public FisExporter() {
@@ -107,6 +116,12 @@ public class FisExporter extends Exporter {
         return result.toString();
     }
 
+    /**
+     Returns a string representation of the `[System]` configuration
+
+     @param engine is the engine
+     @return a string representation of the `[System]` configuration
+     */
     public String exportSystem(Engine engine) {
         StringBuilder result = new StringBuilder();
         result.append("[System]\n");
@@ -166,6 +181,12 @@ public class FisExporter extends Exporter {
         return result.toString();
     }
 
+    /**
+     Returns a string representation of the `[Input]` configuration
+
+     @param engine is the engine
+     @return a string representation of the `[Input]` configuration
+     */
     public String exportInputs(Engine engine) {
         StringBuilder result = new StringBuilder();
 
@@ -187,6 +208,12 @@ public class FisExporter extends Exporter {
         return result.toString();
     }
 
+    /**
+     Returns a string representation of the `[Output]` configuration
+
+     @param engine is the engine
+     @return a string representation of the `[Output]` configuration
+     */
     public String exportOutputs(Engine engine) {
         StringBuilder result = new StringBuilder();
 
@@ -208,6 +235,12 @@ public class FisExporter extends Exporter {
         return result.toString();
     }
 
+    /**
+     Returns a string representation of the `[Rules]` configuration
+
+     @param engine is the engine
+     @return a string representation of the `[Rules]` configuration
+     */
     public String exportRules(Engine engine) {
         StringBuilder result = new StringBuilder();
         result.append("[Rules]\n");
@@ -225,6 +258,15 @@ public class FisExporter extends Exporter {
         return result.toString();
     }
 
+    /**
+     Returns a string representation for the Rule in the Fuzzy Inference System
+     format
+
+     @param rule is the rule
+     @param engine is the engine in which the rule is registered
+     @return a string representation for the rule in the Fuzzy Inference System
+     format
+     */
     public String exportRule(Rule rule, Engine engine) {
         List<Proposition> propositions = new ArrayList<Proposition>();
         List<Operator> operators = new ArrayList<Operator>();
@@ -338,6 +380,14 @@ public class FisExporter extends Exporter {
         return result.toString();
     }
 
+    /**
+     Returns a string representation of the TNorm in the Fuzzy Inference System
+     format
+
+     @param tnorm is the TNorm
+     @return a string representation of the TNorm in the Fuzzy Inference System
+     format
+     */
     public String toString(TNorm tnorm) {
         if (tnorm == null) {
             return "min";
@@ -366,6 +416,14 @@ public class FisExporter extends Exporter {
         return tnorm.getClass().getSimpleName();
     }
 
+    /**
+     Returns a string representation of the SNorm in the Fuzzy Inference System
+     format
+
+     @param snorm is the SNorm
+     @return a string representation of the SNorm in the Fuzzy Inference System
+     format
+     */
     public String toString(SNorm snorm) {
         if (snorm == null) {
             return "max";
@@ -400,6 +458,14 @@ public class FisExporter extends Exporter {
         return snorm.getClass().getSimpleName();
     }
 
+    /**
+     Returns a string representation of the Defuzzifier in the Fuzzy Inference
+     System format
+
+     @param defuzzifier is the defuzzifier
+     @return a string representation of the Defuzzifier in the Fuzzy Inference
+     System format
+     */
     public String toString(Defuzzifier defuzzifier) {
         if (defuzzifier == null) {
             return "";
@@ -428,6 +494,14 @@ public class FisExporter extends Exporter {
         return defuzzifier.getClass().getSimpleName();
     }
 
+    /**
+     Returns a string representation of the Term in the Fuzzy Inference System
+     format
+
+     @param term is the term
+     @return a string representation of the term in the Fuzzy Inference System
+     format
+     */
     public String toString(Term term) {
         if (term instanceof Bell) {
             Bell t = (Bell) term;

@@ -33,6 +33,17 @@ import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 
+/**
+ The FllExporter class is an Exporter that translates an Engine and its
+ components to the FuzzyLite Language (FLL), see
+ [http://www.fuzzylite.com/fll-fld](http://www.fuzzylite.com/fll-fld) for more
+ information.
+
+ @author Juan Rada-Vilela, Ph.D.
+ @see FllImporter
+ @see Exporter
+ @since 4.0
+ */
 public class FllExporter extends Exporter {
 
     private String indent;
@@ -47,18 +58,38 @@ public class FllExporter extends Exporter {
         this.separator = separator;
     }
 
+    /**
+     Gets the indent string of the FuzzyLite Language
+
+     @return the indent string of the FuzzyLite Language
+     */
     public String getIndent() {
         return indent;
     }
 
+    /**
+     Sets the indent string of the FuzzyLite Language
+
+     @param indent is the indent string of the FuzzyLite Language
+     */
     public void setIndent(String indent) {
         this.indent = indent;
     }
 
+    /**
+     Gets the separator of the FuzzyLite Language
+
+     @return the separator of the FuzzyLite Language
+     */
     public String getSeparator() {
         return separator;
     }
 
+    /**
+     Gets the separator of the FuzzyLite Language
+
+     @param separator of the FuzzyLite Language
+     */
     public void setSeparator(String separator) {
         this.separator = separator;
     }
@@ -79,6 +110,14 @@ public class FllExporter extends Exporter {
         return Op.join(result, separator);
     }
 
+    /**
+     Returns a string representation of the collection of variables in the
+     FuzzyLite Language
+
+     @param variables is the collection of variables
+     @return a string representation of the collection of variables in the
+     FuzzyLite Language
+     */
     public String toStringVariables(Collection<? extends Variable> variables) {
         List<String> result = new LinkedList<String>();
         for (Variable variable : variables) {
@@ -87,6 +126,14 @@ public class FllExporter extends Exporter {
         return Op.join(result, separator);
     }
 
+    /**
+     Returns a string representation of the collection of input variables in the
+     FuzzyLite Language
+
+     @param variables is the collection of input variables
+     @return a string representation of the collection of input variables in the
+     FuzzyLite Language
+     */
     public String toStringInputVariables(Collection<InputVariable> variables) {
         List<String> result = new LinkedList<String>();
         for (InputVariable variable : variables) {
@@ -95,6 +142,14 @@ public class FllExporter extends Exporter {
         return Op.join(result, separator);
     }
 
+    /**
+     Returns a string representation of the collection of output variables in
+     the FuzzyLite Language
+
+     @param variables is a collection of output variables
+     @return a string representation of the collection of output variables in
+     the FuzzyLite Language
+     */
     public String toStringOutputVariables(Collection<OutputVariable> variables) {
         List<String> result = new LinkedList<String>();
         for (OutputVariable variable : variables) {
@@ -103,6 +158,14 @@ public class FllExporter extends Exporter {
         return Op.join(result, separator);
     }
 
+    /**
+     Returns a string representation of the collection of rule blocks in the
+     FuzzyLite Language
+
+     @param ruleBlocks is the collection of rule blocks
+     @return a string representation of the collection of rule blocks in the
+     FuzzyLite Language
+     */
     public String toStringRuleBlocks(Collection<RuleBlock> ruleBlocks) {
         List<String> result = new LinkedList<String>();
         for (RuleBlock ruleBlock : ruleBlocks) {
@@ -111,6 +174,12 @@ public class FllExporter extends Exporter {
         return Op.join(result, separator);
     }
 
+    /**
+     Returns a string representation of the Variable in the FuzzyLite Language
+
+     @param variable is the variable
+     @return a string representation of the variable in the FuzzyLite Language
+     */
     public String toString(Variable variable) {
         List<String> result = new LinkedList<String>();
         result.add(String.format("Variable: %s", variable.getName()));
@@ -126,6 +195,14 @@ public class FllExporter extends Exporter {
         return Op.join(result, separator);
     }
 
+    /**
+     Returns a string representation of the InputVariable in the FuzzyLite
+     Language
+
+     @param inputVariable is the input variable to export
+     @return a string representation of the input variable in the FuzzyLite
+     Language
+     */
     public String toString(InputVariable inputVariable) {
         List<String> result = new LinkedList<String>();
         result.add(String.format("InputVariable: %s", inputVariable.getName()));
@@ -141,6 +218,14 @@ public class FllExporter extends Exporter {
         return Op.join(result, separator);
     }
 
+    /**
+     Returns a string representation of the OutputVariable in the FuzzyLite
+     Language
+
+     @param outputVariable is the output variable
+     @return a string representation of the output variable in the FuzzyLite
+     Language
+     */
     public String toString(OutputVariable outputVariable) {
         List<String> result = new LinkedList<String>();
         result.add(String.format("OutputVariable: %s", outputVariable.getName()));
@@ -165,6 +250,12 @@ public class FllExporter extends Exporter {
         return Op.join(result, separator);
     }
 
+    /**
+     Returns a string representation of the RuleBlock in the FuzzyLite Language
+
+     @param ruleBlock is the rule block
+     @return a string representation of the rule block in the FuzzyLite Language
+     */
     public String toString(RuleBlock ruleBlock) {
         List<String> result = new LinkedList<String>();
         result.add(String.format("RuleBlock: %s", ruleBlock.getName()));
@@ -184,16 +275,34 @@ public class FllExporter extends Exporter {
         return Op.join(result, separator);
     }
 
+    /**
+     Returns a string representation of the Rule in the FuzzyLite Language
+
+     @param rule is the rule
+     @return a string representation of the rule in the FuzzyLite Language
+     */
     public String toString(Rule rule) {
         return "rule: " + rule.getText();
     }
 
+    /**
+     Returns a string representation of the Term in the FuzzyLite Language
+
+     @param term is the term
+     @return a string representation of the term in the FuzzyLite Language
+     */
     public String toString(Term term) {
         return "term: " + term.getName()
                 + " " + term.getClass().getSimpleName()
                 + " " + term.parameters();
     }
 
+    /**
+     Returns a string representation of the Norm in the FuzzyLite Language
+
+     @param norm is the norm
+     @return a string representation of the norm in the FuzzyLite Language
+     */
     public String toString(Norm norm) {
         if (norm == null) {
             return "none";
@@ -201,6 +310,14 @@ public class FllExporter extends Exporter {
         return norm.getClass().getSimpleName();
     }
 
+    /**
+     Returns a string representation of the Activation method in the FuzzyLite
+     Language
+
+     @param activation is the activation method
+     @return a string representation of the activation method in the FuzzyLite
+     Language
+     */
     public String toString(Activation activation) {
         if (activation == null) {
             return "none";
@@ -212,6 +329,14 @@ public class FllExporter extends Exporter {
         return className + " " + activation.parameters();
     }
 
+    /**
+     Returns a string representation of the Defuzzifier in the FuzzyLite
+     Language
+
+     @param defuzzifier is the defuzzifier
+     @return a string representation of the defuzzifier in the FuzzyLite
+     Language
+     */
     public String toString(Defuzzifier defuzzifier) {
         if (defuzzifier == null) {
             return "none";

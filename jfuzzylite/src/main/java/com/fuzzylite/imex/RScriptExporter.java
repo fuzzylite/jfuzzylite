@@ -31,6 +31,16 @@ import java.io.Writer;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ The RScriptExporter class is an Exporter that creates an R script to plot one
+ or more surfaces of an engine for two input variables and any number of output
+ variables.
+
+ @author Juan Rada-Vilela, Ph.D.
+ @see FldExporter
+ @see Exporter
+ @since 6.0
+ */
 public class RScriptExporter extends Exporter {
 
     private String minimumColor;
@@ -43,30 +53,69 @@ public class RScriptExporter extends Exporter {
         this.contourColor = "black";
     }
 
+    /**
+     Gets the color to represent the minimum values.
+
+     @return the color to represent the minimum values
+     */
     public String getMinimumColor() {
         return minimumColor;
     }
 
+    /**
+     Sets the color to represent the minimum values.
+
+     @param minimumColor is the color to represent the minimum values
+     */
     public void setMinimumColor(String minimumColor) {
         this.minimumColor = minimumColor;
     }
 
+    /**
+     Gets the color to represent the maximum values.
+
+     @return maximumColor is the color to represent the maximum values
+     */
     public String getMaximumColor() {
         return maximumColor;
     }
 
+    /**
+     Sets the color to represent the maximum values.
+
+     @param maximumColor is the color to represent the maximum values
+     */
     public void setMaximumColor(String maximumColor) {
         this.maximumColor = maximumColor;
     }
 
+    /**
+     Gets the color to draw the contour lines
+
+     @return the color to draw the contour lines
+     */
     public String getContourColor() {
         return contourColor;
     }
 
+    /**
+     Sets the color to draw the contour lines
+
+     @param contourColor is the color to draw the contour lines
+     */
     public void setContourColor(String contourColor) {
         this.contourColor = contourColor;
     }
 
+    /**
+     Returns an R script plotting multiple surfaces based on a data frame
+     generated with 1024 values in the scope of FldExporter::AllVariables for
+     the first two input variables.
+
+     @param engine is the engine to export
+     @return an R script plotting multiple surfaces for the first two input
+     variables in the engine.
+     */
     @Override
     public String toString(Engine engine) {
         if (engine.getInputVariables().isEmpty()) {
@@ -81,6 +130,20 @@ public class RScriptExporter extends Exporter {
                 1024, FldExporter.ScopeOfValues.AllVariables, engine.getOutputVariables());
     }
 
+    /**
+     Returns an R script plotting multiple surfaces based on a data frame
+     generated with the given number of values and scope for the two input
+     variables.
+
+     @param engine is the engine to export
+     @param a is the first input variable
+     @param b is the second input variable
+     @param values is the number of values to evaluate the engine
+     @param scope is the scope of the number of values to evaluate the engine
+     @param outputVariables are the output variables to create the surface for
+     @return an R script plotting multiple surfaces for the two input variables
+     on the output variables.
+     */
     public String toString(Engine engine, InputVariable a, InputVariable b,
             int values, FldExporter.ScopeOfValues scope,
             List<OutputVariable> outputVariables) {
@@ -95,6 +158,19 @@ public class RScriptExporter extends Exporter {
         return writer.toString();
     }
 
+    /**
+     Returns an R script plotting multiple surfaces based on the input stream of
+     values for the two input variables.
+
+     @param engine is the engine to export
+     @param a is the first input variable
+     @param b is the second input variable
+     @param reader is an input stream of data whose lines contain
+     space-separated input values
+     @param outputVariables are the output variables to create the surface for
+     @return an R script plotting multiple surfaces for the two input variables
+     on the output variables
+     */
     public String toString(Engine engine, InputVariable a, InputVariable b,
             Reader reader, List<OutputVariable> outputVariables) {
         StringWriter writer = new StringWriter();
@@ -108,6 +184,15 @@ public class RScriptExporter extends Exporter {
         return writer.toString();
     }
 
+    /**
+     Creates an R script file plotting multiple surfaces based on a data frame
+     generated with 1024 values in the scope of FldExporter::AllVariables for
+     the two input variables
+
+     @param file is the R script file
+     @param engine is the engine to export
+     @throws IOException if any error occurs during writing the file
+     */
     @Override
     public void toFile(File file, Engine engine) throws IOException {
         if (engine.getInputVariables().isEmpty()) {
@@ -122,6 +207,20 @@ public class RScriptExporter extends Exporter {
                 1024, FldExporter.ScopeOfValues.AllVariables, engine.getOutputVariables());
     }
 
+    /**
+     Creates an R script file plotting multiple surfaces based on a data frame
+     generated with the given number of values and scope for the two input
+     variables
+
+     @param file is the R script file
+     @param engine is the engine to export
+     @param a is the first input variable
+     @param b is the second input variable
+     @param values is the number of values to evaluate the engine
+     @param scope is the scope of the number of values to evaluate the engine
+     @param outputVariables are the output variables to create the surface for
+     @throws IOException if any error occurs upon writing the file
+     */
     public void toFile(File file, Engine engine,
             InputVariable a, InputVariable b,
             int values, FldExporter.ScopeOfValues scope,
@@ -139,6 +238,19 @@ public class RScriptExporter extends Exporter {
         }
     }
 
+    /**
+     Creates an R script file plotting multiple surfaces based on the input
+     stream of values for the two input variables.
+
+     @param file is the R script file
+     @param engine is the engine to export
+     @param a is the first input variable
+     @param b is the second input variable
+     @param reader is an input stream of data whose lines contain
+     space-separated input values
+     @param outputVariables are the output variables to create the surface for
+     @throws IOException if any error occurs upon writing the file
+     */
     public void toFile(File file, Engine engine,
             InputVariable a, InputVariable b, Reader reader,
             List<OutputVariable> outputVariables) throws IOException {
@@ -155,6 +267,21 @@ public class RScriptExporter extends Exporter {
         }
     }
 
+    /**
+     Writes an R script plotting multiple surfaces based on a manually imported
+     data frame containing the data for the two input variables on the output
+     variables.
+
+     @param engine is the engine to export
+     @param writer is the output where the engine will be written to
+     @param a is the first input variable
+     @param b is the second input variable
+     @param dataFramePath is the path where the data frame should be located
+     (the path will not be accessed, it will only be written to script)
+     @param outputVariables are the output variables to create the surface for
+     @throws IOException if any error occurs upon writing on the writer
+
+     */
     public void writeScriptImportingDataFrame(Engine engine, Writer writer,
             InputVariable a, InputVariable b, String dataFramePath,
             List<OutputVariable> outputVariables) throws IOException {
@@ -173,6 +300,20 @@ public class RScriptExporter extends Exporter {
         writeScriptPlots(writer, a, b, outputVariables);
     }
 
+    /**
+     Writes an R script plotting multiple surfaces based on a data frame
+     generated with the given number of values and scope for the two input
+     variables on the output variables.
+
+     @param engine is the engine to export
+     @param writer is the output where the engine will be written to
+     @param a is the first input variable
+     @param b is the second input variable
+     @param values is the number of values to evaluate the engine
+     @param scope is the scope of the number of values to evaluate the engine
+     @param outputVariables are the output variables to create the surface for
+     @throws IOException if any error occurs upon writing on the writer
+     */
     public void writeScriptExportingDataFrame(Engine engine, Writer writer,
             InputVariable a, InputVariable b, int values, FldExporter.ScopeOfValues scope,
             List<OutputVariable> outputVariables) throws IOException {
@@ -197,6 +338,21 @@ public class RScriptExporter extends Exporter {
         writeScriptPlots(writer, a, b, outputVariables);
     }
 
+    /**
+     Writes an R script plotting multiple surfaces based on a data frame
+     generated with the given number of values and scope for the two input
+     variables on the output variables.
+
+     @param engine is the engine to export
+     @param writer is the output where the engine will be written to
+     @param a is the first input variable
+     @param b is the second input variable
+     @param reader is an input stream of data whose lines contain
+     space-separated input values
+     @param outputVariables are the output variables to create the surface for
+     @throws IOException if any error occurs upon writing on the writer
+
+     */
     public void writeScriptExportingDataFrame(Engine engine, Writer writer,
             InputVariable a, InputVariable b, Reader reader,
             List<OutputVariable> outputVariables) throws IOException {
@@ -215,12 +371,29 @@ public class RScriptExporter extends Exporter {
         writeScriptPlots(writer, a, b, outputVariables);
     }
 
+    /**
+     Writes the header of the R script (e.g., import libraries)
+
+     @param writer is the output where the header will be written to
+     @throws IOException if any error occurs upon writing on the writer
+
+     */
     protected void writeScriptHeader(Writer writer) throws IOException {
         writer.append("#R script generated with " + FuzzyLite.LIBRARY + ".\n\n");
         writer.append("library(ggplot2);\n");
         writer.append("\n");
     }
 
+    /**
+     Writes the code to generate the surface plots for the input variables on
+     the output variables.
+
+     @param writer is the output where the engine will be written to
+     @param a is the first input variable
+     @param b is the second input variable
+     @param outputVariables are the output variables to create the surface for
+     @throws IOException if any error occurs upon writing on the writer
+     */
     protected void writeScriptPlots(Writer writer,
             InputVariable a, InputVariable b,
             List<OutputVariable> outputVariables) throws IOException {

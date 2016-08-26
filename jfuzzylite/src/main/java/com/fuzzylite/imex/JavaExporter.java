@@ -19,7 +19,6 @@ package com.fuzzylite.imex;
 import com.fuzzylite.Engine;
 import com.fuzzylite.FuzzyLite;
 import com.fuzzylite.Op;
-import static com.fuzzylite.Op.str;
 import com.fuzzylite.activation.Activation;
 import com.fuzzylite.defuzzifier.Defuzzifier;
 import com.fuzzylite.defuzzifier.IntegralDefuzzifier;
@@ -36,13 +35,16 @@ import com.fuzzylite.variable.OutputVariable;
 import java.util.List;
 import java.util.regex.Pattern;
 import static com.fuzzylite.Op.str;
-import static com.fuzzylite.Op.str;
-import static com.fuzzylite.Op.str;
-import static com.fuzzylite.Op.str;
-import static com.fuzzylite.Op.str;
-import static com.fuzzylite.Op.str;
-import static com.fuzzylite.Op.str;
 
+/**
+ The JavaExporter class is an Exporter that translates an Engine and its
+ components to the `Java` programming language using the `jfuzzylite` library.
+
+ @author Juan Rada-Vilela, Ph.D.
+ @see CppExporter
+ @see Exporter
+ @since 4.0
+ */
 public class JavaExporter extends Exporter {
 
     private boolean usingVariableNames;
@@ -55,10 +57,25 @@ public class JavaExporter extends Exporter {
         this.usingVariableNames = usingVariableNames;
     }
 
+    /**
+     Gets whether variables are exported using their names (e.g.,
+     `power.setValue(Double.NaN)`) instead of numbered identifiers (e.g.,
+     `inputVariable1.setValue(Double.NaN)`)
+
+     @return whether variables are exported using their names
+     */
     public boolean isUsingVariableNames() {
         return usingVariableNames;
     }
 
+    /**
+     Sets whether variables are exported using their names (e.g.,
+     `power.setValue(Double.NaN)`) instead of numbered identifiers (e.g.,
+     `inputVariable1.setValue(Double.NaN)`)
+
+     @param usingVariableNames indicates whether variables are exported using
+     their names
+     */
     public void setUsingVariableNames(boolean usingVariableNames) {
         this.usingVariableNames = usingVariableNames;
     }
@@ -88,6 +105,15 @@ public class JavaExporter extends Exporter {
         return result.toString();
     }
 
+    /**
+     Returns a string representation of the InputVariable in the Java
+     programming language
+
+     @param inputVariable is the input variable
+     @param engine is the engine in which the input variable is registered
+     @return a string representation of the input variable in the Java
+     programming language
+     */
     public String toString(InputVariable inputVariable, Engine engine) {
         String name;
         if (isUsingVariableNames()) {
@@ -118,6 +144,15 @@ public class JavaExporter extends Exporter {
         return result.toString();
     }
 
+    /**
+     Returns a string representation of the OutputVariable in the Java
+     programming language
+
+     @param outputVariable is the output variable
+     @param engine is the engine in which the output variable is registered
+     @return a string representation of the output variable in the Java
+     programming language
+     */
     public String toString(OutputVariable outputVariable, Engine engine) {
         String name;
         if (isUsingVariableNames()) {
@@ -161,6 +196,15 @@ public class JavaExporter extends Exporter {
         return result.toString();
     }
 
+    /**
+     Returns a string representation of the RuleBlock in the Java programming
+     language
+
+     @param ruleBlock is the rule block
+     @param engine is the engine in which the rule block is registered
+     @return a string representation of the rule block in the Java programming
+     language
+     */
     public String toString(RuleBlock ruleBlock, Engine engine) {
         String name = "ruleBlock";
         if (engine.numberOfRuleBlocks() > 1) {
@@ -190,6 +234,14 @@ public class JavaExporter extends Exporter {
         return result.toString();
     }
 
+    /**
+     Returns a string representation of the Term in the Java programming
+     language
+
+     @param term is the term
+     @return a string representation of the term in the Java programming
+     language
+     */
     public String toString(Term term) {
         if (term == null) {
             return "null";
@@ -222,6 +274,14 @@ public class JavaExporter extends Exporter {
         return result;
     }
 
+    /**
+     Returns a string representation of the Defuzzifier in the Java programming
+     language
+
+     @param defuzzifier is the defuzzifier
+     @return a string representation of the defuzzifier in the Java programming
+     language
+     */
     public String toString(Defuzzifier defuzzifier) {
         if (defuzzifier == null) {
             return "null";
@@ -239,6 +299,14 @@ public class JavaExporter extends Exporter {
         return String.format("new %s()", defuzzifier.getClass().getSimpleName());
     }
 
+    /**
+     Returns a string representation of the Activation method in the Java
+     programming language
+
+     @param activation is the activation method
+     @return a string representation of the activation method in the Java
+     programming language
+     */
     public String toString(Activation activation) {
         if (activation == null) {
             return "fl:null";
@@ -257,6 +325,14 @@ public class JavaExporter extends Exporter {
                 Op.join(values, ", "));
     }
 
+    /**
+     Returns a string representation of the Norm in the Java programming
+     language
+
+     @param norm is the norm
+     @return a string representation of the norm in the Java programming
+     language
+     */
     public String toString(Norm norm) {
         if (norm == null) {
             return "null";
@@ -264,6 +340,14 @@ public class JavaExporter extends Exporter {
         return String.format("new %s()", norm.getClass().getSimpleName());
     }
 
+    /**
+     Returns a string representation of the scalar value in the Java programming
+     language
+
+     @param value is the scalar value
+     @return a string representation of the scalar value in the Java programming
+     language
+     */
     public String toString(double value) {
         if (Double.isNaN(value)) {
             return "Double.NaN";

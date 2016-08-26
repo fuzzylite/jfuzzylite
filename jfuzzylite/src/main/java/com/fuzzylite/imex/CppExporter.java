@@ -19,7 +19,6 @@ package com.fuzzylite.imex;
 import com.fuzzylite.Engine;
 import com.fuzzylite.FuzzyLite;
 import com.fuzzylite.Op;
-import static com.fuzzylite.Op.str;
 import com.fuzzylite.activation.Activation;
 import com.fuzzylite.defuzzifier.Defuzzifier;
 import com.fuzzylite.defuzzifier.IntegralDefuzzifier;
@@ -37,13 +36,16 @@ import com.fuzzylite.variable.OutputVariable;
 import java.util.List;
 import java.util.regex.Pattern;
 import static com.fuzzylite.Op.str;
-import static com.fuzzylite.Op.str;
-import static com.fuzzylite.Op.str;
-import static com.fuzzylite.Op.str;
-import static com.fuzzylite.Op.str;
-import static com.fuzzylite.Op.str;
-import static com.fuzzylite.Op.str;
 
+/**
+ The CppExporter class is an Exporter that translates an Engine and its
+ components to the `C++` programming language using the `fuzzylite` library.
+
+ @author Juan Rada-Vilela, Ph.D.
+ @see JavaExporter
+ @see Exporter
+ @since 4.0
+ */
 public class CppExporter extends Exporter {
 
     private boolean usingNamespace;
@@ -58,26 +60,68 @@ public class CppExporter extends Exporter {
         this.usingVariableNames = exportVariableNames;
     }
 
-    protected String fl() {
+    /**
+     Returns the `fl` namespace if CppExporter::isUsingNamespace is `true`,
+     empty otherwise
+
+     @return `fl::` if CppExporter::isUsingNamespace is `true`, empty otherwise
+     */
+    public String fl() {
         return fl("");
     }
 
-    protected String fl(String clazz) {
+    /**
+     Returns the given text prepended with the `fl` namespace if
+     CppExporter::isUsingNamespace is `true`, or the text otherwise
+
+     @param clazz is the text to be prepended the `fl::`.
+     @return the given text prepended with the `fl` namespace if
+     CppExporter::isUsingNamespace is `true`, or the text otherwise
+     */
+    public String fl(String clazz) {
         return this.usingNamespace ? "fl::" + clazz : clazz;
     }
 
+    /**
+     Sets whether the fl namespace of the library is prepended to types (e.g.,
+     fl::Engine)
+
+     @param usingNamespace whether the fl namespace of the library is prepended
+     to types (e.g., fl::Engine)
+     */
     public void setUsingNamespace(boolean usingNamespace) {
         this.usingNamespace = usingNamespace;
     }
 
+    /**
+     Gets whether the fl namespace of the library is prepended to types (e.g.,
+     fl::Engine)
+
+     @return whether the fl namespace of the library is prepended to types
+     */
     public boolean isUsingNamespace() {
         return this.usingNamespace;
     }
 
+    /**
+     Sets whether variables are exported using their names (e.g.,
+     `power->setValue(fl::nan)`) instead of numbered identifiers (e.g.,
+     `inputVariable1->setValue(fl::nan)`)
+
+     @param usingVariableNames indicates whether variables are exported using
+     their names
+     */
     public void setUsingVariableNames(boolean usingVariableNames) {
         this.usingVariableNames = usingVariableNames;
     }
 
+    /**
+     Gets whether variables are exported using their names (e.g.,
+     `power->setValue(fl::nan)`) instead of numbered identifiers (e.g.,
+     `inputVariable1->setValue(fl::nan)`)
+
+     @return whether variables are exported using their names
+     */
     public boolean isUsingVariableNames() {
         return usingVariableNames;
     }
@@ -110,6 +154,15 @@ public class CppExporter extends Exporter {
         return result.toString();
     }
 
+    /**
+     Returns a string representation of InputVariable in the `C++` programming
+     language
+
+     @param inputVariable is the input variable
+     @param engine is the engine in which the input variable is registered
+     @return a string representation of the input variable in the `C++`
+     programming language
+     */
     public String toString(InputVariable inputVariable, Engine engine) {
         String name;
         if (isUsingVariableNames()) {
@@ -141,6 +194,15 @@ public class CppExporter extends Exporter {
         return result.toString();
     }
 
+    /**
+     Returns a string representation of the OutputVariable in the `C++`
+     programming language
+
+     @param outputVariable is the output variable
+     @param engine is the engine in which the output variable is registered
+     @return a string representation of the output variable in the `C++`
+     programming language
+     */
     public String toString(OutputVariable outputVariable, Engine engine) {
         String name;
         if (isUsingVariableNames()) {
@@ -184,6 +246,15 @@ public class CppExporter extends Exporter {
         return result.toString();
     }
 
+    /**
+     Returns a string representation of the RuleBlock in the `C++` programming
+     language
+
+     @param ruleBlock is the rule block
+     @param engine is the engine in which the rule block is registered
+     @return a string representation of the rule block in the `C++` programming
+     language
+     */
     public String toString(RuleBlock ruleBlock, Engine engine) {
         String name = "ruleBlock";
         if (engine.numberOfRuleBlocks() > 1) {
@@ -215,6 +286,14 @@ public class CppExporter extends Exporter {
         return result.toString();
     }
 
+    /**
+     Returns a string representation of the scalar value in the `C++`
+     programming language
+
+     @param value is the scalar value
+     @return a string representation of the scalar value in the `C++`
+     programming language
+     */
     public String toString(double value) {
         if (Double.isNaN(value)) {
             return "fl::nan";
@@ -224,6 +303,14 @@ public class CppExporter extends Exporter {
         return str(value);
     }
 
+    /**
+     Returns a string representation of the Term in the `C++` programming
+     language
+
+     @param term is the term
+     @return a string representation of the term in the `C++` programming
+     language
+     */
     public String toString(Term term) {
         if (term == null) {
             return "fl::null";
@@ -256,10 +343,26 @@ public class CppExporter extends Exporter {
         return result;
     }
 
+    /**
+     Returns a string representation of the Hedge in the `C++` programming
+     language
+
+     @param hedge is the hedge
+     @return a string representation of the hedge in the `C++` programming
+     language
+     */
     public String toString(Hedge hedge) {
         return "new " + fl(hedge.getClass().getSimpleName());
     }
 
+    /**
+     Returns a string representation of the Norm in the `C++` programming
+     language
+
+     @param norm is the norm
+     @return a string representation of the norm in the `C++` programming
+     language
+     */
     public String toString(Norm norm) {
         if (norm == null) {
             return "fl::null";
@@ -267,6 +370,14 @@ public class CppExporter extends Exporter {
         return "new " + fl(norm.getClass().getSimpleName());
     }
 
+    /**
+     Returns a string representation of the Defuzzifier in the `C++` programming
+     language
+
+     @param defuzzifier is the defuzzifier
+     @return a string representation of the defuzzifier in the `C++` programming
+     language
+     */
     public String toString(Defuzzifier defuzzifier) {
         if (defuzzifier == null) {
             return "fl::null";
@@ -284,6 +395,14 @@ public class CppExporter extends Exporter {
         return "new " + fl(defuzzifier.getClass().getSimpleName());
     }
 
+    /**
+     Returns a string representation of the Activation method in the `C++`
+     programming language
+
+     @param activation is the activation method
+     @return a string representation of the activation method in the `C++`
+     programming language
+     */
     public String toString(Activation activation) {
         if (activation == null) {
             return "fl::null";

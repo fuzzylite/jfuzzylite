@@ -324,7 +324,7 @@ public class Console {
             if (options.containsKey(KW_DATA_EXPORT_INPUTS)) {
                 exportInputValues = "true".equals(options.get(KW_DATA_EXPORT_INPUTS));
             }
-            fldExporter.setExportHeaders(exportHeaders);
+            fldExporter.setExportHeader(exportHeaders);
             fldExporter.setExportInputValues(exportInputValues);
 
             String filename = options.get(KW_DATA_INPUT_FILE);

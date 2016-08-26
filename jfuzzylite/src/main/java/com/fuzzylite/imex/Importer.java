@@ -25,10 +25,33 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 
+/**
+ The Importer class is the abstract class for importers to configure an Engine
+ and its components from different text formats.
+
+ @todo declare methods to import specific components
+
+ @author Juan Rada-Vilela, Ph.D.
+ @see Exporter
+ @since 4.0
+ */
 public abstract class Importer implements Op.Cloneable {
 
+    /**
+     Imports the engine from the given text
+
+     @param text is the string representation of the engine to import from
+     @return the engine represented by the text
+     */
     public abstract Engine fromString(String text);
 
+    /**
+     Imports the engine from the given file
+
+     @param file is the file containing the engine to import
+     @return the engine represented by the file
+     @throws IOException if any error occurs upon reading the file
+     */
     public Engine fromFile(File file) throws IOException {
         BufferedReader reader = new BufferedReader(new InputStreamReader(
                 new FileInputStream(file), FuzzyLite.UTF_8));

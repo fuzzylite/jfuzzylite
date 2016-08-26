@@ -26,10 +26,34 @@ import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.util.logging.Level;
 
+/**
+ The Exporter class is the abstract class for exporters to translate an Engine
+ into different formats.
+
+ @todo declare methods for exporting other components (e.g., Variable)
+
+ @author Juan Rada-Vilela, Ph.D.
+ @see Importer
+ @since 4.0
+ */
 public abstract class Exporter implements Op.Cloneable {
 
+    /**
+     Returns a string representation of the engine
+
+     @param engine is the engine to export
+     @return a string representation of the engine
+     */
     public abstract String toString(Engine engine);
 
+    /**
+     Stores the string representation of the engine into the specified file
+
+     @param file is the file to export the engine to
+     @param engine is the engine to export
+     @throws IOException if any problem occurs upon creation or writing to the
+     file
+     */
     public void toFile(File file, Engine engine) throws IOException {
         if (!file.createNewFile()) {
             FuzzyLite.logger().log(Level.FINE, "Replacing file: {0}", file.getAbsolutePath());
@@ -45,6 +69,11 @@ public abstract class Exporter implements Op.Cloneable {
         }
     }
 
+    /**
+     Creates a clone of the exporter
+
+     @return a clone of the exporter
+     */
     @Override
     public Exporter clone() throws CloneNotSupportedException {
         return (Exporter) super.clone();

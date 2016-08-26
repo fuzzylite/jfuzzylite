@@ -51,6 +51,15 @@ import com.fuzzylite.variable.InputVariable;
 import com.fuzzylite.variable.OutputVariable;
 import java.util.Iterator;
 
+/**
+ The FclExporter class is an Exporter that translates an Engine and its
+ components to the Fuzzy Control Language specification.
+
+ @author Juan Rada-Vilela, Ph.D.
+ @see FclImporter
+ @see Exporter
+ @since 4.0
+ */
 public class FclExporter extends Exporter {
 
     private String indent;
@@ -63,10 +72,20 @@ public class FclExporter extends Exporter {
         this.indent = indent;
     }
 
+    /**
+     Gets the indentation string within blocks
+
+     @return the indentation string within blocks
+     */
     public String getIndent() {
         return indent;
     }
 
+    /**
+     Sets the indentation string within blocks
+
+     @param indent is the indentation string within blocks
+     */
     public void setIndent(String indent) {
         this.indent = indent;
     }
@@ -113,6 +132,14 @@ public class FclExporter extends Exporter {
         return result.toString();
     }
 
+    /**
+     Returns a string representation of the InputVariable according to the Fuzzy
+     Control Language specification
+
+     @param inputVariable is the input variable
+     @return a string representation of the input variable according to the
+     Fuzzy Control Language specification
+     */
     public String toString(InputVariable inputVariable) {
         StringBuilder result = new StringBuilder();
         result.append(String.format("FUZZIFY %s\n", inputVariable.getName()));
@@ -127,6 +154,14 @@ public class FclExporter extends Exporter {
         return result.toString();
     }
 
+    /**
+     Returns a string representation of the OutputVariable according to the
+     Fuzzy Control Language specification
+
+     @param outputVariable is the output variable
+     @return a string representation of the output variable according to the
+     Fuzzy Control Language specification
+     */
     public String toString(OutputVariable outputVariable) {
         StringBuilder result = new StringBuilder();
 
@@ -154,6 +189,14 @@ public class FclExporter extends Exporter {
         return result.toString();
     }
 
+    /**
+     Returns a string representation of the RuleBlock according to the Fuzzy
+     Control Language specification
+
+     @param ruleBlock is the rule block
+     @return a string representation of the rule block according to the Fuzzy
+     Control Language specification
+     */
     public String toString(RuleBlock ruleBlock) {
         StringBuilder result = new StringBuilder();
         result.append(String.format("RULEBLOCK %s\n", ruleBlock.getName()));
@@ -175,6 +218,14 @@ public class FclExporter extends Exporter {
         return result.toString();
     }
 
+    /**
+     Returns a string representation of the Norm according to the Fuzzy Control
+     Language specification
+
+     @param norm is the norm
+     @return a string representation of the norm according to the Fuzzy Control
+     Language specification
+     */
     public String toString(Norm norm) {
         if (norm == null) {
             return "NONE";
@@ -230,6 +281,14 @@ public class FclExporter extends Exporter {
         return norm.getClass().getSimpleName();
     }
 
+    /**
+     Returns a string representation of the Defuzzifier according to the Fuzzy
+     Control Language specification
+
+     @param defuzzifier is the defuzzifier
+     @return a string representation of the defuzzifier according to the Fuzzy
+     Control Language specification
+     */
     public String toString(Defuzzifier defuzzifier) {
         if (defuzzifier == null) {
             return "NONE";
@@ -258,6 +317,14 @@ public class FclExporter extends Exporter {
         return defuzzifier.getClass().getSimpleName();
     }
 
+    /**
+     Returns a string representation of the Term according to the Fuzzy Control
+     Language specification
+
+     @param term is the term
+     @return a string representation of the term according to the Fuzzy Control
+     Language specification
+     */
     public String toString(Term term) {
         if (term == null) {
             return "";

@@ -40,6 +40,18 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.logging.Level;
 
+/**
+ The FllImporter class is an Importer that configures an Engine and its
+ components utilizing the FuzzyLite Language (FLL), see
+ [http://www.fuzzylite.com/fll-fld](http://www.fuzzylite.com/fll-fld) for more
+ information.
+
+ @author Juan Rada-Vilela, Ph.D.
+ @see FllExporter
+ @see Importer
+ @since 4.0
+ @todo parse methods returning respective instances from blocks of text
+ */
 public class FllImporter extends Importer {
 
     private String separator;
@@ -52,10 +64,20 @@ public class FllImporter extends Importer {
         this.separator = separator;
     }
 
+    /**
+     Gets the separator of the language (default separator is a new line '\n')
+
+     @return the separator of the language
+     */
     public String getSeparator() {
         return separator;
     }
 
+    /**
+     Sets the separator of the language (default separator is a new line '\n')
+
+     @param separator is the separator of the language
+     */
     public void setSeparator(String separator) {
         this.separator = separator;
     }

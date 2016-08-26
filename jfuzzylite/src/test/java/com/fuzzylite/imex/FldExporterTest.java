@@ -63,7 +63,7 @@ public class FldExporterTest {
         engine.addInputVariable(new InputVariable("Dummy4", 0, 1));
 
         FldExporter exporter = new FldExporter("\t");
-        exporter.setExportHeaders(false);
+        exporter.setExportHeader(false);
 
         int valuesEachVariable = 3;
         int expectedValues = (int) Math.pow(valuesEachVariable, engine.numberOfInputVariables());

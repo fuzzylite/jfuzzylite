@@ -62,6 +62,15 @@ import java.util.Map;
 import java.util.StringTokenizer;
 import java.util.regex.Pattern;
 
+/**
+ The FclImporter class is an Importer that configures an Engine and its
+ components utilizing the Fuzzy Control Language specification.
+
+ @author Juan Rada-Vilela, Ph.D.
+ @see FclExporter
+ @see Importer
+ @since 4.0
+ */
 public class FclImporter extends Importer {
 
     @Override

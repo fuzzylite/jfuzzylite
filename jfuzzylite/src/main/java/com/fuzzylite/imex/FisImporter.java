@@ -85,6 +85,16 @@ import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
 
+/**
+ The FisImporter class is an Importer that configures an Engine and its
+ components from utilizing the Fuzzy Inference System format for Matlab or
+ Octave.
+
+ @author Juan Rada-Vilela, Ph.D.
+ @see FisExporter
+ @see Importer
+ @since 4.0
+ */
 public class FisImporter extends Importer {
 
     protected static final int AND = 0, OR = 1, IMP = 2, AGG = 3, DEFUZZ = 4, ALL = 5;
