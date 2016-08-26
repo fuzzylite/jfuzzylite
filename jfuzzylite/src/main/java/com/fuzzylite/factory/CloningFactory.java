@@ -22,6 +22,16 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+/**
+ The CloningFactory class is the base class for a factory whose objects are
+ created from a registered object by calling the `clone()` method.
+
+ @param <T> is the class of the object to be cloned
+
+ @author Juan Rada-Vilela, Ph.D.
+ @see FactoryManager
+ @since 5.0
+ */
 public class CloningFactory<T extends Op.Cloneable> implements Op.Cloneable {
 
     private Map<String, T> objects;
@@ -30,20 +40,43 @@ public class CloningFactory<T extends Op.Cloneable> implements Op.Cloneable {
         this.objects = new HashMap<String, T>();
     }
 
+    /**
+     Registers the object in the factory and assumes its ownership
+
+     @param key is the unique name by which objects are registered
+     @param object is the object to be cloned via a `clone` method
+     */
     public void registerObject(String key, T object) {
         this.objects.put(key, object);
     }
 
+    /**
+     Deregisters the given object from the factory and deletes it
+
+     @param key is the unique name by which objects are registered
+     */
     public void deregisterObject(String key) {
         if (this.objects.containsKey(key)) {
             this.objects.remove(key);
         }
     }
 
+    /**
+     Checks whether the factory has the given object registered
+
+     @param key is the unique name by which objects are registered
+     @return whether the factory has the given object registered
+     */
     public boolean hasObject(String key) {
         return this.objects.containsKey(key);
     }
 
+    /**
+     Gets the object registered by the given key, not a clone of the object
+
+     @param key is the unique name by which objects are registered
+     @return the object registered by the given key
+     */
     public T getObject(String key) {
         if (this.objects.containsKey(key)) {
             return this.objects.get(key);
@@ -51,6 +84,14 @@ public class CloningFactory<T extends Op.Cloneable> implements Op.Cloneable {
         return null;
     }
 
+    /**
+     Creates a cloned object by executing the clone method on the registered
+     object
+
+     @param key is the unique name by which objects are registered
+     @return a cloned object by executing the clone method on the registered
+     object
+     */
     @SuppressWarnings("unchecked")
     public T cloneObject(String key) {
         if (this.objects.containsKey(key)) {
@@ -68,14 +109,29 @@ public class CloningFactory<T extends Op.Cloneable> implements Op.Cloneable {
                 + "> not registered in " + getClass().getSimpleName());
     }
 
+    /**
+     Returns a set of the available objects
+
+     @return a set of the available objects
+     */
     public Set<String> available() {
         return new HashSet<String>(this.objects.keySet());
     }
 
+    /**
+     Gets the map of registered keys and objects
+
+     @return the map of registered keys and objects
+     */
     public Map<String, T> getObjects() {
         return objects;
     }
 
+    /**
+     Sets the map of registered keys and objects
+
+     @param objects is the map of registered keys and objects
+     */
     public void setObjects(Map<String, T> objects) {
         this.objects = objects;
     }

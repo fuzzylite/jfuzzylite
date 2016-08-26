@@ -25,6 +25,15 @@ import com.fuzzylite.norm.t.HamacherProduct;
 import com.fuzzylite.norm.t.Minimum;
 import com.fuzzylite.norm.t.NilpotentMinimum;
 
+/**
+ The TNormFactory class is a ConstructionFactory of TNorm%s.
+
+ @author Juan Rada-Vilela, Ph.D.
+ @see TNorm
+ @see ConstructionFactory
+ @see FactoryManager
+ @since 4.0
+ */
 public class TNormFactory extends ConstructionFactory<TNorm> {
 
     public TNormFactory() {

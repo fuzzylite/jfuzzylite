@@ -24,6 +24,15 @@ import com.fuzzylite.hedge.Seldom;
 import com.fuzzylite.hedge.Somewhat;
 import com.fuzzylite.hedge.Very;
 
+/**
+ The HedgeFactory class is a ConstructionFactory of Hedge%s.
+
+ @author Juan Rada-Vilela, Ph.D.
+ @see Hedge
+ @see ConstructionFactory
+ @see FactoryManager
+ @since 4.0
+ */
 public class HedgeFactory extends ConstructionFactory<Hedge> {
 
     public HedgeFactory() {

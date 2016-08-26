@@ -39,6 +39,15 @@ import com.fuzzylite.term.Trapezoid;
 import com.fuzzylite.term.Triangle;
 import com.fuzzylite.term.ZShape;
 
+/**
+ The TermFactory class is a ConstructionFactory of Term%s.
+
+ @author Juan Rada-Vilela, Ph.D.
+ @see Term
+ @see ConstructionFactory
+ @see FactoryManager
+ @since 4.0
+ */
 public class TermFactory extends ConstructionFactory<Term> {
 
     public TermFactory() {

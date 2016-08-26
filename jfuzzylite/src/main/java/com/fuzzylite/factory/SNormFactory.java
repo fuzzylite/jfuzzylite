@@ -27,6 +27,15 @@ import com.fuzzylite.norm.s.NilpotentMaximum;
 import com.fuzzylite.norm.s.NormalizedSum;
 import com.fuzzylite.norm.s.UnboundedSum;
 
+/**
+ The SNormFactory class is a ConstructionFactory of SNorm%s.
+
+ @author Juan Rada-Vilela, Ph.D.
+ @see SNorm
+ @see ConstructionFactory
+ @see FactoryManager
+ @since 4.0
+ */
 public class SNormFactory extends ConstructionFactory<SNorm> {
 
     public SNormFactory() {

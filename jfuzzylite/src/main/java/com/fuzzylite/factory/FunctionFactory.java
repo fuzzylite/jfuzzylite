@@ -23,6 +23,17 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 
+/**
+ The FunctionFactory class is a CloningFactory of operators and functions
+ utilized by the Function term.
+
+ @author Juan Rada-Vilela, Ph.D.
+ @see Function
+ @see Element
+ @see CloningFactory
+ @see FactoryManager
+ @since 5.0
+ */
 public class FunctionFactory extends CloningFactory<Function.Element> {
 
     public FunctionFactory() {
@@ -148,6 +159,11 @@ public class FunctionFactory extends CloningFactory<Function.Element> {
         }
     }
 
+    /**
+     Returns a set of the operators available
+
+     @return a set of the operators available
+     */
     public Set<String> availableOperators() {
         Set<String> operators = new HashSet<String>(this.getObjects().keySet());
         Iterator<String> it = operators.iterator();
@@ -160,6 +176,11 @@ public class FunctionFactory extends CloningFactory<Function.Element> {
         return operators;
     }
 
+    /**
+     Returns a set of the functions available
+
+     @return a set of the functions available
+     */
     public Set<String> availableFunctions() {
         Set<String> functions = new HashSet<String>(this.getObjects().keySet());
         Iterator<String> it = functions.iterator();

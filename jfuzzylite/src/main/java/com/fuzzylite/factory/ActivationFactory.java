@@ -25,6 +25,17 @@ import com.fuzzylite.activation.Lowest;
 import com.fuzzylite.activation.Proportional;
 import com.fuzzylite.activation.Threshold;
 
+/**
+ The ActivationFactory class is a ConstructionFactory of Activation methods for
+ RuleBlock%s.
+
+ @author Juan Rada-Vilela, Ph.D.
+ @see Activation
+ @see RuleBlock
+ @see ConstructionFactory
+ @see FactoryManager
+ @since 6.0
+ */
 public class ActivationFactory extends ConstructionFactory<Activation> {
 
     public ActivationFactory() {
