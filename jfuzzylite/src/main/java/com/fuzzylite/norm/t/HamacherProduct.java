@@ -18,8 +18,26 @@ package com.fuzzylite.norm.t;
 
 import com.fuzzylite.norm.TNorm;
 
+/**
+ The HamacherProduct class is a TNorm that computes the Hamacher product of any
+ two values.
+
+ @author Juan Rada-Vilela, Ph.D.
+ @see HamacherSum
+ @see TNorm
+ @see TNormFactory
+ @see Norm
+ @since 4.0
+ */
 public class HamacherProduct extends TNorm {
 
+    /**
+     Computes the Hamacher product of two membership function values
+
+     @param a is a membership function value
+     @param b is a membership function value
+     @return @f$(a \times b) / (a+b- a \times b)@f$
+     */
     @Override
     public double compute(double a, double b) {
         return (a * b) / (a + b - a * b);

@@ -19,8 +19,27 @@ package com.fuzzylite.norm.s;
 import com.fuzzylite.Op;
 import com.fuzzylite.norm.SNorm;
 
+/**
+ The DrasticSum class is an SNorm that computes the drastic sum of any two
+ values.
+
+ @author Juan Rada-Vilela, Ph.D.
+ @see DrasticProduct
+ @see SNorm
+ @see SNormFactory
+ @see Norm
+ @since 4.0
+ */
 public class DrasticSum extends SNorm {
 
+    /**
+     Computes the drastic sum of two membership function values
+
+     @param a is a membership function value
+     @param b is a membership function value
+     @return @f$\begin{cases} \max(a,b) & \mbox{if $\min(a,b)=0$} \cr 1 &
+     \mbox{otherwise} \end{cases}@f$
+     */
     @Override
     public double compute(double a, double b) {
         if (Op.isEq(Op.min(a, b), 0.0)) {

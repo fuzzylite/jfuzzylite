@@ -18,8 +18,26 @@ package com.fuzzylite.norm.s;
 
 import com.fuzzylite.norm.SNorm;
 
+/**
+ The EinsteinSum class is an SNorm that computes the einstein sum of any two
+ values.
+
+ @author Juan Rada-Vilela, Ph.D.
+ @see EinsteinProduct
+ @see SNorm
+ @see SNormFactory
+ @see Norm
+ @since 4.0
+ */
 public class EinsteinSum extends SNorm {
 
+    /**
+     Computes the Einstein sum of two membership function values
+
+     @param a is a membership function value
+     @param b is a membership function value
+     @return @f$a+b/(1+a \times b)@f$
+     */
     @Override
     public double compute(double a, double b) {
         return (a + b) / (1.0 + a * b);

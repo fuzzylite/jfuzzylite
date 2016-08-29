@@ -18,8 +18,26 @@ package com.fuzzylite.norm.t;
 
 import com.fuzzylite.norm.TNorm;
 
+/**
+ The AlgebraicProduct class is a TNorm that computes the algebraic product of
+ any two values.
+
+ @author Juan Rada-Vilela, Ph.D.
+ @see AlgebraicSum
+ @see TNorm
+ @see TNormFactory
+ @see Norm
+ @since 4.0
+ */
 public class AlgebraicProduct extends TNorm {
 
+    /**
+     Computes the algebraic product of two membership function values
+
+     @param a is a membership function value
+     @param b is a membership function value
+     @return @f$a\times b@f$
+     */
     @Override
     public double compute(double a, double b) {
         return a * b;

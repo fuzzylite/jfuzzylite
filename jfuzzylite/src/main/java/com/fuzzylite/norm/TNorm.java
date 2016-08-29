@@ -16,6 +16,18 @@
  */
 package com.fuzzylite.norm;
 
+/**
+ The TNorm class is the base class for T-Norms, and it is utilized as the
+ conjunction fuzzy logic operator and as the implication (or `activation` in
+ versions 5.0 and earlier) fuzzy logic operator.
+
+ @author Juan Rada-Vilela, Ph.D.
+ @see RuleBlock::getConjunction()
+ @see RuleBlock::getImplication()
+ @see TNormFactory
+ @see Norm
+ @since 4.0
+ */
 public abstract class TNorm extends Norm {
 
     @Override

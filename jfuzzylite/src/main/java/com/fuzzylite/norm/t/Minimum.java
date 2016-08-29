@@ -19,8 +19,25 @@ package com.fuzzylite.norm.t;
 import com.fuzzylite.Op;
 import com.fuzzylite.norm.TNorm;
 
+/**
+ The Minimum class is a TNorm that computes the minimum of any two values.
+
+ @author Juan Rada-Vilela, Ph.D.
+ @see Maximum
+ @see TNorm
+ @see TNormFactory
+ @see Norm
+ @since 4.0
+ */
 public class Minimum extends TNorm {
 
+    /**
+     Computes the minimum of two membership function values
+
+     @param a is a membership function value
+     @param b is a membership function value
+     @return @f$\min(a,b)@f$
+     */
     @Override
     public double compute(double a, double b) {
         return Op.min(a, b);

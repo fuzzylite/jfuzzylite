@@ -19,6 +19,20 @@ package com.fuzzylite.norm.t;
 import com.fuzzylite.norm.TNorm;
 import com.fuzzylite.term.Function;
 
+/*
+     The TNormFunction class is a customizable TNorm via Function, which
+     computes any function based on the @f$a@f$ and @f$b@f$ values.
+     This TNorm is not registered with the TNormFactory due to issues configuring
+     the formula within. To register the TNorm, a static method with the
+     constructor needs to be manually created and registered.
+
+     @author Juan Rada-Vilela, Ph.D.
+     @see Function
+     @see TNorm
+     @see Norm
+     @see TNormFactory
+     @since 6.0
+ */
 public class TNormFunction extends TNorm {
 
     private Function function;
@@ -36,6 +50,16 @@ public class TNormFunction extends TNorm {
         }
     }
 
+    /**
+     Computes the S-Norm utilizing the given function via
+     SNormFunction::setFormula(), which automatically assigns the values of
+
+     @f$a@f$ and @f$b@f$.
+
+     @param a is a membership function value
+     @param b is a membership function value
+     @return the evaluation of the function
+     */
     @Override
     public double compute(double a, double b) {
         this.function.getVariables().put("a", a);
@@ -43,10 +67,29 @@ public class TNormFunction extends TNorm {
         return this.function.evaluate();
     }
 
+    /**
+     Returns the reference to the Function
+
+     @return the reference to the Function
+     */
+    public Function function() {
+        return this.function;
+    }
+
+    /**
+     Loads the function with the given formula
+
+     @param formula is a valid formula in infix notation
+     */
     public void setFormula(String formula) {
         this.function.load(formula);
     }
 
+    /**
+     Returns the formula loaded into the function
+
+     @return the formula loaded into the function
+     */
     public String getFormula() {
         return this.function.getFormula();
     }

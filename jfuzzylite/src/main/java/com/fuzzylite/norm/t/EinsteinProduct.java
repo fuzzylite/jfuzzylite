@@ -18,8 +18,26 @@ package com.fuzzylite.norm.t;
 
 import com.fuzzylite.norm.TNorm;
 
+/**
+ The EinsteinProduct class is a TNorm that computes the Einstein product of any
+ two values.
+
+ @author Juan Rada-Vilela, Ph.D.
+ @see EinsteinSum
+ @see TNorm
+ @see TNormFactory
+ @see Norm
+ @since 4.0
+ */
 public class EinsteinProduct extends TNorm {
 
+    /**
+     Computes the Einstein product of two membership function values
+
+     @param a is a membership function value
+     @param b is a membership function value
+     @return @f$(a\times b)/(2-(a+b-a\times b))@f$
+     */
     @Override
     public double compute(double a, double b) {
         return (a * b) / (2 - (a + b - a * b));

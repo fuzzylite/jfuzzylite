@@ -19,8 +19,27 @@ package com.fuzzylite.norm.t;
 import com.fuzzylite.Op;
 import com.fuzzylite.norm.TNorm;
 
+/**
+ The NilpotentMinimum class is a TNorm that computes the nilpotent minimum of
+ any two values.
+
+ @author Juan Rada-Vilela, Ph.D.
+ @see NilpotentMaximum
+ @see TNorm
+ @see TNormFactory
+ @see Norm
+ @since 5.0
+ */
 public class NilpotentMinimum extends TNorm {
 
+    /**
+     Computes the nilpotent minimum of two membership function values
+
+     @param a is a membership function value
+     @param b is a membership function value
+     @return @f$\begin{cases} \min(a,b) & \mbox{if $a+b>1$} \cr 0 &
+     \mbox{otherwise} \end{cases}@f$
+     */
     @Override
     public double compute(double a, double b) {
         if (Op.isGt(a + b, 1.0)) {

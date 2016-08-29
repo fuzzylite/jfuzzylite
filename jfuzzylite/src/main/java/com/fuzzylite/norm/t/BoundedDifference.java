@@ -19,8 +19,26 @@ package com.fuzzylite.norm.t;
 import com.fuzzylite.Op;
 import com.fuzzylite.norm.TNorm;
 
+/**
+ The BoundedDifference class is a TNorm that computes the bounded difference
+ between any two values.
+
+ @author Juan Rada-Vilela, Ph.D.
+ @see BoundedSum
+ @see TNorm
+ @see TNormFactory
+ @see Norm
+ @since 4.0
+ */
 public class BoundedDifference extends TNorm {
 
+    /**
+     Computes the bounded difference between two membership function values
+
+     @param a is a membership function value
+     @param b is a membership function value
+     @return @f$\max(0, a+b - 1)@f$
+     */
     @Override
     public double compute(double a, double b) {
         return Op.max(0.0, a + b - 1);

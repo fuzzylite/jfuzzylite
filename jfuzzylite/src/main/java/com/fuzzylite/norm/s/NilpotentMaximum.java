@@ -19,8 +19,27 @@ package com.fuzzylite.norm.s;
 import com.fuzzylite.Op;
 import com.fuzzylite.norm.SNorm;
 
+/**
+ The NilpotentMaximum class is an SNorm that computes the nilpotent maximum of
+ any two values.
+
+ @author Juan Rada-Vilela, Ph.D.
+ @see NilpotentMinimum
+ @see SNorm
+ @see SNormFactory
+ @see Norm
+ @since 5.0
+ */
 public class NilpotentMaximum extends SNorm {
 
+    /**
+     Computes the nilpotent maximum of two membership function values
+
+     @param a is a membership function value
+     @param b is a membership function value
+     @return @f$\begin{cases} \max(a,b) & \mbox{if $a+b<0$} \cr 1 &
+     \mbox{otherwise} \end{cases}@f$
+     */
     @Override
     public double compute(double a, double b) {
         if (Op.isLt(a + b, 1.0)) {

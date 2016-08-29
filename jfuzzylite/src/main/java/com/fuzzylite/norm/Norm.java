@@ -18,10 +18,32 @@ package com.fuzzylite.norm;
 
 import com.fuzzylite.Op;
 
+/**
+ The Norm class is the abstract class for norms.
+
+ @author Juan Rada-Vilela, Ph.D.
+ @see TNorm
+ @see SNorm
+ @see TNormFactory
+ @see SNormFactory
+ @since 4.0
+ */
 public abstract class Norm implements Op.Cloneable {
 
+    /**
+     Computes the norm for @f$a@f$ and @f$b@f$
+
+     @param a is a membership function value
+     @param b is a membership function value
+     @return the norm between @f$a@f$ and @f$b@f$
+     */
     public abstract double compute(double a, double b);
 
+    /**
+     Creates a clone of the norm
+
+     @return a clone of the norm
+     */
     @Override
     public Norm clone() throws CloneNotSupportedException {
         return (Norm) super.clone();
