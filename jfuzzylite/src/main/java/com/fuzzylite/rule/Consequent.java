@@ -31,6 +31,22 @@ import java.util.ListIterator;
 import java.util.StringTokenizer;
 import java.util.logging.Level;
 
+/**
+ The Consequent class is a proposition set that represents and evaluates the
+ consequent of a Rule.. The structure of a rule is: `if (antecedent) then
+ (consequent)`. The structure of the consequent of a rule is:
+
+ `then variable is [hedge]* term [and variable is [hedge]* term]* [with w]?`
+
+ where `*`-marked elements may appear zero or more times, elements in brackets
+ are optional, elements in parentheses are compulsory, and `?`-marked elements
+ may appear once or not at all.
+
+ @author Juan Rada-Vilela, Ph.D.
+ @see Antecedent
+ @see Rule
+ @since 4.0
+ */
 public class Consequent {
 
     private String text;
@@ -41,22 +57,52 @@ public class Consequent {
         this.conclusions = new ArrayList<Proposition>();
     }
 
+    /**
+     Gets the text of the consequent
+
+     @return the text of the consequent
+     */
     public String getText() {
         return text;
     }
 
+    /**
+     Sets the text of the consequent
+
+     @param text is the text of the consequent
+     */
     public void setText(String text) {
         this.text = text;
     }
 
+    /**
+     Returns the list of propositions that represent the Consequent of a Rule
+
+     @return the list of propositions that represent the Consequent of a Rule
+     */
     public List<Proposition> getConclusions() {
         return conclusions;
     }
 
+    /**
+     Sets the list of propositions that represent the Consequent of a Rule
+
+     @param conclusions is the list of propositions that represent the
+     Consequent of a Rule
+     */
     public void setConclusions(List<Proposition> conclusions) {
         this.conclusions = conclusions;
     }
 
+    /**
+     Modifies the proposition set according to the activation degree (computed
+     in the Antecedent of the Rule) and the implication operator (given in the
+     RuleBlock)
+
+     @param activationDegree is the activation degree computed in the Antecedent
+     of the Rule
+     @param implication is the implication operator configured in the RuleBlock
+     */
     public void modify(double activationDegree, TNorm implication) {
         if (!isLoaded()) {
             throw new RuntimeException(String.format(
@@ -80,18 +126,41 @@ public class Consequent {
         }
     }
 
+    /**
+     Indicates whether the consequent is loaded
+
+     @return whether the consequent is loaded
+     */
     public boolean isLoaded() {
         return !conclusions.isEmpty();
     }
 
+    /**
+     Unloads the consequent
+     */
     public void unload() {
         conclusions.clear();
     }
 
+    /**
+     Loads the consequent with text given from Consequent::getText() and uses
+     the engine to identify and retrieve references to the input variables and
+     output variables as required
+
+     @param engine is the engine from which the rules are part of
+     */
     public void load(Engine engine) {
         load(getText(), engine);
     }
 
+    /**
+     Loads the consequent with the given text and uses the engine to identify
+     and retrieve references to the input variables and output variables as
+     required
+
+     @param consequent is the consequent of the rule in text
+     @param engine is the engine from which the rules are part of
+     */
     public void load(String consequent, Engine engine) {
         unload();
         setText(consequent);
@@ -208,6 +277,11 @@ public class Consequent {
         }
     }
 
+    /**
+     Returns a string representation of the Consequent
+
+     @return a string representation of the Consequent
+     */
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();

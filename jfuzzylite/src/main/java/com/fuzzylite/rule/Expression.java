@@ -16,12 +16,26 @@
  */
 package com.fuzzylite.rule;
 
+/**
+ The Expression class is the base class to build an expression tree.
+
+ @author Juan Rada-Vilela, Ph.D.
+ @see Antecedent
+ @see Consequent
+ @see Rule
+ @since 4.0
+ */
 public abstract class Expression {
 
     public enum Type {
         Proposition, Operator
     }
 
+    /**
+     Returns the type of the expression
+
+     @return the type of the expression
+     */
     public abstract Type type();
 
     @Override

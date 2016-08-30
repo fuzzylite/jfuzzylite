@@ -36,6 +36,21 @@ import java.util.ListIterator;
 import java.util.StringTokenizer;
 import java.util.logging.Level;
 
+/**
+ The Antecedent class is an expression tree that represents and evaluates the
+ antecedent of a Rule. The structure of a rule is: `if (antecedent) then
+ (consequent)`. The structure of the antecedent of a rule is:
+
+ `if variable is [hedge]* term [(and|or) variable is [hedge]* term]*`
+
+ where `*`-marked elements may appear zero or more times, elements in brackets
+ are optional, and elements in parentheses are compulsory.
+
+ @author Juan Rada-Vilela, Ph.D.
+ @see Consequent
+ @see Rule
+ @since 4.0
+ */
 public class Antecedent {
 
     private String text;
@@ -46,37 +61,79 @@ public class Antecedent {
         this.expression = null;
     }
 
+    /**
+     Gets the antecedent in text
+
+     @return the antecedent in text
+     */
     public String getText() {
         return text;
     }
 
+    /**
+     Sets the antecedent in text
+
+     @param text is the antecedent in text
+     */
     public void setText(String text) {
         this.text = text;
     }
 
+    /**
+     Gets the expression tree of the antecedent
+
+     @return the expression tree of the antecedent
+     */
     public Expression getExpression() {
         return this.expression;
     }
 
+    /**
+     Sets the expression tree of the antecedent
+
+     @param expression is the expression tree of the antecedent
+     */
     public void setExpression(Expression expression) {
         this.expression = expression;
     }
 
+    /**
+     Indicates whether the antecedent is loaded
+
+     @return whether the antecedent is loaded
+     */
     public boolean isLoaded() {
         return expression != null;
     }
 
+    /**
+     Computes the activation degree of the antecedent on the expression tree
+     from the root node
+
+     @param conjunction is the conjunction operator from the RuleBlock
+     @param disjunction is the disjunction operator from the RuleBlock
+     @return the activation degree of the antecedent
+     */
     public double activationDegree(TNorm conjunction, SNorm disjunction) {
         return this.activationDegree(conjunction, disjunction, expression);
     }
 
+    /**
+     Computes the activation degree of the antecedent on the expression tree
+     from the given node
+
+     @param conjunction is the conjunction operator from the RuleBlock
+     @param disjunction is the disjunction operator from the RuleBlock
+     @param node is a node in the expression tree of the antecedent
+     @return the activation degree of the antecedent
+     */
     public double activationDegree(TNorm conjunction, SNorm disjunction, Expression node) {
         if (!isLoaded()) {
             throw new RuntimeException(String.format(
                     "[antecedent error] antecedent <%s> is not loaded", text));
         }
-        final Expression.Type expression = node.type();
-        if (expression == Expression.Type.Proposition) {
+        final Expression.Type expressionType = node.type();
+        if (expressionType == Expression.Type.Proposition) {
             Proposition proposition = (Proposition) node;
             if (!proposition.getVariable().isEnabled()) {
                 return 0.0;
@@ -111,7 +168,7 @@ public class Antecedent {
             return result;
         }
 
-        if (expression == Expression.Type.Operator) {
+        if (expressionType == Expression.Type.Operator) {
             Operator operator = (Operator) node;
             if (operator.getLeft() == null || operator.getRight() == null) {
                 throw new RuntimeException("[syntax error] left and right operators cannot be null");
@@ -142,14 +199,32 @@ public class Antecedent {
         }
     }
 
+    /**
+     Unloads the antecedent
+     */
     public void unload() {
         setExpression(null);
     }
 
+    /**
+     Loads the antecedent with the text obtained from Antecedent::getText() and
+     uses the engine to identify and retrieve references to the input variables
+     and output variables as required
+
+     @param engine is the engine from which the rules are part of
+     */
     public void load(Engine engine) {
         load(getText(), engine);
     }
 
+    /**
+     Loads the antecedent with the given text and uses the engine to identify
+     and retrieve references to the input variables and output variables as
+     required
+
+     @param antecedent is the antecedent of the rule in text
+     @param engine is the engine from which the rules are part of
+     */
     public void load(String antecedent, Engine engine) {
         FuzzyLite.logger().log(Level.FINE, "Antecedent: {0}", antecedent);
         unload();
@@ -297,11 +372,23 @@ public class Antecedent {
         setExpression(expressionStack.pop());
     }
 
+    /**
+     Returns a string representation of the expression tree in infix notation
+
+     @return a string representation of the expression tree in infix notation
+     */
     @Override
     public String toString() {
         return this.toInfix(this.expression);
     }
 
+    /**
+     Returns a string representation of the expression tree utilizing prefix
+     notation
+
+     @return a string representation of the given expression tree utilizing prefix
+     notation
+     */
     public String toPrefix() {
         return this.toPrefix(this.expression);
     }

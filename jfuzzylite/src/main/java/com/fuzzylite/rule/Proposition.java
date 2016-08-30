@@ -22,6 +22,16 @@ import com.fuzzylite.variable.Variable;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ The Proposition class is an Expression that represents a terminal node in the
+ expression tree as `variable is [hedge]* term`.
+
+ @author Juan Rada-Vilela, Ph.D.
+ @see Antecedent
+ @see Consequent
+ @see Rule
+ @since 4.0
+ */
 public class Proposition extends Expression {
 
     private Variable variable;
@@ -42,26 +52,56 @@ public class Proposition extends Expression {
         this.term = term;
     }
 
+    /**
+     Gets the variable in `variable is [hedge]* term`
+
+     @return the variable in `variable is [hedge]* term`
+     */
     public Variable getVariable() {
         return variable;
     }
 
+    /**
+     Sets the variable in `variable is [hedge]* term`
+
+     @param variable is the variable in `variable is [hedge]* term`
+     */
     public void setVariable(Variable variable) {
         this.variable = variable;
     }
 
+    /**
+     Gets the Hedge%s in `variable is [hedge]* term`
+
+     @return the Hedge%s in `variable is [hedge]* term`
+     */
     public List<Hedge> getHedges() {
         return hedges;
     }
 
+    /**
+     Sets the Hedge%s in `variable is [hedge]* term`
+
+     @param hedges is the Hedge%s in `variable is [hedge]* term`
+     */
     public void setHedges(List<Hedge> hedges) {
         this.hedges = hedges;
     }
 
+    /**
+     Gets the Term in `variable is [hedge]* term`
+
+     @return the Term in `variable is [hedge]* term`
+     */
     public Term getTerm() {
         return term;
     }
 
+    /**
+     Sets the Term in `variable is [hedge]* term`
+
+     @param term is the Term in `variable is [hedge]* term`
+     */
     public void setTerm(Term term) {
         this.term = term;
     }
@@ -71,6 +111,11 @@ public class Proposition extends Expression {
         return Type.Proposition;
     }
 
+    /**
+     Returns a string representation of the proposition
+
+     @return a string representation of the proposition
+     */
     @Override
     public String toString() {
         StringBuilder result = new StringBuilder();
