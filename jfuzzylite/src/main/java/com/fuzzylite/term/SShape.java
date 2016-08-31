@@ -20,6 +20,17 @@ import com.fuzzylite.Op;
 import java.util.Iterator;
 import java.util.List;
 
+/**
+ The SShape class is an edge Term that represents the S-shaped membership
+ function.
+
+ @image html sShape.svg
+
+ @author Juan Rada-Vilela, Ph.D.
+ @see Term
+ @see Variable
+ @since 4.0
+ */
 public class SShape extends Term {
 
     private double start, end;
@@ -42,12 +53,22 @@ public class SShape extends Term {
         this.end = end;
     }
 
+    /**
+     Returns the parameters of the term
+
+     @return `"start end [height]"`
+     */
     @Override
     public String parameters() {
         return Op.join(" ", start, end)
                 + (!Op.isEq(height, 1.0) ? " " + Op.str(height) : "");
     }
 
+    /**
+     Configures the term with the parameters
+
+     @param parameters as `"start end [height]"`
+     */
     @Override
     public void configure(String parameters) {
         if (parameters.isEmpty()) {
@@ -68,6 +89,17 @@ public class SShape extends Term {
         }
     }
 
+    /**
+     Computes the membership function evaluated at @f$x@f$
+
+     @param x
+     @return @f$\begin{cases} 0h & \mbox{if $x \leq s$} \cr h(2 \left((x - s) /
+     (e-s)\right)^2) & \mbox{if $x \leq 0.5(s+e)$}\cr h(1 - 2\left((x - e) /
+     (e-s)\right)^2) & \mbox{if $x < e$}\cr 1h & \mbox{otherwise} \end{cases}@f$
+
+     where @f$h@f$ is the height of the Term, @f$s@f$ is the start of the
+     SShape, @f$e@f$ is the end of the SShape.
+     */
     @Override
     public double membership(double x) {
         if (Double.isNaN(x)) {
@@ -85,18 +117,38 @@ public class SShape extends Term {
         return height * 1.0;
     }
 
+    /**
+     Gets the start of the edge
+
+     @return the start of the edge
+     */
     public double getStart() {
         return start;
     }
 
+    /**
+     Sets the start of the edge
+
+     @param start is the start of the edge
+     */
     public void setStart(double start) {
         this.start = start;
     }
 
+    /**
+     Gets the end of the edge
+
+     @return the end of the edge
+     */
     public double getEnd() {
         return end;
     }
 
+    /**
+     Sets the end of the edge
+
+     @param end is the end of the edge
+     */
     public void setEnd(double end) {
         this.end = end;
     }

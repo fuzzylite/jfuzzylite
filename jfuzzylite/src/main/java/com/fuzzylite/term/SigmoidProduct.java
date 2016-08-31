@@ -20,6 +20,17 @@ import com.fuzzylite.Op;
 import java.util.Iterator;
 import java.util.List;
 
+/**
+ The SigmoidProduct class is an extended Term that represents the product of two
+ sigmoidal membership functions.
+
+ @image html sigmoidProduct.svg
+
+ @author Juan Rada-Vilela, Ph.D.
+ @see Term
+ @see Variable
+ @since 4.0
+ */
 public class SigmoidProduct extends Term {
 
     private double left, rising;
@@ -47,12 +58,22 @@ public class SigmoidProduct extends Term {
         this.right = right;
     }
 
+    /**
+     Returns the parameters of the term
+
+     @return `"left rising falling right [height]"`
+     */
     @Override
     public String parameters() {
         return Op.join(" ", left, rising, falling, right)
                 + (!Op.isEq(height, 1.0) ? " " + Op.str(height) : "");
     }
 
+    /**
+     Configures the term with the parameters
+
+     @param parameters as `"left rising falling right [height]"`
+     */
     @Override
     public void configure(String parameters) {
         if (parameters.isEmpty()) {
@@ -75,6 +96,20 @@ public class SigmoidProduct extends Term {
         }
     }
 
+    /**
+     Computes the membership function evaluated at @f$x@f$
+
+     @param x
+     @return @f$ h (a \times b)@f$
+
+     where @f$h@f$ is the height,
+     @f$a= 1 / (1 + \exp(-s_l *\times (x - i_l))) @f$,
+     @f$b = 1 / (1 + \exp(-s_r \times (x - i_r)))@f$,
+     @f$i_l@f$ is the left inflection of the SigmoidProduct,
+     @f$s_l@f$ is the left slope of the SigmoidProduct,
+     @f$i_r@f$ is the right inflection of the SigmoidProduct,
+     @f$s_r@f$ is the right slope of the SigmoidProduct
+     */
     @Override
     public double membership(double x) {
         if (Double.isNaN(x)) {
@@ -85,36 +120,71 @@ public class SigmoidProduct extends Term {
         return height * 1.0 / (a * b);
     }
 
+    /**
+     Gets the inflection of the left sigmoidal curve
+
+     @return the inflection of the left sigmoidal curve
+     */
     public double getLeft() {
         return left;
     }
 
-    public void setLeft(double left) {
-        this.left = left;
+    /**
+     Sets the inflection of the left sigmoidal curve
+
+     @param leftInflection is the inflection of the left sigmoidal curve
+     */
+    public void setLeft(double leftInflection) {
+        this.left = leftInflection;
     }
 
     public double getRising() {
         return rising;
     }
 
-    public void setRising(double rising) {
-        this.rising = rising;
+    /**
+     Sets the slope of the left sigmoidal curve
+
+     @param risingSlope is the slope of the left sigmoidal curve
+     */
+    public void setRising(double risingSlope) {
+        this.rising = risingSlope;
     }
 
+    /**
+     Gets the slope of the right sigmoidal curve
+
+     @return the slope of the right sigmoidal curve
+     */
     public double getFalling() {
         return falling;
     }
 
-    public void setFalling(double falling) {
-        this.falling = falling;
+    /**
+     Sets the slope of the right sigmoidal curve
+
+     @param fallingSlope is the slope of the right sigmoidal curve
+     */
+    public void setFalling(double fallingSlope) {
+        this.falling = fallingSlope;
     }
 
+    /**
+     Gets the inflection of the right sigmoidal curve
+
+     @return the inflection of the right sigmoidal curve
+     */
     public double getRight() {
         return right;
     }
 
-    public void setRight(double right) {
-        this.right = right;
+    /**
+     Sets the inflection of the right sigmoidal curve
+
+     @param rightInflection is the inflection of the right sigmoidal curve
+     */
+    public void setRight(double rightInflection) {
+        this.right = rightInflection;
     }
 
     @Override

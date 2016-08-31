@@ -20,6 +20,17 @@ import com.fuzzylite.Op;
 import java.util.Iterator;
 import java.util.List;
 
+/**
+ The Rectangle class is a basic Term that represents the rectangle membership
+ function.
+
+ @image html rectangle.svg
+
+ @author Juan Rada-Vilela, Ph.D.
+ @see Term
+ @see Variable
+ @since 4.0
+ */
 public class Rectangle extends Term {
 
     private double start, end;
@@ -42,12 +53,22 @@ public class Rectangle extends Term {
         this.end = end;
     }
 
+    /**
+     Returns the parameters of the term
+
+     @return `"start end [height]"`
+     */
     @Override
     public String parameters() {
         return Op.join(" ", start, end)
                 + (!Op.isEq(height, 1.0) ? " " + Op.str(height) : "");
     }
 
+    /**
+     Configures the term with the parameters
+
+     @param parameters as `"start end [height]"`
+     */
     @Override
     public void configure(String parameters) {
         if (parameters.isEmpty()) {
@@ -68,6 +89,17 @@ public class Rectangle extends Term {
         }
     }
 
+    /**
+     Computes the membership function evaluated at @f$x@f$
+
+     @param x
+     @return @f$\begin{cases} 1h & \mbox{if $x \in [s, e]$} \cr 0h &
+     \mbox{otherwise} \end{cases}@f$
+
+     where @f$h@f$ is the height of the Term,
+     @f$s@f$ is the start of the Rectangle,
+     @f$e@f$ is the end of the Rectangle.
+     */
     @Override
     public double membership(double x) {
         if (Double.isNaN(x)) {
@@ -79,18 +111,38 @@ public class Rectangle extends Term {
         return height * 0.0;
     }
 
+    /**
+     Gets the start of the rectangle
+
+     @return the start of the rectangle
+     */
     public double getStart() {
         return start;
     }
 
+    /**
+     Sets the start of the rectangle
+
+     @param start is the start of the rectangle
+     */
     public void setStart(double start) {
         this.start = start;
     }
 
+    /**
+     Gets the end of the rectangle
+
+     @return the end of the rectangle
+     */
     public double getEnd() {
         return end;
     }
 
+    /**
+     Sets the end of the rectangle
+
+     @param end is the end of the rectangle
+     */
     public void setEnd(double end) {
         this.end = end;
     }

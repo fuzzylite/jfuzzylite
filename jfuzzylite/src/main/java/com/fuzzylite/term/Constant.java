@@ -18,6 +18,16 @@ package com.fuzzylite.term;
 
 import com.fuzzylite.Op;
 
+/**
+ The Constant class is a (zero) polynomial Term that represents a constant value
+
+ @f$ f(x) = k @f$
+
+ @author Juan Rada-Vilela, Ph.D.
+ @see Term
+ @see Variable
+ @since 4.0
+ */
 public class Constant extends Term {
 
     private double value;
@@ -35,11 +45,21 @@ public class Constant extends Term {
         this.value = value;
     }
 
+    /**
+     Returns the parameters of the term
+
+     @return `"value"`
+     */
     @Override
     public String parameters() {
         return Op.str(value);
     }
 
+    /**
+     Configures the term with the parameters
+
+     @param parameters as `"value"`
+     */
     @Override
     public void configure(String parameters) {
         if (parameters.isEmpty()) {
@@ -48,15 +68,31 @@ public class Constant extends Term {
         setValue(Op.toDouble(parameters));
     }
 
+    /**
+     Computes the membership function evaluated at @f$x@f$
+
+     @param x is irrelevant
+     @return @f$c@f$, where @f$c@f$ is the constant value
+     */
     @Override
     public double membership(double x) {
         return this.value;
     }
 
+    /**
+     Gets the constant value
+
+     @return the constant value
+     */
     public double getValue() {
         return value;
     }
 
+    /**
+     Sets the constant value
+
+     @param value is the constant value
+     */
     public void setValue(double value) {
         this.value = value;
     }

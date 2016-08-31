@@ -20,6 +20,17 @@ import com.fuzzylite.Op;
 import java.util.Iterator;
 import java.util.List;
 
+/**
+ The Trapezoid class is a basic Term that represents the trapezoidal membership
+ function.
+
+ @image html trapezoid.svg
+
+ @author Juan Rada-Vilela, Ph.D.
+ @see Term
+ @see Variable
+ @since 4.0
+ */
 public class Trapezoid extends Term {
 
     private double vertexA, vertexB, vertexC, vertexD;
@@ -53,12 +64,22 @@ public class Trapezoid extends Term {
         this.vertexD = vertexD;
     }
 
+    /**
+     Returns the parameters of the term
+
+     @return `"vertexA vertexB vertexC vertexD [height]"`
+     */
     @Override
     public String parameters() {
         return Op.join(" ", vertexA, vertexB, vertexC, vertexD)
                 + (!Op.isEq(height, 1.0) ? " " + Op.str(height) : "");
     }
 
+    /**
+     Configures the term with the parameters
+
+     @param parameters as `"vertexA vertexB vertexC vertexD [height]"`
+     */
     @Override
     public void configure(String parameters) {
         if (parameters.isEmpty()) {
@@ -81,6 +102,20 @@ public class Trapezoid extends Term {
         }
     }
 
+    /**
+     Computes the membership function evaluated at @f$x@f$
+
+     @param x
+     @return @f$\begin{cases} 0h & \mbox{if $x \not\in[a,d]$}\cr h \times
+     \min(1, (x - a) / (b - a)) & \mbox{if $x < b$}\cr 1h & \mbox{if $x \leq
+     c$}\cr h (d - x) / (d - c) & \mbox{if $x < d$}\cr 0h & \mbox{otherwise}
+     \end{cases}@f$
+
+     where @f$h@f$ is the height of the Term, @f$a@f$ is the first vertex of the
+     Trapezoid, @f$b@f$ is the second vertex of the Tr a pezoid, @f$c@f$ is the
+     third vertex of the Trapezoid, @f$d@f$ is the fourth vertex of the
+     Trapezoid
+     */
     @Override
     public double membership(double x) {
         if (Double.isNaN(x)) {
@@ -99,36 +134,76 @@ public class Trapezoid extends Term {
         return height * 0.0;
     }
 
+    /**
+     Gets the first vertex of the trapezoid
+
+     @return the first vertex of the trapezoid
+     */
     public double getVertexA() {
         return vertexA;
     }
 
-    public void setVertexA(double vertexA) {
-        this.vertexA = vertexA;
+    /**
+     Sets the first vertex of the trapezoid
+
+     @param a is the first vertex of the trapezoid
+     */
+    public void setVertexA(double a) {
+        this.vertexA = a;
     }
 
+    /**
+     Gets the second vertex of the trapezoid
+
+     @return the second vertex of the trapezoid
+     */
     public double getVertexB() {
         return vertexB;
     }
 
-    public void setVertexB(double vertexB) {
-        this.vertexB = vertexB;
+    /**
+     Sets the second vertex of the trapezoid
+
+     @param b is the second vertex of the trapezoid
+     */
+    public void setVertexB(double b) {
+        this.vertexB = b;
     }
 
+    /**
+     Gets the third vertex of the trapezoid
+
+     @return the third vertex of the trapezoid
+     */
     public double getVertexC() {
         return vertexC;
     }
 
-    public void setVertexC(double vertexC) {
-        this.vertexC = vertexC;
+    /**
+     Sets the third vertex of the trapezoid
+
+     @param c is the third vertex of the trapezoid
+     */
+    public void setVertexC(double c) {
+        this.vertexC = c;
     }
 
+    /**
+     Gets the fourth vertex of the trapezoid
+
+     @return the fourth vertex of the trapezoid
+     */
     public double getVertexD() {
         return vertexD;
     }
 
-    public void setVertexD(double vertexD) {
-        this.vertexD = vertexD;
+    /**
+     Sets the fourth vertex of the trapezoid
+
+     @param d is the fourth vertex of the trapezoid
+     */
+    public void setVertexD(double d) {
+        this.vertexD = d;
     }
 
     @Override

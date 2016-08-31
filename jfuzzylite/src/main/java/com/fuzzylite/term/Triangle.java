@@ -20,6 +20,17 @@ import com.fuzzylite.Op;
 import java.util.Iterator;
 import java.util.List;
 
+/**
+ The Triangle class is a basic Term that represents the triangular membership
+ function.
+
+ @image html triangle.svg
+
+ @author Juan Rada-Vilela, Ph.D.
+ @see Term
+ @see Variable
+ @since 4.0
+ */
 public class Triangle extends Term {
 
     private double vertexA, vertexB, vertexC;
@@ -47,12 +58,22 @@ public class Triangle extends Term {
         this.vertexC = vertexC;
     }
 
+    /**
+     Returns the parameters of the term
+
+     @return `"vertexA vertexB vertexC [height]"`
+     */
     @Override
     public String parameters() {
         return Op.join(" ", vertexA, vertexB, vertexC)
                 + (!Op.isEq(height, 1.0) ? " " + Op.str(height) : "");
     }
 
+    /**
+     Configures the term with the parameters
+
+     @param parameters as `"vertexA vertexB vertexC [height]"`
+     */
     @Override
     public void configure(String parameters) {
         if (parameters.isEmpty()) {
@@ -74,6 +95,18 @@ public class Triangle extends Term {
         }
     }
 
+    /**
+     Computes the membership function evaluated at @f$x@f$
+
+     @param x
+     @return @f$\begin{cases} 0h & \mbox{if $x \not\in [a,c]$}\cr 1h & \mbox{if
+     $x = b$}\cr h (x - a) / (b - a) & \mbox{if $x < b$} \cr h (c - x) / (c - b)
+     & \mbox{otherwise} \end{cases}@f$
+
+     where @f$h@f$ is the height of the Term, @f$a@f$ is the first vertex of the
+     Triangle, @f$b@f$ is the second vertex of the Triangle, @ f $c@f$ is the
+     third vertex of the Triangle
+     */
     @Override
     public double membership(double x) {
         if (Double.isNaN(x)) {
@@ -91,28 +124,58 @@ public class Triangle extends Term {
         }
     }
 
+    /**
+     Gets the first vertex of the triangle
+
+     @return the first vertex of the triangle
+     */
     public double getVertexA() {
         return vertexA;
     }
 
-    public void setVertexA(double vertexA) {
-        this.vertexA = vertexA;
+    /**
+     Sets the first vertex of the triangle
+
+     @param a is the first vertex of the triangle
+     */
+    public void setVertexA(double a) {
+        this.vertexA = a;
     }
 
+    /**
+     Gets the second vertex of the triangle
+
+     @return the second vertex of the triangle
+     */
     public double getVertexB() {
         return vertexB;
     }
 
-    public void setVertexB(double vertexB) {
-        this.vertexB = vertexB;
+    /**
+     Sets the second vertex of the triangle
+
+     @param b is the second vertex of the triangle
+     */
+    public void setVertexB(double b) {
+        this.vertexB = b;
     }
 
+    /**
+     Gets the third vertex of the triangle
+
+     @return the third vertex of the triangle
+     */
     public double getVertexC() {
         return vertexC;
     }
 
-    public void setVertexC(double vertexC) {
-        this.vertexC = vertexC;
+    /**
+     Sets the third vertex of the triangle
+
+     @param c is the third vertex of the triangle
+     */
+    public void setVertexC(double c) {
+        this.vertexC = c;
     }
 
     @Override

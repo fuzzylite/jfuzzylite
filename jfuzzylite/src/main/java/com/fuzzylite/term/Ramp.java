@@ -20,11 +20,34 @@ import com.fuzzylite.Op;
 import java.util.Iterator;
 import java.util.List;
 
+/**
+ The Ramp class is an edge Term that represents the ramp membership function.
+
+ @image html ramp.svg
+
+ @author Juan Rada-Vilela, Ph.D.
+ @see Term
+ @see Variable
+ @since 4.0
+ */
 public class Ramp extends Term {
 
+    /**
+     Direction is an enumerator that indicates the direction of the ramp.
+     */
     public enum Direction {
-
-        Positive, Zero, Negative
+        /**
+         `(_/)` increases to the right
+         */
+        Positive,
+        /**
+         `(--)` slope is zero
+         */
+        Zero,
+        /**
+         `(\\_)` increases to the left
+         */
+        Negative
     }
 
     private double start, end;
@@ -47,12 +70,22 @@ public class Ramp extends Term {
         this.end = end;
     }
 
+    /**
+     Returns the parameters of the term
+
+     @return `"start end [height]"`
+     */
     @Override
     public String parameters() {
         return Op.join(" ", start, end)
                 + (!Op.isEq(height, 1.0) ? " " + Op.str(height) : "");
     }
 
+    /**
+     Configures the term with the parameters
+
+     @param parameters as `"start end [height]"`
+     */
     @Override
     public void configure(String parameters) {
         if (parameters.isEmpty()) {
@@ -73,6 +106,28 @@ public class Ramp extends Term {
         }
     }
 
+    /**
+     Computes the membership function evaluated at @f$x@f$
+
+     @param x
+     @return
+     @f$\begin{cases}
+
+     0h & \mbox{if $x = e$}\cr
+
+     \begin{cases} 0h & \mbox{if $x \leq s$}\cr 1h & \mbox{if $x \geq e$}\cr h
+     (x - s) / (e - s) & \mbox{otherwise}\cr \end{cases} & \mbox{if $s < e$}\cr
+
+     \begin{cases}
+     0h & \mbox{if $x \geq s$}\cr
+     1h & \mbox{if $x \leq e$}\cr
+     h (s - x) / (s - e) & \mbox{otherwise}
+     \end{cases} & \mbox{if $s > e$}\cr \end{cases}@f$
+
+     where @f$h@f$ is the height of the Term,
+     @f$s@f$ is the start of the Ramp,
+     @f$e@f$ is the end of the Ramp
+     */
     @Override
     public double membership(double x) {
         if (Double.isNaN(x)) {
@@ -102,22 +157,47 @@ public class Ramp extends Term {
         }
     }
 
+    /**
+     Gets the start of the ramp
+
+     @return the start of the ramp
+     */
     public double getStart() {
         return start;
     }
 
+    /**
+     Sets the start of the ramp
+
+     @param start is the start of the ramp
+     */
     public void setStart(double start) {
         this.start = start;
     }
 
+    /**
+     Gets the end of the ramp
+
+     @return the end of the ramp
+     */
     public double getEnd() {
         return end;
     }
 
+    /**
+     Sets the end of the ramp
+
+     @param end is the end of the ramp
+     */
     public void setEnd(double end) {
         this.end = end;
     }
 
+    /**
+     Returns the direction of the ramp
+
+     @return the direction of the ramp
+     */
     public Direction direction() {
         double range = this.end - this.start;
         if (!Op.isFinite(range) || Op.isEq(range, 0.0)) {

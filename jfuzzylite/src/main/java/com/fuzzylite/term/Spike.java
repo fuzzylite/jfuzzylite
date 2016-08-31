@@ -20,6 +20,17 @@ import com.fuzzylite.Op;
 import java.util.Iterator;
 import java.util.List;
 
+/**
+ The Spike class is an extended Term that represents the spike membership
+ function.
+
+ @image html spike.svg
+
+ @author Juan Rada-Vilela, Ph.D.
+ @see Term
+ @see Variable
+ @since 5.0
+ */
 public class Spike extends Term {
 
     private double center, width;
@@ -42,12 +53,22 @@ public class Spike extends Term {
         this.width = width;
     }
 
+    /**
+     Returns the parameters of the term
+
+     @return `"center width [height]"`
+     */
     @Override
     public String parameters() {
         return Op.join(" ", center, width)
                 + (!Op.isEq(height, 1.0) ? " " + Op.str(height) : "");
     }
 
+    /**
+     Configures the term with the parameters
+
+     @param parameters as `"center width [height]"`
+     */
     @Override
     public void configure(String parameters) {
         if (parameters.isEmpty()) {
@@ -68,6 +89,16 @@ public class Spike extends Term {
         }
     }
 
+    /**
+     Computes the membership function evaluated at @f$x@f$
+
+     @param x
+     @return @f$h \times \exp(-|10 / w (x - c)|)@f$
+
+     where @f$h@f$ is the height of the Term,
+     @f$w@f$ is the width of the Spike,
+     @f$c@f$ is the center of the Spike
+     */
     @Override
     public double membership(double x) {
         if (Double.isNaN(x)) {
@@ -76,18 +107,38 @@ public class Spike extends Term {
         return height * Math.exp(-Math.abs(10.0 / width * (x - center)));
     }
 
+    /**
+     Gets the center of the spike
+
+     @return the center of the spike
+     */
     public double getCenter() {
         return center;
     }
 
+    /**
+     Sets the center of the spike
+
+     @param center is the center of the spike
+     */
     public void setCenter(double center) {
         this.center = center;
     }
 
+    /**
+     Gets the width of the spike
+
+     @return the width of the spike
+     */
     public double getWidth() {
         return width;
     }
 
+    /**
+     Sets the width of the spike
+
+     @param width is the width of the spike
+     */
     public void setWidth(double width) {
         this.width = width;
     }

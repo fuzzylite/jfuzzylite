@@ -20,6 +20,17 @@ import com.fuzzylite.Op;
 import java.util.Iterator;
 import java.util.List;
 
+/**
+ The Bell class is an extended Term that represents the generalized bell curve
+ membership function.
+
+ @image html bell.svg
+
+ @author Juan Rada-Vilela, Ph.D.
+ @see Term
+ @see Variable
+ @since 4.0
+ */
 public class Bell extends Term {
 
     private double center, width, slope;
@@ -43,12 +54,22 @@ public class Bell extends Term {
         this.slope = slope;
     }
 
+    /**
+     Returns the parameters of the term
+
+     @return `"center width slope [height]"`
+     */
     @Override
     public String parameters() {
         return Op.join(" ", center, width, slope)
                 + (!Op.isEq(height, 1.0) ? " " + Op.str(height) : "");
     }
 
+    /**
+     Configures the term with the parameters
+
+     @param parameters as `"center width slope [height]"`
+     */
     @Override
     public void configure(String parameters) {
         if (parameters.isEmpty()) {
@@ -70,35 +91,75 @@ public class Bell extends Term {
         }
     }
 
+    /**
+     Computes the membership function evaluated at @f$x@f$
+
+     @param x
+     @return @f$h / (1 + \left(|x-c|/w\right)^{2s}@f$
+
+     where @f$h@f$ is the height of the Term,
+     @f$c@f$ is the center of the Bell,
+     @f$w@f$ is the width of the Bell,
+     @f$s@f$ is the slope of the Bell
+     */
     @Override
     public double membership(double x) {
         if (Double.isNaN(x)) {
             return Double.NaN;
         }
-        //from octave: gbellmf.m
         return height * 1.0 / (1.0 + Math.pow(Math.abs((x - center) / width), 2.0 * slope));
     }
 
+    /**
+     Gets the center of the bell curve
+
+     @return the center of the bell curve
+     */
     public double getCenter() {
         return center;
     }
 
+    /**
+     Sets the center of the bell curve
+
+     @param center is the center of the bell curve
+     */
     public void setCenter(double center) {
         this.center = center;
     }
 
+    /**
+     Gets the width of the bell curve
+
+     @return the width of the bell curve
+     */
     public double getWidth() {
         return width;
     }
 
+    /**
+     Sets the width of the bell curve
+
+     @param width is the width of the bell curve
+     */
     public void setWidth(double width) {
         this.width = width;
     }
 
+    /**
+     Gets the slope of the bell curve
+
+     @return the slope of the bell curve
+     */
     public double getSlope() {
         return slope;
     }
 
+    /**
+     Sets the slope of the bell curve
+
+     @param slope is the slope of the bell curve
+     */
     public void setSlope(double slope) {
         this.slope = slope;
     }

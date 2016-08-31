@@ -20,6 +20,17 @@ import com.fuzzylite.Op;
 import com.fuzzylite.imex.FllExporter;
 import com.fuzzylite.norm.TNorm;
 
+/**
+ The Activated class is a special Term that contains pointers to the necessary
+ information of a term that has been activated as part of the Antecedent of a
+ Rule. The ownership of the pointers is not transferred to objects of this
+ class. The Activated class was named `Thresholded` in versions 4.0 and earlier.
+
+ @author Juan Rada-Vilela, Ph.D.
+ @see OutputVariable
+ @see Term
+ @since 5.0
+ */
 public class Activated extends Term {
 
     private Term term;
@@ -36,6 +47,13 @@ public class Activated extends Term {
         this.implication = implication;
     }
 
+    /**
+     Computes the implication of the activation degree and the membership
+     function value of @f$x@f$
+
+     @param x is a value
+     @return @f$d \otimes \mu(x)@f$, where @f$d@f$ is the activation degree
+     */
     @Override
     public double membership(double x) {
         if (Double.isNaN(x)) {
@@ -49,6 +67,11 @@ public class Activated extends Term {
         return implication.compute(term.membership(x), degree);
     }
 
+    /**
+     Returns the parameters of the term
+
+     @return `"degree implication term"`
+     */
     @Override
     public String parameters() {
         FllExporter exporter = new FllExporter();
@@ -64,31 +87,66 @@ public class Activated extends Term {
                 Op.str(degree), term.getName());
     }
 
+    /**
+     Does nothing.
+
+     @param parameters are irrelevant
+     */
     @Override
     public void configure(String parameters) {
         //do nothing
     }
 
+    /**
+     Gets the activated term
+
+     @return the activated term
+     */
     public Term getTerm() {
         return term;
     }
 
+    /**
+     Sets the activated term
+
+     @param term is the activated term
+     */
     public void setTerm(Term term) {
         this.term = term;
     }
 
+    /**
+     Gets the activation degree of the term
+
+     @return the activation degree of the term
+     */
     public double getDegree() {
         return degree;
     }
 
+    /**
+     Sets the activation degree of the term
+
+     @param degree is the activation degree of the term
+     */
     public void setDegree(double degree) {
         this.degree = degree;
     }
 
+    /**
+     Gets the implication operator
+
+     @return the implication operator
+     */
     public TNorm getImplication() {
         return implication;
     }
 
+    /**
+     Sets the implication operator
+
+     @param implication is the implication operator
+     */
     public void setImplication(TNorm implication) {
         this.implication = implication;
     }

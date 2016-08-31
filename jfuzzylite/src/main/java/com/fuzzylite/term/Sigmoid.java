@@ -20,10 +20,35 @@ import com.fuzzylite.Op;
 import java.util.Iterator;
 import java.util.List;
 
+/**
+ The Sigmoid class is an edge Term that represents the sigmoid membership
+ function.
+
+ @image html sigmoid.svg
+
+ @author Juan Rada-Vilela, Ph.D.
+ @see Term
+ @see Variable
+ @since 4.0
+ */
 public class Sigmoid extends Term {
 
+    /**
+     Direction is an enumerator that indicates the direction of the sigmoid.
+     */
     public enum Direction {
-        Positive, Zero, Negative
+        /**
+         `(_/)` increases to the right
+         */
+        Positive,
+        /**
+         `(--)` slope is zero
+         */
+        Zero,
+        /**
+         `(\\_)` increases to the left
+         */
+        Negative
     }
     private double inflection, slope;
 
@@ -45,12 +70,22 @@ public class Sigmoid extends Term {
         this.slope = slope;
     }
 
+    /**
+     Returns the parameters of the term
+
+     @return `"inflection slope [height]"`
+     */
     @Override
     public String parameters() {
         return Op.join(" ", inflection, slope)
                 + (!Op.isEq(height, 1.0) ? " " + Op.str(height) : "");
     }
 
+    /**
+     Configures the term with the parameters
+
+     @param parameters as `"inflection slope [height]"`
+     */
     @Override
     public void configure(String parameters) {
         if (parameters.isEmpty()) {
@@ -71,6 +106,16 @@ public class Sigmoid extends Term {
         }
     }
 
+    /**
+     Computes the membership function evaluated at @f$x@f$
+
+     @param x
+     @return @f$ h / (1 + \exp(-s(x-i)))@f$
+
+     where @f$h@f$ is the height of the Term,
+     @f$s@f$ is the slope of the Sigmoid,
+     @f$i@f$ is the inflection of the Sigmoid
+     */
     @Override
     public double membership(double x) {
         if (Double.isNaN(x)) {
@@ -79,22 +124,47 @@ public class Sigmoid extends Term {
         return height * 1.0 / (1.0 + Math.exp(-slope * (x - inflection)));
     }
 
+    /**
+     Gets the inflection of the sigmoid
+
+     @return the inflection of the sigmoid
+     */
     public double getInflection() {
         return inflection;
     }
 
+    /**
+     Sets the inflection of the sigmoid
+
+     @param inflection is the inflection of the sigmoid
+     */
     public void setInflection(double inflection) {
         this.inflection = inflection;
     }
 
+    /**
+     Gets the slope of the sigmoid
+
+     @return the slope of the sigmoid
+     */
     public double getSlope() {
         return slope;
     }
 
+    /**
+     Sets the slope of the sigmoid
+
+     @param slope is the slope of the sigmoid
+     */
     public void setSlope(double slope) {
         this.slope = slope;
     }
 
+    /**
+     Returns the direction of the sigmoid
+
+     @return the direction of the sigmoid
+     */
     public Direction direction() {
         if (!Op.isFinite(slope) || Op.isEq(slope, 0.0)) {
             return Direction.Zero;

@@ -20,6 +20,17 @@ import com.fuzzylite.Op;
 import java.util.Iterator;
 import java.util.List;
 
+/**
+ The Concave class is an edge Term that represents the concave membership
+ function.
+
+ @image html concave.svg
+
+ @author Juan Rada-Vilela, Ph.D.
+ @see Term
+ @see Variable
+ @since 5.0
+ */
 public class Concave extends Term {
 
     private double inflection, end;
@@ -42,12 +53,22 @@ public class Concave extends Term {
         this.end = end;
     }
 
+    /**
+     Returns the parameters of the term as
+
+     @return `"inflection end [height]"`
+     */
     @Override
     public String parameters() {
         return Op.join(" ", inflection, end)
                 + (!Op.isEq(height, 1.0) ? " " + Op.str(height) : "");
     }
 
+    /**
+     Configures the term with the parameters given
+
+     @param parameters as `"inflection end [height]"`
+     */
     @Override
     public void configure(String parameters) {
         if (parameters.isEmpty()) {
@@ -68,6 +89,20 @@ public class Concave extends Term {
         }
     }
 
+    /**
+     Computes the membership function evaluated at @f$x@f$
+
+     @param x
+     @return @f$\begin{cases} h \times (e - i) / (2e - i - x) & \mbox{if $i \leq
+     e \wedge x < e$
+     (increasing concave)} \cr
+     h \times (i - e) / (-2e + i + x) & \mbox{if $i > e \wedge x > e$
+     (decreasing concave)} \cr h & \mbox{otherwise} \cr \end{cases}@f$
+
+     where @f$h@f$ is the height of the Term,
+     @f$i@f$ is the inflection of the Concave,
+     @f$e@f$ is the end of the Concave
+     */
     @Override
     public double membership(double x) {
         if (Double.isNaN(x)) {
@@ -83,18 +118,38 @@ public class Concave extends Term {
         return height * 1.0;
     }
 
+    /**
+     Gets the inflection of the curve
+
+     @return the inflection of the curve
+     */
     public double getInflection() {
         return inflection;
     }
 
+    /**
+     Sets the inflection of the curve
+
+     @param inflection is the inflection of the curve
+     */
     public void setInflection(double inflection) {
         this.inflection = inflection;
     }
 
+    /**
+     Gets the end of the curve
+
+     @return the end of the curve
+     */
     public double getEnd() {
         return end;
     }
 
+    /**
+     Sets the end of the curve
+
+     @param end is the end of the curve
+     */
     public void setEnd(double end) {
         this.end = end;
     }
