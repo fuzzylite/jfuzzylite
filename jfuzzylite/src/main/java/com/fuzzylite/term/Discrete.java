@@ -272,7 +272,7 @@ public class Discrete extends Term implements List<Pair> {
         }
     }
 
-    private static final Ascendantly ASCENDANTLY = new Ascendantly();
+    public static final Ascendantly ASCENDANTLY = new Ascendantly();
 
     /**
      Ascendantly sorts the pairs of values in this Discrete term by the
