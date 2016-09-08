@@ -782,7 +782,7 @@ public class Op {
     /**
      Returns a string representation of the given value
 
-     @param <T> determines the class type of the value
+     @tparam T determines the class type of the value
      @param x is the value
      @return a string representation of the given value
      */
@@ -793,7 +793,7 @@ public class Op {
     /**
      Returns a string representation of the given value
 
-     @param <T> determines the class type of the value
+     @tparam T determines the class type of the value
      @param x is the value
      @param formatter is the decimal formatter of scalar values
      @return a string representation of the given value
@@ -813,7 +813,7 @@ public class Op {
      elements are represented as strings utilizing the Op.str() method on each
      element
 
-     @param <T> determines the class type of the value
+     @tparam T determines the class type of the value
      @param x is the array of elements
      @param separator is the string to add between the elements
      @return a single string joining the array of elements by the given
@@ -943,7 +943,7 @@ public class Op {
      string. The elements are represented as strings utilizing the Op.str()
      method on each element
 
-     @param <T> determines the type of elements in the array
+     @tparam T determines the type of elements in the array
      @param separator is the string to add between the elements
      @param items are the elements to join
      @return a single string joining the variadic number of elements by the

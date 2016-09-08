@@ -168,7 +168,7 @@ public class Binary extends Term {
      @f$\begin{cases} \infty & \mbox{if $ d > s $}\cr -\infty & \mbox{if $ d < s
      $}\cr \mbox{\tt NaN} & \mbox{otherwise} \end{cases} @f$
 
-     where @f$d@f$ is the given direction, and @ f$s@f$ is the start of the
+     where @f$d@f$ is the given direction, and @ @f$s@f$ is the start of the
      Binary edge
 
      @param direction is the direction of the binary edge
