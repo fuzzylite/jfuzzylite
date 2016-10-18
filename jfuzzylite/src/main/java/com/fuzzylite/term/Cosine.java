@@ -106,8 +106,8 @@ public class Cosine extends Term {
         if (Double.isNaN(x)) {
             return Double.NaN;
         }
-        if (Op.isLt(x, center - width / 2.0)
-                || Op.isGt(x, center + width / 2.0)) {
+        if (Op.isLt(x, center - 0.5 * width)
+                || Op.isGt(x, center + 0.5 * width)) {
             return height * 0.0;
         }
         return height * (0.5 * (1.0 + Math.cos(2.0 / width * Math.PI * (x - center))));
