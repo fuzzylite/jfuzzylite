@@ -16,6 +16,13 @@
  */
 package com.fuzzylite;
 
+import org.junit.After;
+import org.junit.AfterClass;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.Test;
+
 import java.text.DecimalFormat;
 import java.text.MessageFormat;
 import java.util.ArrayList;
@@ -23,13 +30,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 import java.util.logging.Level;
+
 import static org.hamcrest.CoreMatchers.is;
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
 
 public class QuickTest {
 

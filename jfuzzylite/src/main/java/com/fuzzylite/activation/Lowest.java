@@ -22,6 +22,7 @@ import com.fuzzylite.norm.SNorm;
 import com.fuzzylite.norm.TNorm;
 import com.fuzzylite.rule.Rule;
 import com.fuzzylite.rule.RuleBlock;
+
 import java.text.MessageFormat;
 import java.util.Comparator;
 import java.util.List;
@@ -123,7 +124,7 @@ public class Lowest extends Activation {
         }
 
         int activated = 0;
-        while (rulesToActivate.size() > 0 && activated++ < getNumberOfRules()) {
+        while (!rulesToActivate.isEmpty() && activated++ < getNumberOfRules()) {
             Rule rule = rulesToActivate.poll();
             rule.activate(rule.getActivationDegree(), implication);
         }

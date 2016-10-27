@@ -19,6 +19,7 @@ package com.fuzzylite.imex;
 import com.fuzzylite.Engine;
 import com.fuzzylite.FuzzyLite;
 import com.fuzzylite.Op;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;

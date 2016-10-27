@@ -22,6 +22,7 @@ import com.fuzzylite.Op;
 import com.fuzzylite.imex.FllExporter;
 import com.fuzzylite.norm.SNorm;
 import com.fuzzylite.norm.TNorm;
+
 import java.util.StringTokenizer;
 import java.util.logging.Level;
 
@@ -53,8 +54,7 @@ import java.util.logging.Level;
  @see Consequent
  @see Hedge
  @see RuleBlock
- @since 4.0
- */
+ @since 4.0 */
 public class Rule implements Op.Cloneable {
 
     /**
@@ -368,11 +368,14 @@ public class Rule implements Op.Cloneable {
                     case S_END:
                         throw new RuntimeException(String.format(
                                 "[syntax error] unexpected token <%s> at the end of rule", token));
+                    default:
+                        throw new RuntimeException(String.format(
+                                "[syntax error] unexpected state <%s>", state));
                 }
             }
 
             if (state == S_NONE) {
-                throw new RuntimeException(String.format("[syntax error] " + (rule.isEmpty() ? "empty" : "ignored") + "rule: %s", rule));
+                throw new RuntimeException(String.format("[syntax error] %s rule: %s", (rule.isEmpty() ? "empty" : "ignored"), rule));
             } else if (state == S_IF) {
                 throw new RuntimeException(String.format(
                         "[syntax error] keyword <%s> not found in rule: %s",
@@ -418,6 +421,7 @@ public class Rule implements Op.Cloneable {
      Creates a clone of the rule without being loaded
 
      @return a clone of the rule without being loaded
+
      @throws CloneNotSupportedException by definition in Cloneable
      */
     @Override

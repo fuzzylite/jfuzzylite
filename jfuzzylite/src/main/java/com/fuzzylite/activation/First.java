@@ -22,8 +22,8 @@ import com.fuzzylite.norm.SNorm;
 import com.fuzzylite.norm.TNorm;
 import com.fuzzylite.rule.Rule;
 import com.fuzzylite.rule.RuleBlock;
+
 import java.text.MessageFormat;
-import java.util.Iterator;
 import java.util.List;
 import java.util.logging.Level;
 
@@ -110,9 +110,7 @@ public class First extends Activation {
         TNorm implication = ruleBlock.getImplication();
 
         int activated = 0;
-        Iterator<Rule> it = ruleBlock.getRules().iterator();
-        while (it.hasNext()) {
-            Rule rule = it.next();
+        for (Rule rule : ruleBlock.getRules()) {
             rule.deactivate();
 
             if (rule.isLoaded()) {

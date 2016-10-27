@@ -19,6 +19,7 @@ package com.fuzzylite.term;
 import com.fuzzylite.Op;
 import com.fuzzylite.defuzzifier.IntegralDefuzzifier;
 import com.fuzzylite.term.Discrete.Pair;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -164,9 +165,8 @@ public class Discrete extends Term implements List<Pair> {
         LinkedList<Double> values = new LinkedList<Double>();
 
         List<String> strValues = Op.split(parameters, " ");
-        Iterator<String> it = strValues.iterator();
-        while (it.hasNext()) {
-            values.add(Op.toDouble(it.next()));
+        for (String strValue : strValues) {
+            values.add(Op.toDouble(strValue));
         }
 
         if (values.size() % 2 == 0) {
@@ -223,7 +223,7 @@ public class Discrete extends Term implements List<Pair> {
      @return a Discrete term that approximates the given term
      */
     public static Discrete discretize(Term term, double start, double end, int resolution) {
-        return discretize(term, start, end, IntegralDefuzzifier.getDefaultResolution(), true);
+        return discretize(term, start, end, resolution, true);
     }
 
     /**
@@ -433,9 +433,7 @@ public class Discrete extends Term implements List<Pair> {
      */
     public static List<Double> toList(List<Pair> xyValues) {
         List<Double> result = new ArrayList<Double>(xyValues.size() * 2);
-        Iterator<Pair> it = xyValues.iterator();
-        while (it.hasNext()) {
-            Pair pair = it.next();
+        for (Pair pair : xyValues) {
             result.add(pair.getX());
             result.add(pair.getY());
         }

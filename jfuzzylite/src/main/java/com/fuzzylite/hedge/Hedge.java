@@ -17,6 +17,7 @@
 package com.fuzzylite.hedge;
 
 import com.fuzzylite.Op;
+
 import java.util.Locale;
 
 /**

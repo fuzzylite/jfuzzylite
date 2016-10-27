@@ -144,7 +144,7 @@ public class Op {
      @return whether @f$a@f$ is equal to @f$b@f$ at the default tolerance
      */
     public static boolean isEq(double a, double b) {
-        return a == b || Math.abs(a - b) < FuzzyLite.MACHEPS || (Double.isNaN(a) && Double.isNaN(b));
+        return a == b || Math.abs(a - b) < FuzzyLite.macheps || (Double.isNaN(a) && Double.isNaN(b));
     }
 
     /**
@@ -168,7 +168,7 @@ public class Op {
      @return whether @f$a@f$ is different from @f$b@f$ at the default tolerance
      */
     public static boolean isNEq(double a, double b) {
-        return !(a == b || Math.abs(a - b) < FuzzyLite.MACHEPS || (Double.isNaN(a) && Double.isNaN(b)));
+        return !(a == b || Math.abs(a - b) < FuzzyLite.macheps || (Double.isNaN(a) && Double.isNaN(b)));
     }
 
     /**
@@ -192,7 +192,7 @@ public class Op {
      @return whether @f$a@f$ is less than @f$b@f$ at the default tolerance
      */
     public static boolean isLt(double a, double b) {
-        return !(a == b || Math.abs(a - b) < FuzzyLite.MACHEPS || (Double.isNaN(a) && Double.isNaN(b)))
+        return !(a == b || Math.abs(a - b) < FuzzyLite.macheps || (Double.isNaN(a) && Double.isNaN(b)))
                 && a < b;
     }
 
@@ -220,7 +220,7 @@ public class Op {
      tolerance
      */
     public static boolean isLE(double a, double b) {
-        return a == b || Math.abs(a - b) < FuzzyLite.MACHEPS || (Double.isNaN(a) && Double.isNaN(b))
+        return a == b || Math.abs(a - b) < FuzzyLite.macheps || (Double.isNaN(a) && Double.isNaN(b))
                 || a < b;
     }
 
@@ -248,7 +248,7 @@ public class Op {
      @return whether @f$a@f$ is greater than @f$b@f$ at the given tolerance
      */
     public static boolean isGt(double a, double b) {
-        return !(a == b || Math.abs(a - b) < FuzzyLite.MACHEPS || (Double.isNaN(a) && Double.isNaN(b)))
+        return !(a == b || Math.abs(a - b) < FuzzyLite.macheps || (Double.isNaN(a) && Double.isNaN(b)))
                 && a > b;
     }
 
@@ -276,7 +276,7 @@ public class Op {
      tolerance
      */
     public static boolean isGE(double a, double b) {
-        return a == b || Math.abs(a - b) < FuzzyLite.MACHEPS || (Double.isNaN(a) && Double.isNaN(b))
+        return a == b || Math.abs(a - b) < FuzzyLite.macheps || (Double.isNaN(a) && Double.isNaN(b))
                 || a > b;
     }
 
@@ -988,9 +988,9 @@ public class Op {
     /**
      Cloneable is an interface that provides a public method to clone
      */
-    public static interface Cloneable extends java.lang.Cloneable {
+    public interface Cloneable extends java.lang.Cloneable {
 
-        public Object clone() throws CloneNotSupportedException;
+        Object clone() throws CloneNotSupportedException;
     }
 
     /**

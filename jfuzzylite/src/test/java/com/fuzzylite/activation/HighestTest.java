@@ -22,14 +22,15 @@ import com.fuzzylite.FuzzyLite;
 import com.fuzzylite.rule.Rule;
 import com.fuzzylite.rule.RuleBlock;
 import com.fuzzylite.variable.InputVariable;
-import java.util.List;
-import static org.hamcrest.CoreMatchers.is;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
+
+import java.util.List;
+
 import static org.hamcrest.CoreMatchers.is;
 
 public class HighestTest {

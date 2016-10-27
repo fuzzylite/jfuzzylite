@@ -19,12 +19,12 @@ package com.fuzzylite.term;
 import com.fuzzylite.Engine;
 import com.fuzzylite.FuzzyLite;
 import com.fuzzylite.Op;
-import static com.fuzzylite.Op.str;
 import com.fuzzylite.factory.FactoryManager;
 import com.fuzzylite.factory.FunctionFactory;
 import com.fuzzylite.rule.Rule;
 import com.fuzzylite.variable.InputVariable;
 import com.fuzzylite.variable.OutputVariable;
+
 import java.lang.reflect.Method;
 import java.util.ArrayDeque;
 import java.util.Deque;
@@ -56,13 +56,12 @@ import java.util.StringTokenizer;
  convert the text of the Antecedent of a Rule, expressed in infix notation, into
  postfix notation.
 
-
- @author Juan Rada-Vilela, Ph.D.
  @see Term
  @see Variable
  @see FunctionFactory
  @see Antecedent::load()
  @since 4.0
+ @author Juan Rada-Vilela, Ph.D.
  */
 public class Function extends Term {
 
@@ -82,6 +81,7 @@ public class Function extends Term {
         public enum Type {
             Operator, Function
         }
+
         private String name;
         private String description;
         private Type type;
@@ -102,7 +102,7 @@ public class Function extends Term {
         }
 
         public Element(String name, String description, Type type, Method method,
-                int precedence, int associativity) {
+                       int precedence, int associativity) {
             this.name = name;
             this.description = description;
             this.type = type;
@@ -169,8 +169,8 @@ public class Function extends Term {
          Gets the arity of the method, namely the number of arguments required
          by the method
 
-         @return the arity of the method, namely the number of arguments
-         required by the method
+         @return the arity of the method, namely the number of arguments required
+         by the method
          */
         public int getArity() {
             return method.getParameterTypes().length;
@@ -298,6 +298,7 @@ public class Function extends Term {
          Creates a clone of the node.
 
          @return a clone of the node
+
          @throws CloneNotSupportedException
          */
         @Override
@@ -321,7 +322,6 @@ public class Function extends Term {
 
          @param localVariables is a map of substitutions of variable names for
          floating-point values
-
          @return a floating-point value indicating the result of the evaluation
          of the node
          */
@@ -345,7 +345,7 @@ public class Function extends Term {
                         default:
                             throw new RuntimeException(String.format(
                                     "[function error] <%d>-ary element <%s> is not supported, "
-                                    + "only unary and binary elements are",
+                                            + "only unary and binary elements are",
                                     element.getArity(), element.toString()));
                     }
                 } catch (RuntimeException ex) {
@@ -370,7 +370,7 @@ public class Function extends Term {
                 result = value;
             }
             if (FuzzyLite.isDebugging()) {
-                FuzzyLite.logger().fine(String.format("%s = %s", toPostfix(), str(result)));
+                FuzzyLite.logger().fine(String.format("%s = %s", toPostfix(), Op.str(result)));
             }
             return result;
         }
@@ -379,8 +379,8 @@ public class Function extends Term {
          Returns a string with the name of the element, the name of the
          variable, or the constant value, accordingly.
 
-         @return a string with the name of the element, the name of the
-         variable, or the constant value, accordingly.
+         @return a string with the name of the element, the name of the variable,
+         or the constant value, accordingly.
          */
         @Override
         public String toString() {
@@ -481,8 +481,8 @@ public class Function extends Term {
          Returns a postfix representation of the expression tree under the given
          node
 
-         @param node is the node to start the postfix representation from. If
-         the node is null, then the starting point is `this` node
+         @param node is the node to start the postfix representation from. If the
+         node is null, then the starting point is `this` node
          @return a postfix representation of the expression tree under the given
          node
          */
@@ -591,7 +591,8 @@ public class Function extends Term {
      */
     public double evaluate(Map<String, Double> localVariables) {
         if (this.root == null) {
-            throw new RuntimeException("[function error] evaluation failed because function is not loaded");
+            throw new RuntimeException("[function error] evaluation failed " +
+                    "because function is not loaded");
         }
         return this.root.evaluate(localVariables);
     }
@@ -603,6 +604,7 @@ public class Function extends Term {
      @param formula is the formula defining the membership function
      @param engine is the engine to which the Function can have access
      @return a Function term configured with the given parameters
+
      @throws RuntimeException if the formula has a syntax error
      */
     public static Function create(String name, String formula, Engine engine) {
@@ -694,6 +696,7 @@ public class Function extends Term {
      @param formula is the right-hand side of a mathematical equation expressed
      in infix notation
      @return the formula represented in postfix notation
+
      @throws RuntimeException if the formula has syntax errors
      */
     public String toPostfix(String formula) {
@@ -745,7 +748,7 @@ public class Function extends Term {
             } else if (element != null && element.isOperator()) {
                 FuzzyLite.logger().fine(token + " is operator");
                 Element op1 = element;
-                for (;;) {
+                for (; ; ) {
                     Element op2 = null;
                     if (!stack.isEmpty()) {
                         op2 = factory.getObject(stack.peek());
@@ -814,6 +817,7 @@ public class Function extends Term {
      @param text is the right-hand side of a mathematical equation expressed in
      infix notation
      @return a node representing a binary expression tree from the given formula
+
      @throws RuntimeException if the formula has syntax errors
      */
     public Node parse(String text) {
@@ -837,8 +841,9 @@ public class Function extends Term {
 
             if (element != null) {
                 if (element.getArity() > stack.size()) {
-                    throw new RuntimeException(String.format("[function error] operator <%s> has arity <%d>, "
-                            + "but <%d> elements are available: (%s)",
+                    throw new RuntimeException(String.format("[function error] " +
+                                    "operator <%s> has arity <%d>, "
+                                    + "but <%d> elements are available: (%s)",
                             element.getName(), element.getArity(), stack.size(),
                             Op.join(stack, ", ")));
                 }

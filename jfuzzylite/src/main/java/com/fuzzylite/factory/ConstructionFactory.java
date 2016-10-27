@@ -17,6 +17,7 @@
 package com.fuzzylite.factory;
 
 import com.fuzzylite.Op;
+
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -60,7 +61,7 @@ public class ConstructionFactory<T> implements Op.Cloneable {
     }
 
     /**
-     Deregisters from the factory the class associated to the given key
+     Removes from the factory the class associated to the given key
 
      @param simpleName is the key by which constructors are registered
      */

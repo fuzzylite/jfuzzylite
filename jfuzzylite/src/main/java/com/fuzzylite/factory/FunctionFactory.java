@@ -19,6 +19,7 @@ package com.fuzzylite.factory;
 import com.fuzzylite.Op;
 import com.fuzzylite.rule.Rule;
 import com.fuzzylite.term.Function;
+
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;

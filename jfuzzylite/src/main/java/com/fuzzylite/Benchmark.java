@@ -20,6 +20,7 @@ import com.fuzzylite.imex.FldExporter;
 import com.fuzzylite.rule.RuleBlock;
 import com.fuzzylite.variable.InputVariable;
 import com.fuzzylite.variable.OutputVariable;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.Reader;
@@ -239,9 +240,9 @@ public class Benchmark {
             resolution = values - 1;
         }
 
-        int sampleValues[] = new int[engine.numberOfInputVariables()];
-        int minSampleValues[] = new int[engine.numberOfInputVariables()];
-        int maxSampleValues[] = new int[engine.numberOfInputVariables()];
+        int[] sampleValues = new int[engine.numberOfInputVariables()];
+        int[] minSampleValues = new int[engine.numberOfInputVariables()];
+        int[] maxSampleValues = new int[engine.numberOfInputVariables()];
         for (int i = 0; i < engine.numberOfInputVariables(); ++i) {
             sampleValues[i] = 0;
             minSampleValues[i] = 0;
@@ -535,9 +536,7 @@ public class Benchmark {
 
      @f$\text{E} = \sum_i \epsilon_i, \text{where } \epsilon_i = \begin{cases} 0
      & \text{if} |e_i - o_i| < \theta\\ 1 & \text{otherwise} \end{cases} @f$,
-     @f$e@f$ is the set of expected output
-     v
-     alues,
+     @f$e@f$ is the set of expected output values,
      @f$o@f$ is the set of obtained output values, and @f$\theta@f$ is the
      tolerance
 

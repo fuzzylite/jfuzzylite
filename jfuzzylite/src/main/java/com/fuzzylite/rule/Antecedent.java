@@ -28,6 +28,7 @@ import com.fuzzylite.norm.TNorm;
 import com.fuzzylite.term.Function;
 import com.fuzzylite.variable.OutputVariable;
 import com.fuzzylite.variable.Variable;
+
 import java.util.ArrayDeque;
 import java.util.Deque;
 import java.util.LinkedList;
@@ -155,9 +156,9 @@ public class Antecedent {
             Variable variable = proposition.getVariable();
             double result = Double.NaN;
             Variable.Type variableType = variable.type();
-            if (variableType == Variable.Type.InputVariable) {
+            if (variableType == Variable.Type.Input) {
                 result = proposition.getTerm().membership(variable.getValue());
-            } else if (variableType == Variable.Type.OutputVariable) {
+            } else if (variableType == Variable.Type.Output) {
                 result = ((OutputVariable) variable).fuzzyOutput().activationDegree(proposition.getTerm());
             }
             int lastIndex = proposition.getHedges().size();

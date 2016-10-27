@@ -32,9 +32,9 @@ import com.fuzzylite.term.Linear;
 import com.fuzzylite.term.Term;
 import com.fuzzylite.variable.InputVariable;
 import com.fuzzylite.variable.OutputVariable;
+
 import java.util.List;
 import java.util.regex.Pattern;
-import static com.fuzzylite.Op.str;
 
 /**
  The JavaExporter class is an Exporter that translates an Engine and its
@@ -121,7 +121,7 @@ public class JavaExporter extends Exporter {
         } else {
             name = "inputVariable";
             if (engine.numberOfInputVariables() > 1) {
-                name += engine.getInputVariables().indexOf(inputVariable) + 1;
+                name += Integer.toString(engine.getInputVariables().indexOf(inputVariable) + 1);
             }
         }
 
@@ -160,7 +160,7 @@ public class JavaExporter extends Exporter {
         } else {
             name = "outputVariable";
             if (engine.numberOfOutputVariables() > 1) {
-                name += engine.getOutputVariables().indexOf(outputVariable) + 1;
+                name += Integer.toString(engine.getOutputVariables().indexOf(outputVariable) + 1);
             }
         }
         StringBuilder result = new StringBuilder();
@@ -208,7 +208,7 @@ public class JavaExporter extends Exporter {
     public String toString(RuleBlock ruleBlock, Engine engine) {
         String name = "ruleBlock";
         if (engine.numberOfRuleBlocks() > 1) {
-            name += engine.getRuleBlocks().indexOf(ruleBlock) + 1;
+            name += Integer.toString(engine.getRuleBlocks().indexOf(ruleBlock) + 1);
         }
         StringBuilder result = new StringBuilder();
         result.append(String.format("RuleBlock %s = new RuleBlock();\n", name));
@@ -355,7 +355,7 @@ public class JavaExporter extends Exporter {
             return value > 0 ? "Double.POSITIVE_INFINITY"
                     : "Double.NEGATIVE_INFINITY";
         }
-        return str(value);
+        return Op.str(value);
     }
 
     @Override

@@ -21,6 +21,7 @@ import com.fuzzylite.FuzzyLite;
 import com.fuzzylite.Op;
 import com.fuzzylite.variable.InputVariable;
 import com.fuzzylite.variable.OutputVariable;
+
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -440,9 +441,9 @@ public class FldExporter extends Exporter {
             resolution = values - 1;
         }
 
-        int sampleValues[] = new int[engine.numberOfInputVariables()];
-        int minSampleValues[] = new int[engine.numberOfInputVariables()];
-        int maxSampleValues[] = new int[engine.numberOfInputVariables()];
+        int[] sampleValues = new int[engine.numberOfInputVariables()];
+        int[] minSampleValues = new int[engine.numberOfInputVariables()];
+        int[] maxSampleValues = new int[engine.numberOfInputVariables()];
         for (int i = 0; i < engine.numberOfInputVariables(); ++i) {
             sampleValues[i] = 0;
             minSampleValues[i] = 0;

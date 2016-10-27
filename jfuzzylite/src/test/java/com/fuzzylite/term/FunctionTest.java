@@ -18,8 +18,10 @@ package com.fuzzylite.term;
 
 import com.fuzzylite.FuzzyLite;
 import com.fuzzylite.Op;
+
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.is;
+
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Assert;
@@ -30,9 +32,7 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
 /**
- *
- * @author juan
- */
+ @author juan */
 public class FunctionTest {
 
     @Rule

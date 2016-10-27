@@ -16,7 +16,6 @@
  */
 package com.fuzzylite;
 
-import static com.fuzzylite.Op.str;
 import com.fuzzylite.defuzzifier.Defuzzifier;
 import com.fuzzylite.defuzzifier.IntegralDefuzzifier;
 import com.fuzzylite.defuzzifier.WeightedDefuzzifier;
@@ -35,6 +34,7 @@ import com.fuzzylite.term.Term;
 import com.fuzzylite.variable.InputVariable;
 import com.fuzzylite.variable.OutputVariable;
 import com.fuzzylite.variable.Variable;
+
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -91,8 +91,8 @@ public class Engine implements Op.Cloneable {
         /**
          Unknown: When output variables have no defuzzifiers
          */
-        Unknown;
-    };
+        Unknown
+    }
 
     public Engine() {
         this("");
@@ -331,7 +331,7 @@ public class Engine implements Op.Cloneable {
                 if (inputVariable.isEnabled()) {
                     FuzzyLite.logger().fine(String.format(
                             "%s.input = %s\n%s.fuzzy = %s",
-                            inputVariable.getName(), str(inputValue),
+                            inputVariable.getName(), Op.str(inputValue),
                             inputVariable.getName(), inputVariable.fuzzify(inputValue)));
                 } else {
                     FuzzyLite.logger().fine(String.format(
@@ -360,7 +360,7 @@ public class Engine implements Op.Cloneable {
             for (OutputVariable outputVariable : this.outputVariables) {
                 if (outputVariable.isEnabled()) {
                     FuzzyLite.logger().fine(String.format("%s.default = %s",
-                            outputVariable.getName(), str(outputVariable.getDefaultValue())));
+                            outputVariable.getName(), Op.str(outputVariable.getDefaultValue())));
                     FuzzyLite.logger().fine(String.format("%s.lockValueInRange = %s",
                             outputVariable.getName(), String.valueOf(outputVariable.isLockValueInRange())));
                     FuzzyLite.logger().fine(String.format("%s.lockPreviousValue= %s",
@@ -369,7 +369,7 @@ public class Engine implements Op.Cloneable {
                     //no locking is ever performed during this debugging block;
                     double outputValue = outputVariable.getValue();
                     FuzzyLite.logger().fine(String.format("%s.output = %s",
-                            outputVariable.getName(), str(outputValue)));
+                            outputVariable.getName(), Op.str(outputValue)));
                     FuzzyLite.logger().fine(String.format("%s.fuzzy = %s",
                             outputVariable.getName(), outputVariable.fuzzify(outputValue)));
                     FuzzyLite.logger().fine(outputVariable.fuzzyOutput().toString());

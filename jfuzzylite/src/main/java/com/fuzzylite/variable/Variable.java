@@ -23,6 +23,7 @@ import com.fuzzylite.imex.FllExporter;
 import com.fuzzylite.term.Constant;
 import com.fuzzylite.term.Linear;
 import com.fuzzylite.term.Term;
+
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Iterator;
@@ -44,7 +45,7 @@ public class Variable implements Op.Cloneable {
      Indicates the type of the variable to avoid `instanceof`
      */
     public enum Type {
-        None, InputVariable, OutputVariable
+        None, Input, Output
     }
     private String name;
     private List<Term> terms;
@@ -255,10 +256,8 @@ public class Variable implements Op.Cloneable {
      */
     public String fuzzify(double x) {
         StringBuilder sb = new StringBuilder();
-        Iterator<Term> it = getTerms().iterator();
 
-        while (it.hasNext()) {
-            Term term = it.next();
+        for (Term term : getTerms()) {
             double fx = term.membership(x);
 
             if (sb.length() == 0) {
@@ -351,7 +350,7 @@ public class Variable implements Op.Cloneable {
         }
 
         List<Term> sortedTerms = new ArrayList<Term>(terms.size());
-        while (termCentroids.size() > 0) {
+        while (!termCentroids.isEmpty()) {
             sortedTerms.add(termCentroids.poll().getFirst());
         }
         setTerms(sortedTerms);

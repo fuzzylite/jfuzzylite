@@ -25,8 +25,8 @@ package com.fuzzylite.defuzzifier;
  */
 public abstract class IntegralDefuzzifier extends Defuzzifier {
 
-    private static int DEFAULT_RESOLUTION = 100;
-    private int resolution = DEFAULT_RESOLUTION;
+    private static int defaultResolution = 100;
+    private int resolution = defaultResolution;
 
     public IntegralDefuzzifier() {
     }
@@ -64,7 +64,7 @@ public abstract class IntegralDefuzzifier extends Defuzzifier {
      defuzzifiers
      */
     public static void setDefaultResolution(int defaultResolution) {
-        IntegralDefuzzifier.DEFAULT_RESOLUTION = defaultResolution;
+        IntegralDefuzzifier.defaultResolution = defaultResolution;
     }
 
     /**
@@ -73,7 +73,7 @@ public abstract class IntegralDefuzzifier extends Defuzzifier {
      @return the default resolution for integral-based defuzzifiers
      */
     public static int getDefaultResolution() {
-        return IntegralDefuzzifier.DEFAULT_RESOLUTION;
+        return IntegralDefuzzifier.defaultResolution;
     }
 
     @Override

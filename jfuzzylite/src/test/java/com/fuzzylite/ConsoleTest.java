@@ -16,9 +16,6 @@
  */
 package com.fuzzylite;
 
-import java.io.File;
-import java.util.logging.Level;
-import static org.hamcrest.CoreMatchers.is;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Assert;
@@ -30,6 +27,11 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.contrib.java.lang.system.ExpectedSystemExit;
 import org.junit.rules.TemporaryFolder;
+
+import java.io.File;
+import java.util.logging.Level;
+
+import static org.hamcrest.CoreMatchers.is;
 
 public class ConsoleTest {
 
@@ -69,7 +71,7 @@ public class ConsoleTest {
     }
 
     /**
-     * Test of exportAllExamples method, of class Console.
+     Test of exportAllExamples method, of class Console.
      */
     @Test
     public void testExportAllExamples() throws Exception {
@@ -81,7 +83,7 @@ public class ConsoleTest {
                 new String[]{examples.getAbsolutePath(), flFolder.getRoot().getAbsolutePath()});
         Assert.assertThat("output folder exists", flFolder.getRoot().exists(), is(true));
         Console.main(new String[]{
-            "export-examples", examples.getAbsolutePath(), flFolder.getRoot().getAbsolutePath()});
+                "export-examples", examples.getAbsolutePath(), flFolder.getRoot().getAbsolutePath()});
 //        System.in.read();
     }
 
@@ -91,18 +93,18 @@ public class ConsoleTest {
         File examples = new File("../examples/");
         Assert.assertThat("examples is reachable", examples.exists(), is(true));
         Console.main(new String[]{
-            "benchmarks", examples.getAbsolutePath(), "1"});
+                "benchmarks", examples.getAbsolutePath(), "1"});
     }
 
     /**
-     * Test of benchmarkExamples method, of class Console.
+     Test of benchmarkExamples method, of class Console.
      */
     @Test
     public void testBenchmarkExamples() {
     }
 
     /**
-     * Test of main method, of class Console.
+     Test of main method, of class Console.
      */
     @Test
     public void testMain() {

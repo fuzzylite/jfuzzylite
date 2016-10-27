@@ -21,6 +21,7 @@ import com.fuzzylite.norm.SNorm;
 import com.fuzzylite.norm.TNorm;
 import com.fuzzylite.rule.Rule;
 import com.fuzzylite.rule.RuleBlock;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;

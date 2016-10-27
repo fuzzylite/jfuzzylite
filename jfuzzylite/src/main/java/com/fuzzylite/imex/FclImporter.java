@@ -53,6 +53,7 @@ import com.fuzzylite.term.Function;
 import com.fuzzylite.term.Term;
 import com.fuzzylite.variable.InputVariable;
 import com.fuzzylite.variable.OutputVariable;
+
 import java.io.BufferedReader;
 import java.io.StringReader;
 import java.util.ArrayList;
@@ -281,9 +282,9 @@ public class FclImporter extends Importer {
                 Pair<Double, Double> range = parseRange(line);
                 outputVariable.setRange(range.getFirst(), range.getSecond());
             } else if ("LOCK".equals(firstToken)) {
-                Pair<Boolean, Boolean> output_range = parseLocks(line);
-                outputVariable.setLockPreviousValue(output_range.getFirst());
-                outputVariable.setLockValueInRange(output_range.getSecond());
+                Pair<Boolean, Boolean> outputRange = parseLocks(line);
+                outputVariable.setLockPreviousValue(outputRange.getFirst());
+                outputVariable.setLockValueInRange(outputRange.getSecond());
             } else if ("ENABLED".equals(firstToken)) {
                 outputVariable.setEnabled(parseEnabled(line));
             } else {
@@ -583,7 +584,7 @@ public class FclImporter extends Importer {
         if (flags.size() == 1) {
             String flag = flags.get(0).trim();
             output = "PREVIOUS".equals(flag);
-            range = ("RANGE".equals(flag));
+            range = "RANGE".equals(flag);
             if (!(output || range)) {
                 throw new RuntimeException(String.format(
                         "[syntax error] expected locking flags "
@@ -592,8 +593,8 @@ public class FclImporter extends Importer {
         } else if (flags.size() == 2) {
             String flagA = flags.get(0).trim();
             String flagB = flags.get(1).trim();
-            output = ("PREVIOUS".equals(flagA) || "PREVIOUS".equals(flagB));
-            range = ("RANGE".equals(flagA) || "RANGE".equals(flagB));
+            output = "PREVIOUS".equals(flagA) || "PREVIOUS".equals(flagB);
+            range = "RANGE".equals(flagA) || "RANGE".equals(flagB);
             if (!(output && range)) {
                 throw new RuntimeException(String.format(
                         "[syntax error] expected locking flags <PREVIOUS|RANGE>, "

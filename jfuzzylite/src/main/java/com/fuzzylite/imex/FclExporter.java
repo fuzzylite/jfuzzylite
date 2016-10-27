@@ -18,7 +18,6 @@ package com.fuzzylite.imex;
 
 import com.fuzzylite.Engine;
 import com.fuzzylite.Op;
-import static com.fuzzylite.Op.str;
 import com.fuzzylite.defuzzifier.Bisector;
 import com.fuzzylite.defuzzifier.Centroid;
 import com.fuzzylite.defuzzifier.Defuzzifier;
@@ -34,6 +33,7 @@ import com.fuzzylite.norm.s.DrasticSum;
 import com.fuzzylite.norm.s.EinsteinSum;
 import com.fuzzylite.norm.s.HamacherSum;
 import com.fuzzylite.norm.s.Maximum;
+import com.fuzzylite.norm.s.NilpotentMaximum;
 import com.fuzzylite.norm.s.NormalizedSum;
 import com.fuzzylite.norm.t.AlgebraicProduct;
 import com.fuzzylite.norm.t.BoundedDifference;
@@ -49,6 +49,7 @@ import com.fuzzylite.term.Discrete;
 import com.fuzzylite.term.Term;
 import com.fuzzylite.variable.InputVariable;
 import com.fuzzylite.variable.OutputVariable;
+
 import java.util.Iterator;
 
 /**
@@ -180,7 +181,7 @@ public class FclExporter extends Exporter {
                     toString(outputVariable.fuzzyOutput().getAggregation())));
         }
         result.append(String.format(indent + "DEFAULT := %s",
-                str(outputVariable.getDefaultValue())));
+                Op.str(outputVariable.getDefaultValue())));
         if (outputVariable.isLockPreviousValue()) {
             result.append(" | NC");
         }
@@ -275,8 +276,8 @@ public class FclExporter extends Exporter {
         if (norm instanceof HamacherSum) {
             return "HSUM";
         }
-        if (norm instanceof NilpotentMinimum) {
-            return "NMIN";
+        if (norm instanceof NilpotentMaximum) {
+            return "NMAX";
         }
         return norm.getClass().getSimpleName();
     }

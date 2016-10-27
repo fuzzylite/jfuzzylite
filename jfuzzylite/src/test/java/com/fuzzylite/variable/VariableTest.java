@@ -18,12 +18,13 @@ package com.fuzzylite.variable;
 
 import com.fuzzylite.FuzzyLite;
 import com.fuzzylite.term.Triangle;
-import static org.hamcrest.CoreMatchers.is;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.BeforeClass;
+
+import static org.hamcrest.CoreMatchers.is;
 
 public class VariableTest {
 

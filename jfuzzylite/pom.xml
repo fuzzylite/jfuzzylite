@@ -16,20 +16,23 @@
 
     <name>jfuzzylite</name>
     <description>
-        jfuzzylite™ is a cross-platform, free and open-source fuzzy
+        jfuzzylite(TM) is a cross-platform, free, and open-source fuzzy
         logic control library programmed entirely in Java. Its goal is
         to allow you to easily create fuzzy logic controllers in a few
         steps utilizing object-oriented programming without requiring
         any third-party libraries.
 
-        jfuzzylite™ is the equivalent of the fuzzylite® library, but for
+        jfuzzylite is the equivalent of the fuzzylite(R) library, but for
         Java and Android platforms.
+
+        jfuzzylite is a trademark of FuzzyLite Limited.
+        fuzzylite is a registered trademark of FuzzyLite Limited.
     </description>
     <url>http://www.fuzzylite.com/java</url>
 
     <organization>
         <name>FuzzyLite Limited</name>
-        <url>http://www.fuzzylite.com</url>
+        <url>http://www.fuzzylite.com/</url>
     </organization>
 
     <scm>
@@ -54,9 +57,10 @@
             <name>Juan Rada-Vilela, Ph.D.</name>
             <url>http://www.fuzzylite.com/jcrada</url>
             <organization>FuzzyLite Limited</organization>
-            <organizationUrl>http://www.fuzzylite.com</organizationUrl>
+            <organizationUrl>http://www.fuzzylite.com/</organizationUrl>
             <roles>
                 <role>Founder</role>
+                <role>Software Architect</role>
                 <role>Software Engineer</role>
             </roles>
             <timezone>New Zealand/Wellington</timezone>

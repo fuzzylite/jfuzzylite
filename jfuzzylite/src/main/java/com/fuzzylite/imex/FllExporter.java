@@ -29,6 +29,7 @@ import com.fuzzylite.term.Term;
 import com.fuzzylite.variable.InputVariable;
 import com.fuzzylite.variable.OutputVariable;
 import com.fuzzylite.variable.Variable;
+
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;

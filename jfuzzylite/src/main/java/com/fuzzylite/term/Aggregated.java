@@ -19,6 +19,7 @@ package com.fuzzylite.term;
 import com.fuzzylite.Op;
 import com.fuzzylite.imex.FllExporter;
 import com.fuzzylite.norm.SNorm;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -26,7 +27,7 @@ import java.util.List;
  The Aggregated class is a special Term that stores a fuzzy set with the
  Activated terms from the Antecedent%s of a Rule, thereby serving mainly as the
  fuzzy output value of the OutputVariable%s. The ownership of the activated
- terms will be transfered to objects of this class, and therefore their
+ terms will be transferred to objects of this class, and therefore their
  destructors will be called upon destruction of this term (or calling
  Aggregated::clear()).
 

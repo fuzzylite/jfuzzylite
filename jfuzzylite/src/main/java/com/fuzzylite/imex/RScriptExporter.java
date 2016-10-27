@@ -20,6 +20,7 @@ import com.fuzzylite.Engine;
 import com.fuzzylite.FuzzyLite;
 import com.fuzzylite.variable.InputVariable;
 import com.fuzzylite.variable.OutputVariable;
+
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileOutputStream;

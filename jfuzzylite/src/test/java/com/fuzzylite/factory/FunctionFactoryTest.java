@@ -8,15 +8,16 @@ package com.fuzzylite.factory;
 import com.fuzzylite.FuzzyLite;
 import com.fuzzylite.Op;
 import com.fuzzylite.term.Function;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.logging.Level;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.logging.Level;
 
 /**
  *

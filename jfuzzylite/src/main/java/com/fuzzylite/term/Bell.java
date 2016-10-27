@@ -17,6 +17,7 @@
 package com.fuzzylite.term;
 
 import com.fuzzylite.Op;
+
 import java.util.Iterator;
 import java.util.List;
 

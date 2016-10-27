@@ -19,6 +19,7 @@ package com.fuzzylite.term;
 import com.fuzzylite.Engine;
 import com.fuzzylite.Op;
 import com.fuzzylite.variable.InputVariable;
+
 import java.util.ArrayList;
 import java.util.List;
 

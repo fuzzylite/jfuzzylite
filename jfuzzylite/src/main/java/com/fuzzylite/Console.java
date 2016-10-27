@@ -41,12 +41,12 @@ import com.fuzzylite.term.Function;
 import com.fuzzylite.term.Triangle;
 import com.fuzzylite.variable.InputVariable;
 import com.fuzzylite.variable.OutputVariable;
+
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
@@ -76,7 +76,7 @@ public class Console {
      */
     static class Option {
 
-        public String key, value, description;
+        public final String key, value, description;
 
         public Option(String key, String value, String description) {
             this.key = key;
@@ -178,10 +178,10 @@ public class Console {
             options.put(key, value);
         }
         if (options.size() == 1) {
-            Map.Entry<String, String> in_out = options.entrySet().iterator().next();
-            if (in_out.getKey().charAt(0) != '-') {
-                options.put(KW_INPUT_FILE, in_out.getKey());
-                options.put(KW_OUTPUT_FILE, in_out.getValue());
+            Map.Entry<String, String> keyValue = options.entrySet().iterator().next();
+            if (keyValue.getKey().charAt(0) != '-') {
+                options.put(KW_INPUT_FILE, keyValue.getKey());
+                options.put(KW_OUTPUT_FILE, keyValue.getValue());
             }
         } else {
             Set<String> validOptions = new HashSet<String>();
@@ -472,15 +472,14 @@ public class Console {
     }
 
     public String interactiveHelp() {
-        StringBuilder result = new StringBuilder();
-        result.append("#Special Keys:\n");
-        result.append("#=============\n");
-        result.append("#   [Enter]\tProcess engine\n");
-        result.append("#      R\tRestart engine\n");
-        result.append("#      Q\tQuit interactive console\n");
-        result.append("#      H\tShow this help\n");
-        result.append("#=============\n");
-        return result.toString();
+        String result = "#Special Keys:\n" +
+                "#=============\n" +
+                "#   [Enter]\tProcess engine\n" +
+                "#      R\tRestart engine\n" +
+                "#      Q\tQuit interactive console\n" +
+                "#      H\tShow this help\n" +
+                "#=============\n";
+        return result;
     }
 
     /**
@@ -692,7 +691,7 @@ public class Console {
         List<String> errors = new LinkedList<String>();
         for (int i = 0; i < examples.size(); ++i) {
             FuzzyLite.logger().log(Level.INFO, "Processing {0}/{1}: {2}",
-                    new Object[]{(i + 1), examples.size(), examples.get(i)});
+                    new Object[]{i + 1, examples.size(), examples.get(i)});
 
             Engine engine;
 
@@ -743,11 +742,11 @@ public class Console {
                         }
                     }
 
-                    String out = imex.getFirst().toString(engine);
-                    Engine copy = imex.getSecond().fromString(out);
-                    String out_copy = imex.getFirst().toString(copy);
+                    String fll = imex.getFirst().toString(engine);
+                    Engine engineFromFll = imex.getSecond().fromString(fll);
+                    String engineToFll = imex.getFirst().toString(engineFromFll);
 
-                    if (!out.equals(out_copy)) {
+                    if (!fll.equals(engineToFll)) {
                         errors.add(String.format("[imex error] different results <%s,%s> at %s.%s",
                                 imex.getFirst().getClass().getSimpleName(),
                                 imex.getFirst().getClass().getSimpleName(),
@@ -909,7 +908,7 @@ public class Console {
         for (int i = 0; i < fllFiles.size(); ++i) {
             if (writer != null) {
                 FuzzyLite.logger().log(Level.INFO, "Benchmark {0}/{1}: {2}",
-                        new Object[]{(i + 1), fllFiles.size(), fllFiles.get(i)});
+                        new Object[]{i + 1, fllFiles.size(), fllFiles.get(i)});
             }
             benchmark(new File(fllFiles.get(i)), new File(fldFiles.get(i)), runs, writer);
         }
@@ -967,7 +966,7 @@ public class Console {
             }
             File fllFile = new File(args[1]);
             File fldFile = new File(args[2]);
-            int runs = Integer.valueOf(args[3]);
+            int runs = Integer.parseInt(args[3]);
 
             Writer writer = null;
             if (args.length > 4) {
@@ -1010,7 +1009,7 @@ public class Console {
             }
             File fllFiles = new File(args[1]);
             File fldFiles = new File(args[2]);
-            int runs = Integer.valueOf(args[3]);
+            int runs = Integer.parseInt(args[3]);
 
             Writer writer = null;
             if (args.length > 4) {

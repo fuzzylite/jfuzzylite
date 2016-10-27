@@ -57,7 +57,7 @@ public class InputVariable extends Variable {
 
     @Override
     public Type type() {
-        return Type.InputVariable;
+        return Type.Input;
     }
 
     @Override

@@ -24,6 +24,7 @@ import com.fuzzylite.hedge.Hedge;
 import com.fuzzylite.norm.TNorm;
 import com.fuzzylite.term.Activated;
 import com.fuzzylite.variable.OutputVariable;
+
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;

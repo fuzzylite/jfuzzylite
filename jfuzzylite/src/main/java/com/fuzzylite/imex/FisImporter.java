@@ -76,6 +76,7 @@ import com.fuzzylite.term.ZShape;
 import com.fuzzylite.variable.InputVariable;
 import com.fuzzylite.variable.OutputVariable;
 import com.fuzzylite.variable.Variable;
+
 import java.io.BufferedReader;
 import java.io.StringReader;
 import java.util.ArrayList;

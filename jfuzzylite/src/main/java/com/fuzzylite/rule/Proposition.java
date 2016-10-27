@@ -19,6 +19,7 @@ package com.fuzzylite.rule;
 import com.fuzzylite.hedge.Hedge;
 import com.fuzzylite.term.Term;
 import com.fuzzylite.variable.Variable;
+
 import java.util.ArrayList;
 import java.util.List;
 

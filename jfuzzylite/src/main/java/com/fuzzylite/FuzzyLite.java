@@ -33,8 +33,8 @@ public class FuzzyLite {
     public static final String AUTHOR = "Juan Rada-Vilela, Ph.D.";
     public static final String COMPANY = "FuzzyLite Limited";
     public static final String WEBSITE = "http://www.fuzzylite.com/";
-    private static int DECIMALS = 3;
-    protected static double MACHEPS = 1e-6; //Machine epsilon to differentiate numbers
+    private static int decimals = 3;
+    protected static double macheps = 1e-6; //Machine epsilon to differentiate numbers
     private static boolean debugging = false;
 
     public static class ThreadSafeDecimalFormat extends ThreadLocal<DecimalFormat> {
@@ -51,7 +51,7 @@ public class FuzzyLite {
 
     public static final Charset UTF_8 = Charset.forName("UTF-8");
 
-    private static Logger LOGGER = Logger.getLogger("com.fuzzylite");
+    private static Logger logger = Logger.getLogger("com.fuzzylite");
 
     static {
         final String configurationFile = "/logging.properties";
@@ -65,7 +65,7 @@ public class FuzzyLite {
             try {
                 inputStream.close();
             } catch (Exception ex) {
-
+                //ignore
             }
         }
 //        FuzzyLite.logger().info("info");
@@ -82,7 +82,7 @@ public class FuzzyLite {
      @return the default logger of the jfuzzylite library
      */
     public static Logger logger() {
-        return LOGGER;
+        return logger;
     }
 
     /**
@@ -91,7 +91,7 @@ public class FuzzyLite {
      @param logger is the default logger of the jfuzzylite library
      */
     public static void setLogger(Logger logger) {
-        LOGGER = logger;
+        FuzzyLite.logger = logger;
     }
 
     /**
@@ -112,7 +112,7 @@ public class FuzzyLite {
      (default is 3)
      */
     public static int getDecimals() {
-        return DECIMALS;
+        return decimals;
     }
 
     /**
@@ -122,7 +122,7 @@ public class FuzzyLite {
      values
      */
     public static void setDecimals(int decimals) {
-        DECIMALS = decimals;
+        FuzzyLite.decimals = decimals;
         StringBuilder pattern = new StringBuilder("0.".length() + decimals);
         pattern.append("0.");
         for (int i = 0; i < decimals; ++i) {
@@ -141,7 +141,7 @@ public class FuzzyLite {
      considered equivalent (default is 1e-6)
      */
     public static double getMachEps() {
-        return MACHEPS;
+        return macheps;
     }
 
     /**
@@ -152,7 +152,7 @@ public class FuzzyLite {
      are considered equivalent (default is 1e-6)
      */
     public static void setMachEps(double macheps) {
-        MACHEPS = macheps;
+        FuzzyLite.macheps = macheps;
     }
 
     /**
@@ -162,9 +162,9 @@ public class FuzzyLite {
      */
     public static void setLogging(boolean logging) {
         if (logging) {
-            LOGGER.setLevel(debugging ? Level.FINE : Level.INFO);
+            logger.setLevel(debugging ? Level.FINE : Level.INFO);
         } else {
-            LOGGER.setLevel(Level.OFF);
+            logger.setLevel(Level.OFF);
         }
     }
 
@@ -174,7 +174,7 @@ public class FuzzyLite {
      @return whether the library is logging information
      */
     public static boolean isLogging() {
-        return LOGGER.getLevel() != null && !LOGGER.getLevel().equals(Level.OFF);
+        return logger.getLevel() != null && !logger.getLevel().equals(Level.OFF);
     }
 
     /**
@@ -185,7 +185,7 @@ public class FuzzyLite {
     public static void setDebugging(boolean debugging) {
         FuzzyLite.debugging = debugging;
         if (isLogging()) {
-            LOGGER.setLevel(debugging ? Level.FINE : Level.INFO);
+            logger.setLevel(debugging ? Level.FINE : Level.INFO);
         }
     }
 

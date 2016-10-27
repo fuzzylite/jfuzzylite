@@ -24,6 +24,7 @@ import com.fuzzylite.activation.General;
 import com.fuzzylite.imex.FllExporter;
 import com.fuzzylite.norm.SNorm;
 import com.fuzzylite.norm.TNorm;
+
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
@@ -38,8 +39,7 @@ import java.util.logging.Level;
  @see Rule
  @see Antecedent
  @see Consequent
- @since 4.0
- */
+ @since 4.0 */
 public class RuleBlock implements Op.Cloneable {
 
     private String name;
@@ -55,14 +55,20 @@ public class RuleBlock implements Op.Cloneable {
     }
 
     public RuleBlock(String name) {
-        this(name, null, null, null);
+        this(name, null, null, null, new General());
     }
 
+    /**
+     @deprecated: use the constructor that adds the Activation parameter
+     */
     @Deprecated
     public RuleBlock(TNorm conjunction, SNorm disjunction, TNorm implication) {
-        this("", conjunction, disjunction, implication);
+        this("", conjunction, disjunction, implication, new General());
     }
 
+    /**
+     @deprecated: use the constructor that adds the Activation parameter
+     */
     @Deprecated
     public RuleBlock(String name, TNorm conjunction, SNorm disjunction, TNorm implication) {
         //@todo: replace General activation to null in version 7.0
@@ -126,7 +132,7 @@ public class RuleBlock implements Op.Cloneable {
                 exceptions.add(String.format("[%s]: %s", rule.getText(), ex.toString()));
             }
         }
-        if (exceptions.size() > 0) {
+        if (!exceptions.isEmpty()) {
             throw new RuntimeException("[ruleblock error] the following "
                     + "rules could not be loaded:\n" + Op.join(exceptions, "\n"));
         }

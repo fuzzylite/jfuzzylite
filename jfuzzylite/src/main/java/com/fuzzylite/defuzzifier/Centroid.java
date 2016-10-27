@@ -24,7 +24,7 @@ import com.fuzzylite.term.Term;
  fuzzy set represented in a Term.
 
  @author Juan Rada-Vilela, Ph.D.
- @see BiSector
+ @see Bisector
  @see IntegralDefuzzifier
  @see Defuzzifier
  @since 4.0
@@ -61,7 +61,7 @@ public class Centroid extends IntegralDefuzzifier {
         double x, y;
         double area = 0;
         double xcentroid = 0;
-        //@SuppressWarnings("unused")
+
         //double ycentroid = 0;
         for (int i = 0; i < resolution; ++i) {
             x = minimum + (i + 0.5) * dx;

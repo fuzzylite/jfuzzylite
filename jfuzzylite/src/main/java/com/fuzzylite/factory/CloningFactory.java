@@ -17,6 +17,7 @@
 package com.fuzzylite.factory;
 
 import com.fuzzylite.Op;
+
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -51,7 +52,7 @@ public class CloningFactory<T extends Op.Cloneable> implements Op.Cloneable {
     }
 
     /**
-     Deregisters the given object from the factory and deletes it
+     Removes from the factory the given object and deletes it
 
      @param key is the unique name by which objects are registered
      */

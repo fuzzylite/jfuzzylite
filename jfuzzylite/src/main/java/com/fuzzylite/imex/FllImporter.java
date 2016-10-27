@@ -33,6 +33,7 @@ import com.fuzzylite.rule.RuleBlock;
 import com.fuzzylite.term.Term;
 import com.fuzzylite.variable.InputVariable;
 import com.fuzzylite.variable.OutputVariable;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.StringReader;
@@ -137,7 +138,7 @@ public class FllImporter extends Importer {
             try {
                 reader.close();
             } catch (Exception ex) {
-
+                //ignore
             }
         }
         return engine;

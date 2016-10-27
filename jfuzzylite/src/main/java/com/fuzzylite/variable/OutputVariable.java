@@ -21,6 +21,7 @@ import com.fuzzylite.defuzzifier.Defuzzifier;
 import com.fuzzylite.imex.FllExporter;
 import com.fuzzylite.term.Aggregated;
 import com.fuzzylite.term.Term;
+
 import java.util.Iterator;
 
 /**
@@ -296,7 +297,7 @@ public class OutputVariable extends Variable {
 
     @Override
     public Type type() {
-        return Type.OutputVariable;
+        return Type.Output;
     }
 
     @Override

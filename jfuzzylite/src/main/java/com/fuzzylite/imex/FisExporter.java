@@ -19,7 +19,6 @@ package com.fuzzylite.imex;
 import com.fuzzylite.Engine;
 import com.fuzzylite.FuzzyLite;
 import com.fuzzylite.Op;
-import static com.fuzzylite.Op.str;
 import com.fuzzylite.defuzzifier.Bisector;
 import com.fuzzylite.defuzzifier.Centroid;
 import com.fuzzylite.defuzzifier.Defuzzifier;
@@ -83,6 +82,7 @@ import com.fuzzylite.term.ZShape;
 import com.fuzzylite.variable.InputVariable;
 import com.fuzzylite.variable.OutputVariable;
 import com.fuzzylite.variable.Variable;
+
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Deque;
@@ -106,14 +106,12 @@ public class FisExporter extends Exporter {
 
     @Override
     public String toString(Engine engine) {
-        StringBuilder result = new StringBuilder();
-
-        result.append(exportSystem(engine)).append("\n");
-        result.append(exportInputs(engine));
-        result.append(exportOutputs(engine));
-        result.append(exportRules(engine));
-
-        return result.toString();
+        String result =
+                exportSystem(engine) + "\n" +
+                exportInputs(engine) +
+                exportOutputs(engine) +
+                exportRules(engine);
+        return result;
     }
 
     /**
@@ -192,15 +190,15 @@ public class FisExporter extends Exporter {
 
         for (int i = 0; i < engine.numberOfInputVariables(); ++i) {
             InputVariable inputVariable = engine.getInputVariable(i);
-            result.append(String.format("[Input%d]\n", (i + 1)));
+            result.append(String.format("[Input%d]\n", i + 1));
             result.append(String.format("Name='%s'\n", inputVariable.getName()));
             result.append(String.format("Range=[%s %s]\n",
-                    str(inputVariable.getMinimum()), str(inputVariable.getMaximum())));
+                    Op.str(inputVariable.getMinimum()), Op.str(inputVariable.getMaximum())));
             result.append(String.format("NumMFs=%d\n", inputVariable.numberOfTerms()));
             for (int t = 0; t < inputVariable.numberOfTerms(); ++t) {
                 Term term = inputVariable.getTerm(t);
                 result.append(String.format("MF%d=%s\n",
-                        (t + 1), toString(term)));
+                        t + 1, toString(term)));
             }
             result.append("\n");
         }
@@ -219,15 +217,15 @@ public class FisExporter extends Exporter {
 
         for (int i = 0; i < engine.numberOfOutputVariables(); ++i) {
             OutputVariable outputVariable = engine.getOutputVariable(i);
-            result.append(String.format("[Output%d]\n", (i + 1)));
+            result.append(String.format("[Output%d]\n", i + 1));
             result.append(String.format("Name='%s'\n", outputVariable.getName()));
             result.append(String.format("Range=[%s %s]\n",
-                    str(outputVariable.getMinimum()), str(outputVariable.getMaximum())));
+                    Op.str(outputVariable.getMinimum()), Op.str(outputVariable.getMaximum())));
             result.append(String.format("NumMFs=%d\n", outputVariable.numberOfTerms()));
             for (int t = 0; t < outputVariable.numberOfTerms(); ++t) {
                 Term term = outputVariable.getTerm(t);
                 result.append(String.format("MF%d=%s\n",
-                        (t + 1), toString(term)));
+                        t + 1, toString(term)));
             }
             result.append("\n");
         }
@@ -311,7 +309,7 @@ public class FisExporter extends Exporter {
         StringBuilder result = new StringBuilder();
         result.append(translate(propositions, inputVariables)).append(", ");
         result.append(translate(rule.getConsequent().getConclusions(), outputVariables));
-        result.append(String.format("(%s)", str(rule.getWeight())));
+        result.append(String.format("(%s)", Op.str(rule.getWeight())));
         String connector;
         if (operators.isEmpty()) {
             connector = "1";
@@ -361,7 +359,7 @@ public class FisExporter extends Exporter {
                     } else if (hedge instanceof Any) {
                         plusHedge += 0.99;
                     } else {
-                        plusHedge = Double.NaN; // Unreconized hedge combination
+                        plusHedge = Double.NaN; // Unrecognized hedge combination
                     }
                 }
                 break;
@@ -372,7 +370,7 @@ public class FisExporter extends Exporter {
             }
             if (!Double.isNaN(plusHedge)) {
                 result.append(Op.str(termIndexPlusOne + plusHedge));
-            } else { //Unreconized hedge combination
+            } else { //Unrecognized hedge combination
                 result.append(String.format("%d.?", termIndexPlusOne));
             }
             result.append(" ");
@@ -523,7 +521,7 @@ public class FisExporter extends Exporter {
         if (term instanceof Constant) {
             Constant t = (Constant) term;
             return String.format("'%s':'constant',[%s]", term.getName(),
-                    str(t.getValue()));
+                    Op.str(t.getValue()));
         }
         if (term instanceof Cosine) {
             Cosine t = (Cosine) term;
