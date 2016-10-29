@@ -22,7 +22,7 @@ output->setEnabled(true);
 output->setName("output");
 output->setRange(0.000, 1.000);
 output->setLockValueInRange(false);
-output->fuzzyOutput()->setAggregation(fl::null);
+output->setAggregation(fl::null);
 output->setDefuzzifier(new WeightedAverage("TakagiSugeno"));
 output->setDefaultValue(fl::nan);
 output->setLockPreviousValue(false);
@@ -37,8 +37,8 @@ ruleBlock->setConjunction(fl::null);
 ruleBlock->setDisjunction(fl::null);
 ruleBlock->setImplication(fl::null);
 ruleBlock->setActivation(new General);
-ruleBlock->addRule(fl::Rule::parse("if input is low then output is line1", engine));
-ruleBlock->addRule(fl::Rule::parse("if input is high then output is line2", engine));
+ruleBlock->addRule(Rule::parse("if input is low then output is line1", engine));
+ruleBlock->addRule(Rule::parse("if input is high then output is line2", engine));
 engine->addRuleBlock(ruleBlock);
 
 

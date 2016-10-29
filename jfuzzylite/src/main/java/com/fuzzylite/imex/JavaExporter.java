@@ -176,7 +176,7 @@ public class JavaExporter extends Exporter {
         result.append(String.format(
                 "%s.setLockValueInRange(%s);\n", name, String.valueOf(outputVariable.isLockValueInRange())));
         result.append(String.format(
-                "%s.fuzzyOutput().setAggregation(%s);\n",
+                "%s.setAggregation(%s);\n",
                 name, toString(outputVariable.fuzzyOutput().getAggregation())));
         result.append(String.format(
                 "%s.setDefuzzifier(%s);\n", name,

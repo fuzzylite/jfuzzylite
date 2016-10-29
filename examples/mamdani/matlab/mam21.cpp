@@ -31,7 +31,7 @@ force->setEnabled(true);
 force->setName("force");
 force->setRange(-5.000, 5.000);
 force->setLockValueInRange(false);
-force->fuzzyOutput()->setAggregation(new Maximum);
+force->setAggregation(new Maximum);
 force->setDefuzzifier(new Centroid(200));
 force->setDefaultValue(fl::nan);
 force->setLockPreviousValue(false);
@@ -48,10 +48,10 @@ ruleBlock->setConjunction(new Minimum);
 ruleBlock->setDisjunction(new Maximum);
 ruleBlock->setImplication(new Minimum);
 ruleBlock->setActivation(new General);
-ruleBlock->addRule(fl::Rule::parse("if angle is small and velocity is small then force is negBig", engine));
-ruleBlock->addRule(fl::Rule::parse("if angle is small and velocity is big then force is negSmall", engine));
-ruleBlock->addRule(fl::Rule::parse("if angle is big and velocity is small then force is posSmall", engine));
-ruleBlock->addRule(fl::Rule::parse("if angle is big and velocity is big then force is posBig", engine));
+ruleBlock->addRule(Rule::parse("if angle is small and velocity is small then force is negBig", engine));
+ruleBlock->addRule(Rule::parse("if angle is small and velocity is big then force is negSmall", engine));
+ruleBlock->addRule(Rule::parse("if angle is big and velocity is small then force is posSmall", engine));
+ruleBlock->addRule(Rule::parse("if angle is big and velocity is big then force is posBig", engine));
 engine->addRuleBlock(ruleBlock);
 
 

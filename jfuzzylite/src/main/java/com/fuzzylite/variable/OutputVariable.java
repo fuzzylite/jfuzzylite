@@ -19,6 +19,7 @@ package com.fuzzylite.variable;
 import com.fuzzylite.Op;
 import com.fuzzylite.defuzzifier.Defuzzifier;
 import com.fuzzylite.imex.FllExporter;
+import com.fuzzylite.norm.SNorm;
 import com.fuzzylite.term.Aggregated;
 import com.fuzzylite.term.Term;
 
@@ -111,6 +112,7 @@ public class OutputVariable extends Variable {
      Gets the fuzzy output value @f$\tilde{y}@f$
 
      @return the fuzzy output value @f$\tilde{y}@f$
+
      @todo rename to fuzzyValue
      */
     public Aggregated fuzzyOutput() {
@@ -145,6 +147,24 @@ public class OutputVariable extends Variable {
      */
     public void setDefuzzifier(Defuzzifier defuzzifier) {
         this.defuzzifier = defuzzifier;
+    }
+
+    /**
+     Gets the aggregation operator
+
+     @return the aggregation operator
+     */
+    public SNorm getAggregation() {
+        return this.fuzzyOutput.getAggregation();
+    }
+
+    /**
+     Sets the aggregation operator
+
+     @param aggregation is the aggregation
+     */
+    public void setAggregation(SNorm aggregation) {
+        this.fuzzyOutput.setAggregation(aggregation);
     }
 
     /**
@@ -195,8 +215,8 @@ public class OutputVariable extends Variable {
     /**
      Sets whether to lock the previous value of the output variable
 
-     @param lockPreviousValue indicates whether to lock the previous value of
-     the output variable
+     @param lockPreviousValue indicates whether to lock the previous value of the
+     output variable
      */
     public void setLockPreviousValue(boolean lockPreviousValue) {
         this.lockPreviousValue = lockPreviousValue;
@@ -260,8 +280,7 @@ public class OutputVariable extends Variable {
     /**
      Gets a string representation of the fuzzy output value @f$\tilde{y}@f$
 
-     @return a string representation of the fuzzy output value
-     @f$\tilde{y}@f$
+     @return a string representation of the fuzzy output value @f$\tilde{y}@f$
      */
     public String fuzzyOutputValue() {
         StringBuilder sb = new StringBuilder();
