@@ -22,7 +22,6 @@ import com.fuzzylite.imex.FllExporter;
 import com.fuzzylite.norm.SNorm;
 import com.fuzzylite.term.Aggregated;
 import com.fuzzylite.term.Term;
-
 import java.util.Iterator;
 
 /**
@@ -238,7 +237,7 @@ public class OutputVariable extends Variable {
         String exception = null;
 
         double result = Double.NaN;
-        boolean isValid = isEnabled() && !fuzzyOutput().getTerms().isEmpty();
+        boolean isValid = !fuzzyOutput().getTerms().isEmpty();
         if (isValid) {
             /* Checks whether the variable can be defuzzified without exceptions.
              * If it cannot be defuzzified, be that due to a missing defuzzifier
