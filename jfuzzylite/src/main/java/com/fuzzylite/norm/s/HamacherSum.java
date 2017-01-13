@@ -16,6 +16,7 @@
  */
 package com.fuzzylite.norm.s;
 
+import com.fuzzylite.Op;
 import com.fuzzylite.norm.SNorm;
 
 /**
@@ -40,6 +41,7 @@ public class HamacherSum extends SNorm {
      */
     @Override
     public double compute(double a, double b) {
+        if (Op.isEq(a * b, 1.0)) return 1.0;
         return (a + b - 2 * a * b) / (1 - a * b);
     }
 

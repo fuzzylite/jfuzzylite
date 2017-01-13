@@ -16,6 +16,7 @@
  */
 package com.fuzzylite.norm.t;
 
+import com.fuzzylite.Op;
 import com.fuzzylite.norm.TNorm;
 
 /**
@@ -40,6 +41,7 @@ public class HamacherProduct extends TNorm {
      */
     @Override
     public double compute(double a, double b) {
+        if (Op.isEq(a + b, 0.0)) return 0.0;
         return (a * b) / (a + b - a * b);
     }
 
