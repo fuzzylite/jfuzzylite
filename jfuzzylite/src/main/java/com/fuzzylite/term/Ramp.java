@@ -17,7 +17,6 @@
 package com.fuzzylite.term;
 
 import com.fuzzylite.Op;
-
 import java.util.Iterator;
 import java.util.List;
 
@@ -156,6 +155,16 @@ public class Ramp extends Term {
             }
             return height * (start - x) / (start - end);
         }
+    }
+
+    @Override
+    public double tsukamoto(double activationDegree, double minimum, double maximum) {
+        return Op.scale(activationDegree, 0, 1, start, end);
+    }
+
+    @Override
+    public boolean isMonotonic() {
+        return true;
     }
 
     /**

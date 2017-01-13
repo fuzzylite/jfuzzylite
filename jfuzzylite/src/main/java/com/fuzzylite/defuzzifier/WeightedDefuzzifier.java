@@ -16,17 +16,10 @@
  */
 package com.fuzzylite.defuzzifier;
 
-import com.fuzzylite.FuzzyLite;
-import com.fuzzylite.Op;
-import com.fuzzylite.term.Concave;
 import com.fuzzylite.term.Constant;
 import com.fuzzylite.term.Function;
 import com.fuzzylite.term.Linear;
-import com.fuzzylite.term.Ramp;
-import com.fuzzylite.term.SShape;
-import com.fuzzylite.term.Sigmoid;
 import com.fuzzylite.term.Term;
-import com.fuzzylite.term.ZShape;
 
 /**
  The WeightedDefuzzifier class is the base class for defuzzifiers which compute
@@ -102,121 +95,6 @@ public abstract class WeightedDefuzzifier extends Defuzzifier {
             return Type.TakagiSugeno;
         }
         return Type.Tsukamoto;
-    }
-
-    /**
-     Indicates if the given term is monotonic
-
-     @param term is the given term
-     @return whether the given term is monotonic
-     */
-    public boolean isMonotonic(Term term) {
-        return term instanceof Concave
-                || term instanceof Ramp
-                || term instanceof Sigmoid
-                || term instanceof SShape
-                || term instanceof ZShape;
-    }
-
-    /**
-     Computes the Tsukamoto @f$z@f$-value for the given monotonic term. If the
-     term is not monotonic, then the TakagiSugeno (or InverseTsukamoto)
-
-     @f$z@f$-value is computed.
-
-     @param monotonic is the monotonic term
-     @param activationDegree is the activation degree for the term
-     @param minimum is the minimum value of the range of the term
-     @param maximum is the maximum value of the range of the term
-     @return the Tsukamoto @f$z@f$-value for the given monotonic term, or the
-     TakagiSugeno (or InverseTsukamoto) @f$z@f$-value if the term is not
-     monotonic.
-     */
-    public double tsukamoto(Term monotonic, double activationDegree,
-            double minimum, double maximum) {
-        double w = activationDegree;
-        double z = Double.NaN;
-
-        boolean isTsukamoto = true;
-
-        if (monotonic instanceof Ramp) {
-            Ramp ramp = (Ramp) monotonic;
-            z = Op.scale(w, 0, 1, ramp.getStart(), ramp.getEnd());
-
-        } else if (monotonic instanceof Sigmoid) {
-            Sigmoid sigmoid = (Sigmoid) monotonic;
-            if (Op.isEq(w, 1.0)) {
-                if (Op.isGE(sigmoid.getSlope(), 0.0)) {
-                    z = maximum;
-                } else {
-                    z = minimum;
-                }
-
-            } else if (Op.isEq(w, 0.0)) {
-                if (Op.isGE(sigmoid.getSlope(), 0.0)) {
-                    z = minimum;
-                } else {
-                    z = maximum;
-                }
-
-            } else {
-                double a = sigmoid.getSlope();
-                double b = sigmoid.getInflection();
-                z = b + (Math.log(1.0 / w - 1.0) / -a);
-            }
-
-        } else if (monotonic instanceof SShape) {
-            SShape sshape = (SShape) monotonic;
-            double difference = sshape.getEnd() - sshape.getStart();
-            double a = sshape.getStart() + Math.sqrt(w * difference * difference / 2.0);
-            double b = sshape.getEnd() + Math.sqrt(difference * difference * (w - 1.0) / -2.0);
-            if (Math.abs(w - monotonic.membership(a))
-                    < Math.abs(w - monotonic.membership(b))) {
-                z = a;
-            } else {
-                z = b;
-            }
-
-        } else if (monotonic instanceof ZShape) {
-            ZShape zshape = (ZShape) monotonic;
-            double difference = zshape.getEnd() - zshape.getStart();
-            double a = zshape.getStart() + Math.sqrt(difference * difference * (w - 1) / -2.0);
-            double b = zshape.getEnd() + Math.sqrt(w * difference * difference / 2.0);
-            if (Math.abs(w - monotonic.membership(a))
-                    < Math.abs(w - monotonic.membership(b))) {
-                z = a;
-            } else {
-                z = b;
-            }
-
-        } else if (monotonic instanceof Concave) {
-            Concave concave = (Concave) monotonic;
-            double i = concave.getInflection();
-            double e = concave.getEnd();
-            z = (i - e) / concave.membership(w) + 2 * e - i;
-
-        } else {
-            isTsukamoto = false;
-        }
-
-        if (isTsukamoto) {
-            double fz = monotonic.membership(z);
-            //Compare difference between estimated and true value
-            if (FuzzyLite.isDebugging()) {
-                if (!Op.isEq(w, fz, 1e-2)) {
-                    FuzzyLite.logger().fine(String.format(
-                            "[tsukamoto warning] difference <%s> might suggest an inaccurate "
-                            + "computation of z because it is expected w=f(z) in %s term <%s>, "
-                            + "but w=%s f(z)=%s and z=%s", Op.str(Math.abs(w - fz)),
-                            monotonic.getClass().getSimpleName(), monotonic.getName(),
-                            Op.str(w), Op.str(fz), Op.str(z)));
-                }
-            }
-        } else {
-            // else fallback to the regular Takagi-Sugeno or inverse Tsukamoto (according to term)
-            z = monotonic.membership(w);
-        }
-        return z;
     }
 
     @Override

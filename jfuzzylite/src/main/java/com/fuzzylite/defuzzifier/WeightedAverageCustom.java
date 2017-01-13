@@ -108,7 +108,7 @@ public class WeightedAverageCustom extends WeightedDefuzzifier {
             double w, z;
             for (Activated activated : fuzzyOutput.getTerms()) {
                 w = activated.getDegree();
-                z = tsukamoto(activated.getTerm(), w, minimum, maximum);
+                z = activated.getTerm().tsukamoto(w, minimum, maximum);
                 sum += w * z;
                 weights += w;
             }

@@ -17,7 +17,6 @@
 package com.fuzzylite.term;
 
 import com.fuzzylite.Op;
-
 import java.util.Iterator;
 import java.util.List;
 
@@ -117,6 +116,18 @@ public class Concave extends Term {
             return height * (inflection - end) / (inflection - 2.0 * end + x);
         }
         return height * 1.0;
+    }
+
+    @Override
+    public double tsukamoto(double activationDegree, double minimum, double maximum) {
+        double i = getInflection();
+        double e = getEnd();
+        return (i - e) / membership(activationDegree) + 2 * e - i;
+    }
+
+    @Override
+    public boolean isMonotonic() {
+        return true;
     }
 
     /**

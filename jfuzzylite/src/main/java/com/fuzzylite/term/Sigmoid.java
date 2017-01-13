@@ -17,7 +17,6 @@
 package com.fuzzylite.term;
 
 import com.fuzzylite.Op;
-
 import java.util.Iterator;
 import java.util.List;
 
@@ -123,6 +122,38 @@ public class Sigmoid extends Term {
             return Double.NaN;
         }
         return height * 1.0 / (1.0 + Math.exp(-slope * (x - inflection)));
+    }
+
+    @Override
+    public double tsukamoto(double activationDegree, double minimum, double maximum) {
+        double w = activationDegree;
+        double z;
+
+        if (Op.isEq(w, 1.0)) {
+            if (Op.isGE(slope, 0.0)) {
+                z = maximum;
+            } else {
+                z = minimum;
+            }
+
+        } else if (Op.isEq(w, 0.0)) {
+            if (Op.isGE(slope, 0.0)) {
+                z = minimum;
+            } else {
+                z = maximum;
+            }
+        } else {
+            double a = slope;
+            double b = inflection;
+            z = b + (Math.log(1.0 / w - 1.0) / -a);
+        }
+
+        return z;
+    }
+
+    @Override
+    public boolean isMonotonic() {
+        return true;
     }
 
     /**

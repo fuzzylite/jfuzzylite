@@ -17,7 +17,6 @@
 package com.fuzzylite.term;
 
 import com.fuzzylite.Op;
-
 import java.util.Iterator;
 import java.util.List;
 
@@ -114,6 +113,27 @@ public class ZShape extends Term {
             return height * (2.0 * Math.pow((x - end) / (end - start), 2));
         }
         return height * 0.0;
+    }
+
+    @Override
+    public double tsukamoto(double activationDegree, double minimum, double maximum) {
+        double w = activationDegree;
+        double z;
+
+        double difference = end - start;
+        double a = start + Math.sqrt(-0.5 * (w - 1.0) * difference * difference);
+        double b = end + Math.sqrt(0.5 * w * difference * difference);
+        if (Math.abs(w - membership(a)) < Math.abs(w - membership(b))) {
+            z = a;
+        } else {
+            z = b;
+        }
+        return z;
+    }
+
+    @Override
+    public boolean isMonotonic() {
+        return true;
     }
 
     /**

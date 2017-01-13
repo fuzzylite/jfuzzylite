@@ -34,7 +34,6 @@ import com.fuzzylite.term.Term;
 import com.fuzzylite.variable.InputVariable;
 import com.fuzzylite.variable.OutputVariable;
 import com.fuzzylite.variable.Variable;
-
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -491,7 +490,7 @@ public class Engine implements Op.Cloneable {
                 //Tsukamoto has only monotonic terms: Concave, Ramp, Sigmoid, SShape, or ZShape
                 for (Iterator<Term> it = outputVariable.getTerms().iterator();
                         tsukamoto && it.hasNext();) {
-                    tsukamoto &= weightedDefuzzifier.isMonotonic(it.next());
+                    tsukamoto &= it.next().isMonotonic();
                 }
             }
         }
