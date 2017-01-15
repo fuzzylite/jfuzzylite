@@ -17,7 +17,6 @@
 package com.fuzzylite.term;
 
 import com.fuzzylite.Op;
-
 import java.util.Iterator;
 import java.util.List;
 
@@ -124,11 +123,11 @@ public class Binary extends Term {
         if (Double.isNaN(x)) {
             return Double.NaN;
         }
-        if (direction == Double.POSITIVE_INFINITY
+        if (direction > start
                 && Op.isGE(x, start)) {
             return height * 1.0;
         }
-        if (direction == Double.NEGATIVE_INFINITY
+        if (direction < start
                 && Op.isLE(x, start)) {
             return height * 1.0;
         }
@@ -163,13 +162,12 @@ public class Binary extends Term {
     }
 
     /**
-     Sets the direction of the binary edge. The direction is automatically
-     converted to:
+     Sets the direction of the binary edge.
 
-     @f$\begin{cases} \infty & \mbox{if $ d > s $}\cr -\infty & \mbox{if $ d < s
-     $}\cr \mbox{\tt NaN} & \mbox{otherwise} \end{cases} @f$
+     @f$\begin{cases} \text{Positive} & \mbox{if $ d > s $}\cr \text{Negative} &
+     \mbox{if $ d < s $}\cr \mbox{\tt NaN} & \mbox{otherwise} \end{cases}@f$
 
-     where @f$d@f$ is the given direction, and @ @f$s@f$ is the start of the
+     where @f$d@f$ is the given direction, and @f$s@f$ is the start of the
      Binary edge
 
      @param direction is the direction of the binary edge
@@ -184,10 +182,10 @@ public class Binary extends Term {
      @return the Direction of the binary edge as an enumerator
      */
     public Direction direction() {
-        if (direction == Double.POSITIVE_INFINITY) {
+        if (direction > start) {
             return Direction.Positive;
         }
-        if (direction == Double.NEGATIVE_INFINITY) {
+        if (direction < start) {
             return Direction.Negative;
         }
         return Direction.Undefined;
