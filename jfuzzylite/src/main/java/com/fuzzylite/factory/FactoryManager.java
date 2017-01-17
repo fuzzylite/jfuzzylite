@@ -34,15 +34,23 @@ package com.fuzzylite.factory;
  */
 public class FactoryManager {
 
-    protected static final FactoryManager INSTANCE = new FactoryManager();
+    public static class ThreadSafeFactoryManager extends ThreadLocal<FactoryManager> {
+
+        @Override
+        protected FactoryManager initialValue() {
+            return new FactoryManager();
+        }
+    }
+
+    protected static final ThreadSafeFactoryManager INSTANCE = new ThreadSafeFactoryManager();
 
     /**
-     Gets the static instance of the manager
+     Gets the static instance of the manager for the current thread
 
-     @return the static instance of the manager
+     @return the static instance of the manager for the current thread
      */
     public static FactoryManager instance() {
-        return INSTANCE;
+        return INSTANCE.get();
     }
 
     private TNormFactory tnorm;
@@ -53,13 +61,13 @@ public class FactoryManager {
     private HedgeFactory hedge;
     private FunctionFactory function;
 
-    private FactoryManager() {
+    public FactoryManager() {
         this(new TNormFactory(), new SNormFactory(), new ActivationFactory(),
                 new DefuzzifierFactory(), new TermFactory(), new HedgeFactory(),
                 new FunctionFactory());
     }
 
-    private FactoryManager(TNormFactory tnorm, SNormFactory snorm,
+    public FactoryManager(TNormFactory tnorm, SNormFactory snorm,
             ActivationFactory activation, DefuzzifierFactory defuzzifier,
             TermFactory term, HedgeFactory hedge, FunctionFactory function) {
         this.tnorm = tnorm;
