@@ -17,7 +17,6 @@
 package com.fuzzylite;
 
 import java.io.InputStream;
-import java.math.RoundingMode;
 import java.nio.charset.Charset;
 import java.text.DecimalFormat;
 import java.util.logging.Level;
@@ -41,9 +40,7 @@ public class FuzzyLite {
 
         @Override
         protected DecimalFormat initialValue() {
-            DecimalFormat result = new DecimalFormat("0.000");
-            result.setRoundingMode(RoundingMode.HALF_UP);
-            return result;
+            return new DecimalFormat("0.000");
         }
     }
 
@@ -128,9 +125,7 @@ public class FuzzyLite {
         for (int i = 0; i < decimals; ++i) {
             pattern.append('0');
         }
-        DecimalFormat formatter = new DecimalFormat(pattern.toString());
-        formatter.setRoundingMode(RoundingMode.HALF_UP);
-        FORMATTER.set(formatter);
+        FORMATTER.set(new DecimalFormat(pattern.toString()));
     }
 
     /**
