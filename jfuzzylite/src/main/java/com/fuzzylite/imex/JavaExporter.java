@@ -32,7 +32,6 @@ import com.fuzzylite.term.Linear;
 import com.fuzzylite.term.Term;
 import com.fuzzylite.variable.InputVariable;
 import com.fuzzylite.variable.OutputVariable;
-
 import java.util.List;
 import java.util.regex.Pattern;
 
@@ -83,7 +82,7 @@ public class JavaExporter extends Exporter {
     @Override
     public String toString(Engine engine) {
         StringBuilder result = new StringBuilder();
-        result.append("//Java code generated with " + FuzzyLite.LIBRARY + ".\n\n");
+        result.append("//Code automatically generated with " + FuzzyLite.LIBRARY + ".\n\n");
         result.append("Engine engine = new Engine();\n");
         result.append(String.format(
                 "engine.setName(\"%s\");\n", engine.getName()));
@@ -129,9 +128,11 @@ public class JavaExporter extends Exporter {
         result.append(String.format(
                 "InputVariable %s = new InputVariable();\n", name));
         result.append(String.format(
-                "%s.setEnabled(%s);\n", name, String.valueOf(inputVariable.isEnabled())));
-        result.append(String.format(
                 "%s.setName(\"%s\");\n", name, inputVariable.getName()));
+        result.append(String.format(
+                "%s.setDescription(\"%s\");\n", name, inputVariable.getDescription()));
+        result.append(String.format(
+                "%s.setEnabled(%s);\n", name, String.valueOf(inputVariable.isEnabled())));
         result.append(String.format(
                 "%s.setRange(%s, %s);\n", name,
                 toString(inputVariable.getMinimum()), toString(inputVariable.getMaximum())));
@@ -167,9 +168,11 @@ public class JavaExporter extends Exporter {
         result.append(String.format(
                 "OutputVariable %s = new OutputVariable();\n", name));
         result.append(String.format(
-                "%s.setEnabled(%s);\n", name, String.valueOf(outputVariable.isEnabled())));
-        result.append(String.format(
                 "%s.setName(\"%s\");\n", name, outputVariable.getName()));
+        result.append(String.format(
+                "%s.setDescription(\"%s\");\n", name, outputVariable.getDescription()));
+        result.append(String.format(
+                "%s.setEnabled(%s);\n", name, String.valueOf(outputVariable.isEnabled())));
         result.append(String.format(
                 "%s.setRange(%s, %s);\n", name,
                 toString(outputVariable.getMinimum()), toString(outputVariable.getMaximum())));
@@ -213,9 +216,11 @@ public class JavaExporter extends Exporter {
         StringBuilder result = new StringBuilder();
         result.append(String.format("RuleBlock %s = new RuleBlock();\n", name));
         result.append(String.format(
-                "%s.setEnabled(%s);\n", name, String.valueOf(ruleBlock.isEnabled())));
-        result.append(String.format(
                 "%s.setName(\"%s\");\n", name, ruleBlock.getName()));
+        result.append(String.format(
+                "%s.setDescription(\"%s\");\n", name, ruleBlock.getDescription()));
+        result.append(String.format(
+                "%s.setEnabled(%s);\n", name, String.valueOf(ruleBlock.isEnabled())));
         result.append(String.format(
                 "%s.setConjunction(%s);\n", name, toString(ruleBlock.getConjunction())));
         result.append(String.format(

@@ -23,7 +23,6 @@ import com.fuzzylite.imex.FllExporter;
 import com.fuzzylite.term.Constant;
 import com.fuzzylite.term.Linear;
 import com.fuzzylite.term.Term;
-
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Iterator;
@@ -48,6 +47,7 @@ public class Variable implements Op.Cloneable {
         None, Input, Output
     }
     private String name;
+    private String description;
     private List<Term> terms;
     private double value;
     private double minimum, maximum;
@@ -60,6 +60,7 @@ public class Variable implements Op.Cloneable {
 
     public Variable(String name, double minimum, double maximum) {
         this.name = name;
+        this.description = "";
         this.terms = new ArrayList<Term>();
         this.value = Double.NaN;
         this.minimum = minimum;
@@ -84,6 +85,24 @@ public class Variable implements Op.Cloneable {
      */
     public void setName(String name) {
         this.name = name;
+    }
+
+    /**
+     Gets the description of the variable
+
+     @return the description of the variable
+     */
+    public String getDescription() {
+        return description;
+    }
+
+    /**
+     Sets the description of the variable
+
+     @param description is the description of the variable
+     */
+    public void setDescription(String description) {
+        this.description = description;
     }
 
     /**

@@ -24,7 +24,6 @@ import com.fuzzylite.activation.General;
 import com.fuzzylite.imex.FllExporter;
 import com.fuzzylite.norm.SNorm;
 import com.fuzzylite.norm.TNorm;
-
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
@@ -39,10 +38,12 @@ import java.util.logging.Level;
  @see Rule
  @see Antecedent
  @see Consequent
- @since 4.0 */
+ @since 4.0
+ */
 public class RuleBlock implements Op.Cloneable {
 
     private String name;
+    private String description;
     private TNorm conjunction;
     private SNorm disjunction;
     private TNorm implication;
@@ -81,6 +82,7 @@ public class RuleBlock implements Op.Cloneable {
 
     public RuleBlock(String name, TNorm conjunction, SNorm disjunction, TNorm implication, Activation activation) {
         this.name = name;
+        this.description = "";
         this.conjunction = conjunction;
         this.disjunction = disjunction;
         this.implication = implication;
@@ -174,6 +176,24 @@ public class RuleBlock implements Op.Cloneable {
      */
     public void setName(String name) {
         this.name = name;
+    }
+
+    /**
+     Gets the description of the rule block
+
+     @return the description of the rule block
+     */
+    public String getDescription() {
+        return description;
+    }
+
+    /**
+     Sets the description of the rule block
+
+     @param description is the description of the rule block
+     */
+    public void setDescription(String description) {
+        this.description = description;
     }
 
     /**

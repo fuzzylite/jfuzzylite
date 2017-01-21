@@ -33,7 +33,6 @@ import com.fuzzylite.rule.RuleBlock;
 import com.fuzzylite.term.Term;
 import com.fuzzylite.variable.InputVariable;
 import com.fuzzylite.variable.OutputVariable;
-
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.StringReader;
@@ -169,6 +168,8 @@ public class FllImporter extends Importer {
             Pair<String, String> keyValue = parseKeyValue(line, ':');
             if ("InputVariable".equals(keyValue.getFirst())) {
                 inputVariable.setName(keyValue.getSecond());
+            } else if ("description".equals(keyValue.getFirst())) {
+                inputVariable.setDescription(keyValue.getSecond());
             } else if ("enabled".equals(keyValue.getFirst())) {
                 inputVariable.setEnabled(parseBoolean(keyValue.getSecond()));
             } else if ("range".equals(keyValue.getFirst())) {
@@ -196,6 +197,8 @@ public class FllImporter extends Importer {
             Pair<String, String> keyValue = parseKeyValue(line, ':');
             if ("OutputVariable".equals(keyValue.getFirst())) {
                 outputVariable.setName(keyValue.getSecond());
+            } else if ("description".equals(keyValue.getFirst())) {
+                outputVariable.setDescription(keyValue.getSecond());
             } else if ("enabled".equals(keyValue.getFirst())) {
                 outputVariable.setEnabled(parseBoolean(keyValue.getSecond()));
             } else if ("range".equals(keyValue.getFirst())) {
@@ -237,6 +240,8 @@ public class FllImporter extends Importer {
             Pair<String, String> keyValue = parseKeyValue(line, ':');
             if ("RuleBlock".equals(keyValue.getFirst())) {
                 ruleBlock.setName(keyValue.getSecond());
+            } else if ("description".equals(keyValue.getFirst())) {
+                ruleBlock.setDescription(keyValue.getSecond());
             } else if ("enabled".equals(keyValue.getFirst())) {
                 ruleBlock.setEnabled(parseBoolean(keyValue.getSecond()));
             } else if ("conjunction".equals(keyValue.getFirst())) {

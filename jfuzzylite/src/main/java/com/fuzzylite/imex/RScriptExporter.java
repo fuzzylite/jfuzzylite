@@ -20,7 +20,6 @@ import com.fuzzylite.Engine;
 import com.fuzzylite.FuzzyLite;
 import com.fuzzylite.variable.InputVariable;
 import com.fuzzylite.variable.OutputVariable;
-
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -380,7 +379,7 @@ public class RScriptExporter extends Exporter {
 
      */
     protected void writeScriptHeader(Writer writer) throws IOException {
-        writer.append("#R script generated with " + FuzzyLite.LIBRARY + ".\n\n");
+        writer.append("#Code automatically generated with " + FuzzyLite.LIBRARY + ".\n\n");
         writer.append("library(ggplot2);\n");
         writer.append("\n");
     }

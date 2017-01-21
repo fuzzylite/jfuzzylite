@@ -29,7 +29,6 @@ import com.fuzzylite.term.Term;
 import com.fuzzylite.variable.InputVariable;
 import com.fuzzylite.variable.OutputVariable;
 import com.fuzzylite.variable.Variable;
-
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
@@ -184,6 +183,10 @@ public class FllExporter extends Exporter {
     public String toString(Variable variable) {
         List<String> result = new LinkedList<String>();
         result.add(String.format("Variable: %s", variable.getName()));
+        if (!Op.isEmpty(variable.getDescription())){
+            result.add(String.format("%sdescription: %s", indent,
+                    variable.getDescription()));
+        }
         result.add(String.format("%senabled: %s", indent,
                 String.valueOf(variable.isEnabled())));
         result.add(String.format("%srange: %s", indent,
@@ -207,6 +210,10 @@ public class FllExporter extends Exporter {
     public String toString(InputVariable inputVariable) {
         List<String> result = new LinkedList<String>();
         result.add(String.format("InputVariable: %s", inputVariable.getName()));
+        if (!Op.isEmpty(inputVariable.getDescription())){
+            result.add(String.format("%sdescription: %s", indent,
+                    inputVariable.getDescription()));
+        }
         result.add(String.format("%senabled: %s", indent,
                 String.valueOf(inputVariable.isEnabled())));
         result.add(String.format("%srange: %s", indent,
@@ -230,6 +237,10 @@ public class FllExporter extends Exporter {
     public String toString(OutputVariable outputVariable) {
         List<String> result = new LinkedList<String>();
         result.add(String.format("OutputVariable: %s", outputVariable.getName()));
+        if (!Op.isEmpty(outputVariable.getDescription())){
+            result.add(String.format("%sdescription: %s", indent,
+                    outputVariable.getDescription()));
+        }
         result.add(String.format("%senabled: %s", indent,
                 String.valueOf(outputVariable.isEnabled())));
         result.add(String.format("%srange: %s", indent,
@@ -260,6 +271,10 @@ public class FllExporter extends Exporter {
     public String toString(RuleBlock ruleBlock) {
         List<String> result = new LinkedList<String>();
         result.add(String.format("RuleBlock: %s", ruleBlock.getName()));
+        if (!Op.isEmpty(ruleBlock.getDescription())){
+            result.add(String.format("%sdescription: %s", indent,
+                    ruleBlock.getDescription()));
+        }
         result.add(String.format("%senabled: %s", indent,
                 String.valueOf(ruleBlock.isEnabled())));
         result.add(String.format("%sconjunction: %s", indent,

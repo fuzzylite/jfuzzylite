@@ -986,6 +986,16 @@ public class Op {
     }
 
     /**
+     Indicates whether the string is empty
+
+     @param string is the string to test
+     @return true if the string is null or empty, false otherwise
+     */
+    public static boolean isEmpty(String string) {
+        return string == null || string.length() == 0;
+    }
+
+    /**
      Cloneable is an interface that provides a public method to clone
      */
     public interface Cloneable extends java.lang.Cloneable {

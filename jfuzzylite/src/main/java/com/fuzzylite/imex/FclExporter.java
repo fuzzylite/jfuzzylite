@@ -17,6 +17,7 @@
 package com.fuzzylite.imex;
 
 import com.fuzzylite.Engine;
+import com.fuzzylite.FuzzyLite;
 import com.fuzzylite.Op;
 import com.fuzzylite.defuzzifier.Bisector;
 import com.fuzzylite.defuzzifier.Centroid;
@@ -49,7 +50,6 @@ import com.fuzzylite.term.Discrete;
 import com.fuzzylite.term.Term;
 import com.fuzzylite.variable.InputVariable;
 import com.fuzzylite.variable.OutputVariable;
-
 import java.util.Iterator;
 
 /**
@@ -94,7 +94,7 @@ public class FclExporter extends Exporter {
     @Override
     public String toString(Engine engine) {
         StringBuilder result = new StringBuilder();
-
+        result.append("//Code automatically generated with " + FuzzyLite.LIBRARY + ".\n\n");
         result.append(String.format(
                 "FUNCTION_BLOCK %s\n", engine.getName()));
 

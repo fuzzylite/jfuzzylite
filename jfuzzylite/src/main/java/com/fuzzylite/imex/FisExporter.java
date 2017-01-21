@@ -82,7 +82,6 @@ import com.fuzzylite.term.ZShape;
 import com.fuzzylite.variable.InputVariable;
 import com.fuzzylite.variable.OutputVariable;
 import com.fuzzylite.variable.Variable;
-
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Deque;
@@ -122,6 +121,7 @@ public class FisExporter extends Exporter {
      */
     public String exportSystem(Engine engine) {
         StringBuilder result = new StringBuilder();
+        result.append("#Code automatically generated with " + FuzzyLite.LIBRARY + ".\n\n");
         result.append("[System]\n");
         result.append(String.format("Name='%s'\n", engine.getName()));
         String type;
