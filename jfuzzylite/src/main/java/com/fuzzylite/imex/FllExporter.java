@@ -98,6 +98,10 @@ public class FllExporter extends Exporter {
     public String toString(Engine engine) {
         List<String> result = new LinkedList<String>();
         result.add(String.format("Engine: %s", engine.getName()));
+        if (!Op.isEmpty(engine.getDescription())){
+            result.add(String.format("%sdescription: %s", indent,
+                    engine.getDescription()));
+        }
         for (InputVariable inputVariable : engine.getInputVariables()) {
             result.add(toString(inputVariable));
         }

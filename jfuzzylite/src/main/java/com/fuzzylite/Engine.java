@@ -34,6 +34,7 @@ import com.fuzzylite.term.Term;
 import com.fuzzylite.variable.InputVariable;
 import com.fuzzylite.variable.OutputVariable;
 import com.fuzzylite.variable.Variable;
+
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -51,6 +52,7 @@ import java.util.List;
 public class Engine implements Op.Cloneable {
 
     private String name;
+    private String description;
     private List<InputVariable> inputVariables;
     private List<OutputVariable> outputVariables;
     private List<RuleBlock> ruleBlocks;
@@ -99,6 +101,7 @@ public class Engine implements Op.Cloneable {
 
     public Engine(String name) {
         this.name = name;
+        this.description = "";
         this.inputVariables = new ArrayList<InputVariable>();
         this.outputVariables = new ArrayList<OutputVariable>();
         this.ruleBlocks = new ArrayList<RuleBlock>();
@@ -114,7 +117,7 @@ public class Engine implements Op.Cloneable {
      @param defuzzifier is a defuzzifier registered in the DefuzzifierFactory
      */
     public void configure(String conjunction, String disjunction,
-            String implication, String aggregation, String defuzzifier) {
+                          String implication, String aggregation, String defuzzifier) {
         TNormFactory tnormFactory = FactoryManager.instance().tnorm();
         SNormFactory snormFactory = FactoryManager.instance().snorm();
 
@@ -143,7 +146,7 @@ public class Engine implements Op.Cloneable {
      into a single scalar value
      */
     public void configure(TNorm conjunction, SNorm disjunction,
-            TNorm implication, SNorm aggregation, Defuzzifier defuzzifier) {
+                          TNorm implication, SNorm aggregation, Defuzzifier defuzzifier) {
         try {
             for (RuleBlock ruleblock : this.ruleBlocks) {
                 ruleblock.setConjunction(conjunction == null ? null : conjunction.clone());
@@ -399,6 +402,24 @@ public class Engine implements Op.Cloneable {
      */
     public void setName(String name) {
         this.name = name;
+    }
+
+    /**
+     Gets the description of the engine
+
+     @return the description of the engine
+     */
+    public String getDescription() {
+        return description;
+    }
+
+    /**
+     Sets the description of the engine
+
+     @param description is the description of the engine
+     */
+    public void setDescription(String description) {
+        this.description = description;
     }
 
     /**

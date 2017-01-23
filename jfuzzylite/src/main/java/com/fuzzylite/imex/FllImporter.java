@@ -112,6 +112,9 @@ public class FllImporter extends Importer {
             if ("Engine".equals(key)) {
                 engine.setName(value);
                 continue;
+            } else if ("description".equals(key) && block.isEmpty()){
+                engine.setDescription(value);
+                continue;
             } else if ("InputVariable".equals(key)
                     || "OutputVariable".equals(key)
                     || "RuleBlock".equals(key)) {
