@@ -17,6 +17,7 @@
 package com.fuzzylite;
 
 import com.fuzzylite.Op.Pair;
+import com.fuzzylite.activation.General;
 import com.fuzzylite.defuzzifier.Centroid;
 import com.fuzzylite.defuzzifier.WeightedAverage;
 import com.fuzzylite.imex.CppExporter;
@@ -31,6 +32,7 @@ import com.fuzzylite.imex.FllImporter;
 import com.fuzzylite.imex.Importer;
 import com.fuzzylite.imex.JavaExporter;
 import com.fuzzylite.imex.RScriptExporter;
+import com.fuzzylite.norm.s.AlgebraicSum;
 import com.fuzzylite.norm.s.Maximum;
 import com.fuzzylite.norm.t.AlgebraicProduct;
 import com.fuzzylite.norm.t.Minimum;
@@ -38,6 +40,7 @@ import com.fuzzylite.rule.Rule;
 import com.fuzzylite.rule.RuleBlock;
 import com.fuzzylite.term.Constant;
 import com.fuzzylite.term.Function;
+import com.fuzzylite.term.Trapezoid;
 import com.fuzzylite.term.Triangle;
 import com.fuzzylite.variable.InputVariable;
 import com.fuzzylite.variable.OutputVariable;
@@ -298,7 +301,7 @@ public class Console {
     }
 
     protected void process(String input, Writer writer,
-            String inputFormat, String outputFormat, Map<String, String> options)
+                           String inputFormat, String outputFormat, Map<String, String> options)
             throws Exception {
         Importer importer = null;
         if ("fll".equals(inputFormat)) {
@@ -527,7 +530,6 @@ public class Console {
 
     /**
      Creates a new TakagiSugeno Engine based on the Approximation example of
-
      @f$sin(x)/x@f$
 
      @return a new TakagiSugeno Engine based on the Approximation example of
@@ -612,6 +614,99 @@ public class Console {
         return engine;
     }
 
+    /**
+     Creates a new Hybrid Engine based on the Tipper example using Mamdani
+     and TakagiSugeno outputs.
+
+     @return a new Hybrid Engine based on the Tipper example using Mamdani and
+     TakagiSugeno outputs.
+     */
+    public static Engine hybrid() {
+        Engine engine = new Engine();
+        engine.setName("[tipper] (service and food) -> (tip)");
+
+        InputVariable service = new InputVariable();
+        service.setName("service");
+        service.setDescription("");
+        service.setEnabled(true);
+        service.setRange(0.000, 10.000);
+        service.setLockValueInRange(false);
+        service.addTerm(new Trapezoid("poor", 0.000, 0.000, 2.500, 5.000));
+        service.addTerm(new Triangle("good", 2.500, 5.000, 7.500));
+        service.addTerm(new Trapezoid("excellent", 5.000, 7.500, 10.000, 10.000));
+        engine.addInputVariable(service);
+
+        InputVariable food = new InputVariable();
+        food.setName("food");
+        food.setDescription("");
+        food.setEnabled(true);
+        food.setRange(0.000, 10.000);
+        food.setLockValueInRange(true);
+        food.addTerm(new Trapezoid("rancid", 0.000, 0.000, 2.500, 7.500));
+        food.addTerm(new Trapezoid("delicious", 2.500, 7.500, 10.000, 10.000));
+        engine.addInputVariable(food);
+
+        OutputVariable mTip = new OutputVariable();
+        mTip.setName("mTip");
+        mTip.setDescription("");
+        mTip.setEnabled(true);
+        mTip.setRange(0.000, 30.000);
+        mTip.setLockValueInRange(false);
+        mTip.setAggregation(new Maximum());
+        mTip.setDefuzzifier(new Centroid(100));
+        mTip.setDefaultValue(Double.NaN);
+        mTip.setLockPreviousValue(false);
+        mTip.addTerm(new Triangle("cheap", 0.000, 5.000, 10.000));
+        mTip.addTerm(new Triangle("average", 10.000, 15.000, 20.000));
+        mTip.addTerm(new Triangle("generous", 20.000, 25.000, 30.000));
+        engine.addOutputVariable(mTip);
+
+        OutputVariable tsTip = new OutputVariable();
+        tsTip.setName("tsTip");
+        tsTip.setDescription("");
+        tsTip.setEnabled(true);
+        tsTip.setRange(0.000, 30.000);
+        tsTip.setLockValueInRange(false);
+        tsTip.setAggregation(null);
+        tsTip.setDefuzzifier(new WeightedAverage("TakagiSugeno"));
+        tsTip.setDefaultValue(Double.NaN);
+        tsTip.setLockPreviousValue(false);
+        tsTip.addTerm(new Constant("cheap", 5.000));
+        tsTip.addTerm(new Constant("average", 15.000));
+        tsTip.addTerm(new Constant("generous", 25.000));
+        engine.addOutputVariable(tsTip);
+
+        RuleBlock mamdaniRuleBlock1 = new RuleBlock();
+        mamdaniRuleBlock1.setName("mamdaniRuleBlock");
+        mamdaniRuleBlock1.setDescription("");
+        mamdaniRuleBlock1.setEnabled(true);
+        mamdaniRuleBlock1.setConjunction(new AlgebraicProduct());
+        mamdaniRuleBlock1.setDisjunction(new AlgebraicSum());
+        mamdaniRuleBlock1.setImplication(new Minimum());
+        mamdaniRuleBlock1.setActivation(new General());
+        mamdaniRuleBlock1.addRule(Rule.parse("if service is poor or food is rancid then mTip is cheap", engine));
+        mamdaniRuleBlock1.addRule(Rule.parse("if service is good then mTip is average", engine));
+        mamdaniRuleBlock1.addRule(Rule.parse("if service is excellent or food is delicious then mTip is generous with 0.5", engine));
+        mamdaniRuleBlock1.addRule(Rule.parse("if service is excellent and food is delicious then mTip is generous with 1.0", engine));
+        engine.addRuleBlock(mamdaniRuleBlock1);
+
+        RuleBlock takagiSugenoRuleBlock2 = new RuleBlock();
+        takagiSugenoRuleBlock2.setName("takagiSugenoRuleBlock");
+        takagiSugenoRuleBlock2.setDescription("");
+        takagiSugenoRuleBlock2.setEnabled(true);
+        takagiSugenoRuleBlock2.setConjunction(new AlgebraicProduct());
+        takagiSugenoRuleBlock2.setDisjunction(new AlgebraicSum());
+        takagiSugenoRuleBlock2.setImplication(null);
+        takagiSugenoRuleBlock2.setActivation(new General());
+        takagiSugenoRuleBlock2.addRule(Rule.parse("if service is poor or food is rancid then tsTip is cheap", engine));
+        takagiSugenoRuleBlock2.addRule(Rule.parse("if service is good then tsTip is average", engine));
+        takagiSugenoRuleBlock2.addRule(Rule.parse("if service is excellent or food is delicious then tsTip is generous with 0.5", engine));
+        takagiSugenoRuleBlock2.addRule(Rule.parse("if service is excellent and food is delicious then tsTip is generous with 1.0", engine));
+        engine.addRuleBlock(takagiSugenoRuleBlock2);
+
+        return engine;
+    }
+
     public void exportAllExamples(String from, String to, String sourceBase, String targetBase) throws Exception {
         List<String> examples = new ArrayList<String>();
         examples.add("mamdani/AllTerms");
@@ -648,6 +743,7 @@ public class Console {
         examples.add("takagi-sugeno/octave/linear_tip_calculator");
         examples.add("takagi-sugeno/octave/sugeno_tip_calculator");
         examples.add("tsukamoto/tsukamoto");
+        examples.add("hybrid/tipper");
 
         Importer importer;
         if ("fll".equals(from)) {
@@ -741,16 +837,26 @@ public class Console {
                             continue;
                         }
                     }
+                    if (examples.get(i).contains("hybrid")) {
+                        if (imex.getSecond() instanceof FisImporter) {
+                            continue;
+                        }
+                    }
 
-                    String fll = imex.getFirst().toString(engine);
-                    Engine engineFromFll = imex.getSecond().fromString(fll);
-                    String engineToFll = imex.getFirst().toString(engineFromFll);
+                    String exported = imex.getFirst().toString(engine);
+                    Engine engineFromExport = imex.getSecond().fromString(exported);
+                    String imported = imex.getFirst().toString(engineFromExport);
 
-                    if (!fll.equals(engineToFll)) {
-                        errors.add(String.format("[imex error] different results <%s,%s> at %s.%s",
+                    if (!exported.equals(imported)) {
+                        errors.add(String.format(
+                                "[imex error] different results <%s,%s> at %s.%s:\n" +
+                                        "<Engine A>\n%s\n\n" +
+                                        "=================\n" +
+                                        "<Engine B>\n%s\n\n",
                                 imex.getFirst().getClass().getSimpleName(),
                                 imex.getFirst().getClass().getSimpleName(),
-                                examples.get(i), from));
+                                examples.get(i), from,
+                                exported, imported));
                     }
                 }
 
@@ -761,8 +867,7 @@ public class Console {
                             + "\n}\n");
                 } else if ("java".equals(to)) {
                     String className = examples.get(i).substring(examples.get(i).lastIndexOf('/') + 1);
-                    target.write(
-                            "import com.fuzzylite.*;\n"
+                    target.write("import com.fuzzylite.*;\n"
                             + "import com.fuzzylite.activation.*\n"
                             + "import com.fuzzylite.defuzzifier.*;\n"
                             + "import com.fuzzylite.factory.*;\n"
@@ -950,9 +1055,12 @@ public class Console {
                 return;
             } finally {
                 System.out.println("Please, make sure the output contains the following structure:\n"
-                        + "mkdir -p mamdani/matlab; mkdir -p mamdani/octave; "
-                        + "mkdir -p takagi-sugeno/matlab; mkdir -p takagi-sugeno/octave; "
-                        + "mkdir -p tsukamoto/");
+                        + "mkdir -p " + outputPath + "mamdani/matlab; "
+                        + "mkdir -p " + outputPath + "mamdani/octave; "
+                        + "mkdir -p " + outputPath + "takagi-sugeno/matlab; "
+                        + "mkdir -p " + outputPath + "takagi-sugeno/octave; "
+                        + "mkdir -p " + outputPath + "tsukamoto; "
+                        + "mkdir -p " + outputPath + "hybrid;");
             }
             System.exit(0);
             return;

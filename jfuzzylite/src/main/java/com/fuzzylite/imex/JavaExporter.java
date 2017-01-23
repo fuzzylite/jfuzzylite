@@ -209,10 +209,17 @@ public class JavaExporter extends Exporter {
      language
      */
     public String toString(RuleBlock ruleBlock, Engine engine) {
-        String name = "ruleBlock";
-        if (engine.numberOfRuleBlocks() > 1) {
-            name += Integer.toString(engine.getRuleBlocks().indexOf(ruleBlock) + 1);
+        String name;
+
+        if (isUsingVariableNames() && !ruleBlock.getName().isEmpty()) {
+            name = Op.validName(ruleBlock.getName());
+        } else {
+            name = "ruleBlock";
+            if (engine.numberOfRuleBlocks() > 1) {
+                name += Integer.toString(engine.getRuleBlocks().indexOf(ruleBlock) + 1);
+            }
         }
+
         StringBuilder result = new StringBuilder();
         result.append(String.format("RuleBlock %s = new RuleBlock();\n", name));
         result.append(String.format(

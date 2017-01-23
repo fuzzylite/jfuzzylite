@@ -242,10 +242,10 @@ public class FisExporter extends Exporter {
     public String exportRules(Engine engine) {
         StringBuilder result = new StringBuilder();
         result.append("[Rules]\n");
-        int ruleBlockNumber = 0;
         for (RuleBlock ruleBlock : engine.getRuleBlocks()) {
             if (engine.numberOfRuleBlocks() > 1) {
-                result.append(String.format("# RuleBlock %d", ++ruleBlockNumber));
+                result.append(String.format("# RuleBlock %d",
+                        1 + engine.getRuleBlocks().indexOf(ruleBlock)));
             }
             for (Rule rule : ruleBlock.getRules()) {
                 if (rule.isLoaded()) {

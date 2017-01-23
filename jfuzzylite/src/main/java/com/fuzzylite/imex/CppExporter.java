@@ -259,10 +259,17 @@ public class CppExporter extends Exporter {
      language
      */
     public String toString(RuleBlock ruleBlock, Engine engine) {
-        String name = "ruleBlock";
-        if (engine.numberOfRuleBlocks() > 1) {
-            name += Integer.toString(engine.getRuleBlocks().indexOf(ruleBlock) + 1);
+        String name;
+
+        if (isUsingVariableNames() && !ruleBlock.getName().isEmpty()) {
+            name = Op.validName(ruleBlock.getName());
+        } else {
+            name = "ruleBlock";
+            if (engine.numberOfRuleBlocks() > 1) {
+                name += Integer.toString(engine.getRuleBlocks().indexOf(ruleBlock) + 1);
+            }
         }
+
         StringBuilder result = new StringBuilder();
         result.append(String.format(
                 fl() + "RuleBlock* %s = new " + fl() + "RuleBlock;\n", name));
