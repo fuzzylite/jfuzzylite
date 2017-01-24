@@ -18,6 +18,7 @@ package com.fuzzylite.imex;
 
 import com.fuzzylite.Engine;
 import com.fuzzylite.FuzzyLite;
+import com.fuzzylite.Op;
 import com.fuzzylite.variable.InputVariable;
 import com.fuzzylite.variable.OutputVariable;
 import java.io.BufferedWriter;
@@ -285,10 +286,8 @@ public class RScriptExporter extends Exporter {
     public void writeScriptImportingDataFrame(Engine engine, Writer writer,
             InputVariable a, InputVariable b, String dataFramePath,
             List<OutputVariable> outputVariables) throws IOException {
-        writeScriptHeader(writer);
+        writeScriptHeader(writer, engine);
 
-        writer.append("engine.name = \"" + engine.getName() + "\"\n");
-        writer.append("engine.fll = \"" + new FllExporter().toString(engine) + "\"\n\n");
         writer.append("engine.fldFile = \"" + dataFramePath + "\"\n");
         writer.append("if (require(data.table)) {\n"
                 + "    engine.df = data.table::fread(engine.fldFile, sep=\"auto\", header=\"auto\")\n"
@@ -317,10 +316,7 @@ public class RScriptExporter extends Exporter {
     public void writeScriptExportingDataFrame(Engine engine, Writer writer,
             InputVariable a, InputVariable b, int values, FldExporter.ScopeOfValues scope,
             List<OutputVariable> outputVariables) throws IOException {
-        writeScriptHeader(writer);
-
-        writer.append("engine.name = \"" + engine.getName() + "\"\n");
-        writer.append("engine.fll = \"" + new FllExporter().toString(engine) + "\"\n\n");
+        writeScriptHeader(writer, engine);
 
         List<InputVariable> activeVariables = new ArrayList<InputVariable>(engine.getInputVariables());
         for (int i = 0; i < activeVariables.size(); ++i) {
@@ -356,10 +352,7 @@ public class RScriptExporter extends Exporter {
     public void writeScriptExportingDataFrame(Engine engine, Writer writer,
             InputVariable a, InputVariable b, Reader reader,
             List<OutputVariable> outputVariables) throws IOException {
-        writeScriptHeader(writer);
-
-        writer.append("engine.name = \"" + engine.getName() + "\"\n");
-        writer.append("engine.fll = \"" + new FllExporter().toString(engine) + "\"\n\n");
+        writeScriptHeader(writer, engine);
 
         writer.append("engine.fldFile = \"");
         new FldExporter().write(engine, writer, reader);
@@ -375,13 +368,20 @@ public class RScriptExporter extends Exporter {
      Writes the header of the R script (e.g., import libraries)
 
      @param writer is the output where the header will be written to
+     @param engine is the engine to export
      @throws IOException if any error occurs upon writing on the writer
 
      */
-    protected void writeScriptHeader(Writer writer) throws IOException {
+    protected void writeScriptHeader(Writer writer, Engine engine) throws IOException {
         writer.append("#Code automatically generated with " + FuzzyLite.LIBRARY + ".\n\n");
         writer.append("library(ggplot2);\n");
         writer.append("\n");
+        writer.append("engine.name = \"" + engine.getName() + "\"\n");
+        if (!Op.isEmpty(engine.getDescription())) {
+            writer.append(String.format(
+                    "engine.description = \"%s\"", engine.getDescription()));
+        }
+        writer.append("engine.fll = \"" + new FllExporter().toString(engine) + "\"\n\n");
     }
 
     /**
