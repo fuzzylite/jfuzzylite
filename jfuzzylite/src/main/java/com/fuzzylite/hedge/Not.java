@@ -25,7 +25,7 @@ package com.fuzzylite.hedge;
  @see HedgeFactory
  @since 4.0
  */
-public class Not extends Hedge {
+public final class Not extends Hedge {
 
     /**
      Computes the hedge for the membership function value @f$x@f$

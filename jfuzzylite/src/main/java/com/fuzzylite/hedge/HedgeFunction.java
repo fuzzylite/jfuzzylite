@@ -31,7 +31,7 @@ import com.fuzzylite.term.Function;
  @see HedgeFactory
  @since 6.0
  */
-public class HedgeFunction extends Hedge {
+public final class HedgeFunction extends Hedge {
 
     private Function function;
 

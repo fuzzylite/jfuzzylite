@@ -27,7 +27,7 @@ import com.fuzzylite.Op;
  @see HedgeFactory
  @since 4.0
  */
-public class Seldom extends Hedge {
+public final class Seldom extends Hedge {
 
     /**
      Computes the hedge for the membership function value @f$x@f$
