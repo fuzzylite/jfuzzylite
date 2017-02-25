@@ -33,7 +33,7 @@ import java.util.List;
  @see Rule
  @since 4.0
  */
-public class Proposition extends Expression {
+public final class Proposition extends Expression {
 
     private Variable variable;
     private List<Hedge> hedges;

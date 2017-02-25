@@ -27,7 +27,7 @@ package com.fuzzylite.rule;
  @see Rule
  @since 4.0
  */
-public class Operator extends Expression {
+public final class Operator extends Expression {
 
     private String name;
     private Expression left, right;
