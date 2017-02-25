@@ -29,7 +29,7 @@ import com.fuzzylite.norm.TNorm;
  @see Norm
  @since 4.0
  */
-public class Minimum extends TNorm {
+public final class Minimum extends TNorm {
 
     /**
      Computes the minimum of two membership function values

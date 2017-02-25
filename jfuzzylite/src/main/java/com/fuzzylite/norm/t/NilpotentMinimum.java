@@ -30,7 +30,7 @@ import com.fuzzylite.norm.TNorm;
  @see Norm
  @since 5.0
  */
-public class NilpotentMinimum extends TNorm {
+public final class NilpotentMinimum extends TNorm {
 
     /**
      Computes the nilpotent minimum of two membership function values

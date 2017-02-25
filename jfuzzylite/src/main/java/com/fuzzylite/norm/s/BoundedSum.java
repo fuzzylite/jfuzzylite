@@ -30,7 +30,7 @@ import com.fuzzylite.norm.SNorm;
  @see Norm
  @since 4.0
  */
-public class BoundedSum extends SNorm {
+public final class BoundedSum extends SNorm {
 
     /**
      Computes the bounded sum of two membership function values

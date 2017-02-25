@@ -29,7 +29,7 @@ import com.fuzzylite.norm.SNorm;
  @see Norm
  @since 4.0
  */
-public class Maximum extends SNorm {
+public final class Maximum extends SNorm {
 
     /**
      Computes the maximum of two membership function values

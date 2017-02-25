@@ -30,7 +30,7 @@ import com.fuzzylite.norm.SNorm;
  @see Norm
  @since 5.0
  */
-public class NilpotentMaximum extends SNorm {
+public final class NilpotentMaximum extends SNorm {
 
     /**
      Computes the nilpotent maximum of two membership function values

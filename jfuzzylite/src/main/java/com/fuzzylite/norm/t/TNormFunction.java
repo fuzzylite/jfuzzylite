@@ -19,21 +19,19 @@ package com.fuzzylite.norm.t;
 import com.fuzzylite.norm.TNorm;
 import com.fuzzylite.term.Function;
 
-/*
-     The TNormFunction class is a customizable TNorm via Function, which
-     computes any function based on the @f$a@f$ and @f$b@f$ values.
-     This TNorm is not registered with the TNormFactory due to issues configuring
-     the formula within. To register the TNorm, a static method with the
-     constructor needs to be manually created and registered.
+/**
+ The TNormFunction class is a customizable TNorm via Function, which computes
+ any function based on the @f$a@f$ and @f$b@f$ values. This TNorm is not
+ registered with the TNormFactory.
 
-     @author Juan Rada-Vilela, Ph.D.
-     @see Function
-     @see TNorm
-     @see Norm
-     @see TNormFactory
-     @since 6.0
+ @author Juan Rada-Vilela, Ph.D.
+ @see Function
+ @see TNorm
+ @see Norm
+ @see TNormFactory
+ @since 6.0
  */
-public class TNormFunction extends TNorm {
+public final class TNormFunction extends TNorm {
 
     private Function function;
 

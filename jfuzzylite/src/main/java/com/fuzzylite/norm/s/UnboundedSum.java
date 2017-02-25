@@ -28,7 +28,7 @@ import com.fuzzylite.norm.SNorm;
  @see Norm
  @since 4.0
  */
-public class UnboundedSum extends SNorm {
+public final class UnboundedSum extends SNorm {
 
     /**
      Computes the bounded sum of two membership function values

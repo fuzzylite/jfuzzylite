@@ -30,7 +30,7 @@ import com.fuzzylite.norm.TNorm;
  @see Norm
  @since 4.0
  */
-public class HamacherProduct extends TNorm {
+public final class HamacherProduct extends TNorm {
 
     /**
      Computes the Hamacher product of two membership function values

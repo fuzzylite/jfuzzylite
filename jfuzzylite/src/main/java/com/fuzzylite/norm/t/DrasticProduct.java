@@ -30,7 +30,7 @@ import com.fuzzylite.norm.TNorm;
  @see Norm
  @since 4.0
  */
-public class DrasticProduct extends TNorm {
+public final class DrasticProduct extends TNorm {
 
     /**
      Computes the drastic product of two membership function values

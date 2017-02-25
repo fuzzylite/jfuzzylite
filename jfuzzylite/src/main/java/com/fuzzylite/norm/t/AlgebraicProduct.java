@@ -29,7 +29,7 @@ import com.fuzzylite.norm.TNorm;
  @see Norm
  @since 4.0
  */
-public class AlgebraicProduct extends TNorm {
+public final class AlgebraicProduct extends TNorm {
 
     /**
      Computes the algebraic product of two membership function values

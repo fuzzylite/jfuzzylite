@@ -30,7 +30,7 @@ import com.fuzzylite.norm.TNorm;
  @see Norm
  @since 4.0
  */
-public class BoundedDifference extends TNorm {
+public final class BoundedDifference extends TNorm {
 
     /**
      Computes the bounded difference between two membership function values

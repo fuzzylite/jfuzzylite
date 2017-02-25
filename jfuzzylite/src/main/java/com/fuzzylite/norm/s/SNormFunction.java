@@ -19,21 +19,19 @@ package com.fuzzylite.norm.s;
 import com.fuzzylite.norm.SNorm;
 import com.fuzzylite.term.Function;
 
-/*
-     The SNormFunction class is a customizable SNorm via Function, which
-     computes any function based on the @f$a@f$ and @f$b@f$ values.
-     This SNorm is not registered with the SNormFactory due to issues configuring
-     the formula within. To register the SNorm, a static method with the
-     constructor needs to be manually created and registered.
+/**
+ The SNormFunction class is a customizable SNorm via Function, which computes
+ any function based on the @f$a@f$ and @f$b@f$ values. This SNorm is not
+ registered with the SNormFactory.
 
-     @author Juan Rada-Vilela, Ph.D.
-     @see Function
-     @see SNorm
-     @see Norm
-     @see SNormFactory
-     @since 6.0
+ @author Juan Rada-Vilela, Ph.D.
+ @see Function
+ @see SNorm
+ @see Norm
+ @see SNormFactory
+ @since 6.0
  */
-public class SNormFunction extends SNorm {
+public final class SNormFunction extends SNorm {
 
     private Function function;
 

@@ -29,7 +29,7 @@ import com.fuzzylite.norm.SNorm;
  @see Norm
  @since 4.0
  */
-public class NormalizedSum extends SNorm {
+public final class NormalizedSum extends SNorm {
 
     /**
      Computes the normalized sum of two membership function values

@@ -29,7 +29,7 @@ import com.fuzzylite.norm.SNorm;
  @see Norm
  @since 4.0
  */
-public class AlgebraicSum extends SNorm {
+public final class AlgebraicSum extends SNorm {
 
     /**
      Computes the algebraic sum of two membership function values

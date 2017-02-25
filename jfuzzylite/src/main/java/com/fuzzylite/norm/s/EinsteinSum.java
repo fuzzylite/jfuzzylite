@@ -29,7 +29,7 @@ import com.fuzzylite.norm.SNorm;
  @see Norm
  @since 4.0
  */
-public class EinsteinSum extends SNorm {
+public final class EinsteinSum extends SNorm {
 
     /**
      Computes the Einstein sum of two membership function values

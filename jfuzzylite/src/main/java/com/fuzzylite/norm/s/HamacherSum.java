@@ -30,7 +30,7 @@ import com.fuzzylite.norm.SNorm;
  @see Norm
  @since 4.0
  */
-public class HamacherSum extends SNorm {
+public final class HamacherSum extends SNorm {
 
     /**
      Computes the Hamacher sum of two membership function values

@@ -30,7 +30,7 @@ import com.fuzzylite.norm.SNorm;
  @see Norm
  @since 4.0
  */
-public class DrasticSum extends SNorm {
+public final class DrasticSum extends SNorm {
 
     /**
      Computes the drastic sum of two membership function values

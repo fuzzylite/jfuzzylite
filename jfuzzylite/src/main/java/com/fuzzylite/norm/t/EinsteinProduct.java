@@ -29,7 +29,7 @@ import com.fuzzylite.norm.TNorm;
  @see Norm
  @since 4.0
  */
-public class EinsteinProduct extends TNorm {
+public final class EinsteinProduct extends TNorm {
 
     /**
      Computes the Einstein product of two membership function values
