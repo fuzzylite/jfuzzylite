@@ -36,8 +36,8 @@ import java.util.logging.Level;
 import static org.hamcrest.CoreMatchers.is;
 
 /**
- *
- * @author juan
+
+ @author juan
  */
 public class BenchmarkTest {
 
@@ -138,15 +138,39 @@ public class BenchmarkTest {
     }
 
     @Test
-    public void testSimpleDimmer() {
+    public void testMamdani() {
         Engine engine = Console.mamdani();
         Benchmark benchmark = new Benchmark(engine.getName(), engine);
         benchmark.prepare(1024, FldExporter.ScopeOfValues.AllVariables);
         benchmark.run(100);
 
         FuzzyLite.logger().info(benchmark.format(benchmark.results(),
-                Benchmark.TableShape.Vertical, Benchmark.TableContents.HeaderAndBody,
-                ": "));
+                Benchmark.TableShape.Horizontal, Benchmark.TableContents.HeaderAndBody,
+                " "));
+    }
+
+    @Test
+    public void testTakagiSugeno() {
+        Engine engine = Console.takagiSugeno();
+        Benchmark benchmark = new Benchmark(engine.getName(), engine);
+        benchmark.prepare(1024, FldExporter.ScopeOfValues.AllVariables);
+        benchmark.run(100);
+
+        FuzzyLite.logger().info(benchmark.format(benchmark.results(),
+                Benchmark.TableShape.Horizontal, Benchmark.TableContents.HeaderAndBody,
+                " "));
+    }
+
+     @Test
+    public void testHybrid() {
+        Engine engine = Console.hybrid();
+        Benchmark benchmark = new Benchmark(engine.getName(), engine);
+        benchmark.prepare(1024, FldExporter.ScopeOfValues.AllVariables);
+        benchmark.run(100);
+
+        FuzzyLite.logger().info(benchmark.format(benchmark.results(),
+                Benchmark.TableShape.Horizontal, Benchmark.TableContents.HeaderAndBody,
+                " "));
     }
 
     @Test
