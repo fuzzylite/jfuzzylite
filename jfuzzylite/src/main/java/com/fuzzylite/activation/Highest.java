@@ -83,7 +83,7 @@ public class Highest extends Activation {
         setNumberOfRules(Integer.parseInt(values.get(0)));
     }
 
-    static class Descendantly implements Comparator<Rule> {
+    protected static class Descending implements Comparator<Rule> {
 
         @Override
         public int compare(Rule a, Rule b) {
@@ -108,14 +108,13 @@ public class Highest extends Activation {
         TNorm implication = ruleBlock.getImplication();
 
         PriorityQueue<Rule> rulesToActivate = new PriorityQueue<Rule>(
-                getNumberOfRules(), new Descendantly());
+                numberOfRules, new Descending());
 
         for (Rule rule : ruleBlock.getRules()) {
             rule.deactivate();
 
             if (rule.isLoaded()) {
-                double activationDegree = rule.computeActivationDegree(conjunction, disjunction);
-                rule.setActivationDegree(activationDegree);
+                double activationDegree = rule.activateWith(conjunction, disjunction);
                 if (Op.isGt(activationDegree, 0.0)) {
                     rulesToActivate.offer(rule);
                 }
@@ -123,9 +122,8 @@ public class Highest extends Activation {
         }
 
         int activated = 0;
-        while (!rulesToActivate.isEmpty() && activated++ < getNumberOfRules()) {
-            Rule rule = rulesToActivate.poll();
-            rule.activate(rule.getActivationDegree(), implication);
+        while (!rulesToActivate.isEmpty() && activated++ < numberOfRules) {
+            rulesToActivate.poll().fire(implication);
         }
     }
 

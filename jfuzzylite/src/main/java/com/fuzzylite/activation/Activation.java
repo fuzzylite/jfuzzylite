@@ -17,6 +17,7 @@
 package com.fuzzylite.activation;
 
 import com.fuzzylite.Op;
+import com.fuzzylite.rule.Rule;
 import com.fuzzylite.rule.RuleBlock;
 
 /**

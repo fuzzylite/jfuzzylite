@@ -243,10 +243,9 @@ public class Threshold extends Activation {
         for (Rule rule : ruleBlock.getRules()) {
             rule.deactivate();
             if (rule.isLoaded()) {
-                double activationDegree = rule.computeActivationDegree(conjunction, disjunction);
-                rule.setActivationDegree(activationDegree);
+                double activationDegree = rule.activateWith(conjunction, disjunction);
                 if (activatesWith(activationDegree)) {
-                    rule.activate(activationDegree, implication);
+                    rule.fire(implication);
                 }
             }
         }

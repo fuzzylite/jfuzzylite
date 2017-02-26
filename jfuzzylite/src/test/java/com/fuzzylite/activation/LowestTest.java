@@ -65,24 +65,25 @@ public class LowestTest {
         ambient.setValue(0.3);
         RuleBlock ruleBlock = engine.getRuleBlock(0);
         ruleBlock.setActivation(new Lowest(1));
+        System.out.println(engine.toString());
         engine.process();
 
         List<Rule> rules = engine.getRuleBlock(0).getRules();
-        Assert.assertThat("First rule was not activated",
-                rules.get(0).isActivated(), is(false));
-        Assert.assertThat("Second rule was activated",
-                rules.get(1).isActivated(), is(true));
-        Assert.assertThat("Third rule was not activated",
-                rules.get(2).isActivated(), is(false));
+        Assert.assertThat("First rule was not fired",
+                rules.get(0).isFired(), is(false));
+        Assert.assertThat("Second rule was fired",
+                rules.get(1).isFired(), is(true));
+        Assert.assertThat("Third rule was not fired",
+                rules.get(2).isFired(), is(false));
 
         ruleBlock.setActivation(new Lowest(2));
         engine.process();
-        Assert.assertThat("First rule was activated",
-                rules.get(0).isActivated(), is(true));
-        Assert.assertThat("Second rule was activated",
-                rules.get(1).isActivated(), is(true));
-        Assert.assertThat("Third rule was not activated",
-                rules.get(2).isActivated(), is(false));
+        Assert.assertThat("First rule was fired",
+                rules.get(0).isFired(), is(true));
+        Assert.assertThat("Second rule was fired",
+                rules.get(1).isFired(), is(true));
+        Assert.assertThat("Third rule was not fired",
+                rules.get(2).isFired(), is(false));
     }
 
 }

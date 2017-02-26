@@ -16,6 +16,7 @@
  */
 package com.fuzzylite;
 
+import com.fuzzylite.activation.Activation;
 import com.fuzzylite.defuzzifier.Defuzzifier;
 import com.fuzzylite.defuzzifier.IntegralDefuzzifier;
 import com.fuzzylite.defuzzifier.WeightedDefuzzifier;
@@ -38,6 +39,7 @@ import com.fuzzylite.variable.Variable;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.logging.Level;
 
 /**
  The Engine class is the core class of the library as it groups the necessary
@@ -115,9 +117,12 @@ public class Engine implements Op.Cloneable {
      @param implication is an TNorm registered in the TNormFactory
      @param aggregation is an SNorm registered in the SNormFactory
      @param defuzzifier is a defuzzifier registered in the DefuzzifierFactory
+     @param activation is an activation method registered in the
+     ActivationFactory
      */
     public void configure(String conjunction, String disjunction,
-                          String implication, String aggregation, String defuzzifier) {
+            String implication, String aggregation,
+            String defuzzifier, String activation) {
         TNormFactory tnormFactory = FactoryManager.instance().tnorm();
         SNormFactory snormFactory = FactoryManager.instance().snorm();
 
@@ -126,9 +131,10 @@ public class Engine implements Op.Cloneable {
         TNorm implicationObject = tnormFactory.constructObject(implication);
         SNorm aggregationObject = snormFactory.constructObject(aggregation);
         Defuzzifier defuzzifierObject = FactoryManager.instance().defuzzifier().constructObject(defuzzifier);
+        Activation activationObject = FactoryManager.instance().activation().constructObject(activation);
 
-        configure(conjunctionObject, disjunctionObject,
-                implicationObject, aggregationObject, defuzzifierObject);
+        configure(conjunctionObject, disjunctionObject, implicationObject,
+                aggregationObject, defuzzifierObject, activationObject);
     }
 
     /**
@@ -144,18 +150,22 @@ public class Engine implements Op.Cloneable {
      of the rules
      @param defuzzifier is the operator to transform the aggregated implications
      into a single scalar value
+     @param activation is the activation method to activate and fire the rule
+     blocks
      */
     public void configure(TNorm conjunction, SNorm disjunction,
-                          TNorm implication, SNorm aggregation, Defuzzifier defuzzifier) {
+            TNorm implication, SNorm aggregation,
+            Defuzzifier defuzzifier, Activation activation) {
         try {
             for (RuleBlock ruleblock : this.ruleBlocks) {
                 ruleblock.setConjunction(conjunction == null ? null : conjunction.clone());
                 ruleblock.setDisjunction(disjunction == null ? null : disjunction.clone());
                 ruleblock.setImplication(implication == null ? null : implication.clone());
+                ruleblock.setActivation(activation == null ? null : activation.clone());
             }
             for (OutputVariable outputVariable : this.outputVariables) {
                 outputVariable.setDefuzzifier(defuzzifier == null ? null : defuzzifier.clone());
-                outputVariable.fuzzyOutput().setAggregation(aggregation == null ? null : aggregation.clone());
+                outputVariable.setAggregation(aggregation == null ? null : aggregation.clone());
             }
         } catch (Exception ex) {
             throw new RuntimeException(ex);
@@ -328,6 +338,8 @@ public class Engine implements Op.Cloneable {
          * BEGIN: Debug information
          */
         if (FuzzyLite.isDebugging()) {
+            FuzzyLite.logger().log(Level.FINE, "===============");
+            FuzzyLite.logger().log(Level.FINE, "CURRENT INPUTS:");
             for (InputVariable inputVariable : this.inputVariables) {
                 double inputValue = inputVariable.getValue();
                 if (inputVariable.isEnabled()) {
@@ -347,6 +359,10 @@ public class Engine implements Op.Cloneable {
 
         for (RuleBlock ruleBlock : this.ruleBlocks) {
             if (ruleBlock.isEnabled()) {
+                if (FuzzyLite.isDebugging()) {
+                    FuzzyLite.logger().log(Level.FINE, "===============");
+                    FuzzyLite.logger().log(Level.FINE, "RULE BLOCK: {0}", ruleBlock.getName());
+                }
                 ruleBlock.activate();
             }
         }
@@ -359,6 +375,8 @@ public class Engine implements Op.Cloneable {
          * BEGIN: Debug information
          */
         if (FuzzyLite.isDebugging()) {
+            FuzzyLite.logger().log(Level.FINE, "===============");
+            FuzzyLite.logger().log(Level.FINE, "CURRENT OUTPUTS:");
             for (OutputVariable outputVariable : this.outputVariables) {
                 if (outputVariable.isEnabled()) {
                     FuzzyLite.logger().fine(String.format("%s.default = %s",

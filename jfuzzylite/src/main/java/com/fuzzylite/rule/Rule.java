@@ -54,7 +54,8 @@ import java.util.logging.Level;
  @see Consequent
  @see Hedge
  @see RuleBlock
- @since 4.0 */
+ @since 4.0
+ */
 public class Rule implements Op.Cloneable {
 
     /**
@@ -82,12 +83,13 @@ public class Rule implements Op.Cloneable {
      */
     public static final String FL_WITH = "with";
 
+    private boolean enabled;
     private String text;
     private double weight;
+    private double activationDegree;
+    private boolean fired;
     private Antecedent antecedent;
     private Consequent consequent;
-    private double activationDegree;
-    private boolean activated;
 
     public Rule() {
         this("");
@@ -98,12 +100,33 @@ public class Rule implements Op.Cloneable {
     }
 
     public Rule(String text, double weight) {
+        this.enabled = true;
         this.text = text;
         this.weight = weight;
+        this.activationDegree = 0.0;
+        this.fired = false;
         this.antecedent = new Antecedent();
         this.consequent = new Consequent();
-        this.activationDegree = 0.0;
-        this.activated = false;
+    }
+
+    /**
+     Gets whether the rule is enabled. An enabled rule will be fired, whereas a
+     disabled rule will not.
+
+     @return whether the rule is enabled
+     */
+    public boolean isEnabled() {
+        return enabled;
+    }
+
+    /**
+     Sets whether the rule is enabled. An enabled rule will be fired, whereas a
+     disabled rule will not.
+
+     @param enabled determines whether the rule is enabled
+     */
+    public void setEnabled(boolean enabled) {
+        this.enabled = enabled;
     }
 
     /**
@@ -197,79 +220,56 @@ public class Rule implements Op.Cloneable {
     }
 
     /**
-     Indicates whether the rule has been activated. The activation of a rule is
-     automatically managed within Rule::activate(). The utility of this property
-     can be found in the case of activation methods like First or Last, which
-     compute the activation degree of the rules without necessarily activating
-     the rules.
-
-     @return whether the rule has been activated
+     Deactivates the rule
      */
-    public boolean isActivated() {
-        return activated;
+    public void deactivate() {
+        this.activationDegree = 0.0;
+        this.fired = false;
     }
 
     /**
-     Sets whether the rule has been activated. The activation of a rule is
-     automatically managed within Rule::activate(). The utility of this property
-     can be found in the case of activation methods like First or Last, which
-     compute the activation degree of the rules without necessarily activating
-     the rules.
-
-     @param activated determines whether the rule has been activated
-     */
-    public void setActivated(boolean activated) {
-        this.activated = activated;
-    }
-
-    /**
-     Computes the activation degree for this rule
+     Activates the rule by computing its activation degree using the given
+     conjunction and disjunction operators
 
      @param conjunction is the conjunction operator
      @param disjunction is the disjunction operator
-     @return the activation degree of this rule multiplied by its weight
+     @return the activation degree of the rule
      */
-    public double computeActivationDegree(TNorm conjunction, SNorm disjunction) {
+    public double activateWith(TNorm conjunction, SNorm disjunction) {
         if (!isLoaded()) {
             throw new RuntimeException(String.format("[rule error] the following rule is not loaded: %s", text));
         }
-        return weight * antecedent.activationDegree(conjunction, disjunction);
+        activationDegree = weight * antecedent.activationDegree(conjunction, disjunction);
+        return activationDegree;
     }
 
     /**
-     Activates the rule with the given activation degree and implication
-     operator
+     Fires the rule (if the rule is enabled) using the given implication
+     operator and the underlying activation degree
 
-     @param activationDegree is the activation degree of the rule
-     @param implication is the implication operator from the RuleBlock
+     @param implication is the implication operator
      */
-    public void activate(double activationDegree, TNorm implication) {
-        if (FuzzyLite.isDebugging()) {
-            FuzzyLite.logger().log(Level.FINE, "[activating] {0}", toString());
-        }
+    public void fire(TNorm implication) {
         if (!isLoaded()) {
             throw new RuntimeException(String.format("[rule error] the following rule is not loaded: %s", text));
         }
-        if (Op.isGt(activationDegree, 0.0)) {
+        if (enabled && Op.isGt(activationDegree, 0.0)) {
             if (FuzzyLite.isDebugging()) {
-                FuzzyLite.logger().log(Level.FINE, "[degree={0}] {1}",
+                FuzzyLite.logger().log(Level.FINE, "[firing with {0}] {1}",
                         new String[]{Op.str(activationDegree), toString()});
             }
-            this.activationDegree = activationDegree;
             consequent.modify(activationDegree, implication);
+            fired = true;
         }
-        this.activated = true;
     }
 
     /**
-     Deactivates the rule setting the activation degree to 0.0
+     Indicates whether the rule was fired
+
+     @return whether the rule was fired
      */
-    public void deactivate() {
-        this.activated = false;
-        this.activationDegree = 0.0;
-        if (FuzzyLite.isDebugging()) {
-            FuzzyLite.logger().log(Level.FINE, "[deactivated] {0}", toString());
-        }
+    public boolean isFired() {
+        return fired;
     }
 
     /**
@@ -314,9 +314,9 @@ public class Rule implements Op.Cloneable {
      @param engine is the engine from which the rule is part of
      */
     public void load(String rule, Engine engine) {
+        deactivate();
+        setEnabled(true);
         setText(rule);
-        setActivated(false);
-        setActivationDegree(0.0);
         StringTokenizer tokenizer = new StringTokenizer(rule);
         String token;
         StringBuilder strAntecedent = new StringBuilder();
@@ -421,7 +421,6 @@ public class Rule implements Op.Cloneable {
      Creates a clone of the rule without being loaded
 
      @return a clone of the rule without being loaded
-
      @throws CloneNotSupportedException by definition in Cloneable
      */
     @Override

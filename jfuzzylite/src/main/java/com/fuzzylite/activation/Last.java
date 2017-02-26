@@ -118,12 +118,11 @@ public class Last extends Activation {
             rule.deactivate();
 
             if (rule.isLoaded()) {
-                double activationDegree = rule.computeActivationDegree(conjunction, disjunction);
-                rule.setActivationDegree(activationDegree);
-                if (activated < getNumberOfRules()
+                double activationDegree = rule.activateWith(conjunction, disjunction);
+                if (activated < numberOfRules
                         && Op.isGt(activationDegree, 0.0)
-                        && Op.isGE(activationDegree, getThreshold())) {
-                    rule.activate(activationDegree, implication);
+                        && Op.isGE(activationDegree, threshold)) {
+                    rule.fire(implication);
                     ++activated;
                 }
             }

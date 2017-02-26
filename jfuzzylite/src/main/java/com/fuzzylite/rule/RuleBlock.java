@@ -17,17 +17,13 @@
 package com.fuzzylite.rule;
 
 import com.fuzzylite.Engine;
-import com.fuzzylite.FuzzyLite;
 import com.fuzzylite.Op;
 import com.fuzzylite.activation.Activation;
-import com.fuzzylite.activation.General;
 import com.fuzzylite.imex.FllExporter;
 import com.fuzzylite.norm.SNorm;
 import com.fuzzylite.norm.TNorm;
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
-import java.util.logging.Level;
 
 /**
  The RuleBlock class contains a set of Rule%s and fuzzy logic operators required
@@ -42,13 +38,13 @@ import java.util.logging.Level;
  */
 public class RuleBlock implements Op.Cloneable {
 
+    private boolean enabled;
     private String name;
     private String description;
     private TNorm conjunction;
     private SNorm disjunction;
     private TNorm implication;
     private Activation activation;
-    private boolean enabled;
     private List<Rule> rules;
 
     public RuleBlock() {
@@ -56,38 +52,9 @@ public class RuleBlock implements Op.Cloneable {
     }
 
     public RuleBlock(String name) {
-        this(name, null, null, null, new General());
-    }
-
-    /**
-     @deprecated: use the constructor that adds the Activation parameter
-     */
-    @Deprecated
-    public RuleBlock(TNorm conjunction, SNorm disjunction, TNorm implication) {
-        this("", conjunction, disjunction, implication, new General());
-    }
-
-    /**
-     @deprecated: use the constructor that adds the Activation parameter
-     */
-    @Deprecated
-    public RuleBlock(String name, TNorm conjunction, SNorm disjunction, TNorm implication) {
-        //@todo: replace General activation to null in version 7.0
-        this(name, conjunction, disjunction, implication, new General());
-    }
-
-    public RuleBlock(TNorm conjunction, SNorm disjunction, TNorm implication, Activation activation) {
-        this("", conjunction, disjunction, implication, activation);
-    }
-
-    public RuleBlock(String name, TNorm conjunction, SNorm disjunction, TNorm implication, Activation activation) {
+        this.enabled = true;
         this.name = name;
         this.description = "";
-        this.conjunction = conjunction;
-        this.disjunction = disjunction;
-        this.implication = implication;
-        this.activation = activation;
-        this.enabled = true;
         this.rules = new ArrayList<Rule>();
     }
 
@@ -95,15 +62,9 @@ public class RuleBlock implements Op.Cloneable {
      Activates the rule block
      */
     public void activate() {
-        if (FuzzyLite.isDebugging()) {
-            FuzzyLite.logger().log(Level.FINE, "Activating rule block {0}", getName());
-        }
-        //@todo: remove check in version 7.0
         if (activation == null) {
-            activation = new General();
-        }
-        if (FuzzyLite.isDebugging()) {
-            FuzzyLite.logger().log(Level.FINE, "Activation: {0}", getActivation().getClass().getSimpleName());
+            throw new RuntimeException("[rule block error] "
+                    + "the rule block <" + name + "> requires an activation method");
         }
         activation.activate(this);
     }
@@ -123,7 +84,7 @@ public class RuleBlock implements Op.Cloneable {
      @param engine is the engine where this rule block is registered
      */
     public void loadRules(Engine engine) {
-        List<String> exceptions = new LinkedList<String>();
+        List<String> exceptions = new ArrayList<String>();
         for (Rule rule : this.rules) {
             if (rule.isLoaded()) {
                 rule.unload();

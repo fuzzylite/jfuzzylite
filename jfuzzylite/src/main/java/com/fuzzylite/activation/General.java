@@ -78,8 +78,8 @@ public class General extends Activation {
         for (Rule rule : ruleBlock.getRules()) {
             rule.deactivate();
             if (rule.isLoaded()) {
-                double activationDegree = rule.computeActivationDegree(conjunction, disjunction);
-                rule.activate(activationDegree, implication);
+                rule.activateWith(conjunction, disjunction);
+                rule.fire(implication);
             }
         }
     }

@@ -29,7 +29,6 @@ import java.util.logging.Level;
 
 /**
  The First class is a RuleBlock Activation method that activates the first
-
  @f$n@f$ rules whose activation degrees are greater than or equal to the given
  threshold. The rules are iterated in the order they were added to the rule
  block.
@@ -114,12 +113,11 @@ public class First extends Activation {
             rule.deactivate();
 
             if (rule.isLoaded()) {
-                double activationDegree = rule.computeActivationDegree(conjunction, disjunction);
-                rule.setActivationDegree(activationDegree);
-                if (activated < getNumberOfRules()
+                double activationDegree = rule.activateWith(conjunction, disjunction);
+                if (activated < numberOfRules
                         && Op.isGt(activationDegree, 0.0)
-                        && Op.isGE(activationDegree, getThreshold())) {
-                    rule.activate(activationDegree, implication);
+                        && Op.isGE(activationDegree, threshold)) {
+                    rule.fire(implication);
                     ++activated;
                 }
             }
