@@ -135,6 +135,8 @@ public class CppExporter extends Exporter {
         result.append(fl("Engine* ")).append("engine = new ").append(fl("Engine;\n"));
         result.append(String.format(
                 "engine->setName(\"%s\");\n", engine.getName()));
+        result.append(String.format(
+                "engine->setDescription(\"%s\");\n", engine.getDescription()));
 
         result.append("\n");
 

@@ -86,6 +86,8 @@ public class JavaExporter extends Exporter {
         result.append("Engine engine = new Engine();\n");
         result.append(String.format(
                 "engine.setName(\"%s\");\n", engine.getName()));
+        result.append(String.format(
+                "engine.setDescription(\"%s\");\n", engine.getDescription()));
 
         result.append("\n");
 
