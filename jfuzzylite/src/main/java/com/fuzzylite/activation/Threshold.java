@@ -245,7 +245,7 @@ public class Threshold extends Activation {
             if (rule.isLoaded()) {
                 double activationDegree = rule.activateWith(conjunction, disjunction);
                 if (activatesWith(activationDegree)) {
-                    rule.fire(implication);
+                    rule.trigger(implication);
                 }
             }
         }

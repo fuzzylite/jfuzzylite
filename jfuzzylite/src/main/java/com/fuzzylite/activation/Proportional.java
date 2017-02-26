@@ -91,7 +91,7 @@ public class Proportional extends Activation {
         for (Rule rule : rulesToActivate) {
             double activationDegree = rule.getActivationDegree() / sumActivationDegrees;
             rule.setActivationDegree(activationDegree);
-            rule.fire(implication);
+            rule.trigger(implication);
         }
     }
 

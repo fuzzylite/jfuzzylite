@@ -87,7 +87,7 @@ public class Rule implements Op.Cloneable {
     private String text;
     private double weight;
     private double activationDegree;
-    private boolean fired;
+    private boolean triggered;
     private Antecedent antecedent;
     private Consequent consequent;
 
@@ -104,13 +104,13 @@ public class Rule implements Op.Cloneable {
         this.text = text;
         this.weight = weight;
         this.activationDegree = 0.0;
-        this.fired = false;
+        this.triggered = false;
         this.antecedent = new Antecedent();
         this.consequent = new Consequent();
     }
 
     /**
-     Gets whether the rule is enabled. An enabled rule will be fired, whereas a
+     Gets whether the rule is enabled. An enabled rule will be triggered, whereas a
      disabled rule will not.
 
      @return whether the rule is enabled
@@ -120,7 +120,7 @@ public class Rule implements Op.Cloneable {
     }
 
     /**
-     Sets whether the rule is enabled. An enabled rule will be fired, whereas a
+     Sets whether the rule is enabled. An enabled rule will be triggered, whereas a
      disabled rule will not.
 
      @param enabled determines whether the rule is enabled
@@ -224,7 +224,7 @@ public class Rule implements Op.Cloneable {
      */
     public void deactivate() {
         this.activationDegree = 0.0;
-        this.fired = false;
+        this.triggered = false;
     }
 
     /**
@@ -244,12 +244,12 @@ public class Rule implements Op.Cloneable {
     }
 
     /**
-     Fires the rule (if the rule is enabled) using the given implication
-     operator and the underlying activation degree
+     Triggers the rule's implication (if the rule is enabled) using the given
+     implication operator and the underlying activation degree
 
      @param implication is the implication operator
      */
-    public void fire(TNorm implication) {
+    public void trigger(TNorm implication) {
         if (!isLoaded()) {
             throw new RuntimeException(String.format("[rule error] the following rule is not loaded: %s", text));
         }
@@ -259,17 +259,17 @@ public class Rule implements Op.Cloneable {
                         new String[]{Op.str(activationDegree), toString()});
             }
             consequent.modify(activationDegree, implication);
-            fired = true;
+            triggered = true;
         }
     }
 
     /**
-     Indicates whether the rule was fired
+     Indicates whether the rule's implication was triggered
 
-     @return whether the rule was fired
+     @return whether the rule's implication was triggered
      */
-    public boolean isFired() {
-        return fired;
+    public boolean isTriggered() {
+        return triggered;
     }
 
     /**

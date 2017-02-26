@@ -150,7 +150,7 @@ public class Engine implements Op.Cloneable {
      of the rules
      @param defuzzifier is the operator to transform the aggregated implications
      into a single scalar value
-     @param activation is the activation method to activate and fire the rule
+     @param activation is the activation method to activate and trigger the rule
      blocks
      */
     public void configure(TNorm conjunction, SNorm disjunction,

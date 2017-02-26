@@ -117,7 +117,7 @@ public class First extends Activation {
                 if (activated < numberOfRules
                         && Op.isGt(activationDegree, 0.0)
                         && Op.isGE(activationDegree, threshold)) {
-                    rule.fire(implication);
+                    rule.trigger(implication);
                     ++activated;
                 }
             }

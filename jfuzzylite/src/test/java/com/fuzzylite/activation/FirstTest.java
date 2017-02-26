@@ -66,10 +66,10 @@ public class FirstTest {
 
         List<Rule> rules = engine.getRuleBlock(0).getRules();
         Assert.assertThat("First rule was not activated",
-                rules.get(0).isFired(), is(false));
+                rules.get(0).isTriggered(), is(false));
         Assert.assertThat("Second rule was activated",
-                rules.get(1).isFired(), is(true));
+                rules.get(1).isTriggered(), is(true));
         Assert.assertThat("Third rule was not activated",
-                rules.get(2).isFired(), is(false));
+                rules.get(2).isTriggered(), is(false));
     }
 }

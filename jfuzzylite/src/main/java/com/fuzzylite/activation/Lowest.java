@@ -124,7 +124,7 @@ public class Lowest extends Activation {
 
         int activated = 0;
         while (!rulesToActivate.isEmpty() && activated++ < numberOfRules) {
-            rulesToActivate.poll().fire(implication);
+            rulesToActivate.poll().trigger(implication);
         }
     }
 
