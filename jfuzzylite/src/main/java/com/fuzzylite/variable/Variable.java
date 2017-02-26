@@ -335,9 +335,9 @@ public class Variable implements Op.Cloneable {
     }
 
     /**
-     Ascendantly is a comparator to ascendantly sort pairs of terms by centroid
+     Ascending is a comparator to sort ascending pairs of terms by centroid
      */
-    public static class Ascendantly implements Comparator<Op.Pair<Term, Double>> {
+    public static class Ascending implements Comparator<Op.Pair<Term, Double>> {
 
         @Override
         public int compare(Op.Pair<Term, Double> a, Op.Pair<Term, Double> b) {
@@ -352,7 +352,7 @@ public class Variable implements Op.Cloneable {
     public void sort() {
         PriorityQueue<Op.Pair<Term, Double>> termCentroids
                 = new PriorityQueue<Op.Pair<Term, Double>>(
-                        terms.size(), new Ascendantly());
+                        terms.size(), new Ascending());
         Defuzzifier defuzzifier = new Centroid();
         for (Term term : terms) {
             double centroid;
