@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.fuzzylite</groupId>
     <artifactId>jfuzzylite</artifactId>
@@ -16,14 +18,12 @@
 
     <name>jfuzzylite</name>
     <description>
-        jfuzzylite(TM) is a cross-platform, free, and open-source fuzzy
-        logic control library programmed entirely in Java. Its goal is
-        to allow you to easily create fuzzy logic controllers in a few
-        steps utilizing object-oriented programming without requiring
-        any third-party libraries.
+        jfuzzylite(TM) is a free and open-source fuzzy logic control library
+        programmed in Java. The goal of jfuzzylite is to easily design and
+        efficiently operate fuzzy logic controllers following an object-oriented
+        model without relying on external libraries.
 
-        jfuzzylite is the equivalent of the fuzzylite(R) library, but for
-        Java and Android platforms.
+        jfuzzylite is the Java equivalent of the fuzzylite(R) library.
 
         jfuzzylite is a trademark of FuzzyLite Limited.
         fuzzylite is a registered trademark of FuzzyLite Limited.
@@ -65,7 +65,7 @@
             </roles>
             <timezone>New Zealand/Wellington</timezone>
             <properties>
-                <picUrl>http://www.fuzzylite.com/icon/fuzzylite.png</picUrl>
+                <picUrl>http://www.fuzzylite.com/icon/me.png</picUrl>
             </properties>
         </developer>
     </developers>
@@ -93,7 +93,7 @@
                             <Title>jfuzzylite</Title>
                             <Version>6.0</Version>
                             <Description>a fuzzy logic control library in Java</Description>
-                            <URL>http://www.fuzzylite.com</URL>
+                            <URL>http://www.fuzzylite.com/</URL>
                             <Author>Juan Rada-Vilela, Ph.D.</Author>
                             <Main-Class>com.fuzzylite.Console</Main-Class>
                         </manifestEntries>
