@@ -563,7 +563,7 @@ public class Engine implements Op.Cloneable {
             return Type.Hybrid;
         }
 
-        reason.append("- There are output variables without a defuzzifier");
+        reason.append("- One or more output variables do not have a defuzzifier");
         return Type.Unknown;
     }
 
