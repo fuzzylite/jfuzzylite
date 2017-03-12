@@ -559,7 +559,7 @@ public class Engine implements Op.Cloneable {
             hybrid &= outputVariable.getDefuzzifier() != null;
         }
         if (hybrid) {
-            reason.append("- Output variables have different defuzzifiers");
+            reason.append("- Output variables have different types of defuzzifiers");
             return Type.Hybrid;
         }
 

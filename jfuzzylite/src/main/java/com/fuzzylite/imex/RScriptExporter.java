@@ -379,7 +379,7 @@ public class RScriptExporter extends Exporter {
         writer.append("engine.name = \"" + engine.getName() + "\"\n");
         if (!Op.isEmpty(engine.getDescription())) {
             writer.append(String.format(
-                    "engine.description = \"%s\"", engine.getDescription()));
+                    "engine.description = \"%s\"\n", engine.getDescription()));
         }
         writer.append("engine.fll = \"" + new FllExporter().toString(engine) + "\"\n\n");
     }
