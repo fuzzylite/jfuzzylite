@@ -19,6 +19,7 @@ package com.fuzzylite.rule;
 import com.fuzzylite.Engine;
 import com.fuzzylite.Op;
 import com.fuzzylite.activation.Activation;
+import com.fuzzylite.activation.General;
 import com.fuzzylite.imex.FllExporter;
 import com.fuzzylite.norm.SNorm;
 import com.fuzzylite.norm.TNorm;
@@ -63,8 +64,7 @@ public class RuleBlock implements Op.Cloneable {
      */
     public void activate() {
         if (activation == null) {
-            throw new RuntimeException("[rule block error] "
-                    + "the rule block <" + name + "> requires an activation method");
+            activation = new General();
         }
         activation.activate(this);
     }

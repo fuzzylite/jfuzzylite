@@ -17,6 +17,7 @@
 package com.fuzzylite;
 
 import com.fuzzylite.activation.Activation;
+import com.fuzzylite.activation.General;
 import com.fuzzylite.defuzzifier.Defuzzifier;
 import com.fuzzylite.defuzzifier.IntegralDefuzzifier;
 import com.fuzzylite.defuzzifier.WeightedDefuzzifier;
@@ -161,7 +162,7 @@ public class Engine implements Op.Cloneable {
                 ruleblock.setConjunction(conjunction == null ? null : conjunction.clone());
                 ruleblock.setDisjunction(disjunction == null ? null : disjunction.clone());
                 ruleblock.setImplication(implication == null ? null : implication.clone());
-                ruleblock.setActivation(activation == null ? null : activation.clone());
+                ruleblock.setActivation(activation == null ? new General() : activation.clone());
             }
             for (OutputVariable outputVariable : this.outputVariables) {
                 outputVariable.setDefuzzifier(defuzzifier == null ? null : defuzzifier.clone());

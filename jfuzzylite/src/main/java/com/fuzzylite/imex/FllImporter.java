@@ -21,6 +21,7 @@ import com.fuzzylite.FuzzyLite;
 import com.fuzzylite.Op;
 import com.fuzzylite.Op.Pair;
 import com.fuzzylite.activation.Activation;
+import com.fuzzylite.activation.General;
 import com.fuzzylite.defuzzifier.Defuzzifier;
 import com.fuzzylite.defuzzifier.IntegralDefuzzifier;
 import com.fuzzylite.defuzzifier.WeightedDefuzzifier;
@@ -280,6 +281,9 @@ public class FllImporter extends Importer {
                         + "key <" + keyValue.getFirst() + "> " + "not recognized in pair <"
                         + Op.join(":", keyValue.getFirst(), keyValue.getSecond()) + ">");
             }
+        }
+        if (ruleBlock.getActivation() == null){
+            ruleBlock.setActivation(new General());
         }
         reader.close();
     }

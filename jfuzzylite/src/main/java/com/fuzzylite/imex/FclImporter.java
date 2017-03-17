@@ -19,6 +19,7 @@ package com.fuzzylite.imex;
 import com.fuzzylite.Engine;
 import com.fuzzylite.Op;
 import com.fuzzylite.Op.Pair;
+import com.fuzzylite.activation.General;
 import com.fuzzylite.defuzzifier.Bisector;
 import com.fuzzylite.defuzzifier.Centroid;
 import com.fuzzylite.defuzzifier.Defuzzifier;
@@ -306,6 +307,7 @@ public class FclImporter extends Importer {
             name = line.substring(index + 1); //does not need to be valid name
         }
         RuleBlock ruleBlock = new RuleBlock(name);
+        ruleBlock.setActivation(new General());
         engine.addRuleBlock(ruleBlock);
 
         while ((line = reader.readLine()) != null) {
