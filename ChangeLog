@@ -1,152 +1,191 @@
 Version 6.0
-* License changed to the FuzzyLite License.
-* Changed Maven build to produce binary jar only upon package
-* Other packages can be built using `mvn clean package source:jar javadoc:jar`
-* Renamed Accumulated to Aggregated, and Accumulated::[set|get]Accumulation() to Aggregated::[set|get]Aggregation()
-* Renamed RuleBlock::[set|get]Activation() to RuleBlock::[set|get]Implication()
-* Refactored [Input|Output]Variable::[get|set][Input|Output]Value() to Variable::[get|set]Value()
-* Refactored OutputVariable::[is|set]LockOutputValueInRange() to  Variable::[is|set]LockValueInRange()
-* Renamed OutputVariable::[is|set]LockPreviousOutputValue() to  OutputVariable::[is|set]LockPreviousValue()
-* Improved OutputVariable::defuzzify() to operate correctly handling locks when exceptions occur.
-* Updated [Java|Cpp][Importer|Exporter] to reflect code changes.
-* New Binary term
-* Refactored static Term::updateReference(Engine) to class method to be overriden as necessary
-* Renamed Rule::activationDegree() to Rule::computeActivationDegree()
-* Added Rule::[get|set]activationDegree() and Rule::[is|set]Activated()
-* Removed Hedges from Rule.
-* RuleBlocks utilize new Activation methods to activate rules
-* General is the traditional Activation method, but there are seven to choose from.
-* Created a ActivationFactory to automatically incorporate new Activation methods
-* Updated Fll[Importer|Exporter] to utilize the new definitions, namely Implementation (formerly Activation), Aggregation (formerly Accumulation), and Activation methods, while maintaining backward compatibility for the FLL version 5.0
-* Added UnboundedSum (a+b) SNorm to refer to [Matlab|Octave]'s "sum" aggregation operator, as opposed of the "probor" disjunction operator
-* Updated Fis[Importer|Exporter] to utilize UnboundedSum (sum) and AlgebraicSum (probor) accordingly
-* Renamed CppExporter::[set|is]PrefixNamespace() to CppExporter::[set|is]NamespacePrefixed()
-* Added [Cpp|Java]Exporter::[set|is]VariableNameExported() to export variables by name instead of generic type.
-* Updated [Fis|Fcl]Exporter to prevent from exporting incompatible keywords with their respective languages
-* Simplified Weighted[Average|Sum] to perform typical Takagi-Sugeno regardless of implication and aggregation
-* Created Weighted[Average|Sum]Custom to utilize implication and aggregation as operators to compute weighted [average|sum].
-* Renamed CppExporter::[set|is]PrefixNamespace() to CppExporter::[set|is]UsingNamespace()
-* Renamed [Java|Cpp]Exporter::[set|is]VariableNamesExported() to [Java|Cpp]Exporter::[set|is]UsingVariableNames()
-* Added [Hedge|TNorm|SNorm]Function to customise them with an inner Function term.
+===========
+
+Overview
+--------
+* The FuzzyLite Libraries, namely fuzzylite and jfuzzylite, both in version 6.0, are licensed under the GNU General Public License version 3.
+
+* Important performance improvements.
+
+* Refactored the following names for the operation of engines: from activation operator to implication operator, from accumulation operator to aggregation operator.
+
+* Renamed the term `Accumulated` to `Aggregated`.
+
+* New activation methods decouple the activation of rules from the rule block and provide different methods for activating rules (see Activation Methods).
+
+* New class `ActivationFactory` provides a factory of activation methods.
+
+* New class `Benchmark` to evaluate the performance and accuracy of engines.
+
+* New class `RScriptExporter` to export the surfaces of an engine using the `ggplot2` library.
+
+* New class `Binary` term for binary edges.
+
+* New `UnboundedSum` S-Norm in `SNormFactory`.
+
+* New classes `SNormFunction` and `TNormFunction` to create custom functions on any two values using the `Function` class.
+
+* Added description strings to `Engine`, `Variable` and `RuleBlock`
+
+* Privatized previously protected members of classes and subclasses of `Term`, `Variable`, `Rule`, `Defuzzifier`, `[Cloning|Construction]Factory`, `Importer`, `Exporter`, amongst others.
+
+* Added some unit tests and support for future unit tests.
+
+* Bug fixes.
+
+* New example of hybrid engines.
+
+* New example on obstacle avoidance for Mamdani, Takagi-Sugeno, and Hybrid engines.
+
+* New R scripts for each example and its respective surfaces in `pdf` formats.
 
 
-Version 5.0
-* Added deductive type of Engine with Engine::type()
-* Modified FclExporter and FisExporter to provide backward compatibility with FCL and FIS formats
-* Updated the FIS and FCL examples for backward compatibility
-* Included the original example files
-* Updated FLD examples produced from the engines of the original examples
-* Fixed some original examples of takagi-sugeno to use AlgebraicProduct activation
-* FldExporter no longer restarts the engine
-* FldExporter exports from a custom input dataset
-* Console includes option to read custom input dataset from file
-* Console provides more information about its usage
-* Renamed methods FldExporter::toWriter() to FldExporter::write()
-* Removed variable and methods for property FldExporter::maximum
-* Accuracy improvements importing fis files with large number of decimals
-* Updated FLD examples to reflect accuracy
-* Changed operation for multiple hedges to operate from last to first
-* Fixed OutputVariable to store previous valid output value regardless of locks
-* New OutputVariable::(get|set)OutputValue to store value from defuzzification
-* Changed OutputVariable::defuzzify to store its output value
-* Changed return type of scalar OutputVariable::defuzzify to void OutputVariable::defuzzify
-* Renamed OutputVariable::(get|set)LastValidOutput to OutputVariable::(get|set)LastValidOutputValue
-* Removed OutputVariable::defuzzifyNoLocks
-* Added InputVariable::fuzzyInputValue and OutputVariable::fuzzyOutputValue
-* Removed defaults in Engine::configure
-* Added Engine::configure without conjuntion and disjuntion
-* Added parameter string to Engine::type
-* Changed Engine::isReady
-* Correct handling of integral defuzzification with min|max=NaN|Inf
-* Added method Rule::isLoaded to determine whether a rule is to be activated
-* Added method Rule::unload to allow existence of invalid rules
-* Added methods Engine::set((Input|Output)Variables), Engine::setRuleBlocks
-* Added method RuleBlock::setRules
-* Changed visibility of Rule::setText to public
-* Added method Rule::load(Engine)
-* Renamed term Thresholded to Activated
-* Renamed Thresholded::(set|get)Threshold to Activated::(set|get)Degree
-* Removed variable Rule::FL_ASSIGNS="=" and method Rule::assignsKeyword()
-* Modified original takagi-sugeno examples to reflect proper activation and accumulation
-* Moved Engine::_hedges (and methods) to Rule::_hedges
-* Renamed Antecedent::(get|set)Root to Antecedent::(get|set)Expression
-* Added (Antecedent|Consequent)::(get|set)Text
-* Added (Antecedent|Consequent)::load|unload
-* Added an M-file to compare output values of fuzzylite engines with Matlab
-* Removed const from Norms in RuleBlock::(get|set)(Activation|Conjunction|Disjunction)
-* Deleted method Op::repeat
-* Added built-in functions gt,lt,ge,le,eq and operator !
-* Renamed Term::copy to Term::clone in every Term
-* Merged Function::Operator and Function::BuiltInFunction into Function::Element
-* Created FunctionFactory for Function::Elements
-* IMPORTANT: Changed starting precedence of Function::Element::Operators to 10 (refer to FunctionFactory)
-* Renamed Factory<T>::(register|deregister)Class to Factory<T>::(register|deregister)Constructor
-* Renamed Factory<T> to ConstructionFactory<T>
-* Created CloningFactory<T>
-* Moved functions and operators of term Function to a FunctionFactory
-* Added clone methods to Defuzzifiers, Hedges, Norms, and Terms
-* Added methods Engine::set((Input|Output)Variable) and Engine::setRuleBlock()
-* Added method RuleBlock::reloadRules()
-* Changed Linear pointers to input variables for a pointer to Engine
-* Added support to compare infinity values with fl::Op::isEq and therefore other comparison operators
-* Parameters of all terms are set to fl::nan by default
-* Added methods Engine::get(Input|Output)Variables() and ::getRuleBlocks() to return mutable references
-* Added method Variable::getTerms() to return mutable reference
-* Added method RuleBlock::getRules() to return mutable reference
-* Added methods Ramp::direction() and Sigmoid::direction() to represent direction of slope
-* Added method Op::isFinite(x) to check x is not (nan or inf)
-* Changed Op::isEq(a,b) to return true if a = b = NaN
-* Added method Accumulated::getTerms() to return mutable reference
-* Changed visibility of Linear::coefficients to private
-* Added methods Linear::getCoefficients(), Linear::setCoefficients()
-* Removed public variables Discrete::x,y
-* Added in Discrete a class Pair, and changed signatures of methods and types of their parameters
-* Changed representation of Discrete::(x,y) from List<Double> to List<Pair>
-* Added methods Discrete::setXY(), Discrete::getXY(), to set and get new representation
-* Added methods Discrete::toPairs(List<Double>) and Discrete::toList(List<Pair>)
-* Added method Discrete::formatXY() to get pairs (x,y) nicely formatted
-* Linear term no longer throws exception when inputVariables != |coefficients|
-* Changed visibility of Function::root to private
-* Added method Function::getRoot() to return pointer to Function::root
-* Added option to prefix the namespace in CppExporter, by default it does not prefix
-* Added method OutputVariable::clear() to restart the output variable
-* Renamed variable OutputVariable::lastValidOutputValue to ::previousOutputValue
-* Renamed method OutputVariable::(get|set)LastValidOutputValue to ::(get|set)PreviousOutputValue
-* Renamed variable OutputVariable::lockOutputRange to ::lockOutputValueInRange
-* Renamed method OutputVariable::setLockOutputRange() to ::setLockOutputValueInRange
-* Renamed method OutputVariable::isLockingOutputRange() to ::isLockOutputValueInRange
-* Renamed variable OutputVariable::lockValidOutput to ::lockPreviousOutputValue
-* Renamed method OutputVariable::setLockValidOutput() to ::setLockPreviousOutputValue
-* Renamed method OutputVariable::isLockingValidOutput() to ::isLockPreviousOutputValue
-* Renamed FLL property 'lock-valid' to 'lock-previous'
-* Renamed FIS property 'LockValid' to 'LockPrevious'
-* Renamed FCL property 'LOCK: VALID' to 'LOCK: PREVIOUS'
-* Added method Engine::variables() to retrieve both Input and OutputVariables
-* Added method Term::updateReference(Term*, Engine*) to ensure Linear and Function terms to update references of engines
-* Added in Discrete a class Pair, and changed signatures of methods and types of their parameters
-* Added terms: Concave, Cosine and Spike
-* Renamed methods Triangle::(set|get)(A|B|C) to (set|get)(Vertex(A|B|C))
-* Renamed methods Trapezoid::(set|get)(A|B|C|D) to (set|get)(Vertex(A|B|C|D))
-* Removed method fuzzylite::configuration()
-* Renamed methods in (Fis|Fcl)Importers::extract* to ::parse*
-* Made defaultResolution a static property of IntegralDefuzzifiers
-* Added method Engine::type(name, reason) to show type and reason why type
-* Added method Engine::clone()
-* Added support for Tsukamoto with Concave terms
-* Changed Accumulated to take Activated terms instead of Terms
-* Deleted class Tsukamoto
-* Created class WeightedDefuzzifier from which Weighted(Average|Sum) derive with options: Automatic|TakagiSugeno|Tsukamoto
-* Added methods WeightedDefuzzifier::tsukamoto() and ::inferType()
-* Added benchmarks for fuzzylite in Linux
-* Created the FuzzyLite Interactive Console
-* Added basic rule chaining such that Output Variables can be utilized as antecedents
-* Added two examples for rule chaining: mamdani/Laundry.fll and mamdani/SimpleDimmerInverse.fll
-* Added Term::(get|set)Height and changed all terms accordingly
-* Renamed method Op::makeValidId to Op::validName, which now returns "unnamed" for empty strings.
-* Converted examples/original/*.fis to examples/original/*.fll
-* Removed Exception Specification from methods in Discrete, Linear and Function terms
-* Removed method Operation::toScalar(std::string, bool, scalar)
-* Added method Operation::toScalar(std::string) [throws Exception], and ::toScalar(std::string, scalar alternative) throw()
-* Added method ImEx::(from|to)File to import and export engines using files
-* WeightedAverage and WeightedSum without Activation operators have default behaviour, i.e., AlgebraicProduct
-* Changed default to fuzzylite::_macheps = 1e-6;
+Activation Method
+-----------------
+* New activation methods determine the activation of rules in a rule block. Specifically, the activation methods compute the activation degrees of the rules and the activation order of the rules.
+
+* Seven activation methods available: General, First, Last, Highest, Lowest, Proportional and Threshold.
+
+* If no activation method is supplied, an instance of General will be automatically set.
+
+* New class `General` activates every rule following the insertion order in the rule block.
+
+* New classes `First` and `Last` activate the first and last $n$ rules (following insertion order) whose activation degrees are greater than or equal to a given threshold.
+
+* New classes `Highest` and `Lowest` activate the first and last $n$ rules sorted (descending or ascending) by activation degree.
+
+* New class `Proportional` activates every rule with an activation degree proportional to the activation degrees of the other rules.
+
+* New class `Threshold` activates every rule that satisfies a given comparison operator and a given threshold.
+
+* New class `ActivationFactory`  provides a factory of activation methods.
+
+
+
+Defuzzifier
+-----------
+* Overall performance improvements
+* The new default resolution of integral defuzzifiers is 100 (from 200 in previous version)
+* Importantly simplified `WeightedAverage` and `WeightedSum` by not using the implication and aggregation operators.
+* New experimental classes  `WeightedAverageCustom` and `WeightedSumCustom` which use the implication and aggregation operators to compute the weighted averages and weighted sums, respectively.
+
+
+Factory
+-------
+* New class `ActivationFactory` to register activation methods.
+* New method `FactoryManager::activation()` to get the activation factory.
+* New `abs` function in `FunctionFactory` to compute the absolute value of a number.
+* New `UnboundedSum` S-Norm in `SNormFactory`.
+
+Hedge
+-----
+* Added final identifiers to `Hedge` classes (except `Any`).
+
+
+
+Importer and Exporter
+---------------------
+* New `RScriptExporter` generates an R script that uses the `ggplot2` library to produce the surfaces of an engine for each pair of input variables on each output variable.
+
+* Updated `Fll[Importer|Exporter]` to import and export the newly named properties `implication` and `aggregation` (previously known as `activation` and `accumulation`). However, the `FllImporter` has backward compatibility with the previous property names.
+
+* In `Fll[Importer|Exporter]`, added `lock-range` property of input variables,  `activation` property for activation methods in rule blocks, and `description` property to `[Input|Output]Variable` and `RuleBlock`.
+
+* Added default option to generate C++ and Java code using the actual names of the input variables, output variables, and rule blocks, instead of the generic  `[input|output]Variable` and `ruleBlock` names.
+
+* Updated [Cpp|Java][Import|Export] to generate code using the `description` of an engine if available, the `implication` instead of the `activation`, and the `aggregation` instead of the `accumulation`.
+
+* Removed compatibility between `[Fcl|Fis]Exporter` and `fuzzylite`. In previous versions, these exporters produced additional tags that were only relevant to `fuzzylite`, so that an engine written in these languages could also support the features in `fuzzylite`. However, in doing so, Matlab, Octave and JFuzzyLogic would fail to import the engines written in their own languages because they would not recognize the `fuzzylite` features. Hence, in order to generate code compatible with Matlab, Octave, and JFuzzyLogic, the `fuzzylite` features are removed from the code. 
+
+* Refactored methods [Cpp|Java|Fll|Fis|Fcl]Exporter::toString([S|T]Norm) to take `::toString(Norm)`.
+
+* Renamed methods FisImporter::extract[SNorm|TNorm|Defuzzifier]() to FisImporter::translate[SNorm|TNorm|Defuzzifier]()
+
+
+
+
+Norms
+-----
+* New class `UnboundedSum` to compute sum between any two values and hence reflect Matlab's and Octave's `sum` aggregation operator.
+* New classes `SNormFunction` and `TNormFunction` to create custom functions on any two values using the `Function` class.
+* Fixed bug computing the `NormalizedSum` S-Norm.
+
+
+Rule
+----
+* Added properties `double activationDegree`, `boolean triggered` and `boolean enabled` to a `Rule`. The `activationDegree` property stores the activation degree of the rule in order to avoid recomputing it when requesting it. The `triggered` property indicates whether the rule was triggered (i.e., whether the antecedent modified the consequent). The `enabled` property determines whether the rule can be triggered (by default, a rule is always enabled unless programmatically indicated otherwise).
+
+* Decoupled computing the activation degree and triggering the rule. Previously, the activation degree of a rule was computed and triggered at the same time using `Rule::activate(TNorm conjunction, SNorm disjunction, TNorm implication)`. Currently, there are two methods: `double activateWith(TNorm conjunction, SNorm disjunction)`, which computes, stores and returns the activation degree of the rule; and `trigger(TNorm implication)`, which, if the rule is enabled and the activation degree is greater than zero, then the rule is triggered to modify the consequent.
+
+* Renamed `RuleBlock::activation` operator to `RuleBlock::implication` operator, and so its respective getters and setters.
+* Added `RuleBlock::activation` method and respective getters and setters.
+* In `RuleBlock::activate()`, if there is no activation method, the `General` activation method is automatically set in order to have backward compatibility.
+
+
+* Added identifier `final` to classes `Proposition` and `Operator`.
+
+Term
+----
+* Performance improvements.
+* `Discrete` term uses binary search instead of linear search, hence significantly improving performance.
+* `Discrete` term can create a `Discrete` term from any other term.
+* New `Binary` edge term.
+* Added method `bool Term::isMonotonic()` to determine whether the term is monotonic (returns true only for `Concave`, `Ramp`, `Sigmoid`, `SShape`, and `ZShape`).
+* Refactored static method `WeightedDefuzzifier::tsukamoto()` into non-static method `Term::tsukamoto()`, which is overriden by each of the terms that can be used for `tsukamoto` controllers.
+* Privatized `Term::name` and the properties of each subclass of `Term`.
+* Renamed `Activated::activation` operator to `Activated::implication` and its respective getters and setters.
+* Renamed `Accumulated` term to `Aggregated` term, and its `accumulation` operator to `aggregation` operator including getters and setters.
+* For performance improvements, terms of `Aggregated` term are copies of objects in stack memory rather than pointers to objects in heap memory.
+* Refactored static `Term::updateReference()` to non-static being overrided by `Linear`, `Function`.
+* Added enum `[Ramp|Sigmoid]::Direction` to specify the direction of the term.
+* Added `Term::clone()` method to create a copy of any term.
+
+* Fixed bug in `Function` term. Bug: given a formula = "tan(y)" and a map["y"] = 1.0, and executing `Function::load(formula)`, then the map of variables is reset because `load()` calls `unload()` first, causing the deregistration of variable `y`. Solution: Removed method `unload()` from `load()`, thereby causing future `load()` not to reset variables.
+* Fixed bug in `Function` when enclosing variable in double parenthesis.
+
+
+
+Variable
+--------
+* Refactored `[Input|Output]Variable::[get|set][Input|Output]Value()` to a single value in `Variable::[get|set]Value()`.
+* Refactored `OutputVariable::[is|set]LockedOutputValueInRange()` to its parent `Variable::[is|set]LockValueInRange()`.
+* Added option to lock value in range to input variables by refactoring `OutputVariable::lockValueInRange` to `Variable::lockValueInRange`.
+* Renamed `OutputVariable::[is|set]LockedPreviousValue()` to `OutputVariable::[is|set]LockPreviousValue()`.
+* Added wrapping method `OutputVariable::[get|set]Aggregation()`.
+* For performance improvements, added enum `Variable::Type` and methods `Variable::type()` to indicate whether the variable is of `Type::InputVariable` or `Type::OutputVariable`. Thus, it is no longer necessary to `instanceof` variables to find out whether they are input or output variables.
+
+
+
+Benchmark
+---------
+* Benchmark the time it takes your engine to perform a given number of evaluations over a given number of independent runs.
+* Measure the accuracy of the engine using the mean squared error between the obtained values and the expected values.
+* Export the benchmark results to text.
+
+Console
+-------
+* Benchmark engines from the FuzzyLite Console
+* Hybrid example in Console
+
+Engine
+------
+* Description string for Engine
+* Changed signature of `::configure(TNorm conjunction, SNorm disjunction, TNorm activation, SNorm accumulation, int resolution)` to `::configure(TNorm conjunction, SNorm  SNorm disjunction, TNorm implication, SNorm aggregation, Activation activation)`, where `implication` and `aggregation` are better names for activation and accumulation (respectively), and the `activation` refers to an activation method (see Activation Methods)
+
+
+FuzzyLite
+---------
+* Renamed fuzzylite::debug() to fuzzylite::isDebugging()
+* Renamed fuzzylite::logging() to fuzzylite::isLogging()
+
+
+Examples
+--------
+* New example of hybrid engines.
+* New example on obstacle avoidance for Mamdani, Takagi-Sugeno, and Hybrid engines.
+* New R scripts for each example and its respective surfaces in `pdf` formats.
+* Updated examples to use the new properties  `InputVariable::lock-range`, `Engine::description`, `[Input|Output]Variable::description`, `RuleBlock::description`, `RuleBlock::implication`, `RuleBlock::activation`, and `OutputVariable::aggregation`.
+* Updated C++ and Java examples to reflect variable names instead of generic names.
+
+
+
