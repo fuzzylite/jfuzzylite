@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.fuzzylite</groupId>
     <artifactId>examples</artifactId>
-    <version>5.0</version>
+    <version>6.0</version>
     <packaging>jar</packaging>
     <licenses>
         <license>
@@ -17,11 +17,11 @@
     <description>
         Examples of jfuzzylite™
     </description>
-    <url>http://www.fuzzylite.com/java</url>
+    <url>http://www.fuzzylite.com/java/</url>
 
     <organization>
-        <name>FuzzyLite Ltd</name>
-        <url>http://www.fuzzylite.com</url>
+        <name>FuzzyLite Limited</name>
+        <url>http://www.fuzzylite.com/</url>
     </organization>
 
     <scm>
@@ -40,7 +40,7 @@
             <organization>FuzzyLite Ltd</organization>
             <organizationUrl>http://www.fuzzylite.com/</organizationUrl>
             <roles>
-                <role>Chief Executive Officer</role>
+                <role>Founder</role>
                 <role>Software Architect</role>
                 <role>Software Engineer</role>
             </roles>
@@ -63,7 +63,7 @@
         <dependency>
             <groupId>com.fuzzylite</groupId>
             <artifactId>jfuzzylite</artifactId>
-            <version>5.0.1</version>
+            <version>latest</version>
             <scope>compile</scope>
         </dependency>
     </dependencies>

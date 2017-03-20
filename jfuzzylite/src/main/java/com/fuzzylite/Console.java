@@ -736,6 +736,8 @@ public class Console {
         examples.add("mamdani/AllTerms");
         examples.add("mamdani/SimpleDimmer");
         examples.add("mamdani/Laundry");
+        examples.add("mamdani/ObstacleAvoidance");
+        examples.add("mamdani/SimpleDimmerChained");
         examples.add("mamdani/SimpleDimmerInverse");
         examples.add("mamdani/matlab/mam21");
         examples.add("mamdani/matlab/mam22");
@@ -747,6 +749,7 @@ public class Console {
         examples.add("mamdani/octave/investment_portfolio");
         examples.add("mamdani/octave/mamdani_tip_calculator");
         examples.add("takagi-sugeno/approximation");
+        examples.add("takagi-sugeno/ObstacleAvoidance");
         examples.add("takagi-sugeno/SimpleDimmer");
         examples.add("takagi-sugeno/matlab/fpeaks");
         examples.add("takagi-sugeno/matlab/invkine1");
@@ -768,6 +771,7 @@ public class Console {
         examples.add("takagi-sugeno/octave/sugeno_tip_calculator");
         examples.add("tsukamoto/tsukamoto");
         examples.add("hybrid/tipper");
+        examples.add("hybrid/ObstacleAvoidance");
 
         Importer importer;
         if ("fll".equals(from)) {
@@ -856,12 +860,12 @@ public class Console {
                 target = new BufferedWriter(new OutputStreamWriter(
                         new FileOutputStream(outputFile), FuzzyLite.UTF_8));
                 for (Pair<Exporter, Importer> imex : tests) {
-                    if (examples.get(i).contains("Laundry") || examples.get(i).contains("SimpleDimmerInverse")) {
-                        if (!(imex.getSecond() instanceof FllImporter)) {
-                            continue;
-                        }
-                    }
-                    if (examples.get(i).contains("hybrid")) {
+                    String example = examples.get(i);
+                    if ("mamdani/Laundry".equals(example)
+                            || "mamdani/SimpleDimmerInverse".equals(example)
+                            || "mamdani/SimpleDimmerChained".equals(example)
+                            || "hybrid/tipper".equals(example)
+                            || "hybrid/ObstacleAvoidance".equals(example)) {
                         if (imex.getSecond() instanceof FisImporter) {
                             continue;
                         }
