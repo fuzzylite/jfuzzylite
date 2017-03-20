@@ -48,13 +48,11 @@ public class WeightedSum extends WeightedDefuzzifier {
 
     /**
      Computes the weighted sum of the given fuzzy set represented as an
-     Aggregated Term as @f$y = \sum_i{w_iz_i} @f$, where @f$w_i@f$ is the
+     Aggregated term as @f$y = \sum_i{w_iz_i} @f$, where @f$w_i@f$ is the
      activation degree of term @f$i@f$, and @f$z_i = \mu_i(w_i) @f$.
 
      From version 6.0, the implication and aggregation operators are not
-     utilized for defuzzification. Also, for better performance, the term is
-     assumed to be Aggregated without type checking, for which unexpected
-     operation may occur if the term is not an instance of Aggregated.
+     utilized for defuzzification.
 
      @param term is the fuzzy set represented as an AggregatedTerm
      @param minimum is the minimum value of the range (only used for Tsukamoto)

@@ -23,9 +23,11 @@ import com.fuzzylite.term.Aggregated;
 import com.fuzzylite.term.Term;
 
 /**
- The WeightedSumCustom class is a WeightedDefuzzifier that computes the weighted
+ The (experimental) WeightedSumCustom class is a WeightedDefuzzifier that computes the weighted
  sum of a fuzzy set represented in an Aggregated Term utilizing the fuzzy
- operators for implication and aggregation to compute the weighted sum.
+ operators for implication and aggregation to compute the weighted sum. This is
+ an experimental approach to take advantage of customization thanks to the
+ object-oriented design.
 
  @author Juan Rada-Vilela, Ph.D.
  @see WeightedSum
