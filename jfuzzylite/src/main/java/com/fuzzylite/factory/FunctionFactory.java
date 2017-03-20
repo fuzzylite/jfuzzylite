@@ -121,6 +121,8 @@ public class FunctionFactory extends CloningFactory<Function.Element> {
                     Math.class.getMethod("exp", double.class)));
             registerObject("fabs", new Function.Element("fabs", "Absolute", Function.Element.Type.Function,
                     Math.class.getMethod("abs", double.class)));
+            registerObject("abs", new Function.Element("abs", "Absolute", Function.Element.Type.Function,
+                    Math.class.getMethod("abs", double.class)));
             registerObject("floor", new Function.Element("floor", "Floor", Function.Element.Type.Function,
                     Math.class.getMethod("floor", double.class)));
             registerObject("log", new Function.Element("log", "Natural logarithm", Function.Element.Type.Function,
