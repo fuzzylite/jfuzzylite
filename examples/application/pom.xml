@@ -63,7 +63,7 @@
         <dependency>
             <groupId>com.fuzzylite</groupId>
             <artifactId>jfuzzylite</artifactId>
-            <version>latest</version>
+            <version>6.0</version>
             <scope>compile</scope>
         </dependency>
     </dependencies>

@@ -1,42 +1,35 @@
 /*
- Author: Juan Rada-Vilela, Ph.D.
- Copyright (C) 2010-2014 FuzzyLite Limited
- All rights reserved
+ Copyright (C) 2010-2017 by FuzzyLite Limited.
+ All rights reserved.
 
- This file is part of jfuzzylite.
+ This file is part of jfuzzylite(TM).
 
  jfuzzylite is free software: you can redistribute it and/or modify it under
- the terms of the GNU Lesser General Public License as published by the Free
- Software Foundation, either version 3 of the License, or (at your option)
- any later version.
+ the terms of the FuzzyLite License included with the software.
 
- jfuzzylite is distributed in the hope that it will be useful, but WITHOUT
- ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License
- for more details.
+ You should have received a copy of the FuzzyLite License along with
+ jfuzzylite. If not, see <http://www.fuzzylite.com/license/>.
 
- You should have received a copy of the GNU Lesser General Public License
- along with jfuzzylite.  If not, see <http://www.gnu.org/licenses/>.
-
- fuzzylite™ is a trademark of FuzzyLite Limited.
- jfuzzylite™ is a trademark of FuzzyLite Limited.
+ fuzzylite(R) is a registered trademark of FuzzyLite Limited.
+ jfuzzylite(TM) is a trademark of FuzzyLite Limited.
 
  */
 package com.fuzzylite.examples;
 
 import com.fuzzylite.Engine;
 import com.fuzzylite.FuzzyLite;
+import com.fuzzylite.activation.General;
 import com.fuzzylite.defuzzifier.Centroid;
 import com.fuzzylite.imex.FldExporter;
 import com.fuzzylite.imex.FllImporter;
 import com.fuzzylite.norm.s.Maximum;
-import com.fuzzylite.norm.t.Minimum;
+import com.fuzzylite.norm.t.AlgebraicProduct;
 import com.fuzzylite.rule.Rule;
 import com.fuzzylite.rule.RuleBlock;
-import com.fuzzylite.term.Cosine;
-import com.fuzzylite.term.Triangle;
+import com.fuzzylite.term.Ramp;
 import com.fuzzylite.variable.InputVariable;
 import com.fuzzylite.variable.OutputVariable;
+
 import java.io.File;
 import java.net.URL;
 import java.util.logging.Level;
@@ -49,42 +42,48 @@ public class SimpleDimmer {
 
     //Method 1: Set up the engine manually.
     public void method1() {
+        //Code automatically generated with fuzzylite 6.0.
+
         Engine engine = new Engine();
-        engine.setName("simple-dimmer");
+        engine.setName("ObstacleAvoidance");
+        engine.setDescription("");
 
-        InputVariable inputVariable = new InputVariable();
-        inputVariable.setEnabled(true);
-        inputVariable.setName("Ambient");
-        inputVariable.setRange(0.000, 1.000);
-        inputVariable.addTerm(new Triangle("DARK", 0.000, 0.250, 0.500));
-        inputVariable.addTerm(new Triangle("MEDIUM", 0.250, 0.500, 0.750));
-        inputVariable.addTerm(new Triangle("BRIGHT", 0.500, 0.750, 1.000));
-        engine.addInputVariable(inputVariable);
+        InputVariable obstacle = new InputVariable();
+        obstacle.setName("obstacle");
+        obstacle.setDescription("");
+        obstacle.setEnabled(true);
+        obstacle.setRange(0.000, 1.000);
+        obstacle.setLockValueInRange(false);
+        obstacle.addTerm(new Ramp("left", 1.000, 0.000));
+        obstacle.addTerm(new Ramp("right", 0.000, 1.000));
+        engine.addInputVariable(obstacle);
 
-        OutputVariable outputVariable = new OutputVariable();
-        outputVariable.setEnabled(true);
-        outputVariable.setName("Power");
-        outputVariable.setRange(0.000, 1.000);
-        outputVariable.fuzzyOutput().setAccumulation(new Maximum());
-        outputVariable.setDefuzzifier(new Centroid(200));
-        outputVariable.setDefaultValue(Double.NaN);
-        outputVariable.setLockPreviousOutputValue(false);
-        outputVariable.setLockOutputValueInRange(false);
-        outputVariable.addTerm(new Triangle("LOW", 0.000, 0.250, 0.500));
-        outputVariable.addTerm(new Triangle("MEDIUM", 0.250, 0.500, 0.750));
-        outputVariable.addTerm(new Triangle("HIGH", 0.500, 0.750, 1.000));
-        engine.addOutputVariable(outputVariable);
+        OutputVariable mSteer = new OutputVariable();
+        mSteer.setName("mSteer");
+        mSteer.setDescription("");
+        mSteer.setEnabled(true);
+        mSteer.setRange(0.000, 1.000);
+        mSteer.setLockValueInRange(false);
+        mSteer.setAggregation(new Maximum());
+        mSteer.setDefuzzifier(new Centroid(100));
+        mSteer.setDefaultValue(Double.NaN);
+        mSteer.setLockPreviousValue(false);
+        mSteer.addTerm(new Ramp("left", 1.000, 0.000));
+        mSteer.addTerm(new Ramp("right", 0.000, 1.000));
+        engine.addOutputVariable(mSteer);
 
-        RuleBlock ruleBlock = new RuleBlock();
-        ruleBlock.setEnabled(true);
-        ruleBlock.setName("");
-        ruleBlock.setConjunction(null);
-        ruleBlock.setDisjunction(null);
-        ruleBlock.setActivation(new Minimum());
-        ruleBlock.addRule(Rule.parse("if Ambient is DARK then Power is HIGH", engine));
-        ruleBlock.addRule(Rule.parse("if Ambient is MEDIUM then Power is MEDIUM", engine));
-        ruleBlock.addRule(Rule.parse("if Ambient is BRIGHT then Power is LOW", engine));
-        engine.addRuleBlock(ruleBlock);
+        RuleBlock mamdani = new RuleBlock();
+        mamdani.setName("mamdani");
+        mamdani.setDescription("");
+        mamdani.setEnabled(true);
+        mamdani.setConjunction(null);
+        mamdani.setDisjunction(null);
+        mamdani.setImplication(new AlgebraicProduct());
+        mamdani.setActivation(new General());
+        mamdani.addRule(Rule.parse("if obstacle is left then mSteer is right", engine));
+        mamdani.addRule(Rule.parse("if obstacle is right then mSteer is left", engine));
+        engine.addRuleBlock(mamdani);
+
 
         FuzzyLite.logger().info(new FldExporter().toString(engine));
     }
@@ -92,7 +91,7 @@ public class SimpleDimmer {
     //Method 2: Load from a file
     public void method2() {
         Engine engine = null;
-        String configurationFile = "/SimpleDimmer.fll";
+        String configurationFile = "/ObstacleAvoidance.fll";
         URL url = SimpleDimmer.class.getResource(configurationFile);
         try {
             engine = new FllImporter().fromFile(new File(url.toURI()));
@@ -102,69 +101,10 @@ public class SimpleDimmer {
 
         FuzzyLite.logger().info(new FldExporter().toString(engine));
     }
-    
-    public void anotherTest(){
-        Engine engine = new Engine();
-        engine.setName("simple-dimmer");
-
-        InputVariable inputVariable = new InputVariable();
-        inputVariable.setEnabled(true);
-        inputVariable.setName("Ambient");
-        inputVariable.setRange(0.000, 1.000);
-        inputVariable.addTerm(new Triangle("DARK", 0.000, 0.250, 0.500));
-        inputVariable.addTerm(new Triangle("MEDIUM", 0.250, 0.500, 0.750));
-        inputVariable.addTerm(new Triangle("BRIGHT", 0.500, 0.750, 1.000));
-        engine.addInputVariable(inputVariable);
-
-        OutputVariable outputVariable1 = new OutputVariable();
-        outputVariable1.setEnabled(true);
-        outputVariable1.setName("Power");
-        outputVariable1.setRange(0.000, 1.000);
-        outputVariable1.fuzzyOutput().setAccumulation(new Maximum());
-        outputVariable1.setDefuzzifier(new Centroid(200));
-        outputVariable1.setDefaultValue(Double.NaN);
-        outputVariable1.setLockPreviousOutputValue(false);
-        outputVariable1.setLockOutputValueInRange(false);
-        outputVariable1.addTerm(new Triangle("LOW", 0.000, 0.250, 0.500));
-        outputVariable1.addTerm(new Triangle("MEDIUM", 0.250, 0.500, 0.750));
-        outputVariable1.addTerm(new Triangle("HIGH", 0.500, 0.750, 1.000));
-        engine.addOutputVariable(outputVariable1);
-
-        OutputVariable outputVariable2 = new OutputVariable();
-        outputVariable2.setEnabled(true);
-        outputVariable2.setName("InversePower");
-        outputVariable2.setRange(0.000, 1.000);
-        outputVariable2.fuzzyOutput().setAccumulation(new Maximum());
-        outputVariable2.setDefuzzifier(new Centroid(500));
-        outputVariable2.setDefaultValue(Double.NaN);
-        outputVariable2.setLockPreviousOutputValue(false);
-        outputVariable2.setLockOutputValueInRange(false);
-        outputVariable2.addTerm(new Cosine("LOW", 0.200, 0.500));
-        outputVariable2.addTerm(new Cosine("MEDIUM", 0.500, 0.500));
-        outputVariable2.addTerm(new Cosine("HIGH", 0.800, 0.500));
-        engine.addOutputVariable(outputVariable2);
-
-        RuleBlock ruleBlock = new RuleBlock();
-        ruleBlock.setEnabled(true);
-        ruleBlock.setName("");
-        ruleBlock.setConjunction(null);
-        ruleBlock.setDisjunction(null);
-        ruleBlock.setActivation(new Minimum());
-        ruleBlock.addRule(Rule.parse("if Ambient is DARK then Power is HIGH", engine));
-        ruleBlock.addRule(Rule.parse("if Ambient is MEDIUM then Power is MEDIUM", engine));
-        ruleBlock.addRule(Rule.parse("if Ambient is BRIGHT then Power is LOW", engine));
-        ruleBlock.addRule(Rule.parse("if Power is LOW then InversePower is HIGH", engine));
-        ruleBlock.addRule(Rule.parse("if Power is MEDIUM then InversePower is MEDIUM", engine));
-        ruleBlock.addRule(Rule.parse("if Power is HIGH then InversePower is LOW", engine));
-        engine.addRuleBlock(ruleBlock);
-        
-        FuzzyLite.logger().info(new FldExporter().toString(engine));
-    }
 
     public void run() {
         method1();
         method2();
-        anotherTest();
     }
 
     public static void main(String[] args) {
