@@ -3,21 +3,23 @@ Extracted from [README.md](/README.md)
 
 
 ### <a name="building">Building from Source</a>
-Building from source requires you to have either Ant or Maven installed.
+Building from source requires you to have either Maven or Ant installed.
 
-#### Ant
-```bash
-$ ant -f build.xml
-```
-
-The Ant script will create the library `bin/jfuzzylite.jar` and the library sources `bin/jfuzzylite-src.jar`.
 
 #### Maven
 ```bash
 $ mvn install
 ```
 
-The Maven script will create the library `target/jfuzzylite-5.0.jar` and library sources `target/jfuzzylite-5.0-sources.jar`.
+The Maven script will create the library `target/jfuzzylite-6.0.jar` and library sources `target/jfuzzylite-6.0-sources.jar`.
+
+#### Ant
+```bash
+$ ant -f build.xml
+```
+
+The Ant script will create the library `bin/jfuzzylite.jar`.
+
 
 
 ### <a name="binaries">Binaries</a>
