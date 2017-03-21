@@ -28,10 +28,10 @@ package com.fuzzylite.hedge;
 public final class Not extends Hedge {
 
     /**
-     Computes the hedge for the membership function value @f$x@f$
+     Computes the hedge for the membership function value `x`
 
      @param x is a membership function value
-     @return @f$1-x@f$
+     @return `1-x`
      */
     @Override
     public double hedge(double x) {

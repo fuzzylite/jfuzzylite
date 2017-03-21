@@ -36,7 +36,7 @@ public final class Maximum extends SNorm {
 
      @param a is a membership function value
      @param b is a membership function value
-     @return @f$\max(a,b)@f$
+     @return `\max(a,b)`
      */
     @Override
     public double compute(double a, double b) {

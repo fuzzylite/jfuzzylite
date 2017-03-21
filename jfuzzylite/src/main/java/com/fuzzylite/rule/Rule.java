@@ -36,8 +36,8 @@ import java.util.logging.Level;
  and are separated with a symbolic `and`. The Term in any proposition can be
  preceded by a Hedge that modifies its membership function to model cases such
  as Very, Somewhat, Seldom and Not. Additionally, the contribution of a rule to
- the control of the engine can be determined by its weight @f$w \in [0.0,
- 1.0]@f$, which is equal to 1.0 if omitted. The structure of a rule is the
+ the control of the engine can be determined by its weight `w \in [0.0,
+ 1.0]`, which is equal to 1.0 if omitted. The structure of a rule is the
  following: `if (antecedent) then (consequent) [with weight]`. The structures of
  the antecedent and the consequent are:
 

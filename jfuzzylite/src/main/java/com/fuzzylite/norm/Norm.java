@@ -31,11 +31,11 @@ import com.fuzzylite.Op;
 public abstract class Norm implements Op.Cloneable {
 
     /**
-     Computes the norm for @f$a@f$ and @f$b@f$
+     Computes the norm for `a` and `b`
 
      @param a is a membership function value
      @param b is a membership function value
-     @return the norm between @f$a@f$ and @f$b@f$
+     @return the norm between `a` and `b`
      */
     public abstract double compute(double a, double b);
 

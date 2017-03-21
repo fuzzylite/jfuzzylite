@@ -37,8 +37,8 @@ public final class DrasticProduct extends TNorm {
 
      @param a is a membership function value
      @param b is a membership function value
-     @return @f$\begin{cases} \min(a,b) & \mbox{if $\max(a,b)=1$} \cr 0 &
-     \mbox{otherwise} \end{cases}@f$
+     @return `\begin{cases} \min(a,b) & \mbox{if $\max(a,b)=1$} \cr 0 &
+     \mbox{otherwise} \end{cases}`
      */
     @Override
     public double compute(double a, double b) {

@@ -29,7 +29,7 @@ import java.util.logging.Level;
 
 /**
  The First class is a RuleBlock Activation method that activates the first
- @f$n@f$ rules whose activation degrees are greater than or equal to the given
+ `n` rules whose activation degrees are greater than or equal to the given
  threshold. The rules are iterated in the order they were added to the rule
  block.
 
@@ -92,7 +92,7 @@ public class First extends Activation {
     }
 
     /**
-     Activates the first @f$n@f$ rules whose activation degrees are greater than
+     Activates the first `n` rules whose activation degrees are greater than
      or equal to the given threshold. The rules are iterated in the order the
      rules were added to the rule block.
 

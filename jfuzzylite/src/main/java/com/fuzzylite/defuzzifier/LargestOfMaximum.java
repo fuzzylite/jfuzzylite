@@ -49,7 +49,7 @@ public class LargestOfMaximum extends IntegralDefuzzifier {
      @param term is the fuzzy set
      @param minimum is the minimum value of the fuzzy set
      @param maximum is the maximum value of the fuzzy set
-     @return the largest @f$x@f$-coordinate of the maximum membership function
+     @return the largest `x`-coordinate of the maximum membership function
      value in the fuzzy set
      */
     @Override

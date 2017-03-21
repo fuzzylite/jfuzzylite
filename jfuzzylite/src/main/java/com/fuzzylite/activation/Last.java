@@ -31,7 +31,7 @@ import java.util.logging.Level;
 /**
  The Last class is a RuleBlock Activation method that activates the last
 
- @f$n@f$ rules whose activation degrees are greater than or equal to the given
+ `n` rules whose activation degrees are greater than or equal to the given
  threshold. The rules are iterated in the reverse order in which they were added
  to the rule block.
 
@@ -94,7 +94,7 @@ public class Last extends Activation {
     }
 
     /**
-     Activates the last @f$n@f$ rules whose activation degrees are greater than
+     Activates the last `n` rules whose activation degrees are greater than
      the given threshold. The rules are iterated in the reverse order that the
      rules were added to the rule block.
 

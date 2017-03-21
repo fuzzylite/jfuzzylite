@@ -99,23 +99,23 @@ public class GaussianProduct extends Term {
     }
 
     /**
-     Computes the membership function evaluated at @f$x@f$
+     Computes the membership function evaluated at `x`
 
      @param x
-     @return @f$ h \left((1 - i) + i \times \exp(-(x - \mu_a)^2 /
+     @return ` h \left((1 - i) + i \times \exp(-(x - \mu_a)^2 /
      (2\sigma_a^2))\right) \left((1 - j) + j \times \exp(-(x - \mu_b)^2 / (2
      \sigma_b)^2)\right)
-     @f$
+     `
 
-     where @f$h@f$ is the height of the Term,
-     @f$\mu_a@f$ is the mean of the first GaussianProduct,
-     @f$\sigma_a@f$ is the standard deviation of the first GaussianProduct,
-     @f$\mu_b@f$ is the mean of the second GaussianProduct,
-     @f$\sigma_b@f$ is the standard deviation of the second GaussianProduct,
-     @f$i=\begin{cases}1 & \mbox{if $x \leq \mu_a$} \cr 0
-     &\mbox{otherwise}\end{cases}@f$,
-     @f$j=\begin{cases}1 & \mbox{if $x \geq \mu_b$} \cr 0
-     &\mbox{otherwise}\end{cases}@f$
+     where `h` is the height of the Term,
+     `\mu_a` is the mean of the first GaussianProduct,
+     `\sigma_a` is the standard deviation of the first GaussianProduct,
+     `\mu_b` is the mean of the second GaussianProduct,
+     `\sigma_b` is the standard deviation of the second GaussianProduct,
+     `i=\begin{cases}1 & \mbox{if $x \leq \mu_a$} \cr 0
+     &\mbox{otherwise}\end{cases}`,
+     `j=\begin{cases}1 & \mbox{if $x \geq \mu_b$} \cr 0
+     &\mbox{otherwise}\end{cases}`
      */
     @Override
     public double membership(double x) {

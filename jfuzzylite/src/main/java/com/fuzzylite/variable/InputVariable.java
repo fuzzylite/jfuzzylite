@@ -43,13 +43,13 @@ public class InputVariable extends Variable {
     }
 
     /**
-     Evaluates the membership function of the current input value @f$x@f$ for
-     each term @f$i@f$, resulting in a fuzzy input value in the form
+     Evaluates the membership function of the current input value `x` for
+     each term `i`, resulting in a fuzzy input value in the form
 
-     @f$\tilde{x}=\sum_i{\mu_i(x)/i}@f$. This is equivalent to a call to
-     Variable::fuzzify() passing @f$x@f$ as input value
+     `\tilde{x}=\sum_i{\mu_i(x)/i}`. This is equivalent to a call to
+     Variable::fuzzify() passing `x` as input value
 
-     @return the fuzzy input value expressed as @f$\sum_i{\mu_i(x)/i}@f$
+     @return the fuzzy input value expressed as `\sum_i{\mu_i(x)/i}`
      */
     public String fuzzyInputValue() {
         return fuzzify(this.getValue());

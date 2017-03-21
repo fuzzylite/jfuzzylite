@@ -104,17 +104,17 @@ public class Trapezoid extends Term {
     }
 
     /**
-     Computes the membership function evaluated at @f$x@f$
+     Computes the membership function evaluated at `x`
 
      @param x
-     @return @f$\begin{cases} 0h & \mbox{if $x \not\in[a,d]$}\cr h \times
+     @return `\begin{cases} 0h & \mbox{if $x \not\in[a,d]$}\cr h \times
      \min(1, (x - a) / (b - a)) & \mbox{if $x < b$}\cr 1h & \mbox{if $x \leq
      c$}\cr h (d - x) / (d - c) & \mbox{if $x < d$}\cr 0h & \mbox{otherwise}
-     \end{cases}@f$
+     \end{cases}`
 
-     where @f$h@f$ is the height of the Term, @f$a@f$ is the first vertex of the
-     Trapezoid, @f$b@f$ is the second vertex of the Tr a pezoid, @f$c@f$ is the
-     third vertex of the Trapezoid, @f$d@f$ is the fourth vertex of the
+     where `h` is the height of the Term, `a` is the first vertex of the
+     Trapezoid, `b` is the second vertex of the Tr a pezoid, `c` is the
+     third vertex of the Trapezoid, `d` is the fourth vertex of the
      Trapezoid
      */
     @Override

@@ -98,18 +98,18 @@ public class SigmoidProduct extends Term {
     }
 
     /**
-     Computes the membership function evaluated at @f$x@f$
+     Computes the membership function evaluated at `x`
 
      @param x
-     @return @f$ h (a \times b)@f$
+     @return ` h (a \times b)`
 
-     where @f$h@f$ is the height,
-     @f$a= 1 / (1 + \exp(-s_l *\times (x - i_l))) @f$,
-     @f$b = 1 / (1 + \exp(-s_r \times (x - i_r)))@f$,
-     @f$i_l@f$ is the left inflection of the SigmoidProduct,
-     @f$s_l@f$ is the left slope of the SigmoidProduct,
-     @f$i_r@f$ is the right inflection of the SigmoidProduct,
-     @f$s_r@f$ is the right slope of the SigmoidProduct
+     where `h` is the height,
+     `a= 1 / (1 + \exp(-s_l *\times (x - i_l))) `,
+     `b = 1 / (1 + \exp(-s_r \times (x - i_r)))`,
+     `i_l` is the left inflection of the SigmoidProduct,
+     `s_l` is the left slope of the SigmoidProduct,
+     `i_r` is the right inflection of the SigmoidProduct,
+     `s_r` is the right slope of the SigmoidProduct
      */
     @Override
     public double membership(double x) {

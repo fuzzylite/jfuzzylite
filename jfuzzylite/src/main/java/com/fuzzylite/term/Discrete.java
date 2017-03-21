@@ -33,7 +33,7 @@ import java.util.ListIterator;
  The Discrete class is a basic Term that represents a discrete membership
  function. The pairs of values in any Discrete term **must** be sorted
  ascendently because the membership function is computed using binary search to
- find the lower and upper bounds of @f$x@f$.
+ find the lower and upper bounds of `x`.
 
  @image html discrete.svg
 
@@ -181,7 +181,7 @@ public class Discrete extends Term implements List<Pair> {
      Creates a Discrete term from a variadic set of values.
 
      @param name is the name of the resulting term
-     @param xy are the values @f$x_0, y_0, ..., x_i, y_i, ..., x_n, y_n@f$
+     @param xy are the values `x_0, y_0, ..., x_i, y_i, ..., x_n, y_n`
      @return a new Discrete term with the given parameters
      */
     public static Discrete create(String name, double... xy) {
@@ -199,7 +199,7 @@ public class Discrete extends Term implements List<Pair> {
 
     /**
      Discretizes the given term at the default integral resolution ensuring that
-     @f$\mu(x)\in[0.0,1.0]@f$.
+     `\mu(x)\in[0.0,1.0]`.
 
      @param term is the term to discretize
      @param start is the value from which discretization starts
@@ -212,7 +212,7 @@ public class Discrete extends Term implements List<Pair> {
 
     /**
      Discretizes the given term at the given resolution ensuring that
-     @f$\mu(x)\in[0.0,1.0]@f$.
+     `\mu(x)\in[0.0,1.0]`.
 
 
      @param term is the term to discretize
@@ -235,7 +235,7 @@ public class Discrete extends Term implements List<Pair> {
      @param resolution is the number of equally-distributed samples to perform
      between start and end
      @param boundedMembershipFunction indicates whether to ensure that
-     @f$\mu(x)\in[0.0,1.0]@f$
+     `\mu(x)\in[0.0,1.0]`
      @return a Discrete term that approximates the given term
      */
     public static Discrete discretize(Term term, double start, double end, int resolution,
@@ -277,36 +277,36 @@ public class Discrete extends Term implements List<Pair> {
     /**
      Ascendantly sorts the pairs of values in this Discrete term by the
 
-     @f$x@f$-coordinate
+     `x`-coordinate
      */
     public void sort() {
         Collections.sort(this, ASCENDANTLY);
     }
 
     /**
-     Ascendantly sorts the given pairs of values by the @f$x@f$-value, as it is
+     Ascendantly sorts the given pairs of values by the `x`-value, as it is
      required by the Discrete term.
 
-     @param pairs is a vector of pairs of values in the form @f$(x,y)@f$
+     @param pairs is a vector of pairs of values in the form `(x,y)`
      */
     public static void sort(List<Discrete.Pair> pairs) {
         Collections.sort(pairs, ASCENDANTLY);
     }
 
     /**
-     Computes the membership function evaluated at @f$x@f$ by using binary
-     search to find the lower and upper bounds of @f$x@f$ and then linearly
+     Computes the membership function evaluated at `x` by using binary
+     search to find the lower and upper bounds of `x` and then linearly
      interpolating the membership function between the bounds.
 
      @param x
-     @return @f$ \dfrac{h (y_{\max} - y_{\min})}{(x_{\max}- x_{\min})} (x -
-     x_{\min}) + y_{\min}@f$
+     @return ` \dfrac{h (y_{\max} - y_{\min})}{(x_{\max}- x_{\min})} (x -
+     x_{\min}) + y_{\min}`
 
-     where @f$h@f$ is the height of the Term,
-     @f$x_{\min}@f$ and @f$x_{\max}@f$is are the lower and upper limits of
-     @f$x@f$ in `xy` (respectively),
-     @f$y_{\min}@f$ and @f$y_{\max}@f$is are the membership functions of
-     @f$\mu(x_{\min})@f$ and @f$\mu(x_{\max})@f$ (respectively)
+     where `h` is the height of the Term,
+     `x_{\min}` and `x_{\max}`is are the lower and upper limits of
+     `x` in `xy` (respectively),
+     `y_{\min}` and `y_{\max}`is are the membership functions of
+     `\mu(x_{\min})` and `\mu(x_{\max})` (respectively)
      */
     @Override
     public double membership(double x) {
@@ -367,9 +367,9 @@ public class Discrete extends Term implements List<Pair> {
     }
 
     /**
-     Creates, fills and returns a list containing the @f$x@f$ values
+     Creates, fills and returns a list containing the `x` values
 
-     @return a list containing the @f$x@f$ values
+     @return a list containing the `x` values
      */
     public List<Double> x() {
         List<Double> result = new ArrayList<Double>(xy.size());
@@ -380,19 +380,19 @@ public class Discrete extends Term implements List<Pair> {
     }
 
     /**
-     Gets the @f$x@f$ value at the given index
+     Gets the `x` value at the given index
 
      @param index is the index
-     @return the @f$x@f$ value at the given index
+     @return the `x` value at the given index
      */
     public double x(int index) {
         return xy.get(index).x;
     }
 
     /**
-     Creates, fills and returns a vector containing the @f$y@f$ values
+     Creates, fills and returns a vector containing the `y` values
 
-     @return a vector containing the @f$y@f$ values
+     @return a vector containing the `y` values
      */
     public List<Double> y() {
         List<Double> result = new ArrayList<Double>(xy.size());
@@ -403,10 +403,10 @@ public class Discrete extends Term implements List<Pair> {
     }
 
     /**
-     Gets the @f$y@f$ value at the given index
+     Gets the `y` value at the given index
 
      @param index is the index
-     @return the @f$y@f$ value at the given index
+     @return the `y` value at the given index
      */
     public double y(int index) {
         return xy.get(index).y;
@@ -426,10 +426,10 @@ public class Discrete extends Term implements List<Pair> {
     /**
      Creates a list of scalars from a list of Pair given in the form
 
-     @f$\left(\{x_1,y_1\},...,\{x_n,y_n\}\right)@f$
+     `\left(\{x_1,y_1\},...,\{x_n,y_n\}\right)`
 
      @param xyValues is the list of Pair
-     @return a vector of scalars as @f$(x_1,y_1,...,x_n,y_n)@f$
+     @return a vector of scalars as `(x_1,y_1,...,x_n,y_n)`
      */
     public static List<Double> toList(List<Pair> xyValues) {
         List<Double> result = new ArrayList<Double>(xyValues.size() * 2);
@@ -443,14 +443,14 @@ public class Discrete extends Term implements List<Pair> {
     /**
      Creates a list of Pair from a list of scalars given in the form
 
-     @f$(x_1,y_1,...,x_n,y_n)@f$
+     `(x_1,y_1,...,x_n,y_n)`
 
      @param xyValues is a vector of fl::scalar given as
-     @f$(x_1,y_1,...,x_n,y_n)@f$
+     `(x_1,y_1,...,x_n,y_n)`
      @return a list of Pair in the form
-     @f$\left(\{x_1,y_1\},...,\{x_n,y_n\}\right)@f$
+     `\left(\{x_1,y_1\},...,\{x_n,y_n\}\right)`
      @throws RuntimeException if a value is missing, that is, if the length of
-     @f$xy@f$ is odd: @f$|xy|\mod 2 = 1@f$
+     `xy` is odd: `|xy|\mod 2 = 1`
      */
     public static List<Pair> toPairs(List<Double> xyValues) {
         if (xyValues.size() % 2 != 0) {
@@ -468,14 +468,14 @@ public class Discrete extends Term implements List<Pair> {
     /**
      Creates a list of Pair from a list of scalars given in the form
 
-     @f$(x_1,y_1,...,x_n,y_n)@f$
+     `(x_1,y_1,...,x_n,y_n)`
 
      @param xyValues is a list of scalars given as
-     @f$(x_1,y_1,...,x_n,y_n)@f$ possibly missing a value
+     `(x_1,y_1,...,x_n,y_n)` possibly missing a value
      @param missingValue is the replacement in the case a value is missing from
-     @f$xy@f$
+     `xy`
      @return a vector of Pair in the form
-     @f$\left(\{x_1,y_1\},...,\{x_n,y_n\}\right)@f$
+     `\left(\{x_1,y_1\},...,\{x_n,y_n\}\right)`
      */
     public static List<Pair> toPairs(List<Double> xyValues, double missingValue) {
         List<Pair> result = new ArrayList<Pair>((xyValues.size() + 1) / 2);
@@ -487,11 +487,11 @@ public class Discrete extends Term implements List<Pair> {
     }
 
     /**
-     Formats a vector of Pair into a string in the form @f$(x_1,y_1) ...
-     (x_n,y_n)@f$
+     Formats a vector of Pair into a string in the form `(x_1,y_1) ...
+     (x_n,y_n)`
 
      @param xy is the vector of Pair
-     @return a formatted string containing the pairs of @f$(x,y)@f$ values
+     @return a formatted string containing the pairs of `(x,y)` values
      */
     public static String formatXY(List<Discrete.Pair> xy) {
         return formatXY(xy, "(", ",", ")", " ");
@@ -500,17 +500,17 @@ public class Discrete extends Term implements List<Pair> {
     /**
      Formats a vector of Pair into a string in the form
 
-     @f$(x_1,y_1) ... (x_n,y_n)@f$
+     `(x_1,y_1) ... (x_n,y_n)`
      @param xy is the vector of Pair
      @param prefix indicates the prefix of a Pair, e.g., `(` results in
-     @f$(x_i@f$
+     `(x_i`
      @param innerSeparator indicates the separator between
-     @f$x@f$ and @f$y@f$, e.g., `,` results in @f$x_i,y_i@f$
+     `x` and `y`, e.g., `,` results in `x_i,y_i`
      @param suffix indicates the postfix of a Pair, e.g., `]` results in
-     @f$y_i]@f$
+     `y_i]`
      @param outerSeparator indicates the separator between Pair, e.g., `;`
-     results in @f$(x_i,y_i);(x_j,y_j)@f$
-     @return a formatted string containing the pairs of @f$(x,y)@f$ values
+     results in `(x_i,y_i);(x_j,y_j)`
+     @return a formatted string containing the pairs of `(x,y)` values
      */
     public static String formatXY(List<Discrete.Pair> xy,
             String prefix, String innerSeparator,

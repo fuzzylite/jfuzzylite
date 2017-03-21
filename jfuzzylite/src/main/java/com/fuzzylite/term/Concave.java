@@ -90,18 +90,18 @@ public class Concave extends Term {
     }
 
     /**
-     Computes the membership function evaluated at @f$x@f$
+     Computes the membership function evaluated at `x`
 
      @param x
-     @return @f$\begin{cases} h \times (e - i) / (2e - i - x) & \mbox{if $i \leq
+     @return `\begin{cases} h \times (e - i) / (2e - i - x) & \mbox{if $i \leq
      e \wedge x < e$
      (increasing concave)} \cr
      h \times (i - e) / (-2e + i + x) & \mbox{if $i > e \wedge x > e$
-     (decreasing concave)} \cr h & \mbox{otherwise} \cr \end{cases}@f$
+     (decreasing concave)} \cr h & \mbox{otherwise} \cr \end{cases}`
 
-     where @f$h@f$ is the height of the Term,
-     @f$i@f$ is the inflection of the Concave,
-     @f$e@f$ is the end of the Concave
+     where `h` is the height of the Term,
+     `i` is the inflection of the Concave,
+     `e` is the end of the Concave
      */
     @Override
     public double membership(double x) {

@@ -37,7 +37,7 @@ public final class BoundedDifference extends TNorm {
 
      @param a is a membership function value
      @param b is a membership function value
-     @return @f$\max(0, a+b - 1)@f$
+     @return `\max(0, a+b - 1)`
      */
     @Override
     public double compute(double a, double b) {

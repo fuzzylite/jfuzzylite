@@ -21,7 +21,7 @@ import com.fuzzylite.term.Function;
 
 /**
  The TNormFunction class is a customizable TNorm via Function, which computes
- any function based on the @f$a@f$ and @f$b@f$ values. This TNorm is not
+ any function based on the `a` and `b` values. This TNorm is not
  registered with the TNormFactory.
 
  @author Juan Rada-Vilela, Ph.D.
@@ -52,7 +52,7 @@ public final class TNormFunction extends TNorm {
      Computes the S-Norm utilizing the given function via
      SNormFunction::setFormula(), which automatically assigns the values of
 
-     @f$a@f$ and @f$b@f$.
+     `a` and `b`.
 
      @param a is a membership function value
      @param b is a membership function value

@@ -28,10 +28,10 @@ package com.fuzzylite.hedge;
 public final class Very extends Hedge {
 
     /**
-     Computes the hedge for the membership function value @f$x@f$
+     Computes the hedge for the membership function value `x`
 
      @param x is a membership function value
-     @return @f$x^2@f$
+     @return `x^2`
      */
     @Override
     public double hedge(double x) {

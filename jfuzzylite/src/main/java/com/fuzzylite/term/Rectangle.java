@@ -91,15 +91,15 @@ public class Rectangle extends Term {
     }
 
     /**
-     Computes the membership function evaluated at @f$x@f$
+     Computes the membership function evaluated at `x`
 
      @param x
-     @return @f$\begin{cases} 1h & \mbox{if $x \in [s, e]$} \cr 0h &
-     \mbox{otherwise} \end{cases}@f$
+     @return `\begin{cases} 1h & \mbox{if $x \in [s, e]$} \cr 0h &
+     \mbox{otherwise} \end{cases}`
 
-     where @f$h@f$ is the height of the Term,
-     @f$s@f$ is the start of the Rectangle,
-     @f$e@f$ is the end of the Rectangle.
+     where `h` is the height of the Term,
+     `s` is the start of the Rectangle,
+     `e` is the end of the Rectangle.
      */
     @Override
     public double membership(double x) {

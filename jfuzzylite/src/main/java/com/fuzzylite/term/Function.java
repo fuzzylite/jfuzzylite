@@ -34,21 +34,21 @@ import java.util.Set;
 import java.util.StringTokenizer;
 
 /**
- The Function class is a polynomial Term that represents a generic function @f$
- f : x \mapsto f(x) @f$. Every Function object has a public key-value map,
+ The Function class is a polynomial Term that represents a generic function `
+ f : x \mapsto f(x) `. Every Function object has a public key-value map,
  namely Function::variables, that links variable names to fl::scalar values,
  which are utilized to replace the variable names for their respective values in
  the given formula whenever the function
 
- @f$f@f$ is evaluated. Specifically, when the method Function::membership() is
+ `f` is evaluated. Specifically, when the method Function::membership() is
  called, the name and value of the variable
- @f$x@f$ are automatically loaded into the map. Furthermore, if an Engine is
+ `x` are automatically loaded into the map. Furthermore, if an Engine is
  given, the names of its InputVariable%s and OutputVariable%s will also be
  automatically loaded into the map linking to their respective input values and
  (previously defuzzified) output values. The Function::variables need to be
- manually loaded whenever variables other than @f$x@f$, input variables, and
+ manually loaded whenever variables other than `x`, input variables, and
  output variables, are expressed in the given formula, always having in mind
- that (a) the map replaces existing keys, and (b) the variable @f$x@f$, and
+ that (a) the map replaces existing keys, and (b) the variable `x`, and
  input variables and output variables of an engine will automatically be
  replaced and will also take precedence over previously loaded variables.
 
@@ -544,13 +544,13 @@ public class Function extends Term {
     }
 
     /**
-     Computes the membership function value of @f$x@f$ at the root node. If the
+     Computes the membership function value of `x` at the root node. If the
      engine has been set, the current values of the input variables and output
      variables are added to the map of Function::variables. In addition, the
-     variable @f$x@f$ will also be added to the map.
+     variable `x` will also be added to the map.
 
      @param x
-     @return the membership function value of @f$x@f$ at the root node
+     @return the membership function value of `x` at the root node
      */
     @Override
     public double membership(double x) {

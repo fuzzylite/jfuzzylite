@@ -107,16 +107,16 @@ public class Binary extends Term {
     }
 
     /**
-     Computes the membership function evaluated at @f$x@f$
+     Computes the membership function evaluated at `x`
 
      @param x
-     @return @f$\begin{cases} 1h & \mbox{if $ \left(s < d \vedge x \in [s, d)\right) \wedge
+     @return `\begin{cases} 1h & \mbox{if $ \left(s < d \vedge x \in [s, d)\right) \wedge
      \left( s > d \vedge x \in (d, s] \right) $} \cr 0h & \mbox{otherwise}
-     \end{cases}@f$
+     \end{cases}`
 
-     where @f$h@f$ is the height of the Term,
-     @f$s@f$ is the start of the Binary edge,
-     @f$d@f$ is the direction of the Binary edge.
+     where `h` is the height of the Term,
+     `s` is the start of the Binary edge,
+     `d` is the direction of the Binary edge.
      */
     @Override
     public double membership(double x) {
@@ -164,10 +164,10 @@ public class Binary extends Term {
     /**
      Sets the direction of the binary edge.
 
-     @f$\begin{cases} \text{Positive} & \mbox{if $ d > s $}\cr \text{Negative} &
-     \mbox{if $ d < s $}\cr \mbox{\tt NaN} & \mbox{otherwise} \end{cases}@f$
+     `\begin{cases} \text{Positive} & \mbox{if $ d > s $}\cr \text{Negative} &
+     \mbox{if $ d < s $}\cr \mbox{\tt NaN} & \mbox{otherwise} \end{cases}`
 
-     where @f$d@f$ is the given direction, and @f$s@f$ is the start of the
+     where `d` is the given direction, and `s` is the start of the
      Binary edge
 
      @param direction is the direction of the binary edge

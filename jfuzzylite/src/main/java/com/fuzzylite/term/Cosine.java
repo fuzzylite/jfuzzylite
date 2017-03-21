@@ -91,16 +91,16 @@ public class Cosine extends Term {
     }
 
     /**
-     Computes the membership function evaluated at @f$x@f$
+     Computes the membership function evaluated at `x`
 
      @param x
-     @return @f$\begin{cases} 0h & \mbox{if $x < c - 0.5w \vee x > c + 0.5w$}
+     @return `\begin{cases} 0h & \mbox{if $x < c - 0.5w \vee x > c + 0.5w$}
      \cr 0.5h \times ( 1 + \cos(2.0 / w\pi(x-c))) & \mbox{otherwise}
-     \end{cases}@f$
+     \end{cases}`
 
-     where @f$h@f$ is the height of the Term,
-     @f$c@f$ is the center of the Cosine,
-     @f$w@f$ is the width of the Cosine
+     where `h` is the height of the Term,
+     `c` is the center of the Cosine,
+     `w` is the width of the Cosine
      */
     @Override
     public double membership(double x) {

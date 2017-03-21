@@ -91,14 +91,14 @@ public class Spike extends Term {
     }
 
     /**
-     Computes the membership function evaluated at @f$x@f$
+     Computes the membership function evaluated at `x`
 
      @param x
-     @return @f$h \times \exp(-|10 / w (x - c)|)@f$
+     @return `h \times \exp(-|10 / w (x - c)|)`
 
-     where @f$h@f$ is the height of the Term,
-     @f$w@f$ is the width of the Spike,
-     @f$c@f$ is the center of the Spike
+     where `h` is the height of the Term,
+     `w` is the width of the Spike,
+     `c` is the center of the Spike
      */
     @Override
     public double membership(double x) {

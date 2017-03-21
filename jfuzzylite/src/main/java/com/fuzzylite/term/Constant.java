@@ -21,7 +21,7 @@ import com.fuzzylite.Op;
 /**
  The Constant class is a (zero) polynomial Term that represents a constant value
 
- @f$ f(x) = k @f$
+ ` f(x) = k `
 
  @author Juan Rada-Vilela, Ph.D.
  @see Term
@@ -69,10 +69,10 @@ public class Constant extends Term {
     }
 
     /**
-     Computes the membership function evaluated at @f$x@f$
+     Computes the membership function evaluated at `x`
 
      @param x is irrelevant
-     @return @f$c@f$, where @f$c@f$ is the constant value
+     @return `c`, where `c` is the constant value
      */
     @Override
     public double membership(double x) {

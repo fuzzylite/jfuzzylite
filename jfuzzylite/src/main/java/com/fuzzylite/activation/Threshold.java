@@ -42,31 +42,31 @@ public class Threshold extends Activation {
 
     /**
      Comparison is an enumerator that provides six comparison operators between
-     the activation degree @f$a@f$ and the threshold @f$\theta@f$.
+     the activation degree `a` and the threshold `\theta`.
      */
     public enum Comparison {
         /**
-         @f$a < \theta@f$
+         `a < \theta`
          */
         LessThan,
         /**
-         @f$a \leq \theta@f$
+         `a \leq \theta`
          */
         LessThanOrEqualTo,
         /**
-         @f$a = \theta@f$
+         `a = \theta`
          */
         EqualTo,
         /**
-         @f$a \neq \theta@f$
+         `a \neq \theta`
          */
         NotEqualTo,
         /**
-         @f$a \geq \theta@f$
+         `a \geq \theta`
          */
         GreaterThanOrEqualTo,
         /**
-         @f$a > \theta@f$
+         `a > \theta`
          */
         GreaterThan;
 

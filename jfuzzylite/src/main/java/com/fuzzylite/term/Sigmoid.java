@@ -107,14 +107,14 @@ public class Sigmoid extends Term {
     }
 
     /**
-     Computes the membership function evaluated at @f$x@f$
+     Computes the membership function evaluated at `x`
 
      @param x
-     @return @f$ h / (1 + \exp(-s(x-i)))@f$
+     @return ` h / (1 + \exp(-s(x-i)))`
 
-     where @f$h@f$ is the height of the Term,
-     @f$s@f$ is the slope of the Sigmoid,
-     @f$i@f$ is the inflection of the Sigmoid
+     where `h` is the height of the Term,
+     `s` is the slope of the Sigmoid,
+     `i` is the inflection of the Sigmoid
      */
     @Override
     public double membership(double x) {

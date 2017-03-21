@@ -36,7 +36,7 @@ public class Op {
 
      @param a
      @param b
-     @return @f$\min(a,b)@f$
+     @return `\min(a,b)`
      */
     public static double min(double a, double b) {
         if (Double.isNaN(a)) {
@@ -53,7 +53,7 @@ public class Op {
 
      @param a
      @param b
-     @return @f$\max(a,b)@f$
+     @return `\max(a,b)`
      */
     public static double max(double a, double b) {
         if (Double.isNaN(a)) {
@@ -66,14 +66,14 @@ public class Op {
     }
 
     /**
-     Returns @f$x@f$ bounded in @f$[\min,\max]@f$
+     Returns `x` bounded in `[\min,\max]`
 
      @param x is the value to be bounded
      @param min is the minimum value of the range
      @param max is the maximum value of the range
-     @return @f$ \begin{cases} \min & \mbox{if $x < \min$} \cr
+     @return ` \begin{cases} \min & \mbox{if $x < \min$} \cr
      \max & \mbox{if $x > \max$} \cr x & \mbox{otherwise} \end{cases}
-     @f$
+     `
      */
     public static double bound(double x, double min, double max) {
         if (x > max) {
@@ -86,34 +86,34 @@ public class Op {
     }
 
     /**
-     Indicates whether @f$x@f$ is within the closed boundaries
+     Indicates whether `x` is within the closed boundaries
 
      @param x is the value
      @param min is the minimum of the range
      @param max is the maximum of the range
-     @return @f$ \begin{cases} x \in [\min,\max] & \mbox{if $geq \wedge leq$}
+     @return ` \begin{cases} x \in [\min,\max] & \mbox{if $geq \wedge leq$}
      \cr x \in (\min,\max] & \mbox{if $geq \wedge \bar{leq}$} \cr x \in [\min,
      \max) & \mbox{if $\bar{geq} \wedge leq$} \cr x \in (\min, \max) & \mbox{if
      $\bar{geq} \wedge \bar{leq}$} \cr \end{cases}
-     @f$
+     `
      */
     public static boolean in(double x, double min, double max) {
         return in(x, min, max, true, true);
     }
 
     /**
-     Indicates whether @f$x@f$ is within the boundaries (open or closed)
+     Indicates whether `x` is within the boundaries (open or closed)
 
      @param x is the value
      @param min is the minimum of the range
      @param max is the maximum of the range
      @param geq determines whether the maximum is a closed interval
      @param leq determines whether the minimum is a closed interval
-     @return @f$ \begin{cases} x \in [\min,\max] & \mbox{if $geq \wedge leq$}
+     @return ` \begin{cases} x \in [\min,\max] & \mbox{if $geq \wedge leq$}
      \cr x \in (\min,\max] & \mbox{if $geq \wedge \bar{leq}$} \cr x \in [\min,
      \max) & \mbox{if $\bar{geq} \wedge leq$} \cr x \in (\min, \max) & \mbox{if
      $\bar{geq} \wedge \bar{leq}$} \cr \end{cases}
-     @f$
+     `
      */
     public static boolean in(double x, double min, double max, boolean geq,
             boolean leq) {
@@ -123,11 +123,11 @@ public class Op {
     }
 
     /**
-     Indicates whether @f$x@f$ is finite, that is, @f$x \not\in \{\pm\infty,
-     \mathrm{NaN}\}@f$
+     Indicates whether `x` is finite, that is, `x \not\in \{\pm\infty,
+     \mathrm{NaN}\}`
 
      @param x is the value
-     @return whether @f$x@f$ is finite
+     @return whether `x` is finite
      */
     public static boolean isFinite(double x) {
         return !(Double.isNaN(x) || Double.isInfinite(x));
@@ -137,59 +137,59 @@ public class Op {
      * Math Operations
      */
     /**
-     Returns whether @f$a@f$ is equal to @f$b@f$ at the default tolerance
+     Returns whether `a` is equal to `b` at the default tolerance
 
      @param a
      @param b
-     @return whether @f$a@f$ is equal to @f$b@f$ at the default tolerance
+     @return whether `a` is equal to `b` at the default tolerance
      */
     public static boolean isEq(double a, double b) {
         return a == b || Math.abs(a - b) < FuzzyLite.macheps || (Double.isNaN(a) && Double.isNaN(b));
     }
 
     /**
-     Returns whether @f$a@f$ is equal to @f$b@f$ at the given tolerance
+     Returns whether `a` is equal to `b` at the given tolerance
 
      @param a
      @param b
      @param macheps is the minimum difference upon which two floating-point
      values are considered equivalent
-     @return whether @f$a@f$ is equal to @f$b@f$ at the given tolerance
+     @return whether `a` is equal to `b` at the given tolerance
      */
     public static boolean isEq(double a, double b, double macheps) {
         return a == b || Math.abs(a - b) < macheps || (Double.isNaN(a) && Double.isNaN(b));
     }
 
     /**
-     Returns whether @f$a@f$ is different from @f$b@f$ at the default tolerance
+     Returns whether `a` is different from `b` at the default tolerance
 
      @param a
      @param b
-     @return whether @f$a@f$ is different from @f$b@f$ at the default tolerance
+     @return whether `a` is different from `b` at the default tolerance
      */
     public static boolean isNEq(double a, double b) {
         return !(a == b || Math.abs(a - b) < FuzzyLite.macheps || (Double.isNaN(a) && Double.isNaN(b)));
     }
 
     /**
-     Returns whether @f$a@f$ is different from @f$b@f$ at the given tolerance
+     Returns whether `a` is different from `b` at the given tolerance
 
      @param a
      @param b
      @param macheps is the minimum difference upon which two floating-point
      values are considered equivalent
-     @return whether @f$a@f$ is different from @f$b@f$ at the given tolerance
+     @return whether `a` is different from `b` at the given tolerance
      */
     public static boolean isNEq(double a, double b, double macheps) {
         return !(a == b || Math.abs(a - b) < macheps || (Double.isNaN(a) && Double.isNaN(b)));
     }
 
     /**
-     Returns whether @f$a@f$ is less than @f$b@f$ at the default tolerance
+     Returns whether `a` is less than `b` at the default tolerance
 
      @param a
      @param b
-     @return whether @f$a@f$ is less than @f$b@f$ at the default tolerance
+     @return whether `a` is less than `b` at the default tolerance
      */
     public static boolean isLt(double a, double b) {
         return !(a == b || Math.abs(a - b) < FuzzyLite.macheps || (Double.isNaN(a) && Double.isNaN(b)))
@@ -197,13 +197,13 @@ public class Op {
     }
 
     /**
-     Returns whether @f$a@f$ is less than @f$b@f$ at the given tolerance
+     Returns whether `a` is less than `b` at the given tolerance
 
      @param a
      @param b
      @param macheps is the minimum difference upon which two floating-point
      values are considered equivalent
-     @return whether @f$a@f$ is less than @f$b@f$ at the given tolerance
+     @return whether `a` is less than `b` at the given tolerance
      */
     public static boolean isLt(double a, double b, double macheps) {
         return !(a == b || Math.abs(a - b) < macheps || (Double.isNaN(a) && Double.isNaN(b)))
@@ -211,12 +211,12 @@ public class Op {
     }
 
     /**
-     Returns whether @f$a@f$ is less than or equal to @f$b@f$ at the default
+     Returns whether `a` is less than or equal to `b` at the default
      tolerance
 
      @param a
      @param b
-     @return whether @f$a@f$ is less than or equal to @f$b@f$ at the default
+     @return whether `a` is less than or equal to `b` at the default
      tolerance
      */
     public static boolean isLE(double a, double b) {
@@ -225,14 +225,14 @@ public class Op {
     }
 
     /**
-     Returns whether @f$a@f$ is less than or equal to @f$b@f$ at the given
+     Returns whether `a` is less than or equal to `b` at the given
      tolerance
 
      @param a
      @param b
      @param macheps is the minimum difference upon which two floating-point
      values are considered equivalent
-     @return whether @f$a@f$ is less than or equal to @f$b@f$ at the given
+     @return whether `a` is less than or equal to `b` at the given
      tolerance
      */
     public static boolean isLE(double a, double b, double macheps) {
@@ -241,11 +241,11 @@ public class Op {
     }
 
     /**
-     Returns whether @f$a@f$ is greater than @f$b@f$ at the default tolerance
+     Returns whether `a` is greater than `b` at the default tolerance
 
      @param a
      @param b
-     @return whether @f$a@f$ is greater than @f$b@f$ at the given tolerance
+     @return whether `a` is greater than `b` at the given tolerance
      */
     public static boolean isGt(double a, double b) {
         return !(a == b || Math.abs(a - b) < FuzzyLite.macheps || (Double.isNaN(a) && Double.isNaN(b)))
@@ -253,13 +253,13 @@ public class Op {
     }
 
     /**
-     Returns whether @f$a@f$ is greater than @f$b@f$ at the given tolerance
+     Returns whether `a` is greater than `b` at the given tolerance
 
      @param a
      @param b
      @param macheps is the minimum difference upon which two floating-point
      values are considered equivalent
-     @return whether @f$a@f$ is greater than @f$b@f$ at the given tolerance
+     @return whether `a` is greater than `b` at the given tolerance
      */
     public static boolean isGt(double a, double b, double macheps) {
         return !(a == b || Math.abs(a - b) < macheps || (Double.isNaN(a) && Double.isNaN(b)))
@@ -267,12 +267,12 @@ public class Op {
     }
 
     /**
-     Returns whether @f$a@f$ is greater than or equal to @f$b@f$ at the default
+     Returns whether `a` is greater than or equal to `b` at the default
      tolerance
 
      @param a
      @param b
-     @return whether @f$a@f$ is greater than or equal to @f$b@f$ at the default
+     @return whether `a` is greater than or equal to `b` at the default
      tolerance
      */
     public static boolean isGE(double a, double b) {
@@ -281,14 +281,14 @@ public class Op {
     }
 
     /**
-     Returns whether @f$a@f$ is greater than or equal to @f$b@f$ at the given
+     Returns whether `a` is greater than or equal to `b` at the given
      tolerance
 
      @param a
      @param b
      @param macheps is the minimum difference upon which two floating-point
      values are considered equivalent
-     @return whether @f$a@f$ is greater than or equal to @f$b@f$ at the given
+     @return whether `a` is greater than or equal to `b` at the given
      tolerance
      */
     public static boolean isGE(double a, double b, double macheps) {
@@ -297,45 +297,45 @@ public class Op {
     }
 
     /**
-     Returns whether @f$a@f$ is equal to @f$b@f$ at the default tolerance
+     Returns whether `a` is equal to `b` at the default tolerance
 
      @param a
      @param b
-     @return whether @f$a@f$ is equal to @f$b@f$ at the default tolerance
+     @return whether `a` is equal to `b` at the default tolerance
      */
     public static double eq(double a, double b) {
         return isEq(a, b) ? 1.0 : 0.0;
     }
 
     /**
-     Returns whether @f$a@f$ is different from @f$b@f$ at the default tolerance
+     Returns whether `a` is different from `b` at the default tolerance
 
      @param a
      @param b
-     @return whether @f$a@f$ is different from @f$b@f$ at the default tolerance
+     @return whether `a` is different from `b` at the default tolerance
      */
     public static double neq(double a, double b) {
         return isNEq(a, b) ? 1.0 : 0.0;
     }
 
     /**
-     Returns whether @f$a@f$ is less than @f$b@f$ at the default tolerance
+     Returns whether `a` is less than `b` at the default tolerance
 
      @param a
      @param b
-     @return whether @f$a@f$ is less than @f$b@f$ at the default tolerance
+     @return whether `a` is less than `b` at the default tolerance
      */
     public static double lt(double a, double b) {
         return isLt(a, b) ? 1.0 : 0.0;
     }
 
     /**
-     Returns whether @f$a@f$ is less than or equal to @f$b@f$ at the default
+     Returns whether `a` is less than or equal to `b` at the default
      tolerance
 
      @param a
      @param b
-     @return whether @f$a@f$ is less than or equal to @f$b@f$ at the default
+     @return whether `a` is less than or equal to `b` at the default
      tolerance
      */
     public static double le(double a, double b) {
@@ -343,12 +343,12 @@ public class Op {
     }
 
     /**
-     Returns whether @f$a@f$ is greater than or equal to @f$b@f$ at the default
+     Returns whether `a` is greater than or equal to `b` at the default
      tolerance
 
      @param a
      @param b
-     @return whether @f$a@f$ is greater than or equal to @f$b@f$ at the default
+     @return whether `a` is greater than or equal to `b` at the default
      tolerance
      */
     public static double gt(double a, double b) {
@@ -356,12 +356,12 @@ public class Op {
     }
 
     /**
-     Returns whether @f$a@f$ is greater than or equal to @f$b@f$ at the default
+     Returns whether `a` is greater than or equal to `b` at the default
      tolerance
 
      @param a
      @param b
-     @return whether @f$a@f$ is greater than or equal to @f$b@f$ at the default
+     @return whether `a` is greater than or equal to `b` at the default
      tolerance
      */
     public static double ge(double a, double b) {
@@ -373,7 +373,7 @@ public class Op {
 
      @param a
      @param b
-     @return @f$a+b@f$
+     @return `a+b`
      */
     public static double add(double a, double b) {
         return a + b;
@@ -384,7 +384,7 @@ public class Op {
 
      @param a
      @param b
-     @return @f$a-b@f$
+     @return `a-b`
      */
     public static double subtract(double a, double b) {
         return a - b;
@@ -395,7 +395,7 @@ public class Op {
 
      @param a
      @param b
-     @return @f$a\times b@f$
+     @return `a\times b`
      */
     public static double multiply(double a, double b) {
         return a * b;
@@ -406,7 +406,7 @@ public class Op {
 
      @param a
      @param b
-     @return @f$a/b@f$
+     @return `a/b`
      */
     public static double divide(double a, double b) {
         return a / b;
@@ -417,7 +417,7 @@ public class Op {
 
      @param a
      @param b
-     @return @f$a \mod b@f$
+     @return `a \mod b`
      */
     public static double modulo(double a, double b) {
         return a % b;
@@ -428,9 +428,9 @@ public class Op {
 
      @param a
      @param b
-     @return @f$ \begin{cases} 1.0 & \mbox{if $a=1 \wedge b=1$}\cr 0.0 &
+     @return ` \begin{cases} 1.0 & \mbox{if $a=1 \wedge b=1$}\cr 0.0 &
      \mbox{otherwise} \end{cases}
-     @f$
+     `
      */
     public static double logicalAnd(double a, double b) {
         return (isEq(a, 1.0) && isEq(b, 1.0)) ? 1.0 : 0.0;
@@ -441,9 +441,9 @@ public class Op {
 
      @param a
      @param b
-     @return @f$ \begin{cases} 1.0 & \mbox{if $a=1 \vee b=1$}\cr 0.0 &
+     @return ` \begin{cases} 1.0 & \mbox{if $a=1 \vee b=1$}\cr 0.0 &
      \mbox{otherwise} \end{cases}
-     @f$
+     `
      */
     public static double logicalOr(double a, double b) {
         return (isEq(a, 1.0) || isEq(b, 1.0)) ? 1.0 : 0.0;
@@ -453,9 +453,9 @@ public class Op {
      Returns the complement of the value
 
      @param a
-     @return @f$ \begin{cases} 0.0 & \mbox{if $a=1$}\cr 1.0 & \mbox{otherwise}
+     @return ` \begin{cases} 0.0 & \mbox{if $a=1$}\cr 1.0 & \mbox{otherwise}
      \end{cases}
-     @f$
+     `
      */
     public static double logicalNot(double a) {
         return isEq(a, 1.0) ? 0.0 : 1.0;
@@ -472,7 +472,7 @@ public class Op {
     }
 
     /**
-     Linearly interpolates the parameter @f$x@f$ in range `[fromMin,fromMax]` to
+     Linearly interpolates the parameter `x` in range `[fromMin,fromMax]` to
      a new value in the range `[toMin,toMax]`
 
      @param x is the source value to interpolate
@@ -481,7 +481,7 @@ public class Op {
      @param toMin is the minimum value of the target range
      @param toMax is the maximum value of the target range
      @return the source value linearly interpolated to the target range:
-     @f$ y = y_a + (y_b - y_a) \dfrac{x-x_a}{x_b-x_a} @f$
+     ` y = y_a + (y_b - y_a) \dfrac{x-x_a}{x_b-x_a} `
      */
     public static double scale(double x, double fromMin, double fromMax,
             double toMin, double toMax) {
@@ -489,7 +489,7 @@ public class Op {
     }
 
     /**
-     Linearly interpolates the parameter @f$x@f$ in range `[fromMin,fromMax]` to
+     Linearly interpolates the parameter `x` in range `[fromMin,fromMax]` to
      a new value in the range `[toMin,toMax]`, truncated to the range
      `[toMin,toMax]` if bounded is `true`.
 
@@ -501,7 +501,7 @@ public class Op {
      @param bounded determines whether the resulting value is bounded to the
      range
      @return the source value linearly interpolated to the target range:
-     @f$ y = y_a + (y_b - y_a) \dfrac{x-x_a}{x_b-x_a} @f$
+     ` y = y_a + (y_b - y_a) \dfrac{x-x_a}{x_b-x_a} `
      */
     public static double scale(double x, double fromMin, double fromMax,
             double toMin, double toMax, boolean bounded) {
@@ -528,7 +528,7 @@ public class Op {
      Computes the mean of the array
 
      @param x is the array
-     @return @f$\dfrac{\sum_i{x_i}}{|x|}@f$
+     @return `\dfrac{\sum_i{x_i}}{|x|}`
      */
     public static double mean(double[] x) {
         return sum(x) / x.length;
@@ -538,7 +538,7 @@ public class Op {
      Computes the variance of the array
 
      @param x is the array
-     @return @f$ \sum_i{ (x_i - \bar{x})^2 } / (|x| - 1) @f$
+     @return ` \sum_i{ (x_i - \bar{x})^2 } / (|x| - 1) `
      */
     public static double variance(double[] x) {
         return variance(x, mean(x));
@@ -549,7 +549,7 @@ public class Op {
 
      @param x is the vector
      @param mean is the mean value of the vector
-     @return @f$ \sum_i{ (x_i - \bar{x})^2 } / (|x| - 1) @f$
+     @return ` \sum_i{ (x_i - \bar{x})^2 } / (|x| - 1) `
      */
     public static double variance(double[] x, double mean) {
         if (x.length == 0) {
@@ -570,7 +570,7 @@ public class Op {
      Computes the standard deviation of the vector
 
      @param x
-     @return @f$ \sqrt{\mbox{variance}(x, \bar{x})} @f$
+     @return ` \sqrt{\mbox{variance}(x, \bar{x})} `
      */
     public static double standardDeviation(double[] x) {
         return standardDeviation(x, mean(x));
@@ -581,7 +581,7 @@ public class Op {
 
      @param x
      @param mean is the mean value of x
-     @return @f$ \sqrt{\mbox{variance}(x, \bar{x})} @f$
+     @return ` \sqrt{\mbox{variance}(x, \bar{x})} `
      */
     public static double standardDeviation(double[] x, double mean) {
         if (x.length == 0) {
@@ -725,17 +725,17 @@ public class Op {
     }
 
     /**
-     Increments @f$x@f$ by the unit, treating the entire vector as a number. For
-     example, incrementing a few times @f$x_0=\{0,0\}@f$ within boundaries
+     Increments `x` by the unit, treating the entire vector as a number. For
+     example, incrementing a few times `x_0=\{0,0\}` within boundaries
 
-     @f$[0,1]@f$ results in: @f$x_1=\{0,1\}@f$,
+     `[0,1]` results in: `x_1=\{0,1\}`,
 
-     @f$x_2=\{1,0\}@f$, @f$x_3=\{1,1\}@f$, @f$x_4=\{0,0\}@f$.
+     `x_2=\{1,0\}`, `x_3=\{1,1\}`, `x_4=\{0,0\}`.
      @param array is the array to increment
      @param min is the minimum value of the dimension
      @param max is the maximum value of the dimension
-     @return `true` if @f$x@f$ was incremented, `false` otherwise (e.g.,
-     incrementing @f$x_3@f$ returns `false`). In earlier versions to 6.0, the
+     @return `true` if `x` was incremented, `false` otherwise (e.g.,
+     incrementing `x_3` returns `false`). In earlier versions to 6.0, the
      result was the inverse and indicated whether the counter had overflown
      (most sincere apologies for this change).
      */
@@ -744,19 +744,19 @@ public class Op {
     }
 
     /**
-     Increments @f$x@f$ by the unit at the given position, treating the entire
+     Increments `x` by the unit at the given position, treating the entire
      vector as a number. For example, incrementing
 
-     @f$x_0=\{0,0,0\}@f$ within boundaries @f$[0,1]@f$ at the second position
-     results in: @f$x_1=\{0,1,0\}@f$, @f$x_2=\{1,0,0\}@f$,
-     @f$x_3=\{1,1,0\}@f$, @f$x_4=\{0,0,0\}@f$.
+     `x_0=\{0,0,0\}` within boundaries `[0,1]` at the second position
+     results in: `x_1=\{0,1,0\}`, `x_2=\{1,0,0\}`,
+     `x_3=\{1,1,0\}`, `x_4=\{0,0,0\}`.
      @param array is the vector to increment
      @param position is the position of the vector to increment, where smaller
      values lead to higher significance digits
      @param min is the minimum value of the dimension
      @param max is the maximum value of the dimension
-     @return `true` if @f$x@f$ was incremented, `false` otherwise (e.g.,
-     incrementing @f$x_3@f$ returns `false`). In earlier versions to 6.0, the
+     @return `true` if `x` was incremented, `false` otherwise (e.g.,
+     incrementing `x_3` returns `false`). In earlier versions to 6.0, the
      result was the inverse and indicated whether the counter had overflown
      (most sincere apologies for this change).
      */

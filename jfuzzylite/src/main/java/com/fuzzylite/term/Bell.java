@@ -93,15 +93,15 @@ public class Bell extends Term {
     }
 
     /**
-     Computes the membership function evaluated at @f$x@f$
+     Computes the membership function evaluated at `x`
 
      @param x
-     @return @f$h / (1 + \left(|x-c|/w\right)^{2s}@f$
+     @return `h / (1 + \left(|x-c|/w\right)^{2s}`
 
-     where @f$h@f$ is the height of the Term,
-     @f$c@f$ is the center of the Bell,
-     @f$w@f$ is the width of the Bell,
-     @f$s@f$ is the slope of the Bell
+     where `h` is the height of the Term,
+     `c` is the center of the Bell,
+     `w` is the width of the Bell,
+     `s` is the slope of the Bell
      */
     @Override
     public double membership(double x) {

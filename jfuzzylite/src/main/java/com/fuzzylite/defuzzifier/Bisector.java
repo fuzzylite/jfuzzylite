@@ -48,7 +48,7 @@ public class Bisector extends IntegralDefuzzifier {
      @param term is the fuzzy set
      @param minimum is the minimum value of the fuzzy set
      @param maximum is the maximum value of the fuzzy set
-     @return the @f$x@f$-coordinate of the bisector of the fuzzy set
+     @return the `x`-coordinate of the bisector of the fuzzy set
      */
     @Override
     public double defuzzify(Term term, double minimum, double maximum) {

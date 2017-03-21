@@ -53,14 +53,14 @@ public class WeightedSumCustom extends WeightedDefuzzifier {
 
     /**
      Computes the weighted sum of the given fuzzy set represented in an
-     Aggregated Term as @f$y = \sum_i{w_iz_i} @f$, where @f$w_i@f$ is the
-     activation degree of term @f$i@f$, and @f$z_i = \mu_i(w_i) @f$.
+     Aggregated Term as `y = \sum_i{w_iz_i} `, where `w_i` is the
+     activation degree of term `i`, and `z_i = \mu_i(w_i) `.
 
      If the implication and aggregation operators are set to fl::null (or set to
      AlgebraicProduct and UnboundedSum, respectively), then the operation of
      WeightedAverageCustom is the same as the WeightedAverage. Otherwise, the
      implication and aggregation operators are utilized to compute the
-     multiplications and sums in @f$y@f$, respectively.
+     multiplications and sums in `y`, respectively.
 
      @param term is the fuzzy set represented as an AggregatedTerm
      @param minimum is the minimum value of the range (only used for Tsukamoto)

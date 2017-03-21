@@ -48,11 +48,11 @@ public class WeightedAverage extends WeightedDefuzzifier {
 
     /**
      Computes the weighted average of the given fuzzy set represented in an
-     Aggregated term as @f$y = \dfrac{\sum_i w_iz_i}{\sum_i w_i} @f$, where
+     Aggregated term as `y = \dfrac{\sum_i w_iz_i}{\sum_i w_i} `, where
 
-     @f$w_i@f$ is the activation degree of term @f$i@f$, and
+     `w_i` is the activation degree of term `i`, and
 
-     @f$z_i = \mu_i(w_i) @f$.
+     `z_i = \mu_i(w_i) `.
 
      From version 6.0, the implication and aggregation operators are not
      utilized for defuzzification.

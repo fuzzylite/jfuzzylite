@@ -36,7 +36,7 @@ public final class AlgebraicSum extends SNorm {
 
      @param a is a membership function value
      @param b is a membership function value
-     @return @f$a+b-(a \times b)@f$
+     @return `a+b-(a \times b)`
      */
     @Override
     public double compute(double a, double b) {

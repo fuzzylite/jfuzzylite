@@ -28,41 +28,41 @@ import java.util.Iterator;
  The OutputVariable class is a Variable that represents an output of the fuzzy
  logic controller. During the activation of a RuleBlock, the Activated terms of
  each Rule will be Aggregated in the OutputVariable::fuzzyOutput(), which
- represents a fuzzy set hereinafter referred to as @f$\tilde{y}@f$. The
- defuzzification of @f$\tilde{y}@f$ translates the fuzzy output value
+ represents a fuzzy set hereinafter referred to as `\tilde{y}`. The
+ defuzzification of `\tilde{y}` translates the fuzzy output value
 
- @f$\tilde{y}@f$ into a crisp output value @f$y@f$, which can be retrieved using
+ `\tilde{y}` into a crisp output value `y`, which can be retrieved using
  Variable::getValue(). The value of the OutputVariable is computed and
  automatically stored when calling OutputVariable::defuzzify(), but the value
  depends on the following properties (expressed in the FuzzyLite Language):
 
- - Property `default: scalar` overrides the output value @f$y@f$ with the given
+ - Property `default: scalar` overrides the output value `y` with the given
  fl::scalar whenever the defuzzification process results in a non-finite value
  (i.e., fl::nan and fl::inf). For example, considering `default: 0.0`, if
  RuleBlock::activate() does not activate any rules whose Consequent contribute
  to the OutputVariable, then the fuzzy output value is empty, the Defuzzifier
- does not operate, and hence @f$y=0.0@f$. By default, `default: NaN`. Relevant
+ does not operate, and hence `y=0.0`. By default, `default: NaN`. Relevant
  methods are OutputVariable::getDefaultValue() and
  OutputVariable::setDefaultValue().
 
  - Property `lock-previous: boolean`, if enabled, overrides the output value
- @f$y^t@f$ at time @f$t@f$ with the previously defuzzified valid output value
- @f$y^{t-1}@f$ if defuzzification process results in a non-finite value (i.e.,
+ `y^t` at time `t` with the previously defuzzified valid output value
+ `y^{t-1}` if defuzzification process results in a non-finite value (i.e.,
  fl::nan and fl::inf). When enabled, the property takes precedence over
- `default` if @f$y^{t-1}@f$ is a finite value. By default, `lock-previous:
- false`, @f$y^{t-1}=\mbox{NaN}@f$ for @f$t=0@f$, and @f$y^{t-1}=\mbox{NaN}@f$
+ `default` if `y^{t-1}` is a finite value. By default, `lock-previous:
+ false`, `y^{t-1}=\mbox{NaN}` for `t=0`, and `y^{t-1}=\mbox{NaN}`
  when OutputVariable::clear(). Relevant methods are
  OutputVariable::lockPreviousValue(), OutputVariable::isLockPreviousValue,
  OutputVariable::getPreviousValue(), and OutputVariable::setPreviousValue().
 
- - Property `lock-range: boolean` overrides the output value @f$y@f$ to enforce
+ - Property `lock-range: boolean` overrides the output value `y` to enforce
  it lies within the range of the variable determined by Variable::getMinimum()
  and Variable::getMaximum(). When enabled, this property takes precedence over
  `lock-previous` and `default`. For example, considering `range: -1.0 1.0` and
  `lock-range: true`,
 
- @f$y=-1.0@f$ if the result from the Defuzzifier is smaller than `-1.0`, and
- @f$y=1.0@f$ if the result from the Defuzzifier is greater than `1.0`. The
+ `y=-1.0` if the result from the Defuzzifier is smaller than `-1.0`, and
+ `y=1.0` if the result from the Defuzzifier is greater than `1.0`. The
  property `lock-range` was introduced in version 5.0 to substitute the property
  `lock-valid` in version 4.0. By default, `lock-range: false`. Relevant methods
  are Variable::lockValueInRange(), Variable::isLockValueInRange(),
@@ -108,9 +108,9 @@ public class OutputVariable extends Variable {
     }
 
     /**
-     Gets the fuzzy output value @f$\tilde{y}@f$
+     Gets the fuzzy output value `\tilde{y}`
 
-     @return the fuzzy output value @f$\tilde{y}@f$
+     @return the fuzzy output value `\tilde{y}`
 
      @todo rename to fuzzyValue
      */
@@ -277,9 +277,9 @@ public class OutputVariable extends Variable {
     }
 
     /**
-     Gets a string representation of the fuzzy output value @f$\tilde{y}@f$
+     Gets a string representation of the fuzzy output value `\tilde{y}`
 
-     @return a string representation of the fuzzy output value @f$\tilde{y}@f$
+     @return a string representation of the fuzzy output value `\tilde{y}`
      */
     public String fuzzyOutputValue() {
         StringBuilder sb = new StringBuilder();
@@ -303,9 +303,9 @@ public class OutputVariable extends Variable {
     }
 
     /**
-     Clears the output variable by setting @f$\tilde{y}=\{\}@f$,
+     Clears the output variable by setting `\tilde{y}=\{\}`,
 
-     @f$y^{t}=\mbox{NaN}@f$, @f$y^{t-1}=\mbox{NaN}@f$
+     `y^{t}=\mbox{NaN}`, `y^{t-1}=\mbox{NaN}`
      */
     public void clear() {
         fuzzyOutput().clear();

@@ -91,14 +91,14 @@ public class Gaussian extends Term {
     }
 
     /**
-     Computes the membership function evaluated at @f$x@f$
+     Computes the membership function evaluated at `x`
 
      @param x
-     @return @f$ h \times \exp(-(x-\mu)^2/(2\sigma^2))@f$
+     @return ` h \times \exp(-(x-\mu)^2/(2\sigma^2))`
 
-     where @f$h@f$ is the height of the Term,
-     @f$\mu@f$ is the mean of the Gaussian,
-     @f$\sigma@f$ is the standard deviation of the Gaussian
+     where `h` is the height of the Term,
+     `\mu` is the mean of the Gaussian,
+     `\sigma` is the standard deviation of the Gaussian
      */
     @Override
     public double membership(double x) {

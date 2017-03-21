@@ -515,11 +515,11 @@ public class Benchmark {
      difference between the expected and obtained values is not smaller than the
      tolerance.
 
-     @f$\text{E} = \sum_y \sum_i \epsilon_i^y, \text{where } \epsilon_i^y =
+     `\text{E} = \sum_y \sum_i \epsilon_i^y, \text{where } \epsilon_i^y =
      \begin{cases} 0 & \text{if} |e_i^y - o^y_i| < \theta\\ 1 & \text{otherwise}
-     \end{cases} @f$, @f$y@f$ is the set of output variable s , @f$e@f$ is the
-     set of expected output values, @f$o@f$ is the set of obtained output
-     values, and @f$\theta@f$ is the tolerance
+     \end{cases} `, `y` is the set of output variable s , `e` is the
+     set of expected output values, `o` is the set of obtained output
+     values, and `\theta` is the tolerance
 
      @return the number of errors over all the output variables caused by a
      significant difference in accuracy
@@ -534,10 +534,10 @@ public class Benchmark {
      difference between the expected and obtained values is not smaller than the
      tolerance.
 
-     @f$\text{E} = \sum_i \epsilon_i, \text{where } \epsilon_i = \begin{cases} 0
-     & \text{if} |e_i - o_i| < \theta\\ 1 & \text{otherwise} \end{cases} @f$,
-     @f$e@f$ is the set of expected output values,
-     @f$o@f$ is the set of obtained output values, and @f$\theta@f$ is the
+     `\text{E} = \sum_i \epsilon_i, \text{where } \epsilon_i = \begin{cases} 0
+     & \text{if} |e_i - o_i| < \theta\\ 1 & \text{otherwise} \end{cases} `,
+     `e` is the set of expected output values,
+     `o` is the set of obtained output values, and `\theta` is the
      tolerance
 
      @param outputVariable is the output variable to account the errors for

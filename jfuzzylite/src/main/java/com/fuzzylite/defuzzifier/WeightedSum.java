@@ -48,8 +48,8 @@ public class WeightedSum extends WeightedDefuzzifier {
 
     /**
      Computes the weighted sum of the given fuzzy set represented as an
-     Aggregated term as @f$y = \sum_i{w_iz_i} @f$, where @f$w_i@f$ is the
-     activation degree of term @f$i@f$, and @f$z_i = \mu_i(w_i) @f$.
+     Aggregated term as `y = \sum_i{w_iz_i} `, where `w_i` is the
+     activation degree of term `i`, and `z_i = \mu_i(w_i) `.
 
      From version 6.0, the implication and aggregation operators are not
      utilized for defuzzification.

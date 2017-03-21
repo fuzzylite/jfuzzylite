@@ -36,7 +36,7 @@ public final class NormalizedSum extends SNorm {
 
      @param a is a membership function value
      @param b is a membership function value
-     @return @f$(a+b)/\max(1, a + b)@f$
+     @return `(a+b)/\max(1, a + b)`
      */
     @Override
     public double compute(double a, double b) {

@@ -30,12 +30,12 @@ import com.fuzzylite.Op;
 public final class Seldom extends Hedge {
 
     /**
-     Computes the hedge for the membership function value @f$x@f$
+     Computes the hedge for the membership function value `x`
 
      @param x is a membership function value
-     @return @f$ \begin{cases} \sqrt{0.5x} & \mbox{if $x \le 0.5$} \cr
+     @return ` \begin{cases} \sqrt{0.5x} & \mbox{if $x \le 0.5$} \cr
      1-\sqrt{0.5(1-x)} & \mbox{otherwise}\cr \end{cases}
-     @f$
+     `
      */
     @Override
     public double hedge(double x) {

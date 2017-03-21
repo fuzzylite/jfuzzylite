@@ -90,15 +90,15 @@ public class ZShape extends Term {
     }
 
     /**
-     Computes the membership function evaluated at @f$x@f$
+     Computes the membership function evaluated at `x`
 
      @param x
-     @return @f$ \begin{cases} 1h & \mbox{if $x \leq s$} \cr h(1 - 2\left((x -
+     @return ` \begin{cases} 1h & \mbox{if $x \leq s$} \cr h(1 - 2\left((x -
      s) / (e-s)\right)^2) & \mbox{if $x \leq 0.5(s+e)$}\cr h(2 \left((x - e) /
-     (e-s)\right)^2) & \mbox{if $x < e$}\cr 0h & \mbox{otherwise} \end{cases}@f$
+     (e-s)\right)^2) & \mbox{if $x < e$}\cr 0h & \mbox{otherwise} \end{cases}`
 
-     where @f$h@f$ is the height of the Term, @f$s@f$ is the start of the
-     ZShape, @f$e@f$ is the end of the ZShape.
+     where `h` is the height of the Term, `s` is the start of the
+     ZShape, `e` is the end of the ZShape.
      */
     @Override
     public double membership(double x) {

@@ -35,10 +35,10 @@ import java.util.Locale;
 public abstract class Hedge implements Op.Cloneable {
 
     /**
-     Computes the hedge for the membership function value @f$x@f$
+     Computes the hedge for the membership function value `x`
 
      @param x is a membership function value
-     @return the hedge of @f$x@f$
+     @return the hedge of `x`
      */
     public abstract double hedge(double x);
 

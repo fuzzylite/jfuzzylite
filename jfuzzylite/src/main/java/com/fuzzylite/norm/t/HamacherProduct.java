@@ -37,7 +37,7 @@ public final class HamacherProduct extends TNorm {
 
      @param a is a membership function value
      @param b is a membership function value
-     @return @f$(a \times b) / (a+b- a \times b)@f$
+     @return `(a \times b) / (a+b- a \times b)`
      */
     @Override
     public double compute(double a, double b) {

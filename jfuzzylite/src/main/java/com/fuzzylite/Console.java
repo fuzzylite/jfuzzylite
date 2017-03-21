@@ -540,10 +540,10 @@ public class Console {
     /**
      Creates a new TakagiSugeno Engine based on the Approximation example of
 
-     @f$sin(x)/x@f$
+     `sin(x)/x`
 
      @return a new TakagiSugeno Engine based on the Approximation example of
-     @f$sin(x)/x@f$
+     `sin(x)/x`
      */
     public static Engine takagiSugeno() {
         Engine engine = new Engine();

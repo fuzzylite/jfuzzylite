@@ -36,7 +36,7 @@ public final class Minimum extends TNorm {
 
      @param a is a membership function value
      @param b is a membership function value
-     @return @f$\min(a,b)@f$
+     @return `\min(a,b)`
      */
     @Override
     public double compute(double a, double b) {

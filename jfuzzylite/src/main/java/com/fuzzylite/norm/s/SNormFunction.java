@@ -21,7 +21,7 @@ import com.fuzzylite.term.Function;
 
 /**
  The SNormFunction class is a customizable SNorm via Function, which computes
- any function based on the @f$a@f$ and @f$b@f$ values. This SNorm is not
+ any function based on the `a` and `b` values. This SNorm is not
  registered with the SNormFactory.
 
  @author Juan Rada-Vilela, Ph.D.
@@ -52,7 +52,7 @@ public final class SNormFunction extends SNorm {
      Computes the S-Norm utilizing the given function via
      SNormFunction::setFormula(), which automatically assigns the values of
 
-     @f$a@f$ and @f$b@f$.
+     `a` and `b`.
 
      @param a is a membership function value
      @param b is a membership function value

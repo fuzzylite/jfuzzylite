@@ -98,19 +98,19 @@ public class PiShape extends Term {
     }
 
     /**
-     Computes the membership function evaluated at @f$x@f$
+     Computes the membership function evaluated at `x`
 
      @param x
-     @return @f$\begin{cases} 0h & \mbox{if $x \leq b_l$}\cr 2h \left((x - b_l)
+     @return `\begin{cases} 0h & \mbox{if $x \leq b_l$}\cr 2h \left((x - b_l)
      / (t_l-b_l)\right)^2 & \mbox{if $x \leq 0.5(a+b)$}\cr h (1 - 2 \left((x -
      t_l) / (t_l-b_l)\right)^2) & \mbox{if $ x < t_l$}\cr h & \mbox{if $x \leq
      t_r$}\cr h (1 - 2\left((x - t_r) / (b_r - t_r)\right)^2) & \mbox{if $x \leq
      0.5(t_r + b_r)$}\cr 2h \left((x - b_r) / (b_r-t_r)\right)^2 & \mbox{if $x <
-     b_r$} \cr 0h & \mbox{otherwise} \end{cases}@f$
+     b_r$} \cr 0h & \mbox{otherwise} \end{cases}`
 
-     where @f$h@f$ is the height of the Term, @f$b_l@f$ is the bottom left of
-     the PiShape, @f$t_l@f$ is the top left of the PiShape, @f$t_r@f$ is the top
-     right of the PiShape @f$b_r@f$ is the bottom right of the PiShape,
+     where `h` is the height of the Term, `b_l` is the bottom left of
+     the PiShape, `t_l` is the top left of the PiShape, `t_r` is the top
+     right of the PiShape `b_r` is the bottom right of the PiShape,
      */
     @Override
     public double membership(double x) {

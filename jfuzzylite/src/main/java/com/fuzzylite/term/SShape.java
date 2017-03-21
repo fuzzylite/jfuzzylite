@@ -90,15 +90,15 @@ public class SShape extends Term {
     }
 
     /**
-     Computes the membership function evaluated at @f$x@f$
+     Computes the membership function evaluated at `x`
 
      @param x
-     @return @f$\begin{cases} 0h & \mbox{if $x \leq s$} \cr h(2 \left((x - s) /
+     @return `\begin{cases} 0h & \mbox{if $x \leq s$} \cr h(2 \left((x - s) /
      (e-s)\right)^2) & \mbox{if $x \leq 0.5(s+e)$}\cr h(1 - 2\left((x - e) /
-     (e-s)\right)^2) & \mbox{if $x < e$}\cr 1h & \mbox{otherwise} \end{cases}@f$
+     (e-s)\right)^2) & \mbox{if $x < e$}\cr 1h & \mbox{otherwise} \end{cases}`
 
-     where @f$h@f$ is the height of the Term, @f$s@f$ is the start of the
-     SShape, @f$e@f$ is the end of the SShape.
+     where `h` is the height of the Term, `s` is the start of the
+     SShape, `e` is the end of the SShape.
      */
     @Override
     public double membership(double x) {

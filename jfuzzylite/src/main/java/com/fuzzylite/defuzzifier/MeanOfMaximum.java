@@ -49,7 +49,7 @@ public class MeanOfMaximum extends IntegralDefuzzifier {
      @param term is the fuzzy set
      @param minimum is the minimum value of the fuzzy set
      @param maximum is the maximum value of the fuzzy set
-     @return the mean @f$x@f$-coordinate of the maximum membership function
+     @return the mean `x`-coordinate of the maximum membership function
      value in the fuzzy set
      */
     @Override

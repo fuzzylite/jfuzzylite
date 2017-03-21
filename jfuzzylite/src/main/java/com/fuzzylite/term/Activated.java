@@ -49,10 +49,10 @@ public class Activated extends Term {
 
     /**
      Computes the implication of the activation degree and the membership
-     function value of @f$x@f$
+     function value of `x`
 
      @param x is a value
-     @return @f$d \otimes \mu(x)@f$, where @f$d@f$ is the activation degree
+     @return `d \otimes \mu(x)`, where `d` is the activation degree
      */
     @Override
     public double membership(double x) {

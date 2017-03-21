@@ -112,7 +112,7 @@ public abstract class Term implements Op.Cloneable {
      by spaces. If there is one additional parameter, the parameter will be
      considered as the height of the term; otherwise, the height will be set to
 
-     @f$1.0@f$
+     `1.0`
 
      @return the parameters to configure the term (@see Term::configure())
      */
@@ -123,17 +123,17 @@ public abstract class Term implements Op.Cloneable {
      by spaces. If there is one additional parameter, the parameter will be
      considered as the height of the term; otherwise, the height will be set to
 
-     @f$1.0@f$
+     `1.0`
 
      @param parameters is the parameters to configure the term
      */
     public abstract void configure(String parameters);
 
     /**
-     Computes the membership function value at @f$x@f$
+     Computes the membership function value at `x`
 
      @param x
-     @return the membership function value @f$\mu(x)@f$
+     @return the membership function value `\mu(x)`
      */
     public abstract double membership(double x);
 
@@ -160,11 +160,11 @@ public abstract class Term implements Op.Cloneable {
 
     /**
      For monotonic terms, computes the tsukamoto value of the term for the given
-     activation degree @f$\alpha@f$, that is,
+     activation degree `\alpha`, that is,
 
-     @f$ g_j(\alpha) = \{ z \in\mathbb{R} : \mu_j(z) = \alpha \} $@f. If the
+     ` g_j(\alpha) = \{ z \in\mathbb{R} : \mu_j(z) = \alpha \} $@f. If the
      term is not monotonic (or does not override this method) the method
-     computes the membership function @f$\mu(\alpha)@f$.
+     computes the membership function `\mu(\alpha)`.
      @param activationDegree is the activationDegree
      @param minimum is the minimum value of the range of the term
      @param maximum is the maximum value of the range of the term

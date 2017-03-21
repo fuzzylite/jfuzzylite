@@ -37,7 +37,7 @@ public final class BoundedSum extends SNorm {
 
      @param a is a membership function value
      @param b is a membership function value
-     @return @f$\min(1, a+b)@f$
+     @return `\min(1, a+b)`
      */
     @Override
     public double compute(double a, double b) {

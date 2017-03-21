@@ -56,11 +56,11 @@ public class FldExporter extends Exporter {
      */
     public enum ScopeOfValues {
         /**
-         Generates @f$n@f$ values for each variable
+         Generates `n` values for each variable
          */
         EachVariable,
         /**
-         Generates @f$n@f$ values for all variables
+         Generates `n` values for all variables
          */
         AllVariables
     }

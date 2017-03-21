@@ -107,11 +107,11 @@ public class Ramp extends Term {
     }
 
     /**
-     Computes the membership function evaluated at @f$x@f$
+     Computes the membership function evaluated at `x`
 
      @param x
      @return
-     @f$\begin{cases}
+     `\begin{cases}
 
      0h & \mbox{if $x = e$}\cr
 
@@ -122,11 +122,11 @@ public class Ramp extends Term {
      0h & \mbox{if $x \geq s$}\cr
      1h & \mbox{if $x \leq e$}\cr
      h (s - x) / (s - e) & \mbox{otherwise}
-     \end{cases} & \mbox{if $s > e$}\cr \end{cases}@f$
+     \end{cases} & \mbox{if $s > e$}\cr \end{cases}`
 
-     where @f$h@f$ is the height of the Term,
-     @f$s@f$ is the start of the Ramp,
-     @f$e@f$ is the end of the Ramp
+     where `h` is the height of the Term,
+     `s` is the start of the Ramp,
+     `e` is the end of the Ramp
      */
     @Override
     public double membership(double x) {

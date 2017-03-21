@@ -37,8 +37,8 @@ public final class DrasticSum extends SNorm {
 
      @param a is a membership function value
      @param b is a membership function value
-     @return @f$\begin{cases} \max(a,b) & \mbox{if $\min(a,b)=0$} \cr 1 &
-     \mbox{otherwise} \end{cases}@f$
+     @return `\begin{cases} \max(a,b) & \mbox{if $\min(a,b)=0$} \cr 1 &
+     \mbox{otherwise} \end{cases}`
      */
     @Override
     public double compute(double a, double b) {

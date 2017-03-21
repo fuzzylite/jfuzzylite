@@ -20,7 +20,7 @@ import com.fuzzylite.term.Function;
 
 /**
  The HedgeFunction class is a customizable Hedge via Function, which computes
- any function based on the @f$x@f$ value. This hedge is not registered with the
+ any function based on the `x` value. This hedge is not registered with the
  HedgeFactory due to issues configuring the formula within. To register the
  hedge, a static method with the constructor needs to be manually created and
  registered.
@@ -75,7 +75,7 @@ public final class HedgeFunction extends Hedge {
     }
 
     /**
-     Computes the hedge for the membership function value @f$x@f$ utilizing the
+     Computes the hedge for the membership function value `x` utilizing the
      given function via HedgeFunction::setFormula()
 
      @param x is a membership function value

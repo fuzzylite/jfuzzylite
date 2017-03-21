@@ -37,7 +37,7 @@ public final class HamacherSum extends SNorm {
 
      @param a is a membership function value
      @param b is a membership function value
-     @return @f$a+b-(2\times a \times b)/(1-a\times b)@f$
+     @return `a+b-(2\times a \times b)/(1-a\times b)`
      */
     @Override
     public double compute(double a, double b) {

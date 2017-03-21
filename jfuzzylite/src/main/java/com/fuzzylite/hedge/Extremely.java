@@ -30,11 +30,11 @@ import com.fuzzylite.Op;
 public final class Extremely extends Hedge {
 
     /**
-     Computes the hedge for the membership function value @f$x@f$
+     Computes the hedge for the membership function value `x`
 
      @param x is a membership function value
-     @return @f$ \begin{cases} 2x^2 & \mbox{if $x \le 0.5$} \cr 1-2(1-x)^2 &
-     \mbox{otherwise} \cr \end{cases}@f$
+     @return ` \begin{cases} 2x^2 & \mbox{if $x \le 0.5$} \cr 1-2(1-x)^2 &
+     \mbox{otherwise} \cr \end{cases}`
      */
     @Override
     public double hedge(double x) {

@@ -95,11 +95,11 @@ public class Aggregated extends Term {
     }
 
     /**
-     Aggregates the membership function values of @f$x@f$ utilizing the
+     Aggregates the membership function values of `x` utilizing the
      aggregation operator
 
      @param x is a value
-     @return @f$\sum_i{\mu_i(x)}, i \in \mbox{terms}@f$
+     @return `\sum_i{\mu_i(x)}, i \in \mbox{terms}`
      */
     @Override
     public double membership(double x) {

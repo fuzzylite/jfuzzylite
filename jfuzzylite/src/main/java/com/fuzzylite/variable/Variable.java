@@ -205,16 +205,16 @@ public class Variable implements Op.Cloneable {
      Gets whether the variable locks the current value to the range of the
      variable
 
-     If enabled in an InputVariable @f$i@f$, the input value @f$x_i@f$ will be
-     used when computing the Antecedent::activationDegree() as long as @f$x_i
-     \in [\mbox{min}, \mbox{max}]@f$. Else, for the case of
+     If enabled in an InputVariable `i`, the input value `x_i` will be
+     used when computing the Antecedent::activationDegree() as long as `x_i
+     \in [\mbox{min}, \mbox{max}]`. Else, for the case of
 
-     @f$x_i \not\in [\mbox{min}, \mbox{max}]@f$, the range values will be used
-     instead but without changing the input value @f$x_i@f$.
+     `x_i \not\in [\mbox{min}, \mbox{max}]`, the range values will be used
+     instead but without changing the input value `x_i`.
 
-     If enabled in an OutputVariable @f$j@f$, the output value @f$y_j@f$ will be
-     overriden by the range values when @f$y_j \not\in [\mbox{min},
-     \mbox{max}]@f$. See OutputVariable for more information.
+     If enabled in an OutputVariable `j`, the output value `y_j` will be
+     overriden by the range values when `y_j \not\in [\mbox{min},
+     \mbox{max}]`. See OutputVariable for more information.
 
      @return whether the variable locks the current value to the range of the
      variable
@@ -227,16 +227,16 @@ public class Variable implements Op.Cloneable {
      Sets whether the variable locks the current value to the range of the
      variable.
 
-     If enabled in an InputVariable @f$i@f$, the input value @f$x_i@f$ will be
-     used when computing the Antecedent::activationDegree() as long as @f$x_i
-     \in [\mbox{min}, \mbox{max}]@f$. Else, for the case of
+     If enabled in an InputVariable `i`, the input value `x_i` will be
+     used when computing the Antecedent::activationDegree() as long as `x_i
+     \in [\mbox{min}, \mbox{max}]`. Else, for the case of
 
-     @f$x_i \not\in [\mbox{min}, \mbox{max}]@f$, the range values will be used
-     instead but without changing the input value @f$x_i@f$.
+     `x_i \not\in [\mbox{min}, \mbox{max}]`, the range values will be used
+     instead but without changing the input value `x_i`.
 
-     If enabled in an OutputVariable @f$j@f$, the output value @f$y_j@f$ will be
-     overriden by the range values when @f$y_j \not\in [\mbox{min},
-     \mbox{max}]@f$. See OutputVariable for more information.
+     If enabled in an OutputVariable `j`, the output value `y_j` will be
+     overriden by the range values when `y_j \not\in [\mbox{min},
+     \mbox{max}]`. See OutputVariable for more information.
 
      @param lockValueInRange indicates whether to lock the value to the range of
      the variable
@@ -266,12 +266,12 @@ public class Variable implements Op.Cloneable {
     }
 
     /**
-     Evaluates the membership function of value @f$x@f$ for each term @f$i@f$,
+     Evaluates the membership function of value `x` for each term `i`,
      resulting in a fuzzy value in the form
 
-     @f$\tilde{x}=\sum_i{\mu_i(x)/i}@f$
+     `\tilde{x}=\sum_i{\mu_i(x)/i}`
      @param x is the value to fuzzify
-     @return the fuzzy value expressed as @f$\sum_i{\mu_i(x)/i}@f$
+     @return the fuzzy value expressed as `\sum_i{\mu_i(x)/i}`
      */
     public String fuzzify(double x) {
         StringBuilder sb = new StringBuilder();
@@ -294,11 +294,11 @@ public class Variable implements Op.Cloneable {
     /**
      Gets the term which has the highest membership function value for
 
-     @f$x@f$.
+     `x`.
 
      @param x is the value of interest
      @return a pair containing the highest membership function value and the
-     term @f$i@f$ that maximizes @f$\mu_i(x)@f$.
+     term `i` that maximizes `\mu_i(x)`.
      */
     public Op.Pair<Double, Term> highestMembership(double x) {
         Op.Pair<Double, Term> result = new Op.Pair<Double, Term>(0.0, null);
@@ -313,7 +313,7 @@ public class Variable implements Op.Cloneable {
     }
 
     /**
-     Gets the highest membership function value for @f$x@f$.
+     Gets the highest membership function value for `x`.
 
      @param x is the value of interest
      @return the highest membership function value
@@ -325,10 +325,10 @@ public class Variable implements Op.Cloneable {
     /**
      Gets the term which has the highest membership function value for
 
-     @f$x@f$.
+     `x`.
 
      @param x is the value of interest
-     @return the term @f$i@f$ that maximizes @f$\mu_i(x)@f$.
+     @return the term `i` that maximizes `\mu_i(x)`.
      */
     public Term highestMembershipTerm(double x) {
         return highestMembership(x).getSecond();

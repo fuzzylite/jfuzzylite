@@ -97,15 +97,15 @@ public class Triangle extends Term {
     }
 
     /**
-     Computes the membership function evaluated at @f$x@f$
+     Computes the membership function evaluated at `x`
 
      @param x
-     @return @f$\begin{cases} 0h & \mbox{if $x \not\in [a,c]$}\cr 1h & \mbox{if
+     @return `\begin{cases} 0h & \mbox{if $x \not\in [a,c]$}\cr 1h & \mbox{if
      $x = b$}\cr h (x - a) / (b - a) & \mbox{if $x < b$} \cr h (c - x) / (c - b)
-     & \mbox{otherwise} \end{cases}@f$
+     & \mbox{otherwise} \end{cases}`
 
-     where @f$h@f$ is the height of the Term, @f$a@f$ is the first vertex of the
-     Triangle, @f$b@f$ is the second vertex of the Triangle, @f$c@f$ is the
+     where `h` is the height of the Term, `a` is the first vertex of the
+     Triangle, `b` is the second vertex of the Triangle, `c` is the
      third vertex of the Triangle
      */
     @Override
