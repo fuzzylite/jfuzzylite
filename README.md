@@ -1,6 +1,6 @@
 jfuzzylite 6.0 &reg;
 ====================
-<img src="https://raw.githubusercontent.com/fuzzylite/jfuzzylite/master/fuzzylite.png" align="right" alt="jfuzzylite">
+<img src="https://raw.githubusercontent.com/fuzzylite/jfuzzylite/master/jfuzzylite.png" align="right" alt="jfuzzylite">
 
 
 A Fuzzy Logic Control Library in Java
