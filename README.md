@@ -251,7 +251,7 @@ The Maven script will create the library `target/jfuzzylite-6.0.jar` and the sou
 $ ant -f build.xml
 ```
 
-The Ant script will create the library `target/jfuzzylite-6.0.jar`.
+The Ant script will create the library `target/jfuzzylite-6.0.jar` and the source code `target/jfuzzylite-6.0-sources.jar`.
 
 
 #### Documentation
