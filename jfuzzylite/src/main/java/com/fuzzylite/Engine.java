@@ -253,7 +253,7 @@ public class Engine implements Op.Cloneable {
                 int requiresConjunction = 0;
                 int requiresDisjunction = 0;
                 int requiresImplication = 0;
-                for (int r = 0; r < this.ruleBlocks.size(); ++r) {
+                for (int r = 0; r < ruleBlock.numberOfRules(); ++r) {
                     Rule rule = ruleBlock.getRule(r);
                     if (rule == null) {
                         message.append(String.format(
