@@ -1,4 +1,4 @@
-jfuzzylite 6.0 &reg;
+jfuzzylite&trade; 6.0 
 ====================
 <img src="https://raw.githubusercontent.com/fuzzylite/jfuzzylite/master/jfuzzylite.png" align="right" alt="jfuzzylite">
 
