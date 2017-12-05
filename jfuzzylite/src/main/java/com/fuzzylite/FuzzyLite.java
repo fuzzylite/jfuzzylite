@@ -44,6 +44,7 @@ public class FuzzyLite {
         protected DecimalFormat initialValue() {
             NumberFormat df = NumberFormat.getNumberInstance(Locale.ROOT);
             df.setMinimumFractionDigits(decimals);
+            df.setMaximumFractionDigits(decimals);
             return (DecimalFormat) df;
         }
     }
@@ -126,6 +127,7 @@ public class FuzzyLite {
         FuzzyLite.decimals = decimals;
         DecimalFormat decimalFormat = FORMATTER.get();
         decimalFormat.setMinimumFractionDigits(decimals);
+        decimalFormat.setMaximumFractionDigits(decimals);
     }
 
     /**
