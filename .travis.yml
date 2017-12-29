@@ -12,18 +12,20 @@ script:
     fi
 
 env:
-  - FL_BUILDER=mvn
-  - FL_BUILDER=ant
   matrix:
-    include:
-      - addons:
-          apt:
-            packages:
-              - openjdk-6-jdk
-        jdk: openjdk6
-      - jdk: openjdk7
-      - jdk: oraclejdk8
-      - jdk: oraclejdk9
+    - FL_BUILDER=mvn
+    - FL_BUILDER=ant
+    
+matrix:
+  include:
+    - addons:
+        apt:
+          packages:
+            - openjdk-6-jdk
+      jdk: openjdk6
+    - jdk: openjdk7
+    - jdk: oraclejdk8
+    - jdk: oraclejdk9
 
 notifications:
   email:
