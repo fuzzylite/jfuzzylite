@@ -1,4 +1,9 @@
 language: java
+
+addons:
+  apt:
+    packages:
+      - openjdk-6-jdk
 git:
   depth: 1
 script:
@@ -14,6 +19,11 @@ script:
     
 matrix:
   include:
+    - jdk: openjdk6
+      env: FL_BUILDER=mvn
+    - jdk: openjdk6
+      env: FL_BUILDER=ant
+      
     - jdk: openjdk7
       env: FL_BUILDER=mvn
     - jdk: openjdk7
