@@ -12,14 +12,25 @@ script:
     fi
 
 env:
-  - FL_BUILDER=mvn
+  - 
   - FL_BUILDER=ant
     
 matrix:
   include:
     - jdk: openjdk7
+      env: FL_BUILDER=mvn
+    - jdk: openjdk7
+      env: FL_BUILDER=ant
+
     - jdk: oraclejdk8
+      env: FL_BUILDER=mvn
+    - jdk: oraclejdk8
+      env: FL_BUILDER=ant
+
     - jdk: oraclejdk9
+      env: FL_BUILDER=mvn
+    - jdk: oraclejdk9
+      env: FL_BUILDER=ant
 
 notifications:
   email:
