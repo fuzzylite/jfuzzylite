@@ -6,6 +6,7 @@ addons:
       - openjdk-6-jdk
 git:
   depth: 1
+
 script:
   - cd jfuzzylite
   - if [ "$FL_BUILDER" = "mvn" ]; 
@@ -20,7 +21,7 @@ script:
 matrix:
   include:
     - jdk: openjdk6
-      env: FL_BUILDER=mvn
+      env: FL_BUILDER=mvn MAVEN_VERSION="3.0"
     - jdk: openjdk6
       env: FL_BUILDER=ant
       
@@ -38,6 +39,15 @@ matrix:
       env: FL_BUILDER=mvn
     - jdk: oraclejdk9
       env: FL_BUILDER=ant
+      
+install:
+  - if [[ -n "${MAVEN_VERSION}" ]]; then
+        wget https://archive.apache.org/dist/maven/binaries/apache-maven-"${MAVEN_VERSION}"-bin.zip || travis_terminate 1;
+        unzip -qq apache-maven-${MAVEN_VERSION}-bin.zip || travis_terminate 1;
+        export M2_HOME=$PWD/apache-maven-${MAVEN_VERSION};
+        export PATH=$M2_HOME/bin:$PATH;
+        mvn -version;
+    fi
 
 notifications:
   email:
