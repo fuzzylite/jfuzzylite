@@ -1,10 +1,11 @@
 language: java
 
-jdk:
-  - openjdk6
-  - openjdk7
-  - oraclejdk7
-  - oraclejdk8
+addons:
+  apt:
+    packages:
+      - openjdk-6-jdk
+git:
+  depth: 1
 
 script:
   - cd jfuzzylite
@@ -16,15 +17,41 @@ script:
     then
     ant -f build.xml ;
     fi
+    
+matrix:
+  include:
+    - jdk: openjdk6
+      env: FL_BUILDER=mvn MAVEN_VERSION="3.0"
+    - jdk: openjdk6
+      env: FL_BUILDER=ant
+      
+    - jdk: openjdk7
+      env: FL_BUILDER=mvn
+    - jdk: openjdk7
+      env: FL_BUILDER=ant
 
-env:
-  matrix:
-    - FL_BUILDER=mvn
-    - FL_BUILDER=ant
+    - jdk: oraclejdk8
+      env: FL_BUILDER=mvn
+    - jdk: oraclejdk8
+      env: FL_BUILDER=ant
+
+    - jdk: oraclejdk9
+      env: FL_BUILDER=mvn
+    - jdk: oraclejdk9
+      env: FL_BUILDER=ant
+      
+install:
+  - if [[ -n "${MAVEN_VERSION}" ]]; then
+        wget https://archive.apache.org/dist/maven/binaries/apache-maven-"${MAVEN_VERSION}"-bin.zip || travis_terminate 1;
+        unzip -qq apache-maven-${MAVEN_VERSION}-bin.zip || travis_terminate 1;
+        export M2_HOME=$PWD/apache-maven-${MAVEN_VERSION};
+        export PATH=$M2_HOME/bin:$PATH;
+        mvn -version;
+    fi
 
 notifications:
   email:
     recipients:
       - jcrada@fuzzylite.com
-    on_success: change
+    on_success: always
     on_failure: always

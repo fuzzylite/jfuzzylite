@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.fuzzylite</groupId>
     <artifactId>jfuzzylite</artifactId>
-    <version>6.0</version>
+    <version>6.0.1</version>
     <packaging>jar</packaging>
 
     <licenses>
@@ -125,20 +125,6 @@
             </plugin>
 
             <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-source-plugin</artifactId>
-                <version>2.4</version>
-                <executions>
-                    <execution>
-                        <id>attach-sources</id>
-                        <goals>
-                            <goal>jar</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
-
-            <plugin>
                 <artifactId>maven-javadoc-plugin</artifactId>
                 <version>2.9</version>
                 <configuration>
@@ -149,6 +135,18 @@
                         <version>1.3</version>
                     </docletArtifact>
                     <useStandardDocletOptions>true</useStandardDocletOptions>
+                </configuration>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>2.9</version>
+                <configuration>
+                    <systemPropertyVariables>
+                        <user.language>en</user.language>
+                        <user.region>NZ</user.region>
+                    </systemPropertyVariables>
                 </configuration>
             </plugin>
 
