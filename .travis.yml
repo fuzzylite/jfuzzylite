@@ -1,11 +1,5 @@
 language: java
 
-jdk:
-  - openjdk6
-  - openjdk7
-  - oraclejdk7
-  - oraclejdk8
-
 script:
   - cd jfuzzylite
   - if [ "$FL_BUILDER" = "mvn" ]; 
@@ -18,13 +12,22 @@ script:
     fi
 
 env:
+  - FL_BUILDER=mvn
+  - FL_BUILDER=ant
   matrix:
-    - FL_BUILDER=mvn
-    - FL_BUILDER=ant
+    include:
+      - addons:
+          apt:
+            packages:
+              - openjdk-6-jdk
+        jdk: openjdk6
+      - jdk: openjdk7
+      - jdk: oraclejdk8
+      - jdk: oraclejdk9
 
 notifications:
   email:
     recipients:
       - jcrada@fuzzylite.com
-    on_success: change
+    on_success: always
     on_failure: always
