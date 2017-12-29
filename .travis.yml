@@ -1,5 +1,6 @@
 language: java
-
+git:
+  depth: 1
 script:
   - cd jfuzzylite
   - if [ "$FL_BUILDER" = "mvn" ]; 
@@ -10,10 +11,6 @@ script:
     then
     ant -f build.xml ;
     fi
-
-env:
-  - 
-  - FL_BUILDER=ant
     
 matrix:
   include:
