@@ -49,7 +49,7 @@ public class FuzzyLite {
         }
     }
 
-    private static final ThreadLocal<DecimalFormat> FORMATTER = new ThreadSafeDecimalFormat();
+    private static final ThreadSafeDecimalFormat FORMATTER = new ThreadSafeDecimalFormat();
 
     public static final Charset UTF_8 = Charset.forName("UTF-8");
 
