@@ -99,6 +99,13 @@ public class Rule implements Op.Cloneable {
         this(text, 1.0);
     }
 
+    /**
+     *
+     * @param text the rule text
+     * @param weight Not considered at all. Use `with N` in rule text to specify weight.
+     *
+     * @deprecated Use Rule(String) instead. This constructor will be made private in a later release.
+     */
     public Rule(String text, double weight) {
         this.enabled = true;
         this.text = text;
