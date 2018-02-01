@@ -16,19 +16,21 @@
  */
 package com.fuzzylite.imex;
 
-import com.fuzzylite.Engine;
-import com.fuzzylite.FuzzyLite;
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.notNullValue;
+import static org.junit.Assert.assertThat;
 
 import java.io.File;
 import java.util.logging.Level;
 
-import static org.hamcrest.CoreMatchers.is;
+import org.junit.After;
+import org.junit.AfterClass;
+import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.Test;
+
+import com.fuzzylite.Engine;
+import com.fuzzylite.FuzzyLite;
 
 public class FllImporterTest {
 
@@ -54,10 +56,18 @@ public class FllImporterTest {
     @Test
     public void testLaundry() throws Exception {
         File laundry = new File("../examples/original/mamdani/Laundry.fll");
-        Assert.assertThat("File exists", laundry.exists(), is(true));
+        assertThat("File exists", laundry.exists(), is(true));
         FllImporter importer = new FllImporter();
         Engine engine = importer.fromFile(laundry);
         FllExporter exporter = new FllExporter();
         FuzzyLite.logger().log(Level.INFO, exporter.toString(engine));
+    }
+
+    @Test
+    public void testLaundryFromInputStream() throws Exception {
+        FllImporter importer = new FllImporter();
+        Engine engine = importer.fromStream(getClass().getResourceAsStream("/Laundry.fll"));
+
+        assertThat(engine.getInputVariable("Dirt"), notNullValue());
     }
 }
