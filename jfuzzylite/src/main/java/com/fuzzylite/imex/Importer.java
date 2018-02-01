@@ -16,15 +16,16 @@
  */
 package com.fuzzylite.imex;
 
-import com.fuzzylite.Engine;
-import com.fuzzylite.FuzzyLite;
-import com.fuzzylite.Op;
-
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
+
+import com.fuzzylite.Engine;
+import com.fuzzylite.FuzzyLite;
+import com.fuzzylite.Op;
 
 /**
  The Importer class is the abstract class for importers to configure an Engine
@@ -54,18 +55,38 @@ public abstract class Importer implements Op.Cloneable {
      @throws IOException if any error occurs upon reading the file
      */
     public Engine fromFile(File file) throws IOException {
-        BufferedReader reader = new BufferedReader(new InputStreamReader(
-                new FileInputStream(file), FuzzyLite.UTF_8));
+        return fromStream(new FileInputStream(file), true);
+    }
+
+    /**
+     * Imports the engine from the given input stream. Does not close the underlying stream
+     * @param input input source for the engine
+     * @return the engine
+     * @throws IOException any errors from underlying inputstream
+     */
+    public Engine fromStream(InputStream input) throws IOException {
+        return fromStream(input, false);
+    }
+
+    /**
+     * Imports the engine from the given input stream. UTF-8 encoding is used for reading.
+     * @param input input source for the engine
+     * @param close if true tries to close the stream after reading
+     * @return the engine
+     * @throws IOException any errors from underlying inputstream
+     */
+    public Engine fromStream(InputStream input, boolean close) throws IOException {
+        BufferedReader reader = new BufferedReader(new InputStreamReader(input, FuzzyLite.UTF_8));
         String line;
         StringBuilder textEngine = new StringBuilder();
         try {
             while ((line = reader.readLine()) != null) {
                 textEngine.append(line).append("\n");
             }
-        } catch (IOException ex) {
-            throw ex;
         } finally {
-            reader.close();
+            if(close) {
+                reader.close();
+            }
         }
         return fromString(textEngine.toString());
     }
