@@ -21,6 +21,16 @@ script:
     
 matrix:
   include:
+    - jdk: openjdk13
+      env: FL_BUILDER=mvn
+    - jdk: openjdk13
+      env: FL_BUILDER=ant
+      
+    - jdk: openjdk12
+      env: FL_BUILDER=mvn
+    - jdk: openjdk12
+      env: FL_BUILDER=ant
+      
     - jdk: openjdk11
       env: FL_BUILDER=mvn
     - jdk: openjdk11
@@ -46,37 +56,6 @@ matrix:
     - jdk: openjdk7
       env: FL_BUILDER=ant
       
-    - jdk: oraclejdk11
-      env: FL_BUILDER=mvn
-    - jdk: oraclejdk11
-      env: FL_BUILDER=ant
-      
-    - jdk: oraclejdk10
-      env: FL_BUILDER=mvn
-    - jdk: oraclejdk10
-      env: FL_BUILDER=ant
-      
-    - jdk: oraclejdk9
-      env: FL_BUILDER=mvn
-    - jdk: oraclejdk9
-      env: FL_BUILDER=ant
-      
-    - jdk: oraclejdk8
-      env: FL_BUILDER=mvn
-    - jdk: oraclejdk8
-      env: FL_BUILDER=ant
-      
-    - jdk: oraclejdk7
-      env: FL_BUILDER=mvn
-    - jdk: oraclejdk7
-      env: FL_BUILDER=ant
-      
-  allow_failures:
-    - jdk: oraclejdk-ea
-      env: FL_BUILDER=mvn
-    - jdk: oraclejdk-ea
-      env: FL_BUILDER=ant
-
 
 install:
   - if [[ -n "${MAVEN_VERSION}" ]]; then
