@@ -76,9 +76,6 @@
     </developers>
 
     <properties>
-        <jdk.version>1.6</jdk.version>
-        <maven.compiler.source>1.6</maven.compiler.source>
-        <maven.compiler.target>1.6</maven.compiler.target>
         <maven.compiler.verbose>false</maven.compiler.verbose>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
