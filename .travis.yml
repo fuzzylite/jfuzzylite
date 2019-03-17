@@ -1,13 +1,14 @@
 language: java
 
-addons:
-  apt:
-    packages:
-      - openjdk-6-jdk
 git:
   depth: 1
 
+before_script:
+- echo JAVA_HOME = ${JAVA_HOME}
+- echo PATH = ${PATH}
+
 script:
+  - java -version
   - cd jfuzzylite
   - if [ "$FL_BUILDER" = "mvn" ]; 
     then
@@ -20,26 +21,63 @@ script:
     
 matrix:
   include:
-    - jdk: openjdk6
-      env: FL_BUILDER=mvn MAVEN_VERSION="3.0"
-    - jdk: openjdk6
+    - jdk: openjdk11
+      env: FL_BUILDER=mvn
+    - jdk: openjdk11
+      env: FL_BUILDER=ant
+      
+    - jdk: openjdk10
+      env: FL_BUILDER=mvn
+    - jdk: openjdk10
+      env: FL_BUILDER=ant
+      
+    - jdk: openjdk9
+      env: FL_BUILDER=mvn
+    - jdk: openjdk9
+      env: FL_BUILDER=ant
+      
+    - jdk: openjdk8
+      env: FL_BUILDER=mvn
+    - jdk: openjdk8
       env: FL_BUILDER=ant
       
     - jdk: openjdk7
       env: FL_BUILDER=mvn
     - jdk: openjdk7
       env: FL_BUILDER=ant
-
-    - jdk: oraclejdk8
+      
+    - jdk: oraclejdk11
       env: FL_BUILDER=mvn
-    - jdk: oraclejdk8
+    - jdk: oraclejdk11
       env: FL_BUILDER=ant
-
+      
+    - jdk: oraclejdk10
+      env: FL_BUILDER=mvn
+    - jdk: oraclejdk10
+      env: FL_BUILDER=ant
+      
     - jdk: oraclejdk9
       env: FL_BUILDER=mvn
     - jdk: oraclejdk9
       env: FL_BUILDER=ant
       
+    - jdk: oraclejdk8
+      env: FL_BUILDER=mvn
+    - jdk: oraclejdk8
+      env: FL_BUILDER=ant
+      
+    - jdk: oraclejdk7
+      env: FL_BUILDER=mvn
+    - jdk: oraclejdk7
+      env: FL_BUILDER=ant
+      
+  allow_failures:
+    - jdk: oraclejdk-ea
+      env: FL_BUILDER=mvn
+    - jdk: oraclejdk-ea
+      env: FL_BUILDER=ant
+
+
 install:
   - if [[ -n "${MAVEN_VERSION}" ]]; then
         wget https://archive.apache.org/dist/maven/binaries/apache-maven-"${MAVEN_VERSION}"-bin.zip || travis_terminate 1;
