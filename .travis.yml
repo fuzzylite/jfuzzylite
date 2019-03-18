@@ -21,13 +21,13 @@ script:
     
 matrix:
   include:
-    - jdk: openjdk13
-      env: FL_BUILDER=mvn
+    # - jdk: openjdk13
+    #   env: FL_BUILDER=mvn # Failing because of source is set to 1.6
     - jdk: openjdk13
       env: FL_BUILDER=ant
-      
-    - jdk: openjdk12
-      env: FL_BUILDER=mvn
+    
+    # - jdk: openjdk12
+    #   env: FL_BUILDER=mvn # Failing because of source is set to 1.6
     - jdk: openjdk12
       env: FL_BUILDER=ant
       
