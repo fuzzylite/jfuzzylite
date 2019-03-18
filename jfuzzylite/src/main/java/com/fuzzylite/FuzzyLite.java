@@ -19,6 +19,8 @@ package com.fuzzylite;
 import java.io.InputStream;
 import java.nio.charset.Charset;
 import java.text.DecimalFormat;
+import java.text.NumberFormat;
+import java.util.Locale;
 import java.util.logging.Level;
 import java.util.logging.LogManager;
 import java.util.logging.Logger;
@@ -40,7 +42,10 @@ public class FuzzyLite {
 
         @Override
         protected DecimalFormat initialValue() {
-            return new DecimalFormat("0.000");
+            NumberFormat df = NumberFormat.getNumberInstance(Locale.ROOT);
+            df.setMinimumFractionDigits(decimals);
+            df.setMaximumFractionDigits(decimals);
+            return (DecimalFormat) df;
         }
     }
 
@@ -120,12 +125,9 @@ public class FuzzyLite {
      */
     public static void setDecimals(int decimals) {
         FuzzyLite.decimals = decimals;
-        StringBuilder pattern = new StringBuilder("0.".length() + decimals);
-        pattern.append("0.");
-        for (int i = 0; i < decimals; ++i) {
-            pattern.append('0');
-        }
-        FORMATTER.set(new DecimalFormat(pattern.toString()));
+        DecimalFormat decimalFormat = FORMATTER.get();
+        decimalFormat.setMinimumFractionDigits(decimals);
+        decimalFormat.setMaximumFractionDigits(decimals);
     }
 
     /**
