@@ -50,12 +50,6 @@ matrix:
       env: FL_BUILDER=mvn
     - jdk: openjdk8
       env: FL_BUILDER=ant
-      
-    - jdk: openjdk7
-      env: FL_BUILDER=mvn
-    - jdk: openjdk7
-      env: FL_BUILDER=ant
-      
 
 install:
   - if [[ -n "${MAVEN_VERSION}" ]]; then
